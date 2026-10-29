@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake</title>
+  <link rel="stylesheet" href="snake.css">
+</head>
+<body>
+
+  <main class="wrap">
+    <h1>Snake</h1>
+    <p class="score">Score: <span id="score">0</span> &middot; Best: <span id="best">0</span></p>
+
+    <canvas id="game" width="320" height="320"></canvas>
+
+    <button id="start" class="button">Start</button>
+
+    <div class="pad">
+      <button data-dir="up">&#9650;</button>
+      <button data-dir="left">&#9664;</button>
+      <button data-dir="down">&#9660;</button>
+      <button data-dir="right">&#9654;</button>
+    </div>
+
+    <p class="hint">Arrow keys or WASD</p>
+    <p class="back"><a href="index.html">&larr; Back home</a></p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

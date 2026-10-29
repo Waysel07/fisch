@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fisch!</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #bg-video {
+      position: fixed; inset: 0; z-index: -1;
+      overflow: hidden; pointer-events: none;
+      opacity: 0; transition: opacity 0.6s ease;
+    }
+    #bg-video.on { opacity: 1; }
+    #bg-video iframe {
+      position: absolute; top: 50%; left: 50%;
+      width: 100vw; height: 56.25vw;       /* 16:9 */
+      min-height: 100vh; min-width: 177.78vh;
+      transform: translate(-50%, -50%);
+      border: 0;
+    }
+    #fish { cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <div id="bg-video"></div>
+
+  <main class="card">
+    <h1>odFisch!</h1>
+    <p>Jetzt neu: Fisch 2!</p>
+    <img id="fish" src="fsh-spin.gif" alt="Drehender Fisch" title="Klick mich!">
+    <nav class="links">
+      <a href="fish2.html">Fisch 2!</a>
+      <a href="rick.html">Der Ast</a>
+      <a href="fish3.html">Fisch 3!</a>
+    </nav>
+  </main>
+
+  <script>
+    const VIDEO_ID = '3at_m1J1O4I';
+    const fish = document.getElementById('fish');
+    const bg = document.getElementById('bg-video');
+
+    fish.addEventListener('click', () => {
+      const playing = bg.querySelector('iframe');
+
+      if (playing) {                 // second click: stop & hide
+        bg.classList.remove('on');
+        setTimeout(() => playing.remove(), 600);
+        return;
+      }
+
+      const frame = document.createElement('iframe');
+      frame.src = `https://www.youtube-nocookie.com/embed/${VIDEO_ID}`
+                + `?autoplay=1&loop=1&playlist=${VIDEO_ID}`
+                + `&controls=0&modestbranding=1&playsinline=1`;
+      frame.allow = 'autoplay; encrypted-media';
+      bg.appendChild(frame);
+      requestAnimationFrame(() => bg.classList.add('on'));
+    });
+  </script>
+
+</body>
+</html>

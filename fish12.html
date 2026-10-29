@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fisch 2!</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body> 
+
+  <main class="card">
+    <h1>Fisch 12!</h1>
+    <p>Wüffüffüffüffüffüffüffüffüffüffüffüffüffüffüffüffüffüffüffüffüffel!</p>
+    <img src="twawis.jpg" id="travis" alt="Fisch mit offenem Maul" style="cursor:pointer">
+    <audio id="travisSound" src="jetzt-kommt-travis.mp3" preload="auto"></audio>
+    <nav class="links">
+      <a href="index.html">Fisch!</a>
+      <a href="rick.html">Der Ast</a>
+      <a href="fish3.html">Fisch 3!</a>
+    </nav>
+  </main>
+  <script>
+    const img = document.getElementById('travis');
+    const sound = document.getElementById('travisSound');
+
+    img.addEventListener('click', () => {
+      img.src = 'twawis2.jpg';
+      sound.currentTime = 0;
+      sound.play();
+    });
+
+    sound.addEventListener('ended', () => {
+      img.src = 'twawis.jpg';
+    });
+  </script>
+</body>
+</html>

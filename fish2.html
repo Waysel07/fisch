@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fisch 2!</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #secret {
+      cursor: pointer;
+      color: inherit;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="card">
+    <h1>Fisch <a id="secret">2</a>!</h1>
+    <p>Jetzt neu: Fisch RAHHHHHHHHHHH!</p>
+    <img src="lo.gif" alt="Fisch mit offenem Maul">
+    <nav class="links">
+      <a href="index.html">Fisch!</a>
+      <a href="rick.html">Der Ast</a>
+      <a href="fish3.html">Fisch 3!</a>
+    </nav>
+  </main>
+
+  <script>
+    const secret = document.getElementById("secret");
+    secret.addEventListener("click", function (e) {
+      if (!secret.hasAttribute("href")) {
+        e.preventDefault();
+        secret.textContent = "12";
+        secret.href = "fish12.html";
+      }
+    });
+  </script>
+
+</body>
+</html>
