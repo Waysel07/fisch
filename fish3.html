@@ -5,12 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fisch 3!</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    #rat {
+      display: inline-block;
+      color: #c08457;
+      font-weight: 800;
+      text-decoration: none;
+      animation: wiggle 1.5s ease-in-out infinite;
+    }
+    #rat:hover { color: #e0a878; animation: none; transform: scale(1.4); }
+    @keyframes wiggle {
+      0%, 80%, 100% { transform: rotate(0); }
+      85% { transform: rotate(-12deg); }
+      90% { transform: rotate(12deg); }
+      95% { transform: rotate(-6deg); }
+    }
+  </style>
 </head>
 <body>
 
   <main class="card">
     <h1>Fisch 3!</h1>
-    <p>Jetzt neu: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<a href="rat.html" style="color:inherit;text-decoration:none;cursor:text">A</a>AAAAAAAAAAA!</p>
+    <p>Jetzt neu: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA<a id="rat" href="rat.html">A</a>AAAAAAAAAAA!</p>
     <img src="fish3.gif" alt="Schwimmender Fisch">
     <nav class="links">
       <a href="index.html">Fisch!</a>
