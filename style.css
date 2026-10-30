@@ -105,3 +105,18 @@ p {
 @view-transition {
   navigation: auto;
 }
+
+/* Language selector */
+.lang {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  font: inherit;
+  font-weight: 600;
+  background-color: #22c55e;
+  color: #0f172a;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+}

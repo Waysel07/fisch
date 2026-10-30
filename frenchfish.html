@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poisson !</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .card img { aspect-ratio: 2 / 1; }
+  </style>
+</head>
+<body>
+
+  <select class="lang" autocomplete="off" aria-label="Langue" onchange="location.href = this.value">
+    <option value="index.html">🇩🇪 Deutsch</option>
+    <option value="frenchfish.html" selected>🇫🇷 Français</option>
+  </select>
+
+  <main class="card">
+    <h1>Poisson !</h1>
+    <p>Nouveau : poisson au chocolat ! Très français. Oui oui.</p>
+    <img src="frenchfish.gif" alt="Poisson nappé de chocolat">
+    <nav class="links">
+      <a href="index.html">Fisch!</a>
+    </nav>
+  </main>
+
+<script src="/fish.js" defer></script>
+</body>
+</html>
