@@ -6,7 +6,33 @@
   <title>Spezifisch!</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    .card img { object-fit: contain; background: #fff; }
+    .stage {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 550 / 514;
+      margin: 0 auto 1.5rem;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px;
+      overflow: hidden;
+    }
+    .stage img {
+      position: absolute;
+      display: block;
+      margin: 0;
+      max-width: none;
+      aspect-ratio: auto;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .stage .title { left: 0; top: 0; width: 100%; animation: none; }
+    .stage .fish { animation: spin 4s linear infinite; }
+    .stage .f1 { left: 12.7%; top: 53.9%; width: 75.5%; }
+    .stage .f2 { left: 10.7%; top: 13.4%; width: 51.3%; animation-duration: 3s; animation-direction: reverse; }
+    .stage .f3 { left: 58.9%; top: 34%; width: 30.9%; animation-duration: 2s; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .stage .fish { animation: none; } }
   </style>
 </head>
 <body>
@@ -14,7 +40,12 @@
   <main class="card">
     <h1>Spezifisch!</h1>
     <p>Prost! Jetzt hat der Tisch auch was zu trinken.</p>
-    <img src="spezifisch.jpg" alt="Spezifische Spezifische: Fische mit Spezi-Etikett">
+    <div class="stage" role="img" aria-label="Spezifische Spezifische: drei rotierende Fische mit Spezi-Etikett">
+      <img class="title" src="spezifisch-title.png" alt="">
+      <img class="fish f1" src="spezifisch1.png" alt="">
+      <img class="fish f2" src="spezifisch2.png" alt="">
+      <img class="fish f3" src="spezifisch3.png" alt="">
+    </div>
     <nav class="links">
       <a href="tisch.html">Tisch!</a>
       <a href="index.html">Fisch!</a>
