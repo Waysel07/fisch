@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spezifischfischer!</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .card img#scene {
+      max-width: 480px;
+      aspect-ratio: 480 / 340;
+      object-fit: contain;
+      background: #fff;
+      cursor: pointer;
+    }
+    #caption {
+      min-height: 3.2em;
+      color: #e2e8f0;
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+    h1 { font-size: clamp(1.6rem, 8vw, 2.4rem); }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1.2rem;
+    }
+    .controls button {
+      font: inherit;
+      font-weight: 600;
+      border: 0;
+      border-radius: 8px;
+      padding: 0.5rem 1.1rem;
+      margin: 0.2rem;
+      cursor: pointer;
+      background: #334155;
+      color: #e2e8f0;
+    }
+    .controls button.main { background: #22c55e; color: #0f172a; }
+    #count { color: #94a3b8; font-size: 0.85rem; margin: 0 0.4rem; }
+  </style>
+  <link rel="stylesheet" href="legal.css">
+</head>
+<body>
+
+  <main class="card">
+    <h1>Spezifischfischer!</h1>
+    <img id="scene" src="spezifischfischer-1.jpg" alt="" title="Klick mich!">
+    <p id="caption" aria-live="polite"></p>
+    <div class="controls">
+      <button id="prev" aria-label="Zurück">&larr;</button>
+      <button id="next" class="main">Weiter</button>
+      <span id="count"></span>
+      <button id="all">Alles abspielen</button>
+    </div>
+    <audio id="voice" src="spezifischfischer.mp3" preload="auto"></audio>
+    <nav class="links">
+      <a href="spezifisch.html">Spezifisch!</a>
+      <a href="tisch.html">Tisch!</a>
+      <a href="index.html">Fisch!</a>
+    </nav>
+  </main>
+
+  <script>
+    // Each scene: caption + where its part of the voice track starts (seconds)
+    const SCENES = [
+      ['Spezifisch', 0],
+      ['spezifischer Spezifisch', 0.93],
+      ['spezifische Spezifische', 3.17],
+      ['Spezifischer', 4.9],
+      ['Spezifischfischer', 5.73],
+      ['spezifischer Spezifischfischer', 7.17],
+      ['spezifischer Spezifischfischer fischt spezifische Spezifische', 8.87],
+      ['Spee Zierfisch', 12.63],
+      ['spezifische Spee Zierfische', 13.9],
+      ['spezifischer Spezifischfischer fischt spezifische Spezifische mit spezifischen Spee Zierfischen', 16.43],
+    ];
+
+    const img = document.getElementById('scene');
+    const caption = document.getElementById('caption');
+    const count = document.getElementById('count');
+    const next = document.getElementById('next');
+    const voice = document.getElementById('voice');
+    let current = 0;
+    let started = false;  // first "Start" plays scene 1 instead of skipping it
+    let stopAt = null;   // end of the single scene being played, null = play through
+
+    // preload all scenes so switching doesn't flash
+    SCENES.forEach((_, i) => { new Image().src = `spezifischfischer-${i + 1}.jpg`; });
+
+    function show(i) {
+      current = i;
+      img.src = `spezifischfischer-${i + 1}.jpg`;
+      img.alt = SCENES[i][0];
+      caption.textContent = SCENES[i][0];
+      count.textContent = `${i + 1} / ${SCENES.length}`;
+      next.textContent = !started ? 'Start' : i === SCENES.length - 1 ? 'Nochmal' : 'Weiter';
+    }
+
+    function playScene(i) {
+      started = true;
+      show(i);
+      stopAt = i + 1 < SCENES.length ? SCENES[i + 1][1] : null;
+      voice.currentTime = SCENES[i][1];
+      voice.play().catch(() => {});
+    }
+
+    voice.addEventListener('timeupdate', () => {
+      if (stopAt !== null) {
+        if (voice.currentTime >= stopAt) voice.pause();
+        return;
+      }
+      // playing everything: follow the voice track with the pictures
+      let i = 0;
+      while (i + 1 < SCENES.length && voice.currentTime >= SCENES[i + 1][1]) i++;
+      if (i !== current) show(i);
+    });
+
+    // stopPropagation: keep fish.js's click sound out of the narration
+    function on(el, fn) {
+      el.addEventListener('click', (e) => { e.stopPropagation(); fn(); });
+    }
+    const advance = () => playScene(started ? (current + 1) % SCENES.length : 0);
+    on(next, advance);
+    on(img, advance);
+    on(document.getElementById('prev'), () => playScene(Math.max(current - 1, 0)));
+    on(document.getElementById('all'), () => {
+      started = true;
+      stopAt = null;
+      show(0);
+      voice.currentTime = 0;
+      voice.play().catch(() => {});
+    });
+
+    show(0);
+  </script>
+
+<footer class="legal"><a href="datenschutz.html">Datenschutz</a></footer>
+<script src="/fish.js" defer></script>
+</body>
+</html>
