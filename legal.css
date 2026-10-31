@@ -1,0 +1,71 @@
+/* Impressum/Datenschutz links, on every page */
+.legal {
+  position: fixed;
+  bottom: 0.6rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font: 0.8rem/1.4 "Poppins", Arial, Helvetica, sans-serif;
+  pointer-events: none;
+}
+
+.legal a {
+  color: #94a3b8;
+  text-decoration: underline;
+  margin: 0 0.5rem;
+  pointer-events: auto;
+}
+
+.legal a:hover { color: #e2e8f0; }
+
+body { padding-bottom: 2.5rem; }
+
+/* YouTube consent box (two-click solution) */
+.consent {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.85);
+}
+
+.consent > div {
+  max-width: 420px;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: #1e293b;
+  color: #e2e8f0;
+  text-align: center;
+  font: 0.95rem/1.5 "Poppins", Arial, Helvetica, sans-serif;
+}
+
+.consent p { margin-bottom: 1rem; color: #cbd5e1; }
+.consent a { color: #4ade80; }
+
+.consent button {
+  font: inherit;
+  font-weight: 600;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.5rem 1.2rem;
+  margin: 0.25rem;
+  cursor: pointer;
+  background: #22c55e;
+  color: #0f172a;
+}
+
+.consent button.no { background: #334155; color: #e2e8f0; }
+
+/* Impressum / Datenschutz pages */
+.card.text { max-width: 720px; text-align: left; }
+.card.text h1 { margin-bottom: 1rem; }
+.card.text h2 { font-size: 1.15rem; color: #e2e8f0; margin: 1.6rem 0 0.4rem; }
+.card.text p, .card.text li { color: #cbd5e1; margin-bottom: 0.8rem; line-height: 1.6; }
+.card.text ul { padding-left: 1.2rem; margin-bottom: 0.8rem; }
+.card.text a { color: #4ade80; }
+.card.text .links { justify-content: flex-start; margin-top: 2rem; }
+.card.text .links a { color: #0f172a; }
+.card.text ~ .legal { position: static; margin-top: 2rem; }
+body:has(.card.text) { flex-direction: column; padding-bottom: 1rem; }
