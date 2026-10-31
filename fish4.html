@@ -21,6 +21,7 @@
     }
     #fish { cursor: pointer; }
   </style>
+  <link rel="stylesheet" href="legal.css">
 </head>
 <body>
 
@@ -51,6 +52,38 @@
         return;
       }
 
+      if (ytConsent) startVideo();
+      else askConsent();
+    });
+
+    // Two-click solution: YouTube (Google) only gets loaded after an explicit OK.
+    // The OK only lives for this page view, nothing is stored.
+    let ytConsent = false;
+
+    function askConsent() {
+      const box = document.createElement('div');
+      box.className = 'consent';
+      box.innerHTML = `
+        <div role="dialog" aria-modal="true" aria-label="YouTube-Video laden?">
+          <p>Beim Abspielen wird ein Video von YouTube (Google Ireland Ltd.) geladen.
+             Dabei wird u.&nbsp;a. deine IP-Adresse an Google übertragen, ggf. auch in die USA.
+             Mehr dazu in der <a href="datenschutz.html">Datenschutzerklärung</a>.</p>
+          <button class="yes">Video laden</button>
+          <button class="no">Abbrechen</button>
+        </div>`;
+      box.querySelector('.yes').addEventListener('click', () => {
+        ytConsent = true;
+        box.remove();
+        startVideo();
+      });
+      box.querySelector('.no').addEventListener('click', () => {
+        box.remove();
+      });
+      document.body.appendChild(box);
+      box.querySelector('.yes').focus();
+    }
+
+    function startVideo() {
       const frame = document.createElement('iframe');
       frame.src = `https://www.youtube-nocookie.com/embed/${VIDEO_ID}`
                 + `?autoplay=1&loop=1&playlist=${VIDEO_ID}`
@@ -58,8 +91,9 @@
       frame.allow = 'autoplay; encrypted-media';
       bg.appendChild(frame);
       requestAnimationFrame(() => bg.classList.add('on'));
-    });
+    }
   </script>
 <script src="/fish.js" defer></script>
+<footer class="legal"><a href="datenschutz.html">Datenschutz</a></footer>
 </body>
 </html>
