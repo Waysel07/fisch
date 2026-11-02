@@ -80,6 +80,35 @@
     @keyframes fall {
       to { transform: translateY(calc(100vh + 160px)) rotate(var(--turn)); }
     }
+
+    /* The whole card sways like a ship (on top of the rainbow) */
+    .card { animation: rainbow 6s linear infinite, sway 5s ease-in-out infinite; }
+    @keyframes sway {
+      0%, 100% { transform: rotate(-4deg) translateX(-8px); }
+      50%      { transform: rotate(4deg) translateX(8px); }
+    }
+
+    /* Subtitle is backwards. Read it in a mirror. */
+    .card p { transform: scaleX(-1); }
+
+    /* Cursor trail and click bursts */
+    .trail, .burst {
+      position: fixed;
+      pointer-events: none;
+      z-index: 10;
+      translate: -50% -50%;
+    }
+    .trail { width: 36px; animation: trail-fade 0.8s ease-out forwards; }
+    @keyframes trail-fade {
+      to { opacity: 0; transform: scale(0.2) rotate(200deg); }
+    }
+    .burst { width: 44px; animation: burst-fly 1s ease-out forwards; }
+    @keyframes burst-fly {
+      to { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(540deg); }
+    }
+
+    /* The Fisch! button that does not want to be clicked */
+    #flee { position: relative; transition: left 0.15s, top 0.15s; left: 0; top: 0; }
   </style>
   <link rel="stylesheet" href="legal.css">
 </head>
@@ -93,7 +122,7 @@
       <img src="rotierendepinguine.gif" alt="Vier Pinguine, chaotisch drehend">
     </div>
     <nav class="links">
-      <a href="index.html">Fisch!</a>
+      <a id="flee" href="index.html">Fisch!</a>
       <a href="rat.html">Ratte!</a>
     </nav>
   </main>
@@ -117,7 +146,59 @@
       p.addEventListener('animationend', () => p.remove());
       document.body.appendChild(p);
     }
-    setInterval(dropPenguin, 400);
+    setInterval(dropPenguin, 200);
+
+    function spawn(cls, x, y, extra) {
+      const p = document.createElement('img');
+      p.src = 'rotierendepinguine.gif';
+      p.alt = '';
+      p.className = cls;
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      if (extra) extra(p);
+      p.addEventListener('animationend', () => p.remove());
+      document.body.appendChild(p);
+    }
+
+    // Penguins follow the mouse
+    let lastTrail = 0;
+    document.addEventListener('pointermove', e => {
+      const now = performance.now();
+      if (now - lastTrail < 50) return;
+      lastTrail = now;
+      spawn('trail', e.clientX, e.clientY);
+    });
+
+    // Every click: penguin explosion
+    document.addEventListener('click', e => {
+      for (let i = 0; i < 12; i++) {
+        const a = (i / 12) * Math.PI * 2;
+        const r = 120 + Math.random() * 80;
+        spawn('burst', e.clientX, e.clientY, p => {
+          p.style.setProperty('--dx', Math.cos(a) * r + 'px');
+          p.style.setProperty('--dy', Math.sin(a) * r + 'px');
+        });
+      }
+    });
+
+    // The Fisch! button runs away five times, then gives up
+    const flee = document.getElementById('flee');
+    let escapes = 0;
+    flee.addEventListener('pointerenter', e => {
+      if (e.pointerType !== 'mouse' || escapes >= 5) return;
+      escapes++;
+      flee.style.left = (Math.random() * 240 - 120) + 'px';
+      flee.style.top = (Math.random() * 160 - 80) + 'px';
+      if (escapes === 5) {
+        flee.textContent = 'Na gut. Fisch!';
+        flee.style.left = flee.style.top = '0px';
+      }
+    });
+
+    // The tab title won't sit still either
+    const titles = ['🐧 Pinguine!', 'LÄCHELN', 'UND', 'WINKEN', '🐧🐧🐧🐧', 'Kein Fisch.'];
+    let t = 0;
+    setInterval(() => { document.title = titles[t++ % titles.length]; }, 700);
   </script>
 
 <script src="/fish.js" defer></script>
