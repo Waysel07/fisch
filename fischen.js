@@ -46,7 +46,7 @@
     { id: 'ratte',   name: 'Ratte',             img: 'rat.gif',              r: 'junk',      min: 18, max: 28,  val: 1,  say: 'Lass mich, ich hab Termine.', desc: 'Nass und beleidigt. Läuft trotzdem weiter.' },
     { id: 'tisch',   name: 'Tisch',             img: 'tisch.gif',            r: 'junk',      min: 90, max: 140, val: 3,  photo: true, say: 'Ich bin ein Tisch.', desc: 'Ein Tisch. Kein Fisch. Aber fast.' },
     { id: 'flasche', name: 'Spezi-Flasche',     img: 'spezi-flasche.png',    r: 'junk',      min: 25, max: 33,  val: 4,  say: 'Pfand gibt’s keins.', desc: 'Leer. Gehört bestimmt dem Spezifischfischer.' },
-    { id: 'pinguine', name: 'Rotierende Pinguine', img: 'rotierendepinguine.gif', r: 'junk', min: 60, max: 75, val: 25, photo: true, say: 'Wir drehen uns, also sind wir.', desc: 'Vier Pinguine, rotierend. Selten. Wie kommen die hier rein?', rareJunk: true },
+    { id: 'pinguine', name: 'Rotierende Pinguine', img: 'rotierendepinguine.gif', r: 'junk', min: 60, max: 75, val: 25, photo: true, page: 'pinguine.html', say: 'Wir drehen uns, also sind wir.', desc: 'Vier Pinguine, rotierend. Selten. Wie kommen die hier rein?', rareJunk: true },
   ];
 
   const RODS = [
