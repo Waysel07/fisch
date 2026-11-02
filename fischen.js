@@ -58,7 +58,7 @@
   const save = Object.assign({
     coins: 0, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity },
     dex: {}, total: 0, sound: true, seen: false,
-    dexClaimed: [], lvl: 1, xp: 0, rebirths: 0, scales: 0, perks: {}, quests: [], questsDone: 0, lifeCoins: 0,
+    dexClaimed: [], lvl: 1, xp: 0, rebirths: 0, scales: 0, perks: {}, quests: [], questsDone: 0, lifeCoins: 0, totalEarned: 0,
   }, load());
   save.baits.wurm = Infinity;
   function load() {
@@ -285,8 +285,9 @@
     e.n++; e.best = Math.max(e.best, size); save.dex[f.id] = e;
     let newMut = false;
     if (mut) { e.muts = e.muts || {}; newMut = !e.muts[mut.id]; e.muts[mut.id] = (e.muts[mut.id] || 0) + 1; }
-    save.coins += val; save.total++; save.lifeCoins += val;
+    save.coins += val; save.total++; save.lifeCoins += val; save.totalEarned += val;
     progressCatch(f, size, val, first);
+    setTimeout(() => lbSubmit(), 3000);
     if (dexClaimable().length) { updateDexBadge(); if (first || newMut) toast('📖 Fischdex-Belohnung bereit!'); }
     persist(); updateCoins();
     splash(bob.x, SURFACE, 22, '#ffffff');
@@ -437,12 +438,14 @@
   window.addEventListener('keydown', e => {
     const k = e.key.toLowerCase();
     if (k === 'escape') { closeModals(); return; }
+    if (e.target.closest && e.target.closest('input, textarea')) return;
     if (!$('title').hidden) { if (k === ' ' || k === 'enter') { e.preventDefault(); $('start').click(); } return; }
     if (!$('catch').hidden) { if (k === ' ' || k === 'enter') { e.preventDefault(); $('catch-ok').click(); } return; }
     if (k === 'f') { toggleModal('dex'); return; }
     if (k === 'l') { toggleModal('shop'); return; }
     if (k === 'c') { toggleModal('casino'); return; }
     if (k === 'p') { toggleModal('prog'); return; }
+    if (k === 'b') { toggleModal('lb'); return; }
     if (!$('casino').hidden && (k === ' ' || k === 'enter')) { e.preventDefault(); $('spin').click(); return; }
     if (k === 'm') { $('btn-sound').click(); return; }
     if (anyModal()) return;
@@ -1015,14 +1018,14 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb']) $(id).hidden = true;
   }
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
     if (['charge', 'fly', 'bite', 'reel'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -1032,6 +1035,7 @@
   $('btn-shop').addEventListener('click', () => toggleModal('shop'));
   $('btn-casino').addEventListener('click', () => toggleModal('casino'));
   $('btn-prog').addEventListener('click', () => toggleModal('prog'));
+  $('btn-lb').addEventListener('click', () => toggleModal('lb'));
   $('lvl').addEventListener('click', () => toggleModal('prog'));
   $('btn-sound').addEventListener('click', () => {
     save.sound = !save.sound; persist();
@@ -1254,7 +1258,7 @@
     save.dexClaimed = save.dexClaimed || [];
     if (save.dexClaimed.includes(r.id)) return;
     save.dexClaimed.push(r.id);
-    save.coins += r.coins; save.scales += r.scales || 0;
+    save.coins += r.coins; save.scales += r.scales || 0; save.totalEarned += r.coins;
     sfx.coin(); setTimeout(sfx.coin, 150);
     toast(`📖 ${r.name}: +${r.coins} Taler${r.scales ? ` · +${r.scales} 🐚` : ''}${r.perkText ? ' · ' + r.perkText : ''}`);
     persist(); updateCoins(); updateDexBadge(); renderDex();
@@ -1337,8 +1341,9 @@
   setInterval(persist, 30000);
   document.addEventListener('visibilitychange', () => { if (document.hidden) persist(); });
   window.addEventListener('pagehide', persist);
-  $('btn-reset').addEventListener('click', () => {
-    if (!confirm('Spielstand wirklich löschen? Fischdex, Taler und Ausrüstung sind dann weg.')) return;
+  $('btn-reset').addEventListener('click', async () => {
+    if (!confirm('Spielstand wirklich löschen? Fischdex, Taler und Ausrüstung sind dann weg.' + (save.lb ? ' Dein Bestenlisten-Eintrag wird ebenfalls gelöscht.' : ''))) return;
+    if (save.lb) { try { await fetch('/api/leaderboard', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: save.lb.id, token: save.lb.token }) }); } catch { /* offline: entry stays, can be removed on request */ } }
     try { localStorage.removeItem(SAVE_KEY); } catch { /* ignore */ }
     window.removeEventListener('pagehide', persist);
     location.reload();
@@ -1443,7 +1448,7 @@
   function claimQuest(i) {
     const q = save.quests[i]; if (!q || q.p < q.n) return;
     save.quests.splice(i, 1); save.questsDone++;
-    save.coins += q.coins; save.lifeCoins += q.coins;
+    save.coins += q.coins; save.lifeCoins += q.coins; save.totalEarned += q.coins;
     sfx.coin(); toast(`📜 +${q.coins} Taler · +${q.xp} EP`);
     gainXp(q.xp); fillQuests(); persist(); updateCoins(); renderProg();
   }
@@ -1529,6 +1534,100 @@
     gainXp(xp, true);
   }
   fillQuests();
+
+
+  // ------------------------------------------------------------------ leaderboard (opt-in)
+  // Only after the player chooses a nickname and agrees, scores are sent to /api/leaderboard
+  // (Vercel Function + Upstash Redis). At most every 2 minutes and only when something improved.
+  const LB_API = '/api/leaderboard';
+  const LB_TABS = {
+    taler:  { label: '🪙 Taler',          fmt: s => s.toLocaleString('de-DE') + ' Taler' },
+    wieder: { label: '🌀 Wiedergeburten', fmt: s => s + '×' },
+    dex:    { label: '📖 Fischdex',       fmt: s => `${Math.floor(s / 100)} Fische · ${s % 100} Mut.` },
+    rekord: { label: '📏 Rekordfang',     fmt: s => s + ' cm' },
+  };
+  const LB = { boards: null, tab: 'taler', ranks: null, err: '', busy: false };
+  if (!save.totalEarned) save.totalEarned = Math.max(save.lifeCoins || 0, save.coins || 0);
+  function lbScores() {
+    return {
+      taler: Math.floor(save.totalEarned),
+      wieder: save.rebirths,
+      dex: discovered() * 100 + mutsFound().length,
+      rekord: Math.max(0, ...Object.values(save.dex).map(e => e.best || 0)),
+    };
+  }
+  const hex = n => [...crypto.getRandomValues(new Uint8Array(n))].map(b => b.toString(16).padStart(2, '0')).join('');
+  async function lbFetch(method, body) {
+    const r = await fetch(LB_API, { method, headers: { 'Content-Type': 'application/json' }, body: body && JSON.stringify(body) });
+    let j = {}; try { j = await r.json(); } catch { /* not json */ }
+    if (!r.ok) throw Object.assign(new Error(j.error || 'Bestenliste gerade nicht erreichbar.'), { status: r.status });
+    return j;
+  }
+  async function lbSubmit(force) {
+    if (!save.lb || LB.busy) return;
+    const sc = lbScores(), key = JSON.stringify(sc), since = Date.now() - (save.lbT || 0);
+    if (key === save.lbKey || since < 55000 || (!force && since < 120000)) return;
+    LB.busy = true; save.lbT = Date.now();
+    try {
+      const j = await lbFetch('POST', { id: save.lb.id, token: save.lb.token, name: save.lb.name, scores: sc });
+      save.lbKey = key; save.lb.me = j.me; LB.ranks = j.ranks; LB.err = ''; persist();
+    } catch (e) { LB.err = e.message; }
+    LB.busy = false;
+    if (!$('lb').hidden) renderLb();
+  }
+  setInterval(() => lbSubmit(), 130000);
+
+  async function openLb() {
+    renderLb();
+    await lbSubmit(true);
+    try { LB.boards = (await lbFetch('GET')).boards; LB.err = save.lb ? LB.err : ''; }
+    catch (e) { LB.err = e.message; }
+    renderLb();
+  }
+  function renderLb() {
+    $('lb-tabs').replaceChildren(...Object.entries(LB_TABS).map(([id, t]) => {
+      const b = document.createElement('button'); b.className = 'tab' + (LB.tab === id ? ' on' : '');
+      b.textContent = t.label; b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', LB.tab === id);
+      b.addEventListener('click', () => { LB.tab = id; renderLb(); });
+      return b;
+    }));
+    const rows = LB.boards && LB.boards[LB.tab];
+    const list = $('lb-list');
+    if (!rows) list.replaceChildren(Object.assign(document.createElement('li'), { className: 'empty', textContent: LB.err || 'Lädt …' }));
+    else if (!rows.length) list.replaceChildren(Object.assign(document.createElement('li'), { className: 'empty', textContent: 'Noch niemand eingetragen. Sei der Erste!' }));
+    else list.replaceChildren(...rows.map((r, i) => {
+      const li = document.createElement('li'); if (save.lb && r.me === save.lb.me) li.className = 'mine';
+      const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = ['🥇', '🥈', '🥉'][i] || i + 1;
+      const n = document.createElement('b'); n.textContent = r.name;
+      const sc = document.createElement('span'); sc.className = 'score'; sc.textContent = LB_TABS[LB.tab].fmt(r.score);
+      li.append(pos, n, sc); return li;
+    }));
+    const my = LB.ranks && LB.ranks[LB.tab];
+    $('lb-me').textContent = save.lb
+      ? (my && my.rank ? `Dein Platz: ${my.rank} von ${my.of} · ${LB_TABS[LB.tab].fmt(lbScores()[LB.tab])}` : `Dein Wert: ${LB_TABS[LB.tab].fmt(lbScores()[LB.tab])}`) + (LB.err && LB.boards ? ` · ${LB.err}` : '')
+      : '';
+    $('lb-join').hidden = !!save.lb; $('lb-joined').hidden = !save.lb;
+    if (save.lb) $('lb-myname').textContent = save.lb.name;
+  }
+  $('lb-join-btn').addEventListener('click', async () => {
+    const name = $('lb-name').value.replace(/\s+/g, ' ').trim();
+    const err = $('lb-err');
+    if (!/^[\p{L}\p{N} ._\-!?]{2,16}$/u.test(name)) { err.textContent = 'Name: 2–16 Zeichen (Buchstaben, Zahlen, Leerzeichen, . _ - ! ?).'; return; }
+    if (!$('lb-consent').checked) { err.textContent = 'Bitte bestätige die Einwilligung.'; return; }
+    err.textContent = ''; $('lb-join-btn').disabled = true;
+    save.lb = { id: hex(20), token: hex(32), name }; save.lbKey = ''; save.lbT = 0;
+    await lbSubmit(true);
+    if (LB.err) { err.textContent = LB.err; delete save.lb; }
+    persist(); $('lb-join-btn').disabled = false;
+    openLb();
+  });
+  $('lb-leave').addEventListener('click', async () => {
+    if (!save.lb || !confirm('Eintrag aus der Bestenliste löschen? Dein Spielstand bleibt erhalten.')) return;
+    try { await lbFetch('DELETE', { id: save.lb.id, token: save.lb.token }); }
+    catch (e) { if (e.status !== 403) { LB.err = e.message; renderLb(); return; } }
+    delete save.lb; delete save.lbKey; delete save.lbT; LB.ranks = null; persist();
+    toast('Aus der Bestenliste ausgetragen.'); openLb();
+  });
 
   // ------------------------------------------------------------------ boot
   $('btn-sound').textContent = save.sound ? '🔊' : '🔇';
