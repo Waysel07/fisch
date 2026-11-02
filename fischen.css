@@ -290,4 +290,4 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
 #paytable { display: grid; grid-template-columns: auto 1fr; gap: .25rem .6rem; align-items: center; margin-top: .5rem; }
 #paytable span { display: flex; gap: 2px; }
 #paytable img { width: 22px; height: 22px; object-fit: contain; background: #f8fafc; border-radius: 3px; }
-.fine { font-size: .7rem; color: #64748b; margin-top: .7rem; }
+.fine { font-size: .75rem; color: #64748b; margin-top: .7rem; }
