@@ -291,3 +291,12 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
 #paytable span { display: flex; gap: 2px; }
 #paytable img { width: 22px; height: 22px; object-fit: contain; background: #f8fafc; border-radius: 3px; }
 .fine { font-size: .75rem; color: #64748b; margin-top: .7rem; }
+
+/* save indicator + note */
+.pill.saved { opacity: 0; transition: opacity .6s; pointer-events: none; }
+.pill.saved.on { animation: saved 1.8s ease-out; }
+@keyframes saved { 0%, 60% { opacity: 1; } 100% { opacity: 0; } }
+.savenote { font-size: .75rem; color: #64748b; margin-top: .9rem; }
+.savenote a { color: #94a3b8; }
+.linkbtn { font: inherit; background: none; border: 0; color: #94a3b8; text-decoration: underline; padding: 0; }
+.linkbtn:hover { color: #f87171; }
