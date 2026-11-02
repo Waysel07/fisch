@@ -1,0 +1,479 @@
+{
+  "redirects": [
+    {
+      "source": "/beinfisch.gif",
+      "destination": "/img/beinfisch.gif",
+      "permanent": true
+    },
+    {
+      "source": "/beinfisch.html",
+      "destination": "/seiten/beinfisch.html",
+      "permanent": true
+    },
+    {
+      "source": "/blobfisch.gif",
+      "destination": "/img/blobfisch.gif",
+      "permanent": true
+    },
+    {
+      "source": "/blobfisch.html",
+      "destination": "/seiten/blobfisch.html",
+      "permanent": true
+    },
+    {
+      "source": "/fih.gif",
+      "destination": "/img/fih.gif",
+      "permanent": true
+    },
+    {
+      "source": "/fischen-i18n.js",
+      "destination": "/js/fischen-i18n.js",
+      "permanent": true
+    },
+    {
+      "source": "/fischen.css",
+      "destination": "/css/fischen.css",
+      "permanent": true
+    },
+    {
+      "source": "/fischen.js",
+      "destination": "/js/fischen.js",
+      "permanent": true
+    },
+    {
+      "source": "/fish-cursor.png",
+      "destination": "/img/fish-cursor.png",
+      "permanent": true
+    },
+    {
+      "source": "/fish-icon.png",
+      "destination": "/img/fish-icon.png",
+      "permanent": true
+    },
+    {
+      "source": "/fish-smile.gif",
+      "destination": "/img/fish-smile.gif",
+      "permanent": true
+    },
+    {
+      "source": "/fish.js",
+      "destination": "/js/fish.js",
+      "permanent": true
+    },
+    {
+      "source": "/fish.mp3",
+      "destination": "/sounds/fish.mp3",
+      "permanent": true
+    },
+    {
+      "source": "/fish12.html",
+      "destination": "/seiten/fish12.html",
+      "permanent": true
+    },
+    {
+      "source": "/fish2-spin.gif",
+      "destination": "/img/fish2-spin.gif",
+      "permanent": true
+    },
+    {
+      "source": "/fish2.html",
+      "destination": "/seiten/fish2.html",
+      "permanent": true
+    },
+    {
+      "source": "/fish3.gif",
+      "destination": "/img/fish3.gif",
+      "permanent": true
+    },
+    {
+      "source": "/fish3.html",
+      "destination": "/seiten/fish3.html",
+      "permanent": true
+    },
+    {
+      "source": "/fish4.html",
+      "destination": "/seiten/fish4.html",
+      "permanent": true
+    },
+    {
+      "source": "/fish5.html",
+      "destination": "/seiten/fish5.html",
+      "permanent": true
+    },
+    {
+      "source": "/fishcmd.html",
+      "destination": "/seiten/fishcmd.html",
+      "permanent": true
+    },
+    {
+      "source": "/frenchfish.gif",
+      "destination": "/img/frenchfish.gif",
+      "permanent": true
+    },
+    {
+      "source": "/frenchfish.html",
+      "destination": "/seiten/frenchfish.html",
+      "permanent": true
+    },
+    {
+      "source": "/fsh-spin.gif",
+      "destination": "/img/fsh-spin.gif",
+      "permanent": true
+    },
+    {
+      "source": "/gespraechsfisch.html",
+      "destination": "/seiten/gespraechsfisch.html",
+      "permanent": true
+    },
+    {
+      "source": "/gutes-gespraech.gif",
+      "destination": "/img/gutes-gespraech.gif",
+      "permanent": true
+    },
+    {
+      "source": "/jetzt-kommt-travis.mp3",
+      "destination": "/sounds/jetzt-kommt-travis.mp3",
+      "permanent": true
+    },
+    {
+      "source": "/kaugummifisch.html",
+      "destination": "/seiten/kaugummifisch.html",
+      "permanent": true
+    },
+    {
+      "source": "/legal.css",
+      "destination": "/css/legal.css",
+      "permanent": true
+    },
+    {
+      "source": "/lippenfisch-spin.gif",
+      "destination": "/img/lippenfisch-spin.gif",
+      "permanent": true
+    },
+    {
+      "source": "/lo.gif",
+      "destination": "/img/lo.gif",
+      "permanent": true
+    },
+    {
+      "source": "/odfish.jpg",
+      "destination": "/img/odfish.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/oelfisch.html",
+      "destination": "/seiten/oelfisch.html",
+      "permanent": true
+    },
+    {
+      "source": "/oelfisch.png",
+      "destination": "/img/oelfisch.png",
+      "permanent": true
+    },
+    {
+      "source": "/pinguine.html",
+      "destination": "/seiten/pinguine.html",
+      "permanent": true
+    },
+    {
+      "source": "/pixelify-400.woff2",
+      "destination": "/fonts/pixelify-400.woff2",
+      "permanent": true
+    },
+    {
+      "source": "/pixelify-700.woff2",
+      "destination": "/fonts/pixelify-700.woff2",
+      "permanent": true
+    },
+    {
+      "source": "/pixelify-OFL.txt",
+      "destination": "/fonts/pixelify-OFL.txt",
+      "permanent": true
+    },
+    {
+      "source": "/poppins-400.woff2",
+      "destination": "/fonts/poppins-400.woff2",
+      "permanent": true
+    },
+    {
+      "source": "/poppins-600.woff2",
+      "destination": "/fonts/poppins-600.woff2",
+      "permanent": true
+    },
+    {
+      "source": "/poppins-800.woff2",
+      "destination": "/fonts/poppins-800.woff2",
+      "permanent": true
+    },
+    {
+      "source": "/rat.gif",
+      "destination": "/img/rat.gif",
+      "permanent": true
+    },
+    {
+      "source": "/rat.html",
+      "destination": "/seiten/rat.html",
+      "permanent": true
+    },
+    {
+      "source": "/rick.html",
+      "destination": "/seiten/rick.html",
+      "permanent": true
+    },
+    {
+      "source": "/rotierendepinguine.gif",
+      "destination": "/img/rotierendepinguine.gif",
+      "permanent": true
+    },
+    {
+      "source": "/schlammfisch.html",
+      "destination": "/seiten/schlammfisch.html",
+      "permanent": true
+    },
+    {
+      "source": "/schlammfisch.png",
+      "destination": "/img/schlammfisch.png",
+      "permanent": true
+    },
+    {
+      "source": "/script.js",
+      "destination": "/js/script.js",
+      "permanent": true
+    },
+    {
+      "source": "/snake.css",
+      "destination": "/css/snake.css",
+      "permanent": true
+    },
+    {
+      "source": "/snake.html",
+      "destination": "/seiten/snake.html",
+      "permanent": true
+    },
+    {
+      "source": "/spee-zierfisch.png",
+      "destination": "/img/spee-zierfisch.png",
+      "permanent": true
+    },
+    {
+      "source": "/spee-zierfische.png",
+      "destination": "/img/spee-zierfische.png",
+      "permanent": true
+    },
+    {
+      "source": "/spezi-flasche.png",
+      "destination": "/img/spezi-flasche.png",
+      "permanent": true
+    },
+    {
+      "source": "/spezifisch-title.png",
+      "destination": "/img/spezifisch-title.png",
+      "permanent": true
+    },
+    {
+      "source": "/spezifisch.html",
+      "destination": "/seiten/spezifisch.html",
+      "permanent": true
+    },
+    {
+      "source": "/spezifisch1.png",
+      "destination": "/img/spezifisch1.png",
+      "permanent": true
+    },
+    {
+      "source": "/spezifisch2.png",
+      "destination": "/img/spezifisch2.png",
+      "permanent": true
+    },
+    {
+      "source": "/spezifisch3.png",
+      "destination": "/img/spezifisch3.png",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer-1.jpg",
+      "destination": "/img/spezifischfischer-1.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer-10.jpg",
+      "destination": "/img/spezifischfischer-10.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer-2.jpg",
+      "destination": "/img/spezifischfischer-2.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer-3.jpg",
+      "destination": "/img/spezifischfischer-3.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer-4.jpg",
+      "destination": "/img/spezifischfischer-4.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer-5.jpg",
+      "destination": "/img/spezifischfischer-5.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer-6.jpg",
+      "destination": "/img/spezifischfischer-6.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer-7.jpg",
+      "destination": "/img/spezifischfischer-7.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer-8.jpg",
+      "destination": "/img/spezifischfischer-8.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer-9.jpg",
+      "destination": "/img/spezifischfischer-9.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer-cut.png",
+      "destination": "/img/spezifischfischer-cut.png",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer-pixel.png",
+      "destination": "/img/spezifischfischer-pixel.png",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer.html",
+      "destination": "/seiten/spezifischfischer.html",
+      "permanent": true
+    },
+    {
+      "source": "/spezifischfischer.mp3",
+      "destination": "/sounds/spezifischfischer.mp3",
+      "permanent": true
+    },
+    {
+      "source": "/stinkfisch.html",
+      "destination": "/seiten/stinkfisch.html",
+      "permanent": true
+    },
+    {
+      "source": "/stinkfisch.png",
+      "destination": "/img/stinkfisch.png",
+      "permanent": true
+    },
+    {
+      "source": "/style.css",
+      "destination": "/css/style.css",
+      "permanent": true
+    },
+    {
+      "source": "/tisch.gif",
+      "destination": "/img/tisch.gif",
+      "permanent": true
+    },
+    {
+      "source": "/tisch.html",
+      "destination": "/seiten/tisch.html",
+      "permanent": true
+    },
+    {
+      "source": "/tophat-fish-fish.gif",
+      "destination": "/img/tophat-fish-fish.gif",
+      "permanent": true
+    },
+    {
+      "source": "/twawis.jpg",
+      "destination": "/img/twawis.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/twawis2.jpg",
+      "destination": "/img/twawis2.jpg",
+      "permanent": true
+    },
+    {
+      "source": "/wii-arowana.html",
+      "destination": "/seiten/wii-arowana.html",
+      "permanent": true
+    },
+    {
+      "source": "/wii-arowana.png",
+      "destination": "/img/wii-arowana.png",
+      "permanent": true
+    },
+    {
+      "source": "/wii-bait.png",
+      "destination": "/img/wii-bait.png",
+      "permanent": true
+    },
+    {
+      "source": "/wii-blau.png",
+      "destination": "/img/wii-blau.png",
+      "permanent": true
+    },
+    {
+      "source": "/wii-blaufisch.html",
+      "destination": "/seiten/wii-blaufisch.html",
+      "permanent": true
+    },
+    {
+      "source": "/wii-gruen.png",
+      "destination": "/img/wii-gruen.png",
+      "permanent": true
+    },
+    {
+      "source": "/wii-gruenling.html",
+      "destination": "/seiten/wii-gruenling.html",
+      "permanent": true
+    },
+    {
+      "source": "/wii-hecht.html",
+      "destination": "/seiten/wii-hecht.html",
+      "permanent": true
+    },
+    {
+      "source": "/wii-hecht.png",
+      "destination": "/img/wii-hecht.png",
+      "permanent": true
+    },
+    {
+      "source": "/wii-rot.png",
+      "destination": "/img/wii-rot.png",
+      "permanent": true
+    },
+    {
+      "source": "/wii-rotling.html",
+      "destination": "/seiten/wii-rotling.html",
+      "permanent": true
+    },
+    {
+      "source": "/wii-tupfen.png",
+      "destination": "/img/wii-tupfen.png",
+      "permanent": true
+    },
+    {
+      "source": "/wii-tupfenfisch.html",
+      "destination": "/seiten/wii-tupfenfisch.html",
+      "permanent": true
+    },
+    {
+      "source": "/zackenbarsch.gif",
+      "destination": "/img/zackenbarsch.gif",
+      "permanent": true
+    },
+    {
+      "source": "/zackenbarsch.html",
+      "destination": "/seiten/zackenbarsch.html",
+      "permanent": true
+    }
+  ]
+}

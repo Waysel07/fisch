@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pinguine!</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { overflow-x: hidden; }
+
+    /* Comic Sans, as nature intended */
+    .card, .card h1, .card p {
+      font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Comic Neue", cursive;
+    }
+
+    /* Wobbly title, one letter at a time */
+    .card h1 span {
+      display: inline-block;
+      animation: wobble 0.9s ease-in-out infinite;
+    }
+    @keyframes wobble {
+      0%, 100% { transform: translateY(0) rotate(-8deg); }
+      50%      { transform: translateY(-10px) rotate(8deg); }
+    }
+
+    /* Whole card slowly cycles through every colour there is */
+    .card { animation: rainbow 6s linear infinite; }
+    @keyframes rainbow {
+      to { filter: hue-rotate(360deg); }
+    }
+
+    /* Crawling marquee */
+    .marquee {
+      overflow: hidden;
+      white-space: nowrap;
+      margin-bottom: 1rem;
+    }
+    .marquee span {
+      display: inline-block;
+      padding-left: 100%;
+      color: #facc15;
+      font-weight: 800;
+      animation: crawl 7s linear infinite;
+    }
+    @keyframes crawl {
+      to { transform: translateX(-100%); }
+    }
+
+    .stage {
+      perspective: 600px;
+      height: min(320px, 80vw);
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    /* Faster spin, and the axis itself wanders */
+    .card .stage img {
+      aspect-ratio: auto;
+      max-width: min(300px, 75vw);
+      margin: 0 auto;
+      animation: chaos-spin 1.6s linear infinite;
+    }
+    @keyframes chaos-spin {
+      0%   { transform: rotate3d(1, 1, 0, 0deg)    scale(1); }
+      25%  { transform: rotate3d(1, -1, 0.5, 90deg) scale(1.15); }
+      50%  { transform: rotate3d(-1, 1, 1, 180deg) scale(0.85); }
+      75%  { transform: rotate3d(1, 0.3, -1, 270deg) scale(1.1); }
+      100% { transform: rotate3d(1, 1, 0, 360deg)  scale(1); }
+    }
+
+    /* Penguin rain */
+    .rain {
+      position: fixed;
+      top: -80px;
+      width: 60px;
+      z-index: -1;
+      pointer-events: none;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      to { transform: translateY(calc(100vh + 160px)) rotate(var(--turn)); }
+    }
+
+    /* The whole card sways like a ship (on top of the rainbow) */
+    .card { animation: rainbow 6s linear infinite, sway 5s ease-in-out infinite; }
+    @keyframes sway {
+      0%, 100% { transform: rotate(-4deg) translateX(-8px); }
+      50%      { transform: rotate(4deg) translateX(8px); }
+    }
+
+    /* Subtitle is backwards. Read it in a mirror. */
+    .card p { transform: scaleX(-1); }
+
+    /* Cursor trail and click bursts */
+    .trail, .burst {
+      position: fixed;
+      pointer-events: none;
+      z-index: 10;
+      translate: -50% -50%;
+    }
+    .trail { width: 36px; animation: trail-fade 0.8s ease-out forwards; }
+    @keyframes trail-fade {
+      to { opacity: 0; transform: scale(0.2) rotate(200deg); }
+    }
+    .burst { width: 44px; animation: burst-fly 1s ease-out forwards; }
+    @keyframes burst-fly {
+      to { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(540deg); }
+    }
+
+    /* The Fisch! button that does not want to be clicked */
+    #flee { position: relative; transition: left 0.15s, top 0.15s; left: 0; top: 0; }
+  </style>
+  <link rel="stylesheet" href="../css/legal.css">
+</head>
+<body>
+
+  <main class="card">
+    <h1 aria-label="Pinguine!"><span>P</span><span>i</span><span>n</span><span>g</span><span>u</span><span>i</span><span>n</span><span>e</span><span>!</span></h1>
+    <div class="marquee" aria-hidden="true"><span>🐧 LÄCHELN UND WINKEN 🐧 LÄCHELN UND WINKEN 🐧 KEIN FISCH 🐧</span></div>
+    <p>Lächeln und winken, Jungs. Lächeln und winken.</p>
+    <div class="stage">
+      <img src="../img/rotierendepinguine.gif" alt="Vier Pinguine, chaotisch drehend">
+    </div>
+    <nav class="links">
+      <a id="flee" href="../index.html">Fisch!</a>
+      <a href="rat.html">Ratte!</a>
+    </nav>
+  </main>
+
+  <script>
+    // Stagger the title letters so they wobble like a wave
+    document.querySelectorAll('.card h1 span').forEach((s, i) => {
+      s.style.animationDelay = (i * -0.1) + 's';
+    });
+
+    // It's raining penguins
+    function dropPenguin() {
+      const p = document.createElement('img');
+      p.src = '../img/rotierendepinguine.gif';
+      p.alt = '';
+      p.className = 'rain';
+      p.style.left = (Math.random() * 100) + 'vw';
+      p.style.width = (30 + Math.random() * 60) + 'px';
+      p.style.animationDuration = (3 + Math.random() * 4) + 's';
+      p.style.setProperty('--turn', ((Math.random() < 0.5 ? -1 : 1) * (180 + Math.random() * 720)) + 'deg');
+      p.addEventListener('animationend', () => p.remove());
+      document.body.appendChild(p);
+    }
+    setInterval(dropPenguin, 200);
+
+    function spawn(cls, x, y, extra) {
+      const p = document.createElement('img');
+      p.src = '../img/rotierendepinguine.gif';
+      p.alt = '';
+      p.className = cls;
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      if (extra) extra(p);
+      p.addEventListener('animationend', () => p.remove());
+      document.body.appendChild(p);
+    }
+
+    // Penguins follow the mouse
+    let lastTrail = 0;
+    document.addEventListener('pointermove', e => {
+      const now = performance.now();
+      if (now - lastTrail < 50) return;
+      lastTrail = now;
+      spawn('trail', e.clientX, e.clientY);
+    });
+
+    // Every click: penguin explosion
+    document.addEventListener('click', e => {
+      for (let i = 0; i < 12; i++) {
+        const a = (i / 12) * Math.PI * 2;
+        const r = 120 + Math.random() * 80;
+        spawn('burst', e.clientX, e.clientY, p => {
+          p.style.setProperty('--dx', Math.cos(a) * r + 'px');
+          p.style.setProperty('--dy', Math.sin(a) * r + 'px');
+        });
+      }
+    });
+
+    // The Fisch! button runs away five times, then gives up
+    const flee = document.getElementById('flee');
+    let escapes = 0;
+    flee.addEventListener('pointerenter', e => {
+      if (e.pointerType !== 'mouse' || escapes >= 5) return;
+      escapes++;
+      flee.style.left = (Math.random() * 240 - 120) + 'px';
+      flee.style.top = (Math.random() * 160 - 80) + 'px';
+      if (escapes === 5) {
+        flee.textContent = 'Na gut. Fisch!';
+        flee.style.left = flee.style.top = '0px';
+      }
+    });
+
+    // The tab title won't sit still either
+    const titles = ['🐧 Pinguine!', 'LÄCHELN', 'UND', 'WINKEN', '🐧🐧🐧🐧', 'Kein Fisch.'];
+    let t = 0;
+    setInterval(() => { document.title = titles[t++ % titles.length]; }, 700);
+  </script>
+
+<script src="/js/fish.js" defer></script>
+<footer class="legal"><a href="../datenschutz.html">Datenschutz</a></footer>
+</body>
+</html>
