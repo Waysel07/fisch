@@ -16,38 +16,41 @@
 
   // far: only bites beyond this cast distance (0..1); night: x weight at night
   const FISH = [
-    { id: 'fisch',   name: 'Fisch',             img: 'fsh-spin.gif',         r: 'common',    min: 20, max: 45,  val: 5,  photo: true, desc: 'Der Klassiker. Dreht sich gern im Kreis.' },
-    { id: 'pixel',   name: 'Pixelfisch',        img: 'fish-icon.png',        r: 'common',    min: 8,  max: 16,  val: 4,  desc: 'Besteht zu 100 % aus Pixeln. Sehr knusprig.', pixel: true },
-    { id: 'poisson', name: 'Poisson',           img: 'frenchfish.gif',       r: 'common',    min: 25, max: 50,  val: 6,  photo: true, desc: 'Kommt aus Frankreich. Hat Schokolade dabei.' },
-    { id: 'spezi3',  name: 'Kleiner Spezifisch', img: 'spezifisch3.png',     r: 'common', clip: [0, .93],    min: 10, max: 22,  val: 6,  desc: 'Ein ganz kleiner, aber sehr spezifischer Fisch.' },
-    { id: 'fisch2',  name: 'Fisch 2',           img: 'fish2-spin.gif',       r: 'uncommon',  min: 45, max: 90,  val: 14, photo: true, desc: 'Die Fortsetzung. Länger als das Original.' },
-    { id: 'spezi2',  name: 'Spezifische Spezifische', img: 'spezifisch2.png', r: 'uncommon', clip: [3.17, 4.9],  min: 22, max: 40,  val: 15, desc: 'Spezifische Spezifische. Gut gekühlt.' },
-    { id: 'fisch3',  name: 'Fisch 3',           img: 'fish3.gif',            r: 'uncommon',  min: 15, max: 30,  val: 16, photo: true, desc: 'Hat dich gesehen. Ist sichtlich schockiert.' },
-    { id: 'spezi1',  name: 'Spezifischer Spezifisch', img: 'spezifisch1.png', r: 'rare', clip: [.93, 3.17],      min: 40, max: 70,  val: 38, desc: 'Ein Prachtexemplar mit extra viel Spezi.' },
-    { id: 'schuh',   name: 'Schuhfisch',        img: 'fih.gif',              r: 'rare',      min: 30, max: 55,  val: 42, desc: 'Trägt Schuhe. Warum auch nicht.' },
-    { id: 'lo',      name: 'Lo',                img: 'lo.gif',               r: 'rare',      min: 80, max: 160, val: 55, desc: 'Ein kleiner Hai. Beißt nur weit draußen.', far: .55 },
-    { id: 'lippe',   name: 'Lippenfisch',       img: 'lippenfisch-spin.gif', r: 'epic',      min: 30, max: 60,  val: 120, photo: true, desc: 'Er möchte reden. Er hat viel zu sagen.', night: 2.5 },
-    { id: 'travis',  name: 'Travis',            img: 'twawis.jpg',           r: 'epic',      min: 35, max: 65,  val: 140, photo: true, desc: 'Jetzt kommt Travis.', far: .4, sound: 'jetzt-kommt-travis.mp3' },
-    { id: 'spee',    name: 'Spee Zierfisch',    img: 'spee-zierfisch.png',   r: 'epic',      min: 6,  max: 9,   val: 110, clip: [12.63, 13.9], desc: 'Ein Zierfisch, frisch gewaschen. Duftet nach Spee.', night: 1.5 },
-    { id: 'spees',   name: 'Spezifische Spee Zierfische', img: 'spee-zierfische.png', r: 'epic', min: 12, max: 18, val: 160, clip: [13.9, 16.43], desc: 'Zwei auf einmal. Spezifischer geht es kaum.', far: .5 },
-    { id: 'fischer', name: 'Spezifischfischer', img: 'spezifischfischer-cut.png', r: 'legendary', min: 175, max: 190, val: 400, clip: [16.43, null], desc: 'Der spezifische Spezifischfischer fischt spezifische Spezifische. Jetzt hast du ihn gefischt.', far: .45, hint: 'Steht am Steg. Fischt man ihn auch?' },
-    { id: 'odfisch', name: 'Absolute Odfisch',  img: 'odfish.jpg',           r: 'legendary', min: 170, max: 190, val: 500, photo: true, desc: 'Absolute Legende. Nur nachts, nur weit draußen.', far: .6, night: 4, dayOff: true },
-    { id: 'ratte',   name: 'Ratte',             img: 'rat.gif',              r: 'junk',      min: 18, max: 28,  val: 1,  desc: 'Nass und beleidigt. Läuft trotzdem weiter.' },
-    { id: 'tisch',   name: 'Tisch',             img: 'tisch.gif',            r: 'junk',      min: 90, max: 140, val: 3,  photo: true, desc: 'Ein Tisch. Kein Fisch. Aber fast.' },
-    { id: 'flasche', name: 'Spezi-Flasche',     img: 'spezi-flasche.png',    r: 'junk',      min: 25, max: 33,  val: 4,  desc: 'Leer. Gehört bestimmt dem Spezifischfischer.' },
-    { id: 'pinguine', name: 'Rotierende Pinguine', img: 'rotierendepinguine.gif', r: 'junk', min: 60, max: 75, val: 25, photo: true, desc: 'Vier Pinguine, rotierend. Selten. Wie kommen die hier rein?', rareJunk: true },
+    { id: 'fisch',   name: 'Fisch',             img: 'fsh-spin.gif',         r: 'common',    min: 20, max: 45,  val: 5,  photo: true, say: 'Ich dreh mich nur kurz um.', desc: 'Der Klassiker. Dreht sich gern im Kreis.' },
+    { id: 'pixel',   name: 'Pixelfisch',        img: 'fish-icon.png',        r: 'common',    min: 8,  max: 16,  val: 4,  say: 'Knusper, knusper.', desc: 'Besteht zu 100 % aus Pixeln. Sehr knusprig.', pixel: true },
+    { id: 'poisson', name: 'Poisson',           img: 'frenchfish.gif',       r: 'common',    min: 25, max: 50,  val: 6,  photo: true, say: 'Bonjour! Du hast mich, non?', desc: 'Kommt aus Frankreich. Hat Schokolade dabei.' },
+    { id: 'spezi3',  name: 'Kleiner Spezifisch', img: 'spezifisch3.png',     r: 'common', clip: [0, .93],    min: 10, max: 22,  val: 6,  say: 'Klein, aber spezifisch.', desc: 'Ein ganz kleiner, aber sehr spezifischer Fisch.' },
+    { id: 'fisch2',  name: 'Fisch 2',           img: 'fish2-spin.gif',       r: 'uncommon',  min: 45, max: 90,  val: 14, photo: true, say: 'Diesmal mit mehr Budget.', desc: 'Die Fortsetzung. Länger als das Original.' },
+    { id: 'spezi2',  name: 'Spezifische Spezifische', img: 'spezifisch2.png', r: 'uncommon', clip: [3.17, 4.9],  min: 22, max: 40,  val: 15, say: 'Spezifisch. Spezifisch.', desc: 'Spezifische Spezifische. Gut gekühlt.' },
+    { id: 'fisch3',  name: 'Fisch 3',           img: 'fish3.gif',            r: 'uncommon',  min: 15, max: 30,  val: 16, photo: true, say: 'WAS?! Wer bist du denn?', desc: 'Hat dich gesehen. Ist sichtlich schockiert.' },
+    { id: 'spezi1',  name: 'Spezifischer Spezifisch', img: 'spezifisch1.png', r: 'rare', clip: [.93, 3.17],      min: 40, max: 70,  val: 38, say: 'Extra Spezi, extra spezifisch.', desc: 'Ein Prachtexemplar mit extra viel Spezi.' },
+    { id: 'schuh',   name: 'Schuhfisch',        img: 'fih.gif',              r: 'rare',      min: 30, max: 55,  val: 42, say: 'Schöne Schuhe hast du auch.', desc: 'Trägt Schuhe. Warum auch nicht.' },
+    { id: 'lo',      name: 'Lo',                img: 'lo.gif',               r: 'rare',      min: 80, max: 160, val: 55, say: 'Ich bin nicht klein, ich bin kompakt.', desc: 'Ein kleiner Hai. Beißt nur weit draußen.', far: .55 },
+    { id: 'lippe',   name: 'Lippenfisch',       img: 'lippenfisch-spin.gif', r: 'epic',      min: 30, max: 60,  val: 120, photo: true, say: 'Also … wo fange ich an?', desc: 'Er möchte reden. Er hat viel zu sagen.', night: 2.5 },
+    { id: 'travis',  name: 'Travis',            img: 'twawis.jpg',           r: 'epic',      min: 35, max: 65,  val: 140, photo: true, say: 'Jetzt bin ich da.', desc: 'Jetzt kommt Travis.', far: .4, sound: 'jetzt-kommt-travis.mp3' },
+    { id: 'spee',    name: 'Spee Zierfisch',    img: 'spee-zierfisch.png',   r: 'epic',      min: 6,  max: 9,   val: 110, clip: [12.63, 13.9], say: 'Riech mal. Frühlingsfrisch!', desc: 'Ein Zierfisch, frisch gewaschen. Duftet nach Spee.', night: 1.5 },
+    { id: 'spees',   name: 'Spezifische Spee Zierfische', img: 'spee-zierfische.png', r: 'epic', min: 12, max: 18, val: 160, clip: [13.9, 16.43], say: 'Wir bleiben zusammen!', desc: 'Zwei auf einmal. Spezifischer geht es kaum.', far: .5 },
+    { id: 'fischer', name: 'Spezifischfischer', img: 'spezifischfischer-cut.png', r: 'legendary', min: 175, max: 190, val: 400, clip: [16.43, null], say: 'Moment … ich bin doch der Fischer!', desc: 'Der spezifische Spezifischfischer fischt spezifische Spezifische. Jetzt hast du ihn gefischt.', far: .45, hint: 'Steht am Steg. Fischt man ihn auch?' },
+    { id: 'odfisch', name: 'Absolute Odfisch',  img: 'odfish.jpg',           r: 'legendary', min: 170, max: 190, val: 500, photo: true, say: 'Absolut.', desc: 'Absolute Legende. Nur nachts, nur weit draußen.', far: .6, night: 4, dayOff: true },
+    { id: 'ratte',   name: 'Ratte',             img: 'rat.gif',              r: 'junk',      min: 18, max: 28,  val: 1,  say: 'Lass mich, ich hab Termine.', desc: 'Nass und beleidigt. Läuft trotzdem weiter.' },
+    { id: 'tisch',   name: 'Tisch',             img: 'tisch.gif',            r: 'junk',      min: 90, max: 140, val: 3,  photo: true, say: 'Ich bin ein Tisch.', desc: 'Ein Tisch. Kein Fisch. Aber fast.' },
+    { id: 'flasche', name: 'Spezi-Flasche',     img: 'spezi-flasche.png',    r: 'junk',      min: 25, max: 33,  val: 4,  say: 'Pfand gibt’s keins.', desc: 'Leer. Gehört bestimmt dem Spezifischfischer.' },
+    { id: 'pinguine', name: 'Rotierende Pinguine', img: 'rotierendepinguine.gif', r: 'junk', min: 60, max: 75, val: 25, photo: true, say: 'Wir drehen uns, also sind wir.', desc: 'Vier Pinguine, rotierend. Selten. Wie kommen die hier rein?', rareJunk: true },
   ];
 
   const RODS = [
     { id: 'stock',  name: 'Stock mit Schnur', price: 0,    cast: .55, reel: 1.0,  tens: 1.0,  luck: 1,   desc: 'Hat schon Opa benutzt.' },
-    { id: 'bambus', name: 'Bambusrute',       price: 60,   cast: .75, reel: 1.25, tens: .85,  luck: 1,   desc: 'Wirft weiter, kurbelt schneller.' },
-    { id: 'carbon', name: 'Carbonrute',       price: 260,  cast: .92, reel: 1.5,  tens: .7,   luck: 1.15, desc: 'Leicht, stark, weit.' },
-    { id: 'gold',   name: 'Goldene Rute',     price: 900,  cast: 1.0, reel: 1.85, tens: .55,  luck: 1.4, desc: 'Glänzt. Fische lieben Glanz.' },
+    { id: 'bambus', name: 'Bambusrute',       price: 60,   lvl: 2,  cast: .75, reel: 1.25, tens: .85,  luck: 1,   desc: 'Wirft weiter, kurbelt schneller.' },
+    { id: 'carbon', name: 'Carbonrute',       price: 260,  lvl: 5,  cast: .92, reel: 1.5,  tens: .7,   luck: 1.15, desc: 'Leicht, stark, weit.' },
+    { id: 'gold',   name: 'Goldene Rute',     price: 900,  lvl: 9,  cast: 1.0, reel: 1.85, tens: .55,  luck: 1.4, desc: 'Glänzt. Fische lieben Glanz.' },
+    { id: 'regen',  name: 'Regenbogenrute',   price: 2500, reb: 1, cast: 1.0, reel: 2.2,  tens: .48,  luck: 1.7, desc: 'Nur für Wiedergeborene. Schillert in allen Farben.' },
+    { id: 'stern',  name: 'Sternenrute',      price: 6000, reb: 3, cast: 1.0, reel: 2.6,  tens: .4,   luck: 2.1, desc: 'Aus einer Sternschnuppe geschnitzt.' },
   ];
   const BAITS = [
     { id: 'wurm',   name: 'Wurm',          price: 0,  pack: 0, luck: 1,   speed: 1,   desc: 'Unbegrenzt. Wurmig.' },
     { id: 'spezi',  name: 'Spezi-Köder',   price: 12, pack: 5, luck: 1.7, speed: 1.35, desc: '5 Stück. Seltene Fische beißen öfter.' },
-    { id: 'glitzer', name: 'Glitzerköder', price: 35, pack: 5, luck: 2.8, speed: 1.6, desc: '5 Stück. Für die ganz großen Fänge.' },
+    { id: 'glitzer', name: 'Glitzerköder', price: 35, pack: 5, lvl: 4, luck: 2.8, speed: 1.6, desc: '5 Stück. Für die ganz großen Fänge.' },
+    { id: 'mond',   name: 'Mondköder',     price: 90, pack: 5, reb: 2, luck: 4.2, speed: 2,  desc: '5 Stück. Leuchtet. Legenden können nicht widerstehen.' },
   ];
 
   // ------------------------------------------------------------------ save
@@ -55,6 +58,7 @@
   const save = Object.assign({
     coins: 0, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity },
     dex: {}, total: 0, sound: true, seen: false,
+    lvl: 1, xp: 0, rebirths: 0, scales: 0, perks: {}, quests: [], questsDone: 0, lifeCoins: 0,
   }, load());
   save.baits.wurm = Infinity;
   function load() {
@@ -218,7 +222,7 @@
   function land() {
     state = 'wait'; bob.y = SURFACE; bob.dunk = 0;
     splash(bob.x, SURFACE, 10, '#bfe9ff'); ripple(bob.x); sfx.splash();
-    waitT = (2.5 + Math.random() * 6) / bait().speed;
+    waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss'));
     nibbles = Math.floor(Math.random() * 3); nibbleT = waitT - 1.2;
     approacher = null;
     hint('Warten …', 1.2);
@@ -230,7 +234,7 @@
 
   function pickFish() {
     const d = castDistance(), night = isNight(), b = bait(), r = rod();
-    const luck = b.luck * r.luck;
+    const luck = b.luck * r.luck * (1 + .08 * perk('glueck'));
     const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night));
     const weights = pool.map(f => {
       let w = RARITY[f.r].w;
@@ -265,17 +269,107 @@
 
   function land_catch() {
     const { f, size } = hooked;
-    const val = Math.max(1, Math.round(f.val * (0.7 + .6 * (size - f.min) / (f.max - f.min || 1))));
+    const val = Math.max(1, Math.round(f.val * (0.7 + .6 * (size - f.min) / (f.max - f.min || 1)) * coinMult()));
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
     e.n++; e.best = Math.max(e.best, size); save.dex[f.id] = e;
-    save.coins += val; save.total++;
+    save.coins += val; save.total++; save.lifeCoins += val;
+    progressCatch(f, size, val, first);
     persist(); updateCoins();
     splash(bob.x, SURFACE, 22, '#ffffff');
-    state = 'show'; $('reel').hidden = true; holding = false;
-    showCatch(f, size, val, first);
-    if (f.clip) playClip(f.clip); else if (f.sound) playFile(f.sound); else playFile('fish.mp3');
-    sfx.coin();
+    state = 'show'; $('reel').hidden = true; holding = false; hint('');
+    const reveal = () => {
+      showCatch(f, size, val, first);
+      if (f.clip) playClip(f.clip); else if (f.sound) playFile(f.sound); else playFile('fish.mp3');
+      sfx.coin();
+    };
+    const fx = FANFARE[f.r];
+    floaters.push({ x: bob.x, y: SURFACE - 14, text: `${fx ? '' : f.name + ' · '}${size} cm`, c: fx ? fx.c : '#ffffff', life: 2.4 });
+    if (fx && !reduceMotion) {
+      fanfare = { ...fx, r: f.r, x: bob.x, t: 0, done: reveal };
+      fx.notes.forEach((n, i) => setTimeout(() => tone(n, .18, 'triangle', .09), i * 110));
+      if (f.r === 'legendary') setTimeout(() => tone(1568, .6, 'sine', .07, 400), fx.notes.length * 110);
+    } else reveal();
+  }
+
+  // ------------------------------------------------------------------ rare catch fanfare
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const FANFARE = {
+    rare:      { label: 'SELTEN!',   c: '#38bdf8', hi: '#e0f2fe', dur: 1.0, notes: [523, 659, 784] },
+    epic:      { label: 'EPISCH!',   c: '#c084fc', hi: '#f3e8ff', dur: 1.4, notes: [523, 659, 784, 1047] },
+    legendary: { label: 'LEGENDÄR!', c: '#fbbf24', hi: '#fffbeb', dur: 2.0, notes: [392, 523, 659, 784, 1047, 1319] },
+  };
+  let fanfare = null;
+  const floaters = [], glints = [];
+  function updateFx(dt) {
+    for (let i = floaters.length - 1; i >= 0; i--) { const fl = floaters[i]; fl.y -= 9 * dt; fl.life -= dt; if (fl.life <= 0) floaters.splice(i, 1); }
+    for (let i = glints.length - 1; i >= 0; i--) { const g = glints[i]; g.x += g.vx * dt; g.y += g.vy * dt; g.life -= dt; if (g.life <= 0) glints.splice(i, 1); }
+    if (!fanfare) return;
+    const F = fanfare; F.t += dt;
+    const rate = { rare: 25, epic: 45, legendary: 80 }[F.r];
+    for (let n = 0; n < rate * dt + Math.random(); n++) {
+      glints.push({ x: F.x + (Math.random() - .5) * (F.r === 'legendary' ? 60 : 30), y: SURFACE - Math.random() * 6, vx: (Math.random() - .5) * 14, vy: -20 - Math.random() * 40, life: .8 + Math.random() * .8, c: Math.random() < .3 ? F.hi : F.c });
+    }
+    if (F.t >= F.dur) { fanfare = null; F.done(); }
+  }
+  function star(x, y, s, c) { // little 4-point twinkle
+    px(x - s, y, s * 2 + .5, .5, c); px(x, y - s, .5, s * 2 + .5, c);
+  }
+  function drawFx() {
+    const F = fanfare;
+    if (F) {
+      const k = Math.min(1, F.t / .3), out = Math.max(0, (F.t - F.dur + .3) / .3);
+      const a = k * (1 - out);
+      const x = snap(F.x);
+      // rotating rays (epic + legendary)
+      if (F.r !== 'rare') {
+        ctx.save(); ctx.translate(x, SURFACE); ctx.rotate(t * (F.r === 'legendary' ? .9 : .5));
+        ctx.globalAlpha = a * .22; ctx.fillStyle = F.c;
+        const rays = F.r === 'legendary' ? 12 : 8, len = 140 * k;
+        for (let i = 0; i < rays; i++) {
+          const a0 = i / rays * Math.PI * 2;
+          ctx.beginPath(); ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(a0 - .09) * len, Math.sin(a0 - .09) * len);
+          ctx.lineTo(Math.cos(a0 + .09) * len, Math.sin(a0 + .09) * len); ctx.fill();
+        }
+        ctx.restore();
+      }
+      // light pillar out of the water
+      const pw = snap((F.r === 'legendary' ? 14 : F.r === 'epic' ? 10 : 7) * k + Math.sin(t * 20) * .5);
+      ctx.globalAlpha = a * .35; px(x - pw / 2, 0, pw, SURFACE, F.c);
+      ctx.globalAlpha = a * .6; px(x - pw / 4, 0, snap(pw / 2), SURFACE, F.hi);
+      // expanding rings on the surface
+      ctx.strokeStyle = F.c; ctx.lineWidth = .5;
+      for (let i = 0; i < 3; i++) {
+        const p = (F.t * 1.2 + i / 3) % 1;
+        ctx.globalAlpha = a * (1 - p);
+        ctx.beginPath(); ctx.ellipse(x, SURFACE + 1, 4 + p * 40, (4 + p * 40) * .25, 0, 0, 7); ctx.stroke();
+      }
+      // banner
+      const pop = F.t < .35 ? 1 + Math.sin(F.t / .35 * Math.PI) * .35 : 1;
+      ctx.save(); ctx.globalAlpha = a; ctx.translate(W / 2, 46); ctx.scale(pop, pop);
+      ctx.font = '800 16px Poppins, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.lineWidth = 3; ctx.strokeStyle = '#0f172a'; ctx.strokeText(F.label, 0, 0);
+      ctx.fillStyle = F.c; ctx.fillText(F.label, 0, 0);
+      ctx.fillStyle = F.hi; ctx.globalAlpha = a * (.5 + .5 * Math.sin(t * 12)); ctx.fillText(F.label, 0, -.5);
+      ctx.restore();
+      // legendary: white flash at the start
+      if (F.r === 'legendary' && F.t < .25) { ctx.globalAlpha = (1 - F.t / .25) * .7; px(0, 0, W, H, '#fffbeb'); }
+      ctx.globalAlpha = 1;
+    }
+    for (const g of glints) {
+      ctx.globalAlpha = Math.min(1, g.life * 2) * (.6 + .4 * Math.sin(t * 25 + g.x));
+      star(snap(g.x), snap(g.y), g.life > .6 ? 1.5 : 1, g.c);
+    }
+    ctx.globalAlpha = 1;
+    // floating catch text
+    ctx.font = '700 7px Poppins, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (const fl of floaters) {
+      ctx.globalAlpha = Math.min(1, fl.life * 1.5);
+      ctx.lineWidth = 2; ctx.strokeStyle = '#0f172a'; ctx.strokeText(fl.text, snap(fl.x), snap(fl.y));
+      ctx.fillStyle = fl.c; ctx.fillText(fl.text, snap(fl.x), snap(fl.y));
+    }
+    ctx.globalAlpha = 1; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
   }
 
   // ------------------------------------------------------------------ input
@@ -310,6 +404,7 @@
     if (k === 'f') { toggleModal('dex'); return; }
     if (k === 'l') { toggleModal('shop'); return; }
     if (k === 'c') { toggleModal('casino'); return; }
+    if (k === 'p') { toggleModal('prog'); return; }
     if (!$('casino').hidden && (k === ' ' || k === 'enter')) { e.preventDefault(); $('spin').click(); return; }
     if (k === 'm') { $('btn-sound').click(); return; }
     if (anyModal()) return;
@@ -397,6 +492,7 @@
     if (state === 'wait' && Math.random() < dt * .7) ripple(bob.x, .6);
 
     if (npcTalk > 0) npcTalk -= dt;
+    updateFx(dt);
     hintTick(dt);
   }
 
@@ -411,7 +507,7 @@
     }
     const pull = h.str * (reel.thrash ? 2.6 : .55);
     if (holding) {
-      reel.tension += (0.38 + pull * .75) * r.tens * dt;
+      reel.tension += (0.38 + pull * .75) * r.tens * (1 - .06 * perk('schnur')) * dt;
       const gain = reel.thrash ? .05 : .2;
       reel.progress += gain * r.reel / (.6 + h.str) * dt;
       if (Math.random() < dt * 14) sfx.tick();
@@ -482,7 +578,17 @@
     }));
     return c;
   }
-  const playerFrames = [false, true].map(flip => PLAYER_LEGS.map(l => bake(PLAYER_BODY.concat(l), PLAYER_PAL, flip)));
+  // hat colour shows how often you have been reborn
+  const HATS = [['#22c55e', '#15803d', '#86efac'], ['#38bdf8', '#0369a1', '#bae6fd'], ['#c084fc', '#7e22ce', '#f3e8ff'], ['#fbbf24', '#b45309', '#fef3c7']];
+  const hatFrames = [];
+  function playerFrames() {
+    const tier = Math.min(HATS.length - 1, save.rebirths);
+    if (!hatFrames[tier]) {
+      const [h, H, l] = HATS[tier], pal = { ...PLAYER_PAL, h, H, l };
+      hatFrames[tier] = [false, true].map(flip => PLAYER_LEGS.map(g => bake(PLAYER_BODY.concat(g), pal, flip)));
+    }
+    return hatFrames[tier];
+  }
 
   const npcImg = new Image(); npcImg.src = 'spezifischfischer-pixel.png';
   const NPC = { x: 18, w: 10, h: 22 };
@@ -570,7 +676,9 @@
   }
 
   function draw() {
-    ctx.setTransform(2, 0, 0, 2, 0, 0);
+    // legendary catches shake the screen for a moment
+    const quake = fanfare && fanfare.r === 'legendary' && fanfare.t < .7 ? (1 - fanfare.t / .7) * 3 : 0;
+    ctx.setTransform(2, 0, 0, 2, Math.round((Math.random() - .5) * quake) * 2, Math.round((Math.random() - .5) * quake) * 2);
     const [top, bot, dark] = skyColors();
     // letterbox continues the scene (sky above, deep water below)
     const deep = mix([8, 40, 80], [4, 10, 28], dark);
@@ -675,6 +783,7 @@
     // particles
     for (const p of particles) { ctx.globalAlpha = Math.min(1, p.life * 2); px(p.x, p.y, 1, 1, p.c); px(p.x + .5, p.y - .5, .5, .5, '#ffffff'); }
     ctx.globalAlpha = 1;
+    drawFx();
 
     // power meter
     if (state === 'charge') {
@@ -787,7 +896,7 @@
   function drawPlayer(dark) {
     const x = snap(player.x), y = DOCK_Y, d = player.dir;
     const frame = player.walk ? [0, 1, 0, 2][Math.floor(player.walk / 1.6) % 4] : 0;
-    const img = playerFrames[d > 0 ? 0 : 1][frame];
+    const img = playerFrames()[d > 0 ? 0 : 1][frame];
     ctx.drawImage(img, x - 5.5, y - img.height / 2, img.width / 2, img.height / 2);
     // arm + hand holding the rod
     const tip = rodTip();
@@ -853,14 +962,14 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog']) $(id).hidden = true;
   }
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
     if (['charge', 'fly', 'bite', 'reel'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -869,6 +978,8 @@
   $('btn-dex').addEventListener('click', () => toggleModal('dex'));
   $('btn-shop').addEventListener('click', () => toggleModal('shop'));
   $('btn-casino').addEventListener('click', () => toggleModal('casino'));
+  $('btn-prog').addEventListener('click', () => toggleModal('prog'));
+  $('lvl').addEventListener('click', () => toggleModal('prog'));
   $('btn-sound').addEventListener('click', () => {
     save.sound = !save.sound; persist();
     $('btn-sound').textContent = save.sound ? '🔊' : '🔇';
@@ -1004,6 +1115,23 @@
     $('catch-img').classList.toggle('photo', !!f.photo);
     $('catch-name').textContent = f.name;
     $('catch-desc').textContent = f.desc;
+    $('catch-say').textContent = `„${f.say}“`;
+    const sheet = $('catch').querySelector('.sheet');
+    sheet.classList.remove('fx-rare', 'fx-epic', 'fx-legendary');
+    void sheet.offsetWidth; // restart the CSS animations
+    if (FANFARE[f.r]) sheet.classList.add('fx-' + f.r);
+    const conf = $('catch-confetti');
+    conf.replaceChildren();
+    const nConf = { rare: 0, epic: 18, legendary: 36 }[f.r] || 0;
+    for (let i = 0; i < nConf; i++) {
+      const p = document.createElement('i');
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDelay = (Math.random() * 1.2).toFixed(2) + 's';
+      p.style.animationDuration = (1.8 + Math.random() * 1.4).toFixed(2) + 's';
+      p.style.setProperty('--spin', (Math.random() < .5 ? -1 : 1) * (360 + Math.random() * 360) + 'deg');
+      p.style.background = ['#fbbf24', '#fde68a', '#c084fc', '#38bdf8', '#4ade80', '#f472b6'][i % 6];
+      conf.append(p);
+    }
     $('catch-size').textContent = size + ' cm' + (save.dex[f.id].best === size && !first ? ' 🏆' : '');
     $('catch-value').textContent = '+' + val + ' Taler';
     $('catch-new').hidden = !first;
@@ -1028,6 +1156,10 @@
       const info = document.createElement('small');
       info.textContent = e ? `${e.n}× · Rekord ${e.best} cm` : hintFor(f);
       c.append(img, name, r, info);
+      if (e) {
+        const q = document.createElement('q'); q.textContent = f.say;
+        c.append(q); c.title = f.desc;
+      }
       return c;
     }));
   }
@@ -1042,10 +1174,10 @@
   function renderShop() {
     updateCoins();
     $('shop-rods').replaceChildren(...RODS.map(r => {
-      const owned = save.rods.includes(r.id), active = save.rod === r.id;
+      const owned = save.rods.includes(r.id), active = save.rod === r.id, lock = lockText(r);
       return shopItem(r.name, `${r.desc} Wurf ${Math.round(r.cast * 100)} · Kurbel ${r.reel}×`, active,
-        active ? 'Ausgerüstet' : owned ? 'Ausrüsten' : `${r.price} Taler`,
-        active || (!owned && save.coins < r.price),
+        active ? 'Ausgerüstet' : owned ? 'Ausrüsten' : lock || `${r.price} Taler`,
+        active || (!owned && (!!lock || save.coins < r.price)),
         () => {
           if (!owned) { save.coins -= r.price; save.rods.push(r.id); sfx.coin(); toast(r.name + ' gekauft!'); }
           save.rod = r.id; persist(); updateGear(); renderShop();
@@ -1058,8 +1190,9 @@
         () => { save.bait = b.id; persist(); updateGear(); renderShop(); })];
       if (b.pack) {
         const buy = items[0].querySelector('.btn');
-        const b2 = document.createElement('button'); b2.className = 'btn'; b2.textContent = `+${b.pack} für ${b.price}`;
-        b2.disabled = save.coins < b.price;
+        const b2 = document.createElement('button'); b2.className = 'btn'; const lock = lockText(b);
+        b2.textContent = lock || `+${b.pack} für ${b.price}`;
+        b2.disabled = !!lock || save.coins < b.price;
         b2.addEventListener('click', () => {
           save.coins -= b.price; save.baits[b.id] = n + b.pack; sfx.coin();
           persist(); updateCoins(); updateGear(); renderShop();
@@ -1097,9 +1230,195 @@
     location.reload();
   });
 
+
+  // ------------------------------------------------------------------ progression
+  // Angler level (XP from catches), quests, and rebirth: reset coins, gear and level
+  // for Schuppen, spent on permanent talents. Rebirths also raise the Taler bonus,
+  // unlock new gear and recolour the hat.
+  const XP = { common: 6, uncommon: 12, rare: 30, epic: 70, legendary: 180, junk: 3 };
+  const xpNeed = l => Math.round(40 * Math.pow(l, 1.45));
+  const rebirthLvl = () => 12 + save.rebirths * 3;
+  const RARITY_ORDER = ['junk', 'common', 'uncommon', 'rare', 'epic', 'legendary'];
+  const PERKS = [
+    { id: 'taler',  icon: '🪝', name: 'Goldener Haken', desc: l => `+${l * 10} % Taler pro Fang` },
+    { id: 'glueck', icon: '🍀', name: 'Glückspilz',     desc: l => `+${l * 8} % Glück für seltene Fische` },
+    { id: 'biss',   icon: '⏱️', name: 'Lockruf',        desc: l => `Bisse kommen ${l * 8} % schneller` },
+    { id: 'schnur', icon: '🧵', name: 'Starke Schnur',  desc: l => `${l * 6} % weniger Spannung` },
+    { id: 'wissen', icon: '📚', name: 'Anglerwissen',   desc: l => `+${l * 15} % Erfahrung` },
+    { id: 'erbe',   icon: '💰', name: 'Erbstück',       desc: l => `Start mit ${l * 150} Talern nach der Wiedergeburt` },
+  ];
+  const PERK_MAX = 5;
+  const perkCost = l => 2 + l * 2;
+  function perk(id) { return save.perks[id] || 0; }
+  function coinMult() { return (1 + .2 * save.rebirths) * (1 + .1 * perk('taler')); }
+  function lockText(item) {
+    if (item.reb && save.rebirths < item.reb) return `🔒 ${item.reb}× Wiedergeburt`;
+    if (item.lvl && save.lvl < item.lvl) return `🔒 Level ${item.lvl}`;
+    return '';
+  }
+  function scalesFor() { return Math.floor(save.lvl / 2) + Math.floor(Math.sqrt(save.lifeCoins / 40)); }
+
+  function gainXp(n, quiet) {
+    save.xp += Math.round(n * (1 + .15 * perk('wissen')));
+    const from = save.lvl;
+    let reward = 0;
+    while (save.xp >= xpNeed(save.lvl)) { save.xp -= xpNeed(save.lvl); save.lvl++; reward += 20 * save.lvl; }
+    if (save.lvl > from && !quiet) {
+      save.coins += reward; updateCoins();
+      toast(`⭐ Level ${save.lvl}! +${reward} Taler`);
+      const unlocked = [...RODS, ...BAITS].filter(it => it.lvl > from && it.lvl <= save.lvl && !lockText(it)).map(it => it.name);
+      if (unlocked.length) toast(`🔓 Freigeschaltet: ${unlocked.join(', ')}`);
+      if (from < rebirthLvl() && save.lvl >= rebirthLvl()) toast('🌀 Wiedergeburt möglich – schau in den Fortschritt!');
+      [523, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .14, 'square', .05), i * 90));
+    }
+    updateLevel();
+  }
+  function updateLevel() {
+    $('lvl-num').textContent = save.lvl;
+    $('lvl-bar').style.width = Math.min(100, save.xp / xpNeed(save.lvl) * 100) + '%';
+    $('lvl').title = `Level ${save.lvl} · ${save.xp}/${xpNeed(save.lvl)} EP` + (save.rebirths ? ` · ${save.rebirths}× wiedergeboren` : '');
+    $('lvl-reb').textContent = save.rebirths ? '🌀' + save.rebirths : '';
+    $('btn-prog').classList.toggle('ready', save.lvl >= rebirthLvl() || save.quests.some(q => q.p >= q.n));
+  }
+
+  // ---- quests
+  function makeQuest() {
+    const L = save.lvl, used = save.quests.map(q => q.kind);
+    const kinds = ['count', 'rar', 'size', 'coins', 'fish'].filter(k => !used.includes(k));
+    const kind = kinds[Math.floor(Math.random() * kinds.length)];
+    const q = { kind, p: 0 };
+    if (kind === 'count') { q.n = 4 + Math.floor(Math.random() * 3) + Math.floor(L / 3); }
+    if (kind === 'rar') {
+      q.r = L >= 8 && Math.random() < .4 ? 'epic' : L >= 3 && Math.random() < .6 ? 'rare' : 'uncommon';
+      q.n = { uncommon: 3, rare: 2, epic: 1 }[q.r];
+    }
+    if (kind === 'size') { q.n = 1; q.cm = [40, 60, 80, 120, 160][Math.min(4, Math.floor(L / 3))]; }
+    if (kind === 'coins') { q.n = Math.round((60 + L * 45) * coinMult() / 10) * 10; }
+    if (kind === 'fish') {
+      const pool = FISH.filter(f => ['common', 'uncommon', 'rare'].includes(f.r) && (L >= 5 || f.r !== 'rare') && !f.far);
+      q.id = pool[Math.floor(Math.random() * pool.length)].id; q.n = 1 + (Math.random() < .5 ? 1 : 0);
+    }
+    const tier = { count: 1, rar: q.r === 'epic' ? 4 : q.r === 'rare' ? 2.5 : 1.5, size: 2, coins: 1.5, fish: 1.5 }[kind];
+    q.xp = Math.round((20 + L * 6) * tier);
+    q.coins = Math.round((30 + L * 12) * tier / 5) * 5;
+    return q;
+  }
+  function questText(q) {
+    switch (q.kind) {
+      case 'count': return `Fange ${q.n} Fische`;
+      case 'rar': return `Fange ${q.n}× ${RARITY[q.r].label} oder besser`;
+      case 'size': return `Fange einen Fang ab ${q.cm} cm`;
+      case 'coins': return `Verdiene ${q.n} Taler mit Fängen`;
+      case 'fish': return `Fange ${q.n}× ${FISH.find(f => f.id === q.id).name}`;
+    }
+  }
+  function fillQuests() { while (save.quests.length < 3) save.quests.push(makeQuest()); }
+  function progressCatch(f, size, val, first) {
+    gainXp(XP[f.r] * (first ? 3 : 1) * (1 + size / (f.max * 4)));
+    for (const q of save.quests) {
+      if (q.p >= q.n) continue;
+      if (q.kind === 'count' && f.r !== 'junk') q.p++;
+      if (q.kind === 'rar' && f.r !== 'junk' && RARITY_ORDER.indexOf(f.r) >= RARITY_ORDER.indexOf(q.r)) q.p++;
+      if (q.kind === 'size' && size >= q.cm) q.p++;
+      if (q.kind === 'coins') q.p = Math.min(q.n, q.p + val);
+      if (q.kind === 'fish' && f.id === q.id) q.p++;
+      if (q.p >= q.n) toast(`📜 Auftrag erledigt: ${questText(q)} – im Fortschritt abholen`);
+    }
+    updateLevel();
+  }
+  function claimQuest(i) {
+    const q = save.quests[i]; if (!q || q.p < q.n) return;
+    save.quests.splice(i, 1); save.questsDone++;
+    save.coins += q.coins; save.lifeCoins += q.coins;
+    sfx.coin(); toast(`📜 +${q.coins} Taler · +${q.xp} EP`);
+    gainXp(q.xp); fillQuests(); persist(); updateCoins(); renderProg();
+  }
+  function rerollQuest(i) {
+    const cost = 10 + save.lvl * 2;
+    if (save.coins < cost) return;
+    save.coins -= cost; save.quests.splice(i, 1); save.quests.splice(i, 0, makeQuest()); persist(); updateCoins(); renderProg();
+  }
+
+  // ---- rebirth
+  function rebirth() {
+    if (save.lvl < rebirthLvl()) return;
+    const gain = scalesFor();
+    if (!confirm(`Wiedergeburt?\n\nDu bekommst ${gain} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level und Aufträge werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.`)) return;
+    save.rebirths++; save.scales += gain;
+    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [] });
+    fillQuests(); persist(); updateCoins(); updateGear(); updateLevel(); renderProg();
+    const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
+    [262, 330, 392, 523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .25, 'triangle', .08), i * 120));
+    toast(`🌀 Wiedergeboren! +${gain} Schuppen · Taler-Bonus jetzt +${Math.round((coinMult() - 1) * 100)} %`);
+  }
+  function buyPerk(id) {
+    const l = perk(id), c = perkCost(l);
+    if (l >= PERK_MAX || save.scales < c) return;
+    save.scales -= c; save.perks[id] = l + 1; sfx.coin(); persist(); renderProg();
+  }
+
+  function renderProg() {
+    updateLevel();
+    const need = xpNeed(save.lvl);
+    $('prog-level').textContent = save.lvl;
+    $('prog-xp').textContent = `${save.xp} / ${need} EP`;
+    $('prog-xpbar').style.width = Math.min(100, save.xp / need * 100) + '%';
+    $('prog-stats').textContent = `${save.total} Fänge · ${save.questsDone} Aufträge · ${save.rebirths}× wiedergeboren · Taler-Bonus +${Math.round((coinMult() - 1) * 100)} %`;
+    $('prog-quests').replaceChildren(...save.quests.map((q, i) => {
+      const done = q.p >= q.n, d = document.createElement('div');
+      d.className = 'quest' + (done ? ' done' : '');
+      const txt = document.createElement('div');
+      const b = document.createElement('b'); b.textContent = questText(q);
+      const bar = document.createElement('div'); bar.className = 'qbar';
+      const fill = document.createElement('i'); fill.style.width = Math.min(100, q.p / q.n * 100) + '%'; bar.append(fill);
+      const s = document.createElement('small'); s.textContent = `${Math.min(q.p, q.n)} / ${q.n} · Belohnung ${q.coins} Taler, ${q.xp} EP`;
+      txt.append(b, bar, s);
+      const btn = document.createElement('button'); btn.className = 'btn' + (done ? '' : ' ghost');
+      const cost = 10 + save.lvl * 2;
+      btn.textContent = done ? 'Abholen' : `🔄 ${cost}`;
+      btn.title = done ? 'Belohnung abholen' : `Neuer Auftrag für ${cost} Taler`;
+      btn.disabled = !done && save.coins < cost;
+      btn.addEventListener('click', () => done ? claimQuest(i) : rerollQuest(i));
+      d.append(txt, btn);
+      return d;
+    }));
+    const req = rebirthLvl(), can = save.lvl >= req;
+    $('reb-info').textContent = can
+      ? `Bereit! Du bekommst ${scalesFor()} Schuppen und dauerhaft +20 % Taler. Taler, Ruten, Köder und Level werden zurückgesetzt. Fischdex, Rekorde und Talente bleiben.`
+      : `Ab Level ${req} möglich (noch ${req - save.lvl}). Je höher dein Level und je mehr Taler du verdienst, desto mehr Schuppen gibt es (aktuell ${scalesFor()}).`;
+    $('btn-rebirth').disabled = !can;
+    $('reb-next').textContent = save.rebirths < 1 ? 'Freischaltung: Regenbogenrute (1×), Mondköder (2×), Sternenrute (3×), neue Hutfarben.'
+      : save.rebirths < 3 ? `Nächste Freischaltung bei ${save.rebirths < 2 ? '2× – Mondköder' : '3× – Sternenrute'}.` : 'Alles freigeschaltet. Jede weitere Wiedergeburt: +20 % Taler.';
+    $('prog-scales').textContent = save.scales;
+    $('prog-perks').replaceChildren(...PERKS.map(p => {
+      const l = perk(p.id), max = l >= PERK_MAX, c = perkCost(l);
+      const d = document.createElement('div'); d.className = 'item perk';
+      const txt = document.createElement('div');
+      const b = document.createElement('b'); b.textContent = `${p.icon} ${p.name}`;
+      const pips = document.createElement('span'); pips.className = 'pips';
+      pips.textContent = '●'.repeat(l) + '○'.repeat(PERK_MAX - l); b.append(' ', pips);
+      const s = document.createElement('small'); s.textContent = l ? p.desc(l) + (max ? '' : ` → ${p.desc(l + 1)}`) : p.desc(1);
+      txt.append(b, s);
+      const btn = document.createElement('button'); btn.className = 'btn';
+      btn.textContent = max ? 'Max' : `${c} 🐚`; btn.disabled = max || save.scales < c;
+      btn.addEventListener('click', () => buyPerk(p.id));
+      d.append(txt, btn);
+      return d;
+    }));
+  }
+  $('btn-rebirth').addEventListener('click', rebirth);
+
+  // older saves: turn past catches into a starting level, quietly
+  if (!load().lvl) {
+    let xp = 0;
+    for (const f of FISH) if (save.dex[f.id]) xp += XP[f.r] * (save.dex[f.id].n + 2);
+    gainXp(xp, true);
+  }
+  fillQuests();
+
   // ------------------------------------------------------------------ boot
   $('btn-sound').textContent = save.sound ? '🔊' : '🔇';
-  updateCoins(); updateGear();
+  updateCoins(); updateGear(); updateLevel();
   if (save.seen) $('start').textContent = 'Weiter fischen';
 
   let last = performance.now();
@@ -1111,5 +1430,6 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  window.__fischen = { save, get state() { return state; }, setTime: v => { time = v; } };
+  window.__fischen = { save, gainXp, rebirth, get state() { return state; }, setTime: v => { time = v; },
+    land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); } };
 })();
