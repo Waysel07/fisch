@@ -47,10 +47,6 @@
     { id: 'tisch',   name: 'Tisch',             img: 'tisch.gif',            r: 'junk',      min: 90, max: 140, val: 3,  photo: true, say: 'Ich bin ein Tisch.', desc: 'Ein Tisch. Kein Fisch. Aber fast.' },
     { id: 'flasche', name: 'Spezi-Flasche',     img: 'spezi-flasche.png',    r: 'junk',      min: 25, max: 33,  val: 4,  say: 'Pfand gibt’s keins.', desc: 'Leer. Gehört bestimmt dem Spezifischfischer.' },
     { id: 'pinguine', name: 'Rotierende Pinguine', img: 'rotierendepinguine.gif', r: 'junk', min: 60, max: 75, val: 25, photo: true, page: 'pinguine.html', say: 'Wir drehen uns, also sind wir.', desc: 'Vier Pinguine, rotierend. Selten. Wie kommen die hier rein?', rareJunk: true },
-    { id: 'pgschal', name: 'Schal-Pinguin',     img: 'pinguin-schal.png',    r: 'junk',      min: 55, max: 70,  val: 20, pixel: true, page: 'pinguin-schal.html', say: 'Mir ist kalt. Immer.', desc: 'Trägt einen roten Schal. Auch im Sommer.', rareJunk: true },
-    { id: 'pgbrille', name: 'Brillen-Pinguin',  img: 'pinguin-brille.png',   r: 'junk',      min: 55, max: 70,  val: 20, pixel: true, page: 'pinguin-brille.html', say: 'Ich hab das alles berechnet.', desc: 'Hat eine gelbe Brille und einen Plan.', rareJunk: true },
-    { id: 'pgmuetze', name: 'Mützen-Pinguin',   img: 'pinguin-muetze.png',   r: 'junk',      min: 55, max: 70,  val: 20, pixel: true, page: 'pinguin-muetze.html', say: 'Die Mütze bleibt auf.', desc: 'Blaue Strickmütze mit Bommel. Selbst gestrickt.', rareJunk: true },
-    { id: 'pgschlaf', name: 'Schlaf-Pinguin',   img: 'pinguin-schlaf.png',   r: 'junk',      min: 55, max: 70,  val: 20, pixel: true, page: 'pinguin-schlaf.html', say: 'Zzz … nur noch fünf Minuten.', desc: 'Schläft. Auch beim Gefangenwerden.', rareJunk: true, night: 2 },
   ];
 
   const RODS = [
