@@ -59,7 +59,7 @@
   const save = Object.assign({
     coins: 0, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity },
     dex: {}, total: 0, sound: true, seen: false,
-    dexClaimed: [], lvl: 1, xp: 0, rebirths: 0, scales: 0, perks: {}, quests: [], questsDone: 0, lifeCoins: 0, totalEarned: 0,
+    dexClaimed: [], lvl: 1, xp: 0, daily: { d: '', n: 0 }, bestStreak: 0, rebirths: 0, scales: 0, perks: {}, quests: [], questsDone: 0, lifeCoins: 0, totalEarned: 0,
   }, load());
   save.baits.wurm = Infinity;
   function load() {
@@ -270,7 +270,7 @@
     }
     const skew = Math.pow(Math.random(), 1.6);
     hooked = { f, size: Math.round(f.min + (f.max - f.min) * skew), str: STRENGTH[f.r] };
-    Object.assign(reel, { tension: .15, progress: .22, thrash: 0, thrashT: 1 + Math.random(), slack: 0 });
+    Object.assign(reel, { tension: .15, progress: .22, thrash: 0, thrashT: 1 + Math.random(), slack: 0, maxT: 0 });
     state = 'reel'; $('reel').hidden = false; hint('');
     sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff');
   }
@@ -292,20 +292,21 @@
     let newMut = false;
     if (mut) { e.muts = e.muts || {}; newMut = !e.muts[mut.id]; e.muts[mut.id] = (e.muts[mut.id] || 0) + 1; }
     save.coins += val; save.total++; save.lifeCoins += val; save.totalEarned += val;
-    progressCatch(f, size, val, first);
+    const gain = progressCatch(f, size, val, first, mut, newMut, reel.maxT < .7);
     setTimeout(() => lbSubmit(), 3000);
     if (dexClaimable().length) { updateDexBadge(); if (first || newMut) toast('📖 Fischdex-Belohnung bereit!'); }
     persist(); updateCoins();
     splash(bob.x, SURFACE, 22, '#ffffff');
     state = 'show'; $('reel').hidden = true; holding = false; hint('');
     const reveal = () => {
-      showCatch(f, size, val, first, mut, newMut);
+      showCatch(f, size, val, first, mut, newMut, gain);
       if (f.clip) playClip(f.clip); else if (f.sound) playFile(f.sound); else playFile('fish.mp3');
       sfx.coin();
     };
     const fx = FANFARE[f.r] || (mut && { label: `${mut.name.toUpperCase()}!`, c: mut.c, hi: '#ffffff', dur: 1.1, notes: [659, 880, 1175] });
     floaters.push({ x: bob.x, y: SURFACE - 14, text: `${mut ? mut.icon + ' ' : ''}${fx ? '' : f.name + ' · '}${size} cm`, c: mut ? mut.c : fx ? fx.c : '#ffffff', life: 2.4 });
     if (mut && FANFARE[f.r]) floaters.push({ x: bob.x, y: SURFACE - 24, text: `${mut.icon} ${mut.name}`, c: mut.c, life: 2.4 });
+    floaters.push({ x: bob.x, y: SURFACE - 4, text: `+${gain.xp} EP${streak > 1 ? ` · 🔥${streak}` : ''}`, c: '#86efac', life: 2.4 });
     if (fx && !reduceMotion) {
       fanfare = { ...fx, r: FANFARE[f.r] ? f.r : 'rare', x: bob.x, t: 0, done: reveal };
       fx.notes.forEach((n, i) => setTimeout(() => tone(n, .18, 'triangle', .09), i * 110));
@@ -525,7 +526,7 @@
         biteT -= dt;
         bob.dunk = 4 + Math.sin(t * 40);
         if (biteT <= 0) {
-          retract('Zu spät! Er ist weg.');
+          endStreak(); retract('Zu spät! Er ist weg.');
         }
         break;
       case 'reel':
@@ -580,6 +581,7 @@
       reel.progress -= .05 * h.str * (reel.thrash ? 2.2 : 1) * dt;
     }
     reel.tension = Math.max(0, reel.tension);
+    reel.maxT = Math.max(reel.maxT || 0, reel.tension);
 
     if (reel.thrash && Math.random() < dt * 10) splash(bob.x + (Math.random() - .5) * 6, SURFACE, 3, '#ffffff');
     // bobber drifts back toward the dock as you win
@@ -591,8 +593,8 @@
     $('progress').style.width = Math.max(0, Math.min(100, reel.progress * 100)) + '%';
     $('reel').classList.toggle('thrash', !!reel.thrash);
 
-    if (reel.tension >= 1) { sfx.snap(); retract('Schnur gerissen! 💥'); return; }
-    if (reel.progress <= 0) { retract('Entkommen …'); return; }
+    if (reel.tension >= 1) { sfx.snap(); retract('Schnur gerissen! 💥' + lostXp(h.f)); return; }
+    if (reel.progress <= 0) { retract('Entkommen …' + lostXp(h.f)); return; }
     if (reel.progress >= 1) land_catch();
   }
 
@@ -1246,7 +1248,7 @@
   }
 
   let lastCatchVal = 0;
-  function showCatch(f, size, val, first, mut, newMut) {
+  function showCatch(f, size, val, first, mut, newMut, gain) {
     lastCatchVal = val;
     $('catch-double').hidden = false; $('catch-double').disabled = false;
     $('catch-double').textContent = `🎲 Doppelt oder nichts (${val})`;
@@ -1263,6 +1265,7 @@
     mb.hidden = !mut;
     if (mut) { mb.textContent = `${mut.icon} ${mut.name} · ×${mut.val} Wert${newMut ? ' · neue Mutation!' : ''}`; mb.style.setProperty('--mc', mut.c); }
     $('catch-desc').textContent = f.desc;
+    $('catch-xp').textContent = gain ? [`+${gain.xp} EP`, ...gain.tags].join(' · ') : '';
     $('catch-say').textContent = `„${f.say}“`;
     const sheet = $('catch').querySelector('.sheet');
     sheet.classList.remove('fx-rare', 'fx-epic', 'fx-legendary');
@@ -1350,7 +1353,8 @@
     save.dexClaimed.push(r.id);
     save.coins += r.coins; save.scales += r.scales || 0; save.totalEarned += r.coins;
     sfx.coin(); setTimeout(sfx.coin, 150);
-    toast(`📖 ${r.name}: +${r.coins} Taler${r.scales ? ` · +${r.scales} 🐚` : ''}${r.perkText ? ' · ' + r.perkText : ''}`);
+    const ep = gainXp(r.coins / 5);
+    toast(`📖 ${r.name}: +${r.coins} Taler · +${ep} EP${r.scales ? ` · +${r.scales} 🐚` : ''}${r.perkText ? ' · ' + r.perkText : ''}`);
     persist(); updateCoins(); updateDexBadge(); renderDex();
   }
   function updateDexBadge() { $('btn-dex').classList.toggle('ready', dexClaimable().length > 0); }
@@ -1519,8 +1523,10 @@
   // Angler level (XP from catches), quests, and rebirth: reset coins, gear and level
   // for Schuppen, spent on permanent talents. Rebirths also raise the Taler bonus,
   // unlock new gear and recolour the hat.
-  const XP = { common: 6, uncommon: 12, rare: 30, epic: 70, legendary: 180, junk: 3 };
-  const xpNeed = l => Math.round(40 * Math.pow(l, 1.45));
+  const XP = { common: 8, uncommon: 15, rare: 35, epic: 80, legendary: 200, junk: 4 };
+  const xpNeed = l => Math.round(30 * Math.pow(l, 1.35));
+  const DAILY_N = 10; // the first catches of each day give double XP
+  let streak = 0;     // catches in a row without losing a fish (not saved)
   const rebirthLvl = () => 12 + save.rebirths * 3;
   const RARITY_ORDER = ['junk', 'common', 'uncommon', 'rare', 'epic', 'legendary'];
   const PERKS = [
@@ -1543,7 +1549,8 @@
   function scalesFor() { return Math.floor(save.lvl / 2) + Math.floor(Math.sqrt(save.lifeCoins / 40)); }
 
   function gainXp(n, quiet) {
-    save.xp += Math.round(n * (1 + .15 * perk('wissen')));
+    const add = Math.round(n * (1 + .15 * perk('wissen')));
+    save.xp += add;
     const from = save.lvl;
     let reward = 0;
     while (save.xp >= xpNeed(save.lvl)) { save.xp -= xpNeed(save.lvl); save.lvl++; reward += 20 * save.lvl; }
@@ -1556,6 +1563,7 @@
       [523, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .14, 'square', .05), i * 90));
     }
     updateLevel();
+    return add;
   }
   function updateLevel() {
     $('lvl-num').textContent = save.lvl;
@@ -1597,8 +1605,36 @@
     }
   }
   function fillQuests() { while (save.quests.length < 3) save.quests.push(makeQuest()); }
-  function progressCatch(f, size, val, first) {
-    gainXp(XP[f.r] * (first ? 3 : 1) * (1 + size / (f.max * 4)));
+  function today() { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; }
+  function dailyLeft() {
+    if (!save.daily || save.daily.d !== today()) save.daily = { d: today(), n: 0 };
+    return Math.max(0, DAILY_N - save.daily.n);
+  }
+  // XP for one catch: base by rarity and size, plus additive bonuses so nothing stacks out of control
+  function catchXp(f, size, first, mut, newMut, clean) {
+    const base = XP[f.r] * (first ? 3 : 1) * (1 + Math.min(2, size / f.max) / 4);
+    let m = 1; const tags = [];
+    if (f.r !== 'junk') {
+      streak++; save.bestStreak = Math.max(save.bestStreak || 0, streak);
+      if (streak > 1) { m += Math.min(.5, .1 * (streak - 1)); tags.push(`🔥 Serie ×${streak}`); }
+      if (clean) { m += .25; tags.push('✨ Sauber'); }
+    }
+    if (mut) { m += mut.val / 4; tags.push(`${mut.icon} ${mut.name}`); }
+    if (isNight()) { m += .2; tags.push('🌙 Nacht'); }
+    if (dailyLeft() > 0) { save.daily.n++; m += 1; tags.push(`☀️ Tagesbonus ${save.daily.n}/${DAILY_N}`); }
+    if (first) tags.push('📖 Neu');
+    return { n: base * m + (newMut ? 40 : 0), tags };
+  }
+  function endStreak() { streak = 0; }
+  function lostXp(f) { // a lost fish still teaches something, and ends the streak
+    endStreak();
+    const n = gainXp(Math.max(1, XP[f.r] / 4));
+    persist();
+    return ` (+${n} EP)`;
+  }
+  function progressCatch(f, size, val, first, mut, newMut, clean) {
+    const c = catchXp(f, size, first, mut, newMut, clean);
+    const gain = { xp: gainXp(c.n), tags: c.tags };
     for (const q of save.quests) {
       if (q.p >= q.n) continue;
       if (q.kind === 'count' && f.r !== 'junk') q.p++;
@@ -1609,6 +1645,7 @@
       if (q.p >= q.n) toast(`📜 Auftrag erledigt: ${questText(q)} – im Fortschritt abholen`);
     }
     updateLevel();
+    return gain;
   }
   function claimQuest(i) {
     const q = save.quests[i]; if (!q || q.p < q.n) return;
@@ -1648,6 +1685,9 @@
     $('prog-xp').textContent = `${save.xp} / ${need} EP`;
     $('prog-xpbar').style.width = Math.min(100, save.xp / need * 100) + '%';
     $('prog-stats').textContent = `${save.total} Fänge · ${save.questsDone} Aufträge · ${save.rebirths}× wiedergeboren · Taler-Bonus +${Math.round((coinMult() - 1) * 100)} %`;
+    const left = dailyLeft();
+    $('prog-bonus').textContent = (left ? `☀️ Tagesbonus: noch ${left} Fänge mit doppelten EP` : '☀️ Tagesbonus für heute aufgebraucht – morgen wieder') +
+      ` · 🔥 Serie ${streak} (Rekord ${save.bestStreak || 0})`;
     $('prog-quests').replaceChildren(...save.quests.map((q, i) => {
       const done = q.p >= q.n, d = document.createElement('div');
       d.className = 'quest' + (done ? ' done' : '');

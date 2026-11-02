@@ -415,6 +415,9 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
   font-weight: 800; font-size: .8rem; color: #0f172a; background: var(--mc, #fbbf24);
 }
 .mutbadge[hidden] { display: none; }
+.xpline { margin: .25rem 0 0; font-size: .78rem; font-weight: 700; color: #86efac; }
+.xpline:empty { display: none; }
+#prog-bonus { margin-top: .15rem; color: #fde68a; }
 #catch-img.mut-golden   { filter: sepia(1) saturate(4) hue-rotate(-12deg) brightness(1.1); }
 #catch-img.mut-albino   { filter: grayscale(1) brightness(1.45) contrast(.8); }
 #catch-img.mut-schatten { filter: brightness(.35) contrast(1.4) drop-shadow(0 0 10px #818cf8); }
