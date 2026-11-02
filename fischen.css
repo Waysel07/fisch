@@ -404,7 +404,7 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
   animation: reborn 1.6s ease-out forwards;
 }
 @keyframes reborn { from { opacity: .95; transform: scale(.2); } 40% { opacity: .8; } to { opacity: 0; transform: scale(2.4); } }
-@media (max-width: 820px) {
+@media (max-width: 1100px) {
   .lbl { display: none; }
   .xpbar { width: 28px; }
 }
@@ -438,3 +438,35 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
 .reward.got { opacity: .6; }
 .reward .btn { padding: .3rem .7rem; font-size: .8rem; margin-top: .3rem; justify-self: start; }
 .reward .tick { position: absolute; top: .4rem; right: .6rem; color: #4ade80; font-weight: 800; }
+
+/* ---------- Leaderboard ---------- */
+.tabs { display: flex; gap: .35rem; flex-wrap: wrap; margin: .7rem 0 .5rem; }
+.tab {
+  font: inherit; font-size: .85rem; font-weight: 600; color: #cbd5e1;
+  background: #1e293b; border: 2px solid transparent; border-radius: 8px; padding: .3rem .7rem;
+}
+.tab:hover { border-color: #334155; }
+.tab.on { border-color: #22c55e; color: #fff; }
+.lb-list { list-style: none; display: grid; gap: .3rem; }
+.lb-list li {
+  display: grid; grid-template-columns: 2.2rem 1fr auto; align-items: center; gap: .5rem;
+  background: #1e293b; border-radius: 8px; padding: .4rem .7rem; font-size: .9rem;
+}
+.lb-list li.mine { outline: 2px solid #fbbf24; }
+.lb-list li.empty { display: block; color: #94a3b8; text-align: center; }
+.lb-list .pos { font-weight: 800; color: #94a3b8; text-align: center; }
+.lb-list b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-list .score { color: #fde68a; font-weight: 600; white-space: nowrap; }
+#lb-me { margin-top: .5rem; }
+.lb-join, .lb-joined { margin-top: .6rem; }
+.lb-join[hidden], .lb-joined[hidden] { display: none; }
+.lb-join a, .lb-joined a { color: #4ade80; }
+.lb-form { display: flex; gap: .5rem; margin: .6rem 0 .4rem; }
+.lb-form input {
+  flex: 1; min-width: 0; font: inherit; color: #e2e8f0; background: #1e293b;
+  border: 2px solid #334155; border-radius: 8px; padding: .45rem .7rem;
+}
+.lb-form input:focus { outline: none; border-color: #22c55e; }
+.consent { display: flex; gap: .5rem; align-items: flex-start; font-size: .8rem; color: #cbd5e1; }
+.consent input { margin-top: .2rem; accent-color: #22c55e; }
+.err { color: #fca5a5; font-size: .85rem; min-height: 1.2em; margin-top: .3rem; }
