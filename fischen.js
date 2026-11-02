@@ -1183,8 +1183,8 @@
     { id: 'odfisch', img: 'odfish.jpg',           w: 3,  pay: 150 },
     { id: 'ratte',   img: 'rat.gif',              w: 6,  pay: 0 },
   ];
-  const PAIR = 1.5, BETS = [5, 10, 25, 50];
-  let bet = 5, spinning = false;
+  const PAIR = 1.5, BETS = [100, 1000];
+  let bet = 100, spinning = false;
   const symW = SYMBOLS.reduce((a, s) => a + s.w, 0);
   function rollSymbol() {
     let r = Math.random() * symW;
