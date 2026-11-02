@@ -21,10 +21,13 @@
     { id: 'pixel',   name: 'Pixelfisch',        img: 'fish-icon.png',        r: 'common',    min: 8,  max: 16,  val: 4,  say: 'Knusper, knusper.', desc: 'Besteht zu 100 % aus Pixeln. Sehr knusprig.', pixel: true },
     { id: 'poisson', name: 'Poisson',           img: 'frenchfish.gif',       r: 'common',    min: 25, max: 50,  val: 6,  photo: true, say: 'Bonjour! Du hast mich, non?', desc: 'Kommt aus Frankreich. Hat Schokolade dabei.' },
     { id: 'spezi3',  name: 'Kleiner Spezifisch', img: 'spezifisch3.png',     r: 'common', clip: [0, .93],    min: 10, max: 22,  val: 6,  say: 'Klein, aber spezifisch.', desc: 'Ein ganz kleiner, aber sehr spezifischer Fisch.' },
+    { id: 'stink',   name: 'Stinkfisch',        img: 'stinkfisch.png',       r: 'common',    min: 10, max: 25,  val: 5,  pixel: true, page: 'stinkfisch.html', say: 'Riech lieber nicht so genau hin.', desc: 'Grün, fleckig und riecht drei Stege weit.' },
     { id: 'fisch2',  name: 'Fisch 2',           img: 'fish2-spin.gif',       r: 'uncommon',  min: 45, max: 90,  val: 14, photo: true, say: 'Diesmal mit mehr Budget.', desc: 'Die Fortsetzung. Länger als das Original.' },
     { id: 'spezi2',  name: 'Spezifische Spezifische', img: 'spezifisch2.png', r: 'uncommon', clip: [3.17, 4.9],  min: 22, max: 40,  val: 15, say: 'Spezifisch. Spezifisch.', desc: 'Spezifische Spezifische. Gut gekühlt.' },
     { id: 'fisch3',  name: 'Fisch 3',           img: 'fish3.gif',            r: 'uncommon',  min: 15, max: 30,  val: 16, photo: true, say: 'WAS?! Wer bist du denn?', desc: 'Hat dich gesehen. Ist sichtlich schockiert.' },
+    { id: 'schlamm', name: 'Schlammfisch',      img: 'schlammfisch.png',     r: 'uncommon',  min: 20, max: 45,  val: 15, pixel: true, page: 'schlammfisch.html', say: 'Ich hab mich extra schmutzig gemacht.', desc: 'Wohnt im Schlamm unter dem Steg. Tropft überall hin.' },
     { id: 'spezi1',  name: 'Spezifischer Spezifisch', img: 'spezifisch1.png', r: 'rare', clip: [.93, 3.17],      min: 40, max: 70,  val: 38, say: 'Extra Spezi, extra spezifisch.', desc: 'Ein Prachtexemplar mit extra viel Spezi.' },
+    { id: 'oel',     name: 'Ölfisch',           img: 'oelfisch.png',         r: 'rare',      min: 30, max: 60,  val: 45, pixel: true, page: 'oelfisch.html', say: 'Ich schillere. Das ist kein Kompliment.', desc: 'Schwarz und ölig, mit Regenbogenschimmer. Kommt nachts raus.', night: 1.8 },
     { id: 'kaugummi', name: 'Kaugummifisch',    img: 'fish-smile.gif',    r: 'rare',      min: 15, max: 30,  val: 48, photo: true, page: 'kaugummifisch.html', say: 'Blubb. Ich klebe jetzt an dir.', desc: 'Rund, grau und zäh wie alter Kaugummi. Lächelt trotzdem.' },
     { id: 'schuh',   name: 'Schuhfisch',        img: 'fih.gif',              r: 'rare',      min: 30, max: 55,  val: 42, say: 'Schöne Schuhe hast du auch.', desc: 'Trägt Schuhe. Warum auch nicht.' },
     { id: 'lo',      name: 'Lo',                img: 'lo.gif',               r: 'rare',      min: 80, max: 160, val: 55, say: 'Ich bin nicht klein, ich bin kompakt.', desc: 'Ein kleiner Hai. Beißt nur weit draußen.', far: .55 },
@@ -493,6 +496,7 @@
     if (!$('casino').hidden && (k === ' ' || k === 'enter')) { e.preventDefault(); $('spin').click(); return; }
     if (k === 'm') { $('btn-sound').click(); return; }
     if (anyModal()) return;
+    if (/^[1-9]$/.test(k)) { const b = ownedBaits()[+k - 1]; if (b) selectBait(b.id); return; }
     if (k === ' ') { e.preventDefault(); if (!e.repeat) down(); return; }
     keys[k] = true;
   });
@@ -1226,15 +1230,31 @@
     $('toast').appendChild(d); setTimeout(() => d.remove(), 3300);
   }
   function updateCoins() { $('coins').textContent = save.coins; $('shop-coins').textContent = save.coins; $('casino-coins').textContent = save.coins; }
+  // bait hotbar: every bait you own as a slot; click or press 1-9 to switch (only while idle)
+  const ownedBaits = () => BAITS.filter(b => !b.pack || (save.baits[b.id] || 0) > 0);
+  function selectBait(id) {
+    if (save.bait === id) return;
+    if (state !== 'idle') { hint('Erst einholen, dann Köder wechseln', 1.4); return; }
+    save.bait = id; persist(); updateGear(); sfx.tick();
+    hint(`🪝 ${bait().name}`, 1.2);
+  }
   function updateGear() {
-    const b = bait(), n = save.baits[b.id];
-    const g = $('gear'); g.replaceChildren();
-    g.append(`🎣 ${rod().name} · `.trimEnd());
-    g.append(' ');
-    if (b.img) { // baits with their own picture show it in the HUD
-      const im = document.createElement('img'); im.className = 'gear-bait'; im.src = ICONS[b.id]; im.alt = ''; g.append(im, ` ${b.name}`);
-    } else g.append(`🪱 ${b.name}`);
-    g.append(n === Infinity ? '' : ' ×' + n);
+    $('gear').textContent = `🎣 ${rod().name}`;
+    $('baitbar').replaceChildren(...ownedBaits().map((b, i) => {
+      const n = save.baits[b.id], on = b.id === save.bait;
+      const btn = document.createElement('button');
+      btn.className = 'bslot' + (on ? ' on' : '');
+      btn.title = `${b.name}${b.pack ? ' ×' + n : ''} – Taste ${i + 1}`;
+      btn.setAttribute('aria-pressed', on);
+      btn.setAttribute('aria-label', `${b.name}${b.pack ? ', ' + n + ' Stück' : ''}`);
+      const im = document.createElement('img'); im.src = ICONS[b.id]; im.alt = '';
+      if (!ICONS[b.id].startsWith('data:')) im.className = 'photo';
+      const key = document.createElement('small'); key.className = 'key'; key.textContent = i + 1;
+      const cnt = document.createElement('small'); cnt.className = 'cnt'; cnt.textContent = b.pack ? n : '∞';
+      btn.append(im, key, cnt);
+      btn.addEventListener('click', () => selectBait(b.id));
+      return btn;
+    }));
   }
   let lastClock = '';
   function updateClock() {
