@@ -51,6 +51,8 @@
     { id: 'spees',   name: 'Spezifische Spee Zierfische', img: 'img/spee-zierfische.png', r: 'epic', min: 12, max: 18, val: 160, clip: [13.9, 16.43], say: 'Wir bleiben zusammen!', desc: 'Zwei auf einmal. Spezifischer geht es kaum.', far: .5 },
     { id: 'fischer', name: 'Spezifischfischer', img: 'img/spezifischfischer-cut.png', r: 'legendary', min: 175, max: 190, val: 400, clip: [16.43, null], say: 'Moment … ich bin doch der Fischer!', desc: 'Der spezifische Spezifischfischer fischt spezifische Spezifische. Jetzt hast du ihn gefischt.', far: .45, hint: 'Steht am Steg. Fischt man ihn auch?' },
     { id: 'odfisch', name: 'Absolute Odfisch',  img: 'img/odfish.jpg',           r: 'legendary', min: 170, max: 190, val: 500, photo: true, say: 'Absolut.', desc: 'Absolute Legende. Nur nachts, nur weit draußen.', far: .6, night: 4, dayOff: true },
+    { id: 'katze',   name: 'Katzenfisch',       img: 'img/katzenfisch.png',  r: 'legendary', min: 40, max: 70,  val: 450, photo: true, page: 'seiten/katzenfisch.html', say: 'Miau. Ich meine: Blubb.', desc: 'Halb Katze, halb Fisch, ganz flauschig. Kommt lieber nachts.', far: .4, night: 2.5 },
+    { id: 'uhrzeit', name: 'UhrZeitFisch',      img: 'img/uhrzeitfisch.gif', r: 'legendary', min: 160, max: 190, val: 480, photo: true, page: 'seiten/uhrzeitfisch.html', say: 'Ich bin pünktlich. Seit 66 Millionen Jahren.', desc: 'Ein Fisch aus der Urzeit, sehr cool. Beißt nur zur vollen Stunde.', fullHour: true, hint: 'Beißt nur zur vollen Stunde' },
     { id: 'ratte',   name: 'Ratte',             img: 'img/rat.gif',              r: 'junk',      min: 18, max: 28,  val: 1,  say: 'Lass mich, ich hab Termine.', desc: 'Nass und beleidigt. Läuft trotzdem weiter.' },
     { id: 'tisch',   name: 'Tisch',             img: 'img/tisch.gif',            r: 'junk',      min: 90, max: 140, val: 3,  photo: true, say: 'Ich bin ein Tisch.', desc: 'Ein Tisch. Kein Fisch. Aber fast.' },
     { id: 'flasche', name: 'Spezi-Flasche',     img: 'img/spezi-flasche.png',    r: 'junk',      min: 25, max: 33,  val: 4,  say: 'Pfand gibt’s keins.', desc: 'Leer. Gehört bestimmt dem Spezifischfischer.' },
@@ -263,7 +265,8 @@
   function pickFish() {
     const d = castDistance(), night = isNight(), b = bait(), r = rod();
     const luck = b.luck * r.luck * (1 + .08 * perk('glueck')) * (dexPerk('luck10') ? 1.1 : 1);
-    const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night));
+    const fullHour = (time * 24) % 1 < 1 / 6; // the clock shows xx:00
+    const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night) && !(f.fullHour && !fullHour));
     const weights = pool.map(f => {
       let w = RARITY[f.r].w;
       const n = pool.filter(g => g.r === f.r).length; w /= n;
@@ -1480,7 +1483,7 @@
     if (mut) { mb.textContent = `${mut.icon} ${mut.name} · ` + tr('×{n} Wert', { n: mut.val }) + (newMut ? tr(' · neue Mutation!') : ''); mb.style.setProperty('--mc', mut.c); }
     $('catch-desc').textContent = f.desc;
     $('catch-xp').textContent = gain ? [tr('+{n} EP', { n: gain.xp }), ...gain.tags].join(' · ') : '';
-    $('catch-say').textContent = `„${f.say}“`;
+    $('catch-say').textContent = I18N.lang === 'en' ? `“${f.say}”` : `„${f.say}“`;
     const sheet = $('catch').querySelector('.sheet');
     sheet.classList.remove('fx-rare', 'fx-wii', 'fx-epic', 'fx-legendary');
     void sheet.offsetWidth; // restart the CSS animations
