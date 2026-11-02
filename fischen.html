@@ -84,14 +84,24 @@
 
     <!-- Shop -->
     <div class="modal" id="shop" hidden>
-      <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="shop-title">
+      <div class="sheet wide shop-sheet" role="dialog" aria-modal="true" aria-labelledby="shop-title">
         <button class="close" data-close aria-label="Schließen">✕</button>
-        <h2 id="shop-title">Laden</h2>
-        <p class="sub">Du hast <b id="shop-coins">0</b> Fischtaler.</p>
-        <h3>Ruten</h3>
-        <div class="list" id="shop-rods"></div>
-        <h3>Köder</h3>
-        <div class="list" id="shop-baits"></div>
+        <div class="keeper">
+          <img src="tophat-fish-fish.gif" alt="Herr Zylinderwels, ein Wels mit Zylinder" class="keeper-photo">
+          <div class="keeper-talk">
+            <h2 id="shop-title">Zylinderwels &amp; Söhne</h2>
+            <p class="keeper-name">Herr Zylinderwels, Inhaber</p>
+            <p class="keeper-say" id="keeper-say" aria-live="polite"></p>
+          </div>
+        </div>
+        <div class="shop-bar">
+          <div class="tabs" role="tablist">
+            <button class="tab on" data-shop-tab="rods" role="tab" aria-selected="true">🎣 Ruten</button>
+            <button class="tab" data-shop-tab="baits" role="tab" aria-selected="false">🪱 Köder</button>
+          </div>
+          <span class="purse"><img src="fish-icon.png" alt="" class="coin"> <b id="shop-coins">0</b></span>
+        </div>
+        <div class="wares" id="shop-wares"></div>
       </div>
     </div>
 
@@ -213,6 +223,7 @@
           <li><b>Klick bei „!“</b> – anschlagen</li>
           <li><b>Halten</b> – kurbeln, <b>loslassen</b> wenn die Schnur glüht</li>
           <li><b>A / D</b> oder <b>← / →</b> – auf dem Steg laufen</li>
+          <li><b>Klick auf den Kiosk</b> – Herr Zylinderwels verkauft Ruten und Köder</li>
           <li><b>📖</b> – Fischdex füllen, Mutationen sammeln, Belohnungen abholen</li>
           <li><b>📈</b> – Level, Aufträge, Wiedergeburt und Talente</li>
           <li><b>🏆</b> – freiwillig in die Bestenliste eintragen</li>

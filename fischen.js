@@ -435,6 +435,7 @@
     e.preventDefault();
     const rc = cv.getBoundingClientRect();
     const wx = (e.clientX - rc.left) / rc.width * W, wy = (e.clientY - rc.top) / rc.height * H;
+    if (state === 'idle' && !anyModal() && wx > KIOSK.x - 3 && wx < KIOSK.x + KIOSK.w + 3 && wy > DOCK_Y - 40 && wy < DOCK_Y + 2) { audio(); toggleModal('shop'); return; }
     if (state === 'idle' && !anyModal() && wx > NPC.x - 3 && wx < NPC.x + NPC.w + 6 && wy > DOCK_Y - NPC.h - 4 && wy < DOCK_Y + 2) { audio(); talkNpc(); return; }
     down();
   });
@@ -473,7 +474,7 @@
     const left = keys['a'] || keys['arrowleft'], right = keys['d'] || keys['arrowright'];
     if (state === 'idle' && (left || right) && !anyModal()) {
       player.dir = right ? 1 : -1;
-      player.x = Math.max(66, Math.min(DOCK_END - 14, player.x + player.dir * 42 * dt));
+      player.x = Math.max(72, Math.min(DOCK_END - 14, player.x + player.dir * 42 * dt));
       player.walk += dt * 10;
     } else player.walk = 0;
 
@@ -543,6 +544,7 @@
     if (state === 'wait' && Math.random() < dt * .7) ripple(bob.x, .6);
 
     if (npcTalk > 0) npcTalk -= dt;
+    if (welsTalk > 0) welsTalk -= dt;
     updateFx(dt);
     hintTick(dt);
   }
@@ -839,6 +841,7 @@
 
     drawDock(dark);
     drawNpc();
+    drawKiosk(dark);
     drawPlayer(dark);
     drawLine();
 
@@ -916,19 +919,96 @@
       glow.addColorStop(0, `rgba(253, 230, 138, ${.35 * dark})`); glow.addColorStop(1, 'rgba(253, 230, 138, 0)');
       ctx.fillStyle = glow; ctx.fillRect(lx - 40, DOCK_Y - 62, 80, 80);
     }
-    // bucket of catches
-    const bx = 40;
-    px(bx - .5, DOCK_Y - 8, 10, 8, k);
-    px(bx, DOCK_Y - 7.5, 9, 7.5, '#7b8aa3'); px(bx, DOCK_Y - 7.5, 9, 1, '#b8c4d6'); px(bx + 7, DOCK_Y - 6.5, 1.5, 6.5, '#5b6880');
-    px(bx + .5, DOCK_Y - 6.5, 8, 1, '#1e3a5f');
-    px(bx + 1, DOCK_Y - 3.5, 7, .5, '#5b6880');
-    ctx.strokeStyle = '#475569'; ctx.lineWidth = .5; ctx.beginPath(); ctx.arc(bx + 4.5, DOCK_Y - 7.5, 4, Math.PI, 0); ctx.stroke();
-    if (save.total > 0) { px(bx + 3, DOCK_Y - 10, 1.5, 3, '#4ade80'); px(bx + 2, DOCK_Y - 11, 3.5, 1.5, '#22c55e'); px(bx + 2, DOCK_Y - 11, .5, .5, '#86efac'); }
-    // tackle box
-    const tx = 54;
-    px(tx - .5, DOCK_Y - 5, 9, 5, k);
-    px(tx, DOCK_Y - 4.5, 8, 4.5, '#b91c1c'); px(tx, DOCK_Y - 4.5, 8, 1, '#ef4444'); px(tx + 3, DOCK_Y - 3, 2, 1, '#fbbf24');
-    px(tx + 2.5, DOCK_Y - 6, 3, 1, k);
+  }
+
+
+  // ------------------------------------------------------------------ shop kiosk with Herr Zylinderwels
+  // An original pixel catfish in a top hat runs the shop from a little striped kiosk on the dock.
+  const WELS_PAL = {
+    k: '#111827', H: '#1f2937', h: '#4b5563', R: '#7f1d1d', r: '#b91c1c',
+    G: '#6b7a5e', g: '#8a9a7b', D: '#4f5b45', e: '#0b0f19', w: '#f8fafc',
+    L: '#c9a99a', l: '#e2c7b9', m: '#3b1d1d', p: '#d16b78', B: '#d9d2c0', b: '#bfb6a1',
+  };
+  const WELS_TOP = [
+    '......kkkkkkkkkk......',
+    '.....kHhhHHHHHHHk.....',
+    '.....kHhHHHHHHHHk.....',
+    '.....kHhHHHHHHHHk.....',
+    '.....kHHHHHHHHHHk.....',
+    '.....kHHHHHHHHHHk.....',
+    '.....kRrRRRRRRRRk.....',
+    '.....kRRRRRRRRRRk.....',
+    '..kkkkHHHHHHHHHHkkkk..',
+    '.kHhhhHHHHHHHHHHHHHHk.',
+    '..kkkkkkkkkkkkkkkkkk..',
+    '...kGGGgggGGGGGGGGk...',
+    '..kGGgggGGGGGGGGGGGk..',
+    '.kGGGGGGGGGGGGGGGGGGk.',
+  ];
+  const WELS_EYES = [
+    ['.kGewGGGGGGGGGGGGweGk.', '.kGeeGGGGGGGGGGGGeeGk.'],
+    ['.kGDDGGGGGGGGGGGGDDGk.', '.kGGGGGGGGGGGGGGGGGGk.'], // blink
+  ];
+  const WELS_MOUTH = [
+    ['kGGGGGGGGGGGGGGGGGGGGk', 'kGLLLLLLLLLLLLLLLLLLGk', 'kLlllllllllllllllllLLk', 'kLLmmmmmmmmmmmmmmmmLLk', 'kLLLLLLLLLLLLLLLLLLLLk'],
+    ['kGGGGGGGGGGGGGGGGGGGGk', 'kGLLLLLLLLLLLLLLLLLLGk', 'kLmmmmmmmmmmmmmmmmmmLk', 'kLmmmmppppppppppmmmmLk', 'kLLLLLLLLLLLLLLLLLLLLk'], // talking
+  ];
+  const WELS_BELLY = ['.kBBBbBBBBBBBBBBbBBBk.', '.kBBBBBBBBBBBBBBBBBBk.', '..kBBBBBBBBBBBBBBBBk..', '..kbbbbbbbbbbbbbbbbk..'];
+  const welsFrames = [0, 1].map(blink => [0, 1].map(talk =>
+    bake([...WELS_TOP, ...WELS_EYES[blink], ...WELS_MOUTH[talk], ...WELS_BELLY], WELS_PAL)));
+  const KIOSK = { x: 40, w: 24 };
+  let welsTalk = 0, welsLine = '';
+  function welsSay(line, secs = 2.6) { welsLine = line; welsTalk = secs; }
+
+  function drawKiosk(dark) {
+    const k = '#1b1f2e', x0 = KIOSK.x, x1 = KIOSK.x + KIOSK.w, y = DOCK_Y;
+    const wood = mix([150, 98, 56], [66, 48, 38], dark), woodL = mix([186, 128, 78], [86, 62, 48], dark), woodD = mix([104, 66, 38], [46, 34, 28], dark);
+    // back wall
+    px(x0 + 1, y - 30, KIOSK.w - 2, 21, mix([92, 62, 40], [40, 30, 26], dark));
+    for (let xx = x0 + 3; xx < x1 - 2; xx += 4) px(xx, y - 30, .5, 21, woodD);
+    // the catfish (bobs a little, blinks, opens its mouth while talking)
+    const blink = (t % 4) < .12 ? 1 : 0, talk = welsTalk > 0 && Math.sin(t * 18) > 0 ? 1 : 0;
+    const img = welsFrames[blink][talk], wy = y - 22.5 + Math.round(Math.sin(t * 2.2)) * .5;
+    ctx.drawImage(img, x0 + 1, wy, img.width / 2, img.height / 2);
+    // barbels (whiskers) from the mouth corners
+    ctx.strokeStyle = '#2b3326'; ctx.lineWidth = .5;
+    const my = wy + 17, sw = Math.sin(t * 2.6) * 1.2;
+    ctx.beginPath(); ctx.moveTo(x0 + 1.5, my); ctx.quadraticCurveTo(x0 - 3, my + 1, x0 - 4 + sw, my + 5); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x0 + 11.5, my); ctx.quadraticCurveTo(x0 + 16, my + 1, x0 + 17 - sw, my + 5); ctx.stroke();
+    // counter
+    px(x0 - .5, y - 9.5, KIOSK.w + 1, 9.5, k);
+    px(x0, y - 9, KIOSK.w, 9, wood);
+    px(x0, y - 9, KIOSK.w, 1, woodL);
+    for (let xx = x0 + 4; xx < x1; xx += 5) px(xx, y - 8, .5, 8, woodD);
+    px(x0 - 1, y - 10.5, KIOSK.w + 2, 1.5, woodD); px(x0 - 1, y - 10.5, KIOSK.w + 2, .5, woodL);
+    // sign on the counter
+    px(x0 + 5, y - 7.5, 14, 5, '#fef3c7'); px(x0 + 5, y - 7.5, 14, .5, '#fffbeb'); px(x0 + 5, y - 3, 14, .5, '#d6c49a');
+    ctx.fillStyle = '#7f1d1d'; ctx.font = '700 4px Poppins, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('LADEN', x0 + 12, y - 5); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    // goods on the counter: a jar of worms and a sparkly lure
+    px(x0 + 1, y - 13.5, 3, 3, '#bae6fd'); px(x0 + 1.5, y - 12.5, 2, 1.5, '#f472b6'); px(x0 + 1, y - 14, 3, .5, '#475569');
+    const tw = (Math.sin(t * 6) + 1) / 2;
+    px(x1 - 4, y - 12.5, 2, 2, '#fbbf24'); px(x1 - 3.5, y - 12, 1, 1, tw > .5 ? '#fff7cc' : '#f59e0b');
+    // posts
+    px(x0 - .5, y - 33, 2, 23, k); px(x0, y - 32.5, 1, 22.5, woodL);
+    px(x1 - 1.5, y - 33, 2, 23, k); px(x1 - 1, y - 32.5, 1, 22.5, wood);
+    // striped awning with scalloped edge
+    px(x0 - 3, y - 37.5, KIOSK.w + 6, 5.5, k);
+    for (let i = 0; i < 7; i++) {
+      const sx = x0 - 2.5 + i * 4.25;
+      px(sx, y - 37, 4.25, 5, i % 2 ? '#f8fafc' : '#dc2626');
+      px(sx + .5, y - 32, 3.25, 1, i % 2 ? '#e2e8f0' : '#b91c1c');
+    }
+    px(x0 - 2.5, y - 37, KIOSK.w + 5, .5, 'rgba(255,255,255,.5)');
+    // speech bubble
+    if (welsTalk > 0) {
+      ctx.font = '6px Poppins, sans-serif';
+      const bw = Math.ceil(ctx.measureText(welsLine).width) + 4, bx = Math.min(W - bw - 2, x0 + 14), byy = y - 46;
+      ctx.globalAlpha = Math.min(1, welsTalk * 3);
+      px(bx - .5, byy - .5, bw + 1, 9, '#0f172a'); px(bx, byy, bw, 8, '#fffbeb'); px(bx + 2, byy + 8, 2, 1.5, '#0f172a');
+      ctx.fillStyle = '#0f172a'; ctx.textBaseline = 'top'; ctx.fillText(welsLine, bx + 2, byy + 1); ctx.textBaseline = 'alphabetic';
+      ctx.globalAlpha = 1;
+    }
   }
 
   // The Spezifischfischer himself, fishing at the start of the dock with a Spezi bottle on his line.
@@ -936,9 +1016,9 @@
     if (!npcImg.complete || !npcImg.naturalWidth) return;
     const x = NPC.x, y = DOCK_Y;
     ctx.drawImage(npcImg, x, y - NPC.h, NPC.w, NPC.h);
-    const hx = x + 9, hy = y - 13.5, tx = x + 24, ty = y - 26;
+    const hx = x + 9, hy = y - 13.5, tx = x + 19, ty = y - 25;
     ctx.strokeStyle = '#111827'; ctx.lineWidth = .5;
-    ctx.beginPath(); ctx.moveTo(hx, hy); ctx.quadraticCurveTo(x + 18, y - 23, tx, ty); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(hx, hy); ctx.quadraticCurveTo(x + 15, y - 23, tx, ty); ctx.stroke();
     const sw = Math.sin(t * 1.4) * 1.5, by = y - 11;
     ctx.strokeStyle = 'rgba(255,255,255,.6)';
     ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx + sw, by); ctx.stroke();
@@ -1299,49 +1379,124 @@
     return 'Noch nicht gefangen';
   }
 
-  function renderShop() {
-    updateCoins();
-    $('shop-rods').replaceChildren(...RODS.map(r => {
-      const owned = save.rods.includes(r.id), active = save.rod === r.id, lock = lockText(r);
-      return shopItem(r.name, `${r.desc} Wurf ${Math.round(r.cast * 100)} · Kurbel ${r.reel}×`, active,
-        active ? 'Ausgerüstet' : owned ? 'Ausrüsten' : lock || `${r.price} Taler`,
-        active || (!owned && (!!lock || save.coins < r.price)),
-        () => {
-          if (!owned) { save.coins -= r.price; save.rods.push(r.id); sfx.coin(); toast(r.name + ' gekauft!'); }
-          save.rod = r.id; persist(); updateGear(); renderShop();
-        });
-    }));
-    $('shop-baits').replaceChildren(...BAITS.map(b => {
-      const n = save.baits[b.id] || 0, active = save.bait === b.id;
-      const items = [shopItem(b.name + (b.pack && n ? ` (×${n})` : ''), b.desc, active,
-        active ? 'Aktiv' : 'Benutzen', active || !n,
-        () => { save.bait = b.id; persist(); updateGear(); renderShop(); })];
-      if (b.pack) {
-        const buy = items[0].querySelector('.btn');
-        const b2 = document.createElement('button'); b2.className = 'btn'; const lock = lockText(b);
-        b2.textContent = lock || `+${b.pack} für ${b.price}`;
-        b2.disabled = !!lock || save.coins < b.price;
-        b2.addEventListener('click', () => {
-          save.coins -= b.price; save.baits[b.id] = n + b.pack; sfx.coin();
-          persist(); updateCoins(); updateGear(); renderShop();
-        });
-        const wrap = document.createElement('div'); wrap.style.display = 'flex'; wrap.style.gap = '.4rem';
-        buy.replaceWith(wrap); wrap.append(buy, b2);
-      }
-      return items[0];
-    }));
+  // ---- shop: Herr Zylinderwels sells rods and bait; every item has its own pixel icon
+  const KEEPER = {
+    hello: ['Ah, Kundschaft! Treten Sie näher.', 'Feinste Ruten, frisch aus dem Teich.', 'Was darf es sein, werter Angler?', 'Zylinder ab vor so viel Taler!', 'Blubb. Verzeihung. Willkommen!'],
+    buy: ['Exzellente Wahl!', 'Ein Kauf mit Stil.', 'Möge sie Ihnen viele Fische bringen.', 'Sehr wohl, sehr wohl.'],
+    bait: ['Frisch eingetroffen!', 'Die Fische werden Sie lieben.', 'Mit Vergnügen.'],
+    equip: ['Steht Ihnen ausgezeichnet.', 'Eine gute Hand für gutes Gerät.'],
+    poor: n => `Da fehlen noch ${n} Taler, mein Bester.`,
+    locked: l => `Dafür ist es noch zu früh. ${l.replace('🔒 ', '')}, dann reden wir.`,
+  };
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  let shopTab = 'rods';
+  function keeper(line) {
+    $('keeper-say').textContent = line;
+    welsSay(line.length > 34 ? line.slice(0, 32) + '…' : line);
+    tone(180 + Math.random() * 60, .12, 'sine', .06, 120); // blubb
   }
-  function shopItem(title, desc, active, label, disabled, onClick) {
-    const d = document.createElement('div'); d.className = 'item' + (active ? ' active' : '');
-    const txt = document.createElement('div');
-    const b = document.createElement('b'); b.textContent = title;
+
+  // 16x16 pixel icons, drawn once
+  function iconCanvas(draw) {
+    const c = document.createElement('canvas'); c.width = c.height = 16;
+    const x = c.getContext('2d'); draw((px, py, col) => { x.fillStyle = col; x.fillRect(px, py, 1, 1); });
+    return c.toDataURL();
+  }
+  const ROD_COLORS = {
+    stock: i => i % 5 === 0 ? '#5b3416' : '#8b5a2b',
+    bambus: i => i % 4 === 0 ? '#5f6b1f' : '#b5b84a',
+    carbon: i => i % 6 === 0 ? '#38bdf8' : '#1f2937',
+    gold: i => i % 3 === 0 ? '#fde68a' : '#f59e0b',
+    regen: i => ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#a855f7'][i % 6],
+    stern: i => i % 4 === 0 ? '#e0e7ff' : '#312e81',
+  };
+  const ICONS = {};
+  for (const r of RODS) ICONS[r.id] = iconCanvas(p => {
+    const col = ROD_COLORS[r.id] || ROD_COLORS.stock;
+    for (let i = 0; i < 13; i++) { p(2 + i, 13 - i, col(i)); if (i < 4) p(2 + i, 14 - i, col(i)); }   // rod, thicker grip
+    p(3, 14, '#1b1f2e'); p(2, 14, '#1b1f2e');                                                       // butt cap
+    for (const [a, b] of [[5, 12], [6, 12], [5, 13], [6, 13]]) p(a, b, '#64748b'); p(5, 12, '#cbd5e1'); // reel
+    for (let y = 1; y < 9; y++) p(15, y, 'rgba(255,255,255,.7)');                                    // line
+    p(15, 9, '#ef4444'); p(15, 10, '#f8fafc');                                                       // bobber
+    if (r.id === 'stern') { p(13, 2, '#fde68a'); p(12, 3, '#fde68a'); p(14, 3, '#fde68a'); p(13, 4, '#fde68a'); p(13, 3, '#fff'); }
+  });
+  const BAIT_ART = {
+    wurm:  [['....pppp........', '...pPPPPp.......', '...pP..Pp.......', '....p..Pp.......', '.......pP.ppp...', '.......pPpPPPp..', '........pP..Pp..', '.............Pp.', '.............Pp.', '............pPe.', '.............p..'], { p: '#f472b6', P: '#ec4899', e: '#1b1f2e' }],
+    spezi: [['......kk........', '......kk........', '.....kbbk.......', '....kbooBk......', '....kboyBk......', '....kbooBk......', '....kbyyBk......', '....kbooBk......', '....kbooBk......', '....kbbbBk......', '.....kkkk.......'], { k: '#1b1f2e', b: '#6b2d0f', B: '#4a1f0a', o: '#f97316', y: '#a855f7' }],
+    glitzer: [['.......k........', '.......k........', '......kSk.......', '.....kSsSk......', '....kSsWsSk.....', '....kSsssSk.....', '....kSsWsSk.....', '.....kSsSk......', '......kSk.......', '.......k........', '......kkk.......'], { k: '#1b1f2e', S: '#cbd5e1', s: '#e2e8f0', W: '#fde68a' }],
+    mond: [['.....kkkk.......', '...kkMMMMk......', '..kMMMmmkk......', '..kMMmk.........', '.kMMmk..........', '.kMMmk..........', '.kMMmk..........', '..kMMmk.........', '..kMMMmmkk......', '...kkMMMMk......', '.....kkkk.......'], { k: '#1b1f2e', M: '#fde68a', m: '#fbbf24' }],
+  };
+  for (const b of BAITS) ICONS[b.id] = iconCanvas(p => {
+    const [rows, pal] = BAIT_ART[b.id] || BAIT_ART.wurm;
+    rows.forEach((row, y) => [...row].forEach((ch, x) => { if (pal[ch]) p(x + 1, y + 3, pal[ch]); }));
+  });
+
+  function statBar(label, v, max) {
+    const d = document.createElement('div'); d.className = 'stat';
+    const l = document.createElement('span'); l.textContent = label;
+    const bar = document.createElement('i'); const f = document.createElement('b');
+    f.style.width = Math.min(100, v / max * 100) + '%'; bar.append(f);
+    d.append(l, bar); return d;
+  }
+  function ware({ id, name, desc, stats, state, btnText, disabled, onClick, owned }) {
+    const c = document.createElement('div'); c.className = 'ware' + (state ? ' ' + state : '');
+    const ic = document.createElement('img'); ic.className = 'ware-icon'; ic.src = ICONS[id]; ic.alt = '';
+    const b = document.createElement('b'); b.textContent = name;
     const s = document.createElement('small'); s.textContent = desc;
-    txt.append(b, s);
-    const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = label; btn.disabled = disabled;
+    const st = document.createElement('div'); st.className = 'stats'; st.append(...stats);
+    const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = btnText;
+    btn.setAttribute('aria-disabled', disabled ? 'true' : 'false');
     btn.addEventListener('click', onClick);
-    d.append(txt, btn);
-    return d;
+    c.append(ic, b, s, st);
+    if (owned) { const o = document.createElement('span'); o.className = 'owned'; o.textContent = owned; c.append(o); }
+    c.append(btn);
+    return c;
   }
+  function renderShop(greet) {
+    updateCoins();
+    if (greet !== false) keeper(pick(KEEPER.hello));
+    document.querySelectorAll('[data-shop-tab]').forEach(t => {
+      const on = t.dataset.shopTab === shopTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
+    });
+    const wares = shopTab === 'rods' ? RODS.map(r => {
+      const owned = save.rods.includes(r.id), active = save.rod === r.id, lock = !owned && lockText(r);
+      return ware({
+        id: r.id, name: r.name, desc: r.desc,
+        stats: [statBar('Wurf', r.cast, 1), statBar('Kurbel', r.reel, 2.6), statBar('Glück', r.luck, 2.1), statBar('Ruhe', 1.1 - r.tens, .7)],
+        state: active ? 'active' : lock ? 'locked' : owned ? 'owned' : '',
+        btnText: active ? 'In der Hand' : owned ? 'Nehmen' : lock || `${r.price} Taler`,
+        disabled: active || (!owned && (!!lock || save.coins < r.price)),
+        onClick: () => {
+          if (active) return keeper(pick(KEEPER.equip));
+          if (lock) return keeper(KEEPER.locked(lock));
+          if (!owned && save.coins < r.price) return keeper(KEEPER.poor(r.price - save.coins));
+          if (!owned) { save.coins -= r.price; save.rods.push(r.id); sfx.coin(); keeper(pick(KEEPER.buy)); }
+          else keeper(pick(KEEPER.equip));
+          save.rod = r.id; persist(); updateGear(); renderShop(false);
+        },
+      });
+    }) : BAITS.map(b => {
+      const n = save.baits[b.id] || 0, active = save.bait === b.id, lock = b.pack && lockText(b);
+      return ware({
+        id: b.id, name: b.name, desc: b.desc,
+        stats: [statBar('Glück', b.luck, 4.2), statBar('Tempo', b.speed, 2)],
+        state: active ? 'active' : lock ? 'locked' : '',
+        owned: b.pack ? (n ? `${n} im Beutel` : '') : '∞',
+        btnText: !b.pack ? (active ? 'Am Haken' : 'Anködern') : lock || `+${b.pack} für ${b.price}`,
+        disabled: !b.pack ? active : (!!lock || save.coins < b.price),
+        onClick: () => {
+          if (!b.pack) { save.bait = 'wurm'; keeper('Der gute alte Wurm. Klassisch.'); persist(); updateGear(); return renderShop(false); }
+          if (lock) return keeper(KEEPER.locked(lock));
+          if (save.coins < b.price) return keeper(KEEPER.poor(b.price - save.coins));
+          save.coins -= b.price; save.baits[b.id] = n + b.pack; save.bait = b.id; sfx.coin();
+          keeper(pick(KEEPER.bait)); persist(); updateCoins(); updateGear(); renderShop(false);
+        },
+      });
+    });
+    $('shop-wares').replaceChildren(...wares);
+  }
+  document.querySelectorAll('[data-shop-tab]').forEach(t => t.addEventListener('click', () => { shopTab = t.dataset.shopTab; renderShop(false); }));
+
 
   function flashSaved() {
     const el = document.getElementById('saved'); if (!el) return;
