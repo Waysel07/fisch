@@ -16,7 +16,7 @@
     <p>Dies ist eine private Spaß-Seite für Freunde, ohne kommerzielle Zwecke. Bei Fragen zum Datenschutz erreichst du mich per E-Mail: <a href="mailto:schmeef@skyghost.lol">schmeef@skyghost.lol</a></p>
 
     <h2>2. Kurz zusammengefasst</h2>
-    <p>Diese Website setzt keine Cookies, nutzt kein Tracking, keine Analyse-Tools und keine Werbung. Nur das Spiel „Fischen!“ speichert deinen Spielstand lokal in deinem Browser (siehe Abschnitt 5); dieser verlässt dein Gerät nicht. Schriftarten werden lokal ausgeliefert. Es gibt keine Benutzerkonten. Daten fallen nur beim technischen Ausliefern der Seite (Hosting) und – nur nach deiner Einwilligung – beim Abspielen eines YouTube-Videos oder beim Eintragen in die Bestenliste des Spiels (siehe Abschnitt 6) an.</p>
+    <p>Diese Website setzt keine Cookies, nutzt kein Tracking, keine Analyse-Tools und keine Werbung. Nur das Spiel „Fischen!“ speichert deinen Spielstand lokal in deinem Browser (siehe Abschnitt 5); dieser verlässt dein Gerät nicht. Schriftarten werden lokal ausgeliefert. Es gibt keine Benutzerkonten. Daten fallen nur beim technischen Ausliefern der Seite (Hosting) und – nur nach deiner Einwilligung – beim Abspielen eines YouTube-Videos oder beim Eintragen in die Bestenliste oder beim Erstellen eines Cloud-Spielstands im Spiel (siehe Abschnitte 6 und 7) an.</p>
 
     <h2>3. Hosting (Vercel)</h2>
     <p>Die Website wird bei Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, USA gehostet. Beim Aufruf der Seiten verarbeitet Vercel technisch notwendige Daten, insbesondere IP-Adresse, Datum und Uhrzeit des Zugriffs, aufgerufene Seite, Referrer-URL, Browser und Betriebssystem (Server-Logfiles). Das ist nötig, um die Website auszuliefern und ihre Sicherheit und Stabilität zu gewährleisten.</p>
@@ -29,7 +29,7 @@
 
     <h2 id="spiel">5. Cookies und lokaler Speicher</h2>
     <p>Diese Website setzt keine Cookies. Der Snake-Highscore wird nicht gespeichert.</p>
-    <p>Einzige Ausnahme ist das Spiel <a href="fischen.html">„Fischen!“</a>: Damit dein Fortschritt erhalten bleibt, speichert es deinen Spielstand im lokalen Speicher (localStorage) deines Browsers unter dem Schlüssel <code>fischen-save-v1</code>. Gespeichert werden nur Spieldaten: Fischtaler, gefangene Fische, Mutationen und Rekordgrößen, abgeholte Fischdex-Belohnungen, gekaufte Ruten und Köder, Level und Erfahrung, offene Aufträge, Wiedergeburten, Schuppen und Talente, deine Bilanz am Fischautomaten, ob du den Startbildschirm schon gesehen hast, die Toneinstellung und der Zeitpunkt des letzten Speicherns. Wenn du dich in die Bestenliste einträgst, kommen dein Spitzname, eine zufällige ID und ein zufälliges Kennwort für deinen Eintrag hinzu. Diese Daten bleiben auf deinem Gerät; sie werden nicht an mich, an Vercel oder an Dritte übertragen und enthalten keine Angaben zu deiner Person.</p>
+    <p>Einzige Ausnahme ist das Spiel <a href="fischen.html">„Fischen!“</a>: Damit dein Fortschritt erhalten bleibt, speichert es deinen Spielstand im lokalen Speicher (localStorage) deines Browsers unter dem Schlüssel <code>fischen-save-v1</code>. Gespeichert werden nur Spieldaten: Fischtaler, gefangene Fische, Mutationen und Rekordgrößen, abgeholte Fischdex-Belohnungen, gekaufte Ruten und Köder, Level und Erfahrung, offene Aufträge, Wiedergeburten, Schuppen und Talente, deine Bilanz am Fischautomaten, ob du den Startbildschirm schon gesehen hast, die Toneinstellung und der Zeitpunkt des letzten Speicherns. Wenn du dich in die Bestenliste einträgst, kommen dein Spitzname, eine zufällige ID und ein zufälliges Kennwort für deinen Eintrag hinzu; wenn du einen Cloud-Spielstand erstellst, dein geheimer Schlüssel und der Zeitpunkt der letzten Sicherung. Diese Daten bleiben auf deinem Gerät; sie werden nicht an mich, an Vercel oder an Dritte übertragen und enthalten keine Angaben zu deiner Person.</p>
     <p>Das Speichern ist unbedingt erforderlich, damit das Spiel dir den gewünschten Dienst – das Weiterspielen mit deinem Fortschritt – bieten kann (§ 25 Abs. 2 Nr. 2 TDDDG); eine Einwilligung ist dafür nicht nötig. Du kannst den Spielstand jederzeit über „Spielstand löschen“ auf dem Startbildschirm des Spiels oder über die Einstellungen deines Browsers (Websitedaten löschen) entfernen. Wenn dein Browser den lokalen Speicher blockiert, funktioniert das Spiel trotzdem, nur ohne Speichern.</p>
 
     <h2 id="bestenliste">6. Bestenliste im Spiel (freiwillig)</h2>
@@ -38,10 +38,15 @@
     <p>Die Bestenliste wird über eine Funktion bei Vercel (siehe Abschnitt 3) verarbeitet und in einer Datenbank bei Upstash, Inc. (USA) gespeichert; die Datenbank liegt in der EU-Region Frankfurt. Upstash verarbeitet die Daten als Auftragsverarbeiter auf Grundlage seines Auftragsverarbeitungsvertrags (Data Processing Addendum), der auch für einen möglichen Zugriff aus den USA gilt: <a href="https://upstash.com/trust/dpa.pdf">upstash.com/trust/dpa.pdf</a>.</p>
     <p>Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO). Du kannst sie jederzeit mit Wirkung für die Zukunft widerrufen, indem du in der Bestenliste auf „Austragen und Eintrag löschen“ klickst; dein Eintrag wird dann sofort gelöscht. Wenn du deinen Spielstand löschst, ohne dich vorher auszutragen, kann ich deinen Eintrag auf Nachricht hin löschen. Einträge mit beleidigenden Namen oder offensichtlich manipulierten Werten lösche ich.</p>
 
-    <h2>7. Kontakt per E-Mail</h2>
+    <h2 id="cloud">7. Cloud-Spielstand mit geheimem Schlüssel (freiwillig)</h2>
+    <p>Im Spiel „Fischen!“ kannst du freiwillig einen geheimen Schlüssel erstellen, um deinen Spielstand auf ein anderes Gerät zu übertragen. Erst dann wird eine Kopie deines Spielstands an den Server gesendet und dort gespeichert; solange der Schlüssel besteht, aktualisiert das Spiel diese Kopie automatisch (etwa alle drei Minuten und beim Schließen der Seite). Die Kopie enthält dieselben Spieldaten wie der lokale Spielstand (siehe Abschnitt 5), aber nicht den Schlüssel selbst. Gespeichert wird sie unter einem Prüfwert (Hash) des Schlüssels; der Schlüssel ist nur dir bekannt. Wer den Schlüssel kennt, kann den Spielstand laden – gib ihn deshalb nicht weiter.</p>
+    <p>Zum Schutz vor Missbrauch wird deine IP-Adresse dabei nur in gekürzter, gehashter Form für höchstens 60 Sekunden als Zähler gespeichert. Die Kopie wird wie die Bestenliste über Vercel (Abschnitt 3) verarbeitet und bei Upstash in der EU-Region Frankfurt gespeichert (Abschnitt 6).</p>
+    <p>Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Bereitstellung der von dir angeforderten Funktion). Du kannst die Kopie jederzeit im Spiel über „Cloud-Kopie löschen“ entfernen; ohne neue Sicherung wird sie 180 Tage nach der letzten Aktualisierung automatisch gelöscht.</p>
+
+    <h2>8. Kontakt per E-Mail</h2>
     <p>Wenn du mir eine E-Mail schreibst, verarbeite ich deine Angaben nur, um deine Anfrage zu beantworten (Art. 6 Abs. 1 lit. f DSGVO), und lösche sie, sobald sie nicht mehr benötigt werden.</p>
 
-    <h2>8. Deine Rechte</h2>
+    <h2>9. Deine Rechte</h2>
     <p>Du hast nach der DSGVO das Recht auf:</p>
     <ul>
       <li>Auskunft über deine gespeicherten Daten (Art. 15),</li>

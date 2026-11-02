@@ -65,18 +65,23 @@
     try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch { return {}; }
   }
   let saveOk = true;
+  let leaving = false; // set when the save is replaced or wiped, so nothing writes it back on unload
   function persist() {
+    if (leaving) return;
     try {
       save.saved = Date.now();
-      const s = { ...save, baits: { ...save.baits } };
-      delete s.baits.wurm;
-      localStorage.setItem(SAVE_KEY, JSON.stringify(s));
+      localStorage.setItem(SAVE_KEY, JSON.stringify(saveData()));
       if (!saveOk) { saveOk = true; }
       flashSaved();
     } catch {
       // storage blocked or full: keep playing, tell the player once
       if (saveOk) { saveOk = false; setTimeout(() => toast('Speichern nicht möglich – Fortschritt geht beim Schließen verloren.'), 0); }
     }
+  }
+  function saveData() {
+    const s = { ...save, baits: { ...save.baits } };
+    delete s.baits.wurm;
+    return s;
   }
   const rod = () => RODS.find(r => r.id === save.rod) || RODS[0];
   const bait = () => BAITS.find(b => b.id === save.bait) || BAITS[0];
@@ -1018,14 +1023,14 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud']) $(id).hidden = true;
   }
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
     if (['charge', 'fly', 'bite', 'reel'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -1344,8 +1349,8 @@
   $('btn-reset').addEventListener('click', async () => {
     if (!confirm('Spielstand wirklich löschen? Fischdex, Taler und Ausrüstung sind dann weg.' + (save.lb ? ' Dein Bestenlisten-Eintrag wird ebenfalls gelöscht.' : ''))) return;
     if (save.lb) { try { await fetch('/api/leaderboard', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: save.lb.id, token: save.lb.token }) }); } catch { /* offline: entry stays, can be removed on request */ } }
+    leaving = true;
     try { localStorage.removeItem(SAVE_KEY); } catch { /* ignore */ }
-    window.removeEventListener('pagehide', persist);
     location.reload();
   });
 
@@ -1628,6 +1633,79 @@
     delete save.lb; delete save.lbKey; delete save.lbT; LB.ranks = null; persist();
     toast('Aus der Bestenliste ausgetragen.'); openLb();
   });
+
+
+  // ------------------------------------------------------------------ cloud save (secret key)
+  // Optional: a secret key stores a copy of the save on the server (/api/save) so it can be
+  // loaded on another device. Synced every few minutes while a key exists.
+  const CLOUD_API = '/api/save';
+  const KEY_CHARS = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+  function newKey() {
+    const r = crypto.getRandomValues(new Uint8Array(16));
+    return [...r].map(b => KEY_CHARS[b % KEY_CHARS.length]).join('').match(/.{4}/g).join('-');
+  }
+  function cloudPayload() { const d = saveData(); delete d.cloudKey; delete d.cloudT; delete d.cloudSum; return d; }
+  async function cloudCall(body, keepalive) {
+    const r = await fetch(CLOUD_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), keepalive });
+    let j = {}; try { j = await r.json(); } catch { /* not json */ }
+    if (!r.ok) throw Object.assign(new Error(j.error || 'Cloud-Speicher gerade nicht erreichbar.'), { status: r.status });
+    return j;
+  }
+  let cloudBusy = false, cloudErr = '';
+  async function cloudPush(force, keepalive) {
+    if (!save.cloudKey || cloudBusy) return;
+    const data = cloudPayload(), sum = JSON.stringify(data).length + ':' + save.total + ':' + save.coins;
+    if (!force && sum === save.cloudSum) return;
+    cloudBusy = true;
+    try { await cloudCall({ action: 'put', key: save.cloudKey, data }, keepalive); save.cloudT = Date.now(); save.cloudSum = sum; cloudErr = ''; persist(); }
+    catch (e) { cloudErr = e.message; }
+    cloudBusy = false;
+    if (!$('cloud').hidden) renderCloud();
+  }
+  setInterval(() => cloudPush(), 180000);
+  window.addEventListener('pagehide', () => { if (!leaving) cloudPush(false, true); });
+
+  function renderCloud() {
+    const has = !!save.cloudKey;
+    $('cloud-new').hidden = has; $('cloud-have').hidden = !has;
+    if (has) {
+      $('cloud-key').textContent = save.cloudKey;
+      $('cloud-when').textContent = save.cloudT ? 'Zuletzt gesichert: ' + new Date(save.cloudT).toLocaleString('de-DE') : 'Noch nicht gesichert.';
+    }
+    $('cloud-err').textContent = cloudErr;
+  }
+  $('cloud-create').addEventListener('click', async () => {
+    save.cloudKey = newKey(); save.cloudSum = '';
+    await cloudPush(true);
+    if (cloudErr) { delete save.cloudKey; } else toast('☁️ Schlüssel erstellt – schreib ihn dir auf!');
+    persist(); renderCloud();
+  });
+  $('cloud-copy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(save.cloudKey); toast('Schlüssel kopiert.'); } catch { toast('Kopieren nicht möglich – bitte abschreiben.'); }
+  });
+  $('cloud-sync').addEventListener('click', () => cloudPush(true));
+  $('cloud-del').addEventListener('click', async () => {
+    if (!confirm('Cloud-Kopie löschen? Dein Spielstand auf diesem Gerät bleibt erhalten, der Schlüssel funktioniert danach nicht mehr.')) return;
+    try { await cloudCall({ action: 'del', key: save.cloudKey }); }
+    catch (e) { cloudErr = e.message; renderCloud(); return; }
+    delete save.cloudKey; delete save.cloudT; delete save.cloudSum; cloudErr = ''; persist(); renderCloud();
+    toast('Cloud-Kopie gelöscht.');
+  });
+  $('cloud-load').addEventListener('click', async () => {
+    const key = $('cloud-input').value.toUpperCase().replace(/[^0-9A-Z]/g, '').replace(/(.{4})(?=.)/g, '$1-');
+    if (!/^[2-9A-Z]{4}(-[2-9A-Z]{4}){3}$/.test(key)) { cloudErr = 'Der Schlüssel hat 16 Zeichen, z. B. ABCD-EF23-GH45-JK67.'; renderCloud(); return; }
+    try {
+      const j = await cloudCall({ action: 'get', key });
+      const d = j.data;
+      if (!confirm(`Spielstand vom ${new Date(j.t).toLocaleString('de-DE')} laden (${d.total || 0} Fänge, Level ${d.lvl || 1})?\nDer aktuelle Spielstand auf diesem Gerät wird ersetzt.`)) return;
+      d.cloudKey = key; d.cloudT = j.t; d.cloudSum = '';
+      leaving = true;
+      localStorage.setItem(SAVE_KEY, JSON.stringify(d));
+      location.reload();
+    } catch (e) { cloudErr = e.message; renderCloud(); }
+  });
+  $('btn-cloud-title').addEventListener('click', () => { $('title').hidden = true; toggleModal('cloud'); });
+  $('btn-cloud-prog').addEventListener('click', () => toggleModal('cloud'));
 
   // ------------------------------------------------------------------ boot
   $('btn-sound').textContent = save.sound ? '🔊' : '🔇';
