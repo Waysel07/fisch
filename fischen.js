@@ -287,6 +287,7 @@
   function land_catch() {
     const { f } = hooked;
     const mut = rollMutation(f);
+    const shiny = rollShiny();
     const size = mut ? Math.max(1, Math.round(hooked.size * mut.size)) : hooked.size;
     if (approacher) {
       const i = fishes.indexOf(approacher), n = newSwimmer();
@@ -294,25 +295,33 @@
       fishes[i] = n; approacher = null;
     }
     const base = Math.max(0, Math.min(1, (hooked.size - f.min) / (f.max - f.min || 1)));
-    const val = Math.max(1, Math.round(f.val * (0.7 + .6 * base) * coinMult() * (mut ? mut.val : 1)));
+    const val = Math.max(1, Math.round(f.val * (0.7 + .6 * base) * coinMult() * (mut ? mut.val : 1) * (shiny ? SHINY_VAL : 1)));
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
     e.n++; e.best = Math.max(e.best, size); save.dex[f.id] = e;
     let newMut = false;
     if (mut) { e.muts = e.muts || {}; newMut = !e.muts[mut.id]; e.muts[mut.id] = (e.muts[mut.id] || 0) + 1; }
+    let newShiny = false;
+    if (shiny) { e.shiny = (e.shiny || 0) + 1; newShiny = e.shiny === 1; }
     save.coins += val; save.total++; save.lifeCoins += val; save.totalEarned += val;
-    const gain = progressCatch(f, size, val, first, mut, newMut, reel.maxT < .7);
+    const gain = progressCatch(f, size, val, first, mut, newMut, reel.maxT < .7, shiny, newShiny);
     setTimeout(() => lbSubmit(), 3000);
-    if (dexClaimable().length) { updateDexBadge(); if (first || newMut) toast('📖 Fischdex-Belohnung bereit!'); }
+    if (dexClaimable().length) { updateDexBadge(); if (first || newMut || newShiny) toast('📖 Fischdex-Belohnung bereit!'); }
     persist(); updateCoins();
     splash(bob.x, SURFACE, 22, '#ffffff');
     state = 'show'; $('reel').hidden = true; holding = false; hint('');
     const reveal = () => {
-      showCatch(f, size, val, first, mut, newMut, gain);
+      showCatch(f, size, val, first, mut, newMut, gain, shiny, newShiny);
       if (f.clip) playClip(f.clip); else if (f.sound) playFile(f.sound); else playFile('fish.mp3');
       sfx.coin();
     };
-    const fx = FANFARE[f.r] || (mut && { label: `${mut.name.toUpperCase()}!`, c: mut.c, hi: '#ffffff', dur: 1.1, notes: [659, 880, 1175] });
+    const fx = FANFARE[f.r] || (mut && { label: `${mut.name.toUpperCase()}!`, c: mut.c, hi: '#ffffff', dur: 1.1, notes: [659, 880, 1175] })
+      || (shiny && { label: 'SHINY!', c: '#fde047', hi: '#ffffff', dur: 1.2, notes: [1047, 1319, 1568, 2093] });
+    if (shiny) {
+      floaters.push({ x: bob.x, y: SURFACE - 34, text: newShiny ? '💫 Neuer Shiny!' : '💫 Shiny!', c: '#fde047', life: 2.6 });
+      for (let i = 0; i < 40; i++) glints.push({ x: bob.x + (Math.random() - .5) * 24, y: SURFACE - Math.random() * 10, vx: (Math.random() - .5) * 40, vy: -25 - Math.random() * 45, life: .8 + Math.random(), c: ['#fde047', '#ffffff', '#f9a8d4', '#a5f3fc'][i % 4] });
+      [1568, 2093, 2637].forEach((n, i) => setTimeout(() => tone(n, .12, 'sine', .06), 600 + i * 90));
+    }
     floaters.push({ x: bob.x, y: SURFACE - 14, text: `${mut ? mut.icon + ' ' : ''}${fx ? '' : f.name + ' · '}${size} cm`, c: mut ? mut.c : fx ? fx.c : '#ffffff', life: 2.4 });
     if (mut && FANFARE[f.r]) floaters.push({ x: bob.x, y: SURFACE - 24, text: `${mut.icon} ${mut.name}`, c: mut.c, life: 2.4 });
     floaters.push({ x: bob.x, y: SURFACE - 4, text: `+${gain.xp} EP${streak > 1 ? ` · 🔥${streak}` : ''}`, c: '#86efac', life: 2.4 });
@@ -334,6 +343,14 @@
     { id: 'golden',  name: 'Golden',      icon: '🪙', c: '#fbbf24', w: 1.5, size: 1,   val: 6,   desc: 'Pures Fischgold.' },
     { id: 'regen',   name: 'Regenbogen',  icon: '🌈', c: '#f472b6', w: .5,  size: 1.2, val: 12,  desc: 'Schimmert in allen Farben. Extrem selten.' },
   ];
+  // Shinys: any catch can rarely come out shiny (other colours, sparkles, triple value).
+  // They are collected in the Shinydex. Luck from rod and bait helps a little.
+  const SHINY_BASE = 1 / 100, SHINY_VAL = 3;
+  function shinyChance() { return Math.min(.05, SHINY_BASE * Math.sqrt(bait().luck * rod().luck) * (dexPerk('shiny2') ? 2 : 1)); }
+  function rollShiny() {
+    if (window.__fischen && window.__fischen.forceShiny) return true;
+    return Math.random() < shinyChance();
+  }
   function mutLuck() { return Math.sqrt(bait().luck * rod().luck) * (1 + .08 * perk('glueck')) * (dexPerk('mutchance') ? 1.25 : 1); }
   function rollMutation(f) {
     if (f.r === 'junk') return null;
@@ -446,9 +463,15 @@
     e.preventDefault();
     const rc = cv.getBoundingClientRect();
     const wx = (e.clientX - rc.left) / rc.width * W, wy = (e.clientY - rc.top) / rc.height * H;
-    if (state === 'idle' && !anyModal() && wx > KIOSK.x - 3 && wx < KIOSK.x + KIOSK.w + 3 && wy > DOCK_Y - 40 && wy < DOCK_Y + 2) { audio(); toggleModal('shop'); return; }
-    if (state === 'idle' && !anyModal() && wx > NPC.x - 3 && wx < NPC.x + NPC.w + 6 && wy > DOCK_Y - NPC.h - 4 && wy < DOCK_Y + 2) { audio(); talkNpc(); return; }
+    if (state === 'idle' && !anyModal()) { const p = propAt(wx, wy); if (p) { audio(); hoverProp = null; cv.style.cursor = ''; p.open(); return; } }
     down();
+  });
+  $('stage').addEventListener('pointermove', e => {
+    if (e.pointerType === 'touch' || holding) return;
+    const rc = cv.getBoundingClientRect();
+    const over = !e.target.closest('button, a, .modal, #hud') && (e.target === cv || e.target.id === 'stage');
+    hoverProp = over ? propAt((e.clientX - rc.left) / rc.width * W, (e.clientY - rc.top) / rc.height * H) : null;
+    cv.style.cursor = hoverProp && state === 'idle' ? 'pointer' : '';
   });
   window.addEventListener('pointerup', up);
   window.addEventListener('pointercancel', up);
@@ -485,7 +508,7 @@
     const left = keys['a'] || keys['arrowleft'], right = keys['d'] || keys['arrowright'];
     if (state === 'idle' && (left || right) && !anyModal()) {
       player.dir = right ? 1 : -1;
-      player.x = Math.max(72, Math.min(DOCK_END - 14, player.x + player.dir * 42 * dt));
+      player.x = Math.max(80, Math.min(DOCK_END - 14, player.x + player.dir * 42 * dt));
       player.walk += dt * 10;
     } else player.walk = 0;
 
@@ -869,6 +892,7 @@
     drawDock(dark);
     drawNpc();
     drawKiosk(dark);
+    drawProps(dark);
     drawPlayer(dark);
     drawLine();
 
@@ -876,6 +900,7 @@
     for (const p of particles) { ctx.globalAlpha = Math.min(1, p.life * 2); px(p.x, p.y, 1, 1, p.c); px(p.x + .5, p.y - .5, .5, .5, '#ffffff'); }
     ctx.globalAlpha = 1;
     drawFx();
+    drawPropLabel();
 
     // power meter
     if (state === 'charge') {
@@ -986,6 +1011,86 @@
   const KIOSK = { x: 40, w: 24 };
   let welsTalk = 0, welsLine = '';
   function welsSay(line, secs = 2.6) { welsLine = line; welsTalk = secs; }
+
+  // ------------------------------------------------------------------ menus as things on the dock
+  // No menu buttons: the slot machine, the book on the crate, the trophy on the kiosk roof
+  // and the notice board open their menus. Hover shows a label, "!" shows something to collect.
+  function drawSlotMachine(dark) {
+    const k = '#1b1f2e', x0 = 3, y = DOCK_Y;
+    const red = mix([196, 38, 52], [86, 28, 40], dark), redL = mix([236, 96, 100], [118, 50, 60], dark), redD = mix([136, 22, 34], [56, 18, 26], dark);
+    px(x0 - .5, y - 20, 11, 20, k);
+    px(x0, y - 19.5, 10, 19.5, red); px(x0, y - 19.5, 10, .5, redL); px(x0 + 9, y - 19.5, 1, 19.5, redD);
+    px(x0 + 1, y - 18.5, 8, 3, '#f59e0b');
+    for (let i = 0; i < 4; i++) px(x0 + 1.5 + i * 2, y - 17.5, 1, 1, (Math.floor(t * 4) + i) % 2 ? '#fff7cc' : '#b45309');
+    px(x0 + 1, y - 14, 8, 5.5, k); px(x0 + 1.5, y - 13.5, 7, 4.5, '#f8fafc');
+    const sym = ['#38bdf8', '#fbbf24', '#f472b6', '#4ade80'];
+    for (let i = 0; i < 3; i++) { const c = sym[(Math.floor(t * .7) + i * 2) % 4]; px(x0 + 2 + i * 2.3, y - 12, 1.5, 1.5, c); px(x0 + 1.5 + i * 2.3, y - 11.5, .5, .5, c); }
+    px(x0 + 3, y - 7, 4, .5, k);
+    px(x0 + 1, y - 4.5, 8, 3, k); px(x0 + 1.5, y - 4, 7, 2, '#475569'); px(x0 + 4, y - 3.5, 1.5, 1, '#fbbf24');
+    px(x0 + 10, y - 12.5, 1, 1.5, k); px(x0 + 10.5, y - 17.5, .5, 5, '#94a3b8');
+    disc(x0 + 10.75, y - 18, 1.2, '#ef4444'); px(x0 + 10.25, y - 18.75, .5, .5, '#fecaca');
+  }
+  function drawDexBook(dark) {
+    const k = '#1b1f2e', x0 = 29, y = DOCK_Y;
+    const wood = mix([150, 102, 58], [70, 52, 40], dark), woodL = mix([186, 134, 82], [90, 66, 50], dark), woodD = mix([104, 66, 36], [48, 36, 28], dark);
+    px(x0 - .5, y - 5, 8, 5, k); px(x0, y - 4.5, 7, 4.5, wood); px(x0, y - 4.5, 7, .5, woodL);
+    px(x0 + 2.25, y - 4, .5, 4, woodD); px(x0 + 4.75, y - 4, .5, 4, woodD);
+    px(x0 - .5, y - 7, 8, 2, k); px(x0, y - 6.5, 7, 1.5, mix([37, 99, 235], [30, 58, 120], dark));
+    px(x0, y - 8.5, 3.25, 2.5, k); px(x0 + 3.75, y - 8.5, 3.25, 2.5, k);
+    const page = mix([248, 250, 252], [150, 160, 180], dark);
+    px(x0 + .5, y - 8, 2.5, 1.75, page); px(x0 + 4, y - 8, 2.5, 1.75, page);
+    px(x0 + 1, y - 7.5, 1.5, .5, '#94a3b8'); px(x0 + 4.5, y - 7.5, 1.5, .5, '#38bdf8');
+  }
+  function drawTrophy(dark) {
+    const k = '#1b1f2e', cx = KIOSK.x + KIOSK.w / 2, yb = DOCK_Y - 37.5;
+    const gold = mix([251, 191, 36], [160, 120, 40], dark), goldL = mix([253, 230, 138], [190, 160, 90], dark), goldD = mix([217, 119, 6], [120, 80, 20], dark);
+    px(cx - 3, yb - 2, 6, 2, k); px(cx - 2.5, yb - 1.5, 5, 1, '#7c4a24');
+    px(cx - 1, yb - 4, 2, 2, k); px(cx - .5, yb - 4, 1, 2, gold);
+    px(cx - 4.5, yb - 9, 1.5, 3, k); px(cx + 3, yb - 9, 1.5, 3, k);
+    px(cx - 4, yb - 8.5, .5, 2, gold); px(cx + 3.5, yb - 8.5, .5, 2, gold);
+    px(cx - 3.5, yb - 10, 7, 6, k); px(cx - 3, yb - 9.5, 6, 5, gold); px(cx - 3, yb - 9.5, 6, .5, goldL); px(cx + 2, yb - 9, 1, 4.5, goldD);
+    px(cx - 1.5, yb - 8, .5, 2, goldL);
+    if (Math.sin(t * 2.2) > .93) { px(cx + 1, yb - 11.5, .5, 2.5, '#fffbeb'); px(cx, yb - 10.5, 2.5, .5, '#fffbeb'); }
+  }
+  function drawBoard(dark) {
+    const k = '#1b1f2e', x0 = 65, y = DOCK_Y;
+    const post = mix([96, 62, 36], [42, 30, 26], dark), cork = mix([183, 131, 74], [82, 62, 44], dark), frame = mix([120, 78, 42], [56, 40, 30], dark);
+    px(x0 + .5, y - 10.5, 1.5, 10.5, k); px(x0 + 7, y - 10.5, 1.5, 10.5, k);
+    px(x0 + 1, y - 10.5, .75, 10.5, post); px(x0 + 7.5, y - 10.5, .75, 10.5, post);
+    px(x0 - .5, y - 20, 10, 10.5, k); px(x0, y - 19.5, 9, 9.5, frame); px(x0 + .5, y - 19, 8, 8.5, cork);
+    const paper = (x, yy, w, h, c) => { px(x, yy, w, h, c); px(x + .5, yy + 1, w - 1, .5, '#94a3b8'); if (h > 2) px(x + .5, yy + 2, w - 1.5, .5, '#94a3b8'); };
+    paper(x0 + 1, y - 18.5, 3, 3, mix([254, 243, 199], [120, 115, 100], dark));
+    paper(x0 + 4.5, y - 18, 3.5, 2.5, mix([191, 219, 254], [90, 105, 125], dark));
+    paper(x0 + 2, y - 14.5, 4, 3, mix([254, 202, 202], [120, 95, 95], dark));
+    px(x0 + 2.25, y - 18.75, .5, .5, '#ef4444'); px(x0 + 6, y - 18.25, .5, .5, '#22c55e'); px(x0 + 3.75, y - 14.75, .5, .5, '#3b82f6');
+  }
+  const PROPS = [
+    { id: 'casino', label: 'Fischautomat',  x: 2.5, y: DOCK_Y - 20, w: 12.5, h: 20, draw: drawSlotMachine, open: () => toggleModal('casino') },
+    { id: 'dex',    label: 'Fischdex & Shinydex', x: 28.5, y: DOCK_Y - 8.5, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
+    { id: 'lb',     label: 'Bestenliste',   x: KIOSK.x + KIOSK.w / 2 - 5, y: DOCK_Y - 48, w: 10, h: 10.5, draw: drawTrophy, open: () => toggleModal('lb') },
+    { id: 'prog',   label: 'Aufträge & Fortschritt', x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
+    { id: 'shop',   label: 'Laden',         x: KIOSK.x - 3, y: DOCK_Y - 37.5, w: KIOSK.w + 6, h: 37.5, open: () => toggleModal('shop') },
+    { id: 'npc',    label: 'Spezifischfischer', x: NPC.x - 1, y: DOCK_Y - NPC.h - 2, w: NPC.w + 2, h: NPC.h + 2, open: () => talkNpc() },
+  ];
+  let hoverProp = null;
+  function propAt(wx, wy) { return PROPS.find(p => wx > p.x - 1.5 && wx < p.x + p.w + 1.5 && wy > p.y - 1.5 && wy < p.y + p.h + 1.5) || null; }
+  function drawProps(dark) {
+    for (const p of PROPS) if (p.draw) p.draw(dark);
+    const k = '#1b1f2e';
+    for (const p of PROPS) if (p.ready && p.ready()) {
+      const bx = snap(p.x + p.w / 2), by = snap(p.y - 10 + Math.sin(t * 5));
+      px(bx - 2.5, by - .5, 5, 8.5, k); px(bx - 2, by, 4, 7.5, '#fbbf24'); px(bx - .5, by + 1, 1, 3.5, k); px(bx - .5, by + 5.5, 1, 1, k);
+    }
+  }
+  function drawPropLabel() {
+    const p = hoverProp;
+    if (!p || state !== 'idle' || anyModal()) return;
+    ctx.font = '6px Poppins, sans-serif';
+    const w = Math.ceil(ctx.measureText(p.label).width) + 4;
+    const lx = snap(Math.max(1, Math.min(W - w - 1, p.x + p.w / 2 - w / 2))), ly = snap(Math.max(1, p.y - (p.ready && p.ready() ? 21 : 11)));
+    px(lx - .5, ly - .5, w + 1, 9, '#fde68a'); px(lx, ly, w, 8, '#0f172a');
+    ctx.fillStyle = '#fffbeb'; ctx.textBaseline = 'top'; ctx.fillText(p.label, lx + 2, ly + 1); ctx.textBaseline = 'alphabetic';
+  }
 
   function drawKiosk(dark) {
     const k = '#1b1f2e', x0 = KIOSK.x, x1 = KIOSK.x + KIOSK.w, y = DOCK_Y;
@@ -1279,7 +1384,7 @@
   }
 
   let lastCatchVal = 0;
-  function showCatch(f, size, val, first, mut, newMut, gain) {
+  function showCatch(f, size, val, first, mut, newMut, gain, shiny, newShiny) {
     lastCatchVal = val;
     $('catch-double').hidden = false; $('catch-double').disabled = false;
     $('catch-double').textContent = `🎲 Doppelt oder nichts (${val})`;
@@ -1292,6 +1397,9 @@
     $('catch-name').textContent = f.name;
     $('catch-img').className = $('catch-img').className.replace(/\bmut-\S+/g, '').trim();
     if (mut) $('catch-img').classList.add('mut-' + mut.id);
+    $('catch-img').classList.toggle('shiny', !!shiny);
+    $('catch-shiny').hidden = !shiny;
+    if (shiny) $('catch-shiny').textContent = `💫 Shiny · ×${SHINY_VAL} Wert${newShiny ? ' · neu im Shinydex!' : ''}`;
     const mb = $('catch-mut');
     mb.hidden = !mut;
     if (mut) { mb.textContent = `${mut.icon} ${mut.name} · ×${mut.val} Wert${newMut ? ' · neue Mutation!' : ''}`; mb.style.setProperty('--mc', mut.c); }
@@ -1302,6 +1410,7 @@
     sheet.classList.remove('fx-rare', 'fx-wii', 'fx-epic', 'fx-legendary');
     void sheet.offsetWidth; // restart the CSS animations
     if (FANFARE[f.r]) sheet.classList.add('fx-' + f.r);
+    sheet.classList.toggle('is-shiny', !!shiny);
     const conf = $('catch-confetti');
     conf.replaceChildren();
     const nConf = { rare: 0, wii: 14, epic: 18, legendary: 36 }[f.r] || 0;
@@ -1321,7 +1430,34 @@
     $('catch-ok').focus();
   }
 
+  let dexTab = 'fish';
+  const SHINY_REWARDS = ['s1', 's5', 'sall'];
+  function shinysFound() { return FISH.filter(f => save.dex[f.id] && save.dex[f.id].shiny).length; }
+  function renderShinydex() {
+    $('dex-count').textContent = `${shinysFound()} von ${FISH.length} Shinys gefunden · Chance pro Fang gerade ${(shinyChance() * 100).toFixed(1).replace('.', ',')} %`;
+    renderDexRewards();
+    $('dex-grid').replaceChildren(...FISH.map(f => {
+      const e = save.dex[f.id], sh = e && e.shiny;
+      const c = document.createElement('div');
+      c.className = 'card ' + (sh ? 'b-' + f.r + ' shiny-card' : 'unknown');
+      const img = document.createElement('img'); img.loading = 'lazy';
+      if (sh) { img.src = f.img; img.alt = f.name + ' (Shiny)'; img.className = ['shiny', f.pixel ? 'pixel' : '', f.photo ? 'photo' : ''].join(' ').trim(); }
+      else if (e && !f.photo) { img.src = f.img; img.alt = 'Noch kein Shiny'; img.className = 'shadow' + (f.pixel ? ' pixel' : ''); }
+      else { img.src = 'fish-icon.png'; img.alt = 'Unbekannt'; img.className = 'pixel shadow'; }
+      const name = document.createElement('b'); name.textContent = sh ? '💫 ' + f.name : e ? f.name : '???';
+      const r = document.createElement('small'); r.className = 'r-' + f.r; r.textContent = RARITY[f.r].label;
+      const info = document.createElement('small');
+      info.textContent = sh ? `${e.shiny}× shiny gefangen` : e ? 'Noch kein Shiny' : 'Erst normal fangen';
+      c.append(img, name, r, info);
+      return c;
+    }));
+  }
   function renderDex() {
+    document.querySelectorAll('[data-dex-tab]').forEach(t => {
+      const on = t.dataset.dexTab === dexTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
+    });
+    $('dex-title').textContent = dexTab === 'shiny' ? 'Shinydex' : 'Fischdex';
+    if (dexTab === 'shiny') return renderShinydex();
     const got = FISH.filter(f => save.dex[f.id]).length;
     const g = save.gamble || 0;
     $('dex-count').textContent = `${got} von ${FISH.length} entdeckt · ${mutsFound().length} von ${MUTATIONS.length} Mutationen · ${save.total} Fänge insgesamt` + (save.gamble !== undefined ? ` · Glücksspiel ${g >= 0 ? '+' : ''}${g} Taler` : '');
@@ -1372,6 +1508,9 @@
     })),
     { id: 'm1',   name: 'Erste Mutation',      need: () => [mutsFound().length, 1], coins: 100 },
     { id: 'm4',   name: '4 Mutationen',        need: () => [mutsFound().length, 4], coins: 600, scales: 2 },
+    { id: 's1',   name: 'Erster Shiny',        need: () => [shinysFound(), 1],  coins: 300,  scales: 1 },
+    { id: 's5',   name: '5 Shinys',            need: () => [shinysFound(), 5],  coins: 1500, scales: 3 },
+    { id: 'sall', name: 'Shinydex komplett',   need: () => [shinysFound(), FISH.length], coins: 10000, scales: 15, perk: 'shiny2', perkText: 'dauerhaft doppelte Shiny-Chance' },
     { id: 'mall', name: 'Alle Mutationen',     need: () => [mutsFound().length, MUTATIONS.length], coins: 2000, scales: 6, perk: 'mutchance', perkText: 'dauerhaft +25 % Mutationschance' },
   ];
   function discovered() { return FISH.filter(f => save.dex[f.id]).length; }
@@ -1389,9 +1528,11 @@
     persist(); updateCoins(); updateDexBadge(); renderDex();
   }
   function updateDexBadge() { $('btn-dex').classList.toggle('ready', dexClaimable().length > 0); }
+  document.querySelectorAll('[data-dex-tab]').forEach(t => t.addEventListener('click', () => { dexTab = t.dataset.dexTab; renderDex(); }));
   function renderDexRewards() {
     const claimed = save.dexClaimed || [];
-    $('dex-rewards').replaceChildren(...DEX_REWARDS.map(r => {
+    // the Shinydex tab shows only shiny rewards, the Fischdex tab the rest
+    $('dex-rewards').replaceChildren(...DEX_REWARDS.filter(r => (dexTab === 'shiny') === SHINY_REWARDS.includes(r.id)).map(r => {
       const [h, n] = r.need(), done = h >= n, got = claimed.includes(r.id);
       const d = document.createElement('div'); d.className = 'reward' + (got ? ' got' : done ? ' ready' : '');
       const b = document.createElement('b'); b.textContent = r.name;
@@ -1643,7 +1784,7 @@
     return Math.max(0, DAILY_N - save.daily.n);
   }
   // XP for one catch: base by rarity and size, plus additive bonuses so nothing stacks out of control
-  function catchXp(f, size, first, mut, newMut, clean) {
+  function catchXp(f, size, first, mut, newMut, clean, shiny, newShiny) {
     const base = XP[f.r] * (first ? 3 : 1) * (1 + Math.min(2, size / f.max) / 4);
     let m = 1; const tags = [];
     if (f.r !== 'junk') {
@@ -1652,10 +1793,11 @@
       if (clean) { m += .25; tags.push('✨ Sauber'); }
     }
     if (mut) { m += mut.val / 4; tags.push(`${mut.icon} ${mut.name}`); }
+    if (shiny) { m += 1; tags.push('💫 Shiny'); }
     if (isNight()) { m += .2; tags.push('🌙 Nacht'); }
     if (dailyLeft() > 0) { save.daily.n++; m += 1; tags.push(`☀️ Tagesbonus ${save.daily.n}/${DAILY_N}`); }
     if (first) tags.push('📖 Neu');
-    return { n: base * m + (newMut ? 40 : 0), tags };
+    return { n: base * m + (newMut ? 40 : 0) + (newShiny ? 60 : 0), tags };
   }
   function endStreak() { streak = 0; }
   function lostXp(f) { // a lost fish still teaches something, and ends the streak
@@ -1664,8 +1806,8 @@
     persist();
     return ` (+${n} EP)`;
   }
-  function progressCatch(f, size, val, first, mut, newMut, clean) {
-    const c = catchXp(f, size, first, mut, newMut, clean);
+  function progressCatch(f, size, val, first, mut, newMut, clean, shiny, newShiny) {
+    const c = catchXp(f, size, first, mut, newMut, clean, shiny, newShiny);
     const gain = { xp: gainXp(c.n), tags: c.tags };
     for (const q of save.quests) {
       if (q.p >= q.n) continue;
@@ -1953,6 +2095,6 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  window.__fischen = { save, gainXp, rebirth, MUTATIONS, forceMut: null, get state() { return state; }, setTime: v => { time = v; },
+  window.__fischen = { save, gainXp, rebirth, MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, setTime: v => { time = v; },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); } };
 })();
