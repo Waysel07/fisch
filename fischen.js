@@ -8,11 +8,12 @@
     common:    { label: 'Gewöhnlich', w: 60 },
     uncommon:  { label: 'Ungewöhnlich', w: 26 },
     rare:      { label: 'Selten', w: 10 },
+    wii:       { label: 'Wii', w: 3 },
     epic:      { label: 'Episch', w: 3.5 },
     legendary: { label: 'Legendär', w: 0.9 },
     junk:      { label: 'Kein Fisch', w: 9 },
   };
-  const STRENGTH = { common: .45, uncommon: .65, rare: .85, epic: 1.05, legendary: 1.3, junk: .3 };
+  const STRENGTH = { common: .45, uncommon: .65, rare: .85, wii: .95, epic: 1.05, legendary: 1.3, junk: .3 };
 
   // far: only bites beyond this cast distance (0..1); night: x weight at night
   const FISH = [
@@ -27,6 +28,12 @@
     { id: 'kaugummi', name: 'Kaugummifisch',    img: 'fish-smile.gif',    r: 'rare',      min: 15, max: 30,  val: 48, photo: true, page: 'kaugummifisch.html', say: 'Blubb. Ich klebe jetzt an dir.', desc: 'Rund, grau und zäh wie alter Kaugummi. Lächelt trotzdem.' },
     { id: 'schuh',   name: 'Schuhfisch',        img: 'fih.gif',              r: 'rare',      min: 30, max: 55,  val: 42, say: 'Schöne Schuhe hast du auch.', desc: 'Trägt Schuhe. Warum auch nicht.' },
     { id: 'lo',      name: 'Lo',                img: 'lo.gif',               r: 'rare',      min: 80, max: 160, val: 55, say: 'Ich bin nicht klein, ich bin kompakt.', desc: 'Ein kleiner Hai. Beißt nur weit draußen.', far: .55 },
+    { id: 'wiiaro',  name: 'Wii-Arowana',       img: 'wii-arowana.png',      r: 'wii',       min: 60, max: 110, val: 75, page: 'wii-arowana.html', say: 'Schuppen in Lila. Steht mir.', desc: 'Blauer Kopf, lila Schuppen, gelbe Barteln. Sehr stolz darauf.', far: .35 },
+    { id: 'wiihecht', name: 'Wii-Hecht',        img: 'wii-hecht.png',        r: 'wii',       min: 50, max: 95,  val: 70, page: 'wii-hecht.html', say: 'Meine Nase ist nicht lang. Der Rest ist kurz.', desc: 'Getigert in Orange und Grün, mit einer Nase wie ein Stock.', far: .3 },
+    { id: 'wiiblau', name: 'Wii-Blaufisch',     img: 'wii-blau.png',         r: 'wii',       min: 8,  max: 15,  val: 40, page: 'wii-blaufisch.html', say: 'Blau-gelb ist eine Lebenseinstellung.', desc: 'Klein, rund, gelb oben und blau gestreift.' },
+    { id: 'wiitupf', name: 'Wii-Tupfenfisch',   img: 'wii-tupfen.png',       r: 'wii',       min: 8,  max: 15,  val: 40, page: 'wii-tupfenfisch.html', say: 'Die Punkte sind echt. Nicht anfassen.', desc: 'Braun gepunktet mit weißem Bauch. Schaut immer etwas überrascht.' },
+    { id: 'wiigruen', name: 'Wii-Grünling',     img: 'wii-gruen.png',        r: 'wii',       min: 8,  max: 15,  val: 40, page: 'wii-gruenling.html', say: 'Halb grün, halb weiß, ganz glücklich.', desc: 'Vorne weiß, hinten grün getupft. Grinst gern.' },
+    { id: 'wiirot',  name: 'Wii-Rotling',       img: 'wii-rot.png',          r: 'wii',       min: 8,  max: 15,  val: 40, page: 'wii-rotling.html', say: 'Ich bin nicht rot, ich bin aufgeregt.', desc: 'Leuchtend rot mit dunklen Flecken. Immer ein bisschen aufgeregt.' },
     { id: 'lippe',   name: 'Lippenfisch',       img: 'lippenfisch-spin.gif', r: 'epic',      min: 30, max: 60,  val: 120, photo: true, say: 'Also … wo fange ich an?', desc: 'Er möchte reden. Er hat viel zu sagen.', night: 2.5 },
     { id: 'travis',  name: 'Travis',            img: 'twawis.jpg',           r: 'epic',      min: 35, max: 65,  val: 140, photo: true, say: 'Jetzt bin ich da.', desc: 'Jetzt kommt Travis.', far: .4, sound: 'jetzt-kommt-travis.mp3' },
     { id: 'spee',    name: 'Spee Zierfisch',    img: 'spee-zierfisch.png',   r: 'epic',      min: 6,  max: 9,   val: 110, clip: [12.63, 13.9], say: 'Riech mal. Frühlingsfrisch!', desc: 'Ein Zierfisch, frisch gewaschen. Duftet nach Spee.', night: 1.5 },
@@ -249,6 +256,7 @@
       const n = pool.filter(g => g.r === f.r).length; w /= n;
       if (f.r === 'common') w *= 1.3 - d * .6;
       if (f.r === 'rare') w *= (1 + d) * luck;
+      if (f.r === 'wii') w *= (1 + d) * luck;
       if (f.r === 'epic') w *= (1 + 2 * d) * luck * luck;
       if (f.r === 'legendary') w *= (1 + 3 * d) * luck * luck;
       if (f.r === 'junk') w *= f.rareJunk ? .12 * luck : 1 / luck;
@@ -342,6 +350,7 @@
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const FANFARE = {
     rare:      { label: 'SELTEN!',   c: '#38bdf8', hi: '#e0f2fe', dur: 1.0, notes: [523, 659, 784] },
+    wii:       { label: 'WII!',      c: '#5ccdf6', hi: '#ffffff', dur: 1.2, notes: [659, 784, 988, 1319] },
     epic:      { label: 'EPISCH!',   c: '#c084fc', hi: '#f3e8ff', dur: 1.4, notes: [523, 659, 784, 1047] },
     legendary: { label: 'LEGENDÄR!', c: '#fbbf24', hi: '#fffbeb', dur: 2.0, notes: [392, 523, 659, 784, 1047, 1319] },
   };
@@ -352,7 +361,7 @@
     for (let i = glints.length - 1; i >= 0; i--) { const g = glints[i]; g.x += g.vx * dt; g.y += g.vy * dt; g.life -= dt; if (g.life <= 0) glints.splice(i, 1); }
     if (!fanfare) return;
     const F = fanfare; F.t += dt;
-    const rate = { rare: 25, epic: 45, legendary: 80 }[F.r];
+    const rate = { rare: 25, wii: 35, epic: 45, legendary: 80 }[F.r];
     for (let n = 0; n < rate * dt + Math.random(); n++) {
       glints.push({ x: F.x + (Math.random() - .5) * (F.r === 'legendary' ? 60 : 30), y: SURFACE - Math.random() * 6, vx: (Math.random() - .5) * 14, vy: -20 - Math.random() * 40, life: .8 + Math.random() * .8, c: Math.random() < .3 ? F.hi : F.c });
     }
@@ -1268,12 +1277,12 @@
     $('catch-xp').textContent = gain ? [`+${gain.xp} EP`, ...gain.tags].join(' · ') : '';
     $('catch-say').textContent = `„${f.say}“`;
     const sheet = $('catch').querySelector('.sheet');
-    sheet.classList.remove('fx-rare', 'fx-epic', 'fx-legendary');
+    sheet.classList.remove('fx-rare', 'fx-wii', 'fx-epic', 'fx-legendary');
     void sheet.offsetWidth; // restart the CSS animations
     if (FANFARE[f.r]) sheet.classList.add('fx-' + f.r);
     const conf = $('catch-confetti');
     conf.replaceChildren();
-    const nConf = { rare: 0, epic: 18, legendary: 36 }[f.r] || 0;
+    const nConf = { rare: 0, wii: 14, epic: 18, legendary: 36 }[f.r] || 0;
     for (let i = 0; i < nConf; i++) {
       const p = document.createElement('i');
       p.style.left = Math.random() * 100 + '%';
@@ -1332,11 +1341,11 @@
     { id: 'f10',  name: '10 Fische entdeckt',  need: () => [discovered(), 10],  coins: 400,  scales: 2 },
     { id: 'f15',  name: '15 Fische entdeckt',  need: () => [discovered(), 15],  coins: 1000, scales: 4 },
     { id: 'fall', name: 'Fischdex komplett',   need: () => [discovered(), FISH.length], coins: 2500, scales: 8, perk: 'taler10', perkText: 'dauerhaft +10 % Taler' },
-    ...['common', 'uncommon', 'rare', 'epic', 'legendary', 'junk'].map(r => ({
-      id: 'r-' + r, name: { common: 'Alle Gewöhnlichen', uncommon: 'Alle Ungewöhnlichen', rare: 'Alle Seltenen', epic: 'Alle Epischen', legendary: 'Alle Legendären', junk: 'Aller Müll' }[r],
+    ...['common', 'uncommon', 'rare', 'wii', 'epic', 'legendary', 'junk'].map(r => ({
+      id: 'r-' + r, name: { common: 'Alle Gewöhnlichen', uncommon: 'Alle Ungewöhnlichen', rare: 'Alle Seltenen', wii: 'Alle Wii-Fische', epic: 'Alle Epischen', legendary: 'Alle Legendären', junk: 'Aller Müll' }[r],
       need: () => [FISH.filter(f => f.r === r && save.dex[f.id]).length, FISH.filter(f => f.r === r).length],
-      coins: { common: 100, uncommon: 250, rare: 500, epic: 1200, legendary: 2000, junk: 150 }[r],
-      scales: { common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 5, junk: 1 }[r],
+      coins: { common: 100, uncommon: 250, rare: 500, wii: 900, epic: 1200, legendary: 2000, junk: 150 }[r],
+      scales: { common: 0, uncommon: 1, rare: 2, wii: 3, epic: 3, legendary: 5, junk: 1 }[r],
       perk: r === 'legendary' ? 'luck10' : undefined, perkText: r === 'legendary' ? 'dauerhaft +10 % Glück' : undefined,
     })),
     { id: 'm1',   name: 'Erste Mutation',      need: () => [mutsFound().length, 1], coins: 100 },
@@ -1523,12 +1532,12 @@
   // Angler level (XP from catches), quests, and rebirth: reset coins, gear and level
   // for Schuppen, spent on permanent talents. Rebirths also raise the Taler bonus,
   // unlock new gear and recolour the hat.
-  const XP = { common: 8, uncommon: 15, rare: 35, epic: 80, legendary: 200, junk: 4 };
+  const XP = { common: 8, uncommon: 15, rare: 35, wii: 50, epic: 80, legendary: 200, junk: 4 };
   const xpNeed = l => Math.round(30 * Math.pow(l, 1.35));
   const DAILY_N = 10; // the first catches of each day give double XP
   let streak = 0;     // catches in a row without losing a fish (not saved)
   const rebirthLvl = () => 12 + save.rebirths * 3;
-  const RARITY_ORDER = ['junk', 'common', 'uncommon', 'rare', 'epic', 'legendary'];
+  const RARITY_ORDER = ['junk', 'common', 'uncommon', 'rare', 'wii', 'epic', 'legendary'];
   const PERKS = [
     { id: 'taler',  icon: '🪝', name: 'Goldener Haken', desc: l => `+${l * 10} % Taler pro Fang` },
     { id: 'glueck', icon: '🍀', name: 'Glückspilz',     desc: l => `+${l * 8} % Glück für seltene Fische` },
