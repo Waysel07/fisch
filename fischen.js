@@ -742,22 +742,28 @@
     bg.fillStyle = red; bg.fillRect(lx - 2, lb - 24, 4, 1.5); bg.fillRect(lx - .5, lb - 25, 1, 1);
   }
 
-  // Wii-style clouds: soft white puffs with a pale blue halo and underside
-  const CLOUD_PUFFS = [[.22, -2, 6], [.5, -5, 8], [.78, -2, 6.5], [.36, 1, 5], [.66, .5, 5.5], [.05, 1.5, 3.5], [.92, 2, 3.5]];
+  // Fish-shaped clouds: soft white puffs in the shape of a fish that swims right
+  // (tail at the back, dorsal fin on top, belly fin, eye at the head). Halo and blue underside as before.
+  const CLOUD_FISH = [
+    [.14, -2.5, 3.2], [.14, 2.5, 3.2], [.22, 0, 3.5],            // forked tail
+    [.42, -6, 3.6],                                              // dorsal fin
+    [.36, 0, 5.5], [.6, -1.5, 6.5], [.82, 0, 5.5], [.52, 2.5, 4.5], // body
+    [.46, 4.5, 2.8],                                             // belly fin
+  ];
   function cloud(c, dark) {
     const night = dark > .5;
     const body = night ? '#4b5d80' : '#ffffff', under = night ? '#34425e' : '#bfdcf2', halo = night ? '#64748b' : '#e0f2fe';
-    const P = CLOUD_PUFFS.map(([fx, oy, r]) => [c.x + c.w * fx, c.y + oy, r * (c.w / 40) + .5]);
+    const eye = night ? '#e2e8f0' : '#1e293b';
+    const P = CLOUD_FISH.map(([fx, oy, r]) => [c.x + c.w * fx, c.y + oy, r * (c.w / 40) + .5]);
     const a = ctx.globalAlpha; ctx.globalAlpha = a * .35;
     for (const [x, y, r] of P) disc(x, y, r + 2, halo);
     ctx.globalAlpha = a;
     for (const [x, y, r] of P) disc(x, y + 2, r, under);
     for (const [x, y, r] of P) disc(x, y, r, body);
-    // flat, rounded base
-    px(c.x + c.w * .05, c.y + 2, c.w * .9, 2.5, under);
-    // little gloss on the top puff
-    const [tx, ty, tr] = P[1];
-    if (!night) px(tx - tr * .6, ty - tr * .55, tr * .55, .5, '#ffffff');
+    // eye near the head, and a little gloss on the body
+    const [hx, hy, hr] = P[6];
+    disc(hx + hr * .35, hy - hr * .2, Math.max(.9, hr * .18), eye);
+    if (!night) px(P[4][0] - P[4][2] * .6, P[4][1] - P[4][2] * .55, P[4][2] * .55, .5, '#ffffff');
   }
 
   function draw() {
