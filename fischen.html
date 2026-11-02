@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Fischen!</title>
+  <link rel="icon" href="/fish-icon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="fischen.css">
+</head>
+<body>
+
+  <div id="stage">
+    <canvas id="game" width="384" height="216" aria-label="Fischen! Spielfeld"></canvas>
+
+    <!-- HUD -->
+    <div id="hud">
+      <div class="hud-left">
+        <a class="pill back" href="index.html" title="Zurück">&larr;</a>
+        <span class="pill" title="Fischtaler"><img src="fish-icon.png" alt="" class="coin"> <b id="coins">0</b></span>
+        <span class="pill" id="clock" title="Tageszeit">☀️ Tag</span>
+      </div>
+      <div class="hud-right">
+        <button class="pill" id="btn-dex" title="Fischdex (F)">📖 <span class="lbl">Fischdex</span></button>
+        <button class="pill" id="btn-shop" title="Laden (L)">🛒 <span class="lbl">Laden</span></button>
+        <button class="pill" id="btn-sound" title="Ton an/aus (M)">🔊</button>
+      </div>
+    </div>
+
+    <div id="gear" class="pill"></div>
+    <div id="hint"></div>
+    <p id="rotate">📱↻ Quer halten für mehr Meer</p>
+    <div id="toast"></div>
+
+    <!-- Reeling panel -->
+    <div id="reel" hidden>
+      <div class="reel-row"><span>Spannung</span><div class="bar tension"><i id="tension"></i><em class="danger"></em></div></div>
+      <div class="reel-row"><span>Einholen</span><div class="bar progress"><i id="progress"></i></div></div>
+      <p id="reel-tip">Halten = kurbeln · Loslassen, wenn er zappelt!</p>
+    </div>
+
+    <!-- Catch modal -->
+    <div class="modal" id="catch" hidden>
+      <div class="sheet catch-sheet" role="dialog" aria-modal="true" aria-labelledby="catch-name">
+        <p class="rarity" id="catch-rarity"></p>
+        <span class="new" id="catch-new" hidden>NEU!</span>
+        <img id="catch-img" src="fsh-spin.gif" alt="">
+        <h2 id="catch-name"></h2>
+        <p id="catch-desc" class="desc"></p>
+        <p class="stats"><span id="catch-size"></span> · <span id="catch-value"></span></p>
+        <button class="btn" id="catch-ok">Weiter fischen</button>
+      </div>
+    </div>
+
+    <!-- Fischdex -->
+    <div class="modal" id="dex" hidden>
+      <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="dex-title">
+        <button class="close" data-close aria-label="Schließen">✕</button>
+        <h2 id="dex-title">Fischdex</h2>
+        <p class="sub" id="dex-count"></p>
+        <div class="grid" id="dex-grid"></div>
+      </div>
+    </div>
+
+    <!-- Shop -->
+    <div class="modal" id="shop" hidden>
+      <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="shop-title">
+        <button class="close" data-close aria-label="Schließen">✕</button>
+        <h2 id="shop-title">Laden</h2>
+        <p class="sub">Du hast <b id="shop-coins">0</b> Fischtaler.</p>
+        <h3>Ruten</h3>
+        <div class="list" id="shop-rods"></div>
+        <h3>Köder</h3>
+        <div class="list" id="shop-baits"></div>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div class="modal" id="title">
+      <div class="sheet title-sheet">
+        <img src="fsh-spin.gif" alt="" class="title-fish">
+        <h1>Fischen!</h1>
+        <p class="desc">Wirf die Angel aus, warte auf den Biss und hol den Fang ein.<br>Fang sie alle für den Fischdex.</p>
+        <ul class="how">
+          <li><b>Halten &amp; Loslassen</b> – auswerfen</li>
+          <li><b>Klick bei „!“</b> – anschlagen</li>
+          <li><b>Halten</b> – kurbeln, <b>loslassen</b> wenn die Schnur glüht</li>
+          <li><b>A / D</b> oder <b>← / →</b> – auf dem Steg laufen</li>
+        </ul>
+        <button class="btn" id="start">Los geht's!</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="fischen.js"></script>
+</body>
+</html>
