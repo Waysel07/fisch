@@ -144,6 +144,9 @@
         <h3>🐚 Talente <span class="sub">· <b id="prog-scales">0</b> Schuppen</span></h3>
         <p class="sub">Schuppen gibt es bei jeder Wiedergeburt. Talente bleiben für immer.</p>
         <div class="list" id="prog-perks"></div>
+
+        <h3>☁️ Spielstand übertragen</h3>
+        <p class="sub">Mit einem geheimen Schlüssel kannst du deinen Spielstand auf einem anderen Gerät laden. <button class="linkbtn" id="btn-cloud-prog">Öffnen</button></p>
       </div>
     </div>
 
@@ -171,6 +174,34 @@
       </div>
     </div>
 
+    <!-- Cloud save -->
+    <div class="modal" id="cloud" hidden>
+      <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="cloud-title">
+        <button class="close" data-close aria-label="Schließen">✕</button>
+        <h2 id="cloud-title">Spielstand übertragen</h2>
+        <div id="cloud-new">
+          <p class="sub">Erstelle einen geheimen Schlüssel. Dein Spielstand wird dann zusätzlich auf dem Server gesichert und automatisch aktualisiert. Mit dem Schlüssel lädst du ihn auf jedem anderen Gerät. <a href="datenschutz.html#cloud">Datenschutz</a></p>
+          <button class="btn" id="cloud-create">🔑 Schlüssel erstellen</button>
+        </div>
+        <div id="cloud-have" hidden>
+          <p class="sub">Dein geheimer Schlüssel – gut aufheben und niemandem zeigen. Wer ihn hat, kann deinen Spielstand laden.</p>
+          <div class="keybox"><code id="cloud-key"></code><button class="btn ghost" id="cloud-copy">Kopieren</button></div>
+          <p class="sub" id="cloud-when"></p>
+          <div class="cloud-actions">
+            <button class="btn" id="cloud-sync">Jetzt sichern</button>
+            <button class="linkbtn" id="cloud-del">Cloud-Kopie löschen</button>
+          </div>
+        </div>
+        <h3>Spielstand laden</h3>
+        <p class="sub">Schlüssel von einem anderen Gerät eingeben. Der Spielstand auf diesem Gerät wird dabei ersetzt.</p>
+        <div class="lb-form">
+          <input id="cloud-input" type="text" maxlength="19" placeholder="ABCD-EF23-GH45-JK67" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Geheimer Schlüssel">
+          <button class="btn" id="cloud-load">Laden</button>
+        </div>
+        <p class="err" id="cloud-err" role="alert"></p>
+      </div>
+    </div>
+
     <!-- Title -->
     <div class="modal" id="title">
       <div class="sheet title-sheet">
@@ -190,6 +221,7 @@
         </ul>
         <button class="btn" id="start">Los geht's!</button>
         <p class="savenote">Dein Spielstand wird nur lokal in deinem Browser gespeichert (<a href="datenschutz.html#spiel">Datenschutz</a>). <button class="linkbtn" id="btn-reset">Spielstand löschen</button></p>
+        <p class="savenote"><button class="linkbtn" id="btn-cloud-title">☁️ Spielstand mit geheimem Schlüssel übertragen</button></p>
       </div>
     </div>
   </div>

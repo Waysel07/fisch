@@ -470,3 +470,16 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
 .consent { display: flex; gap: .5rem; align-items: flex-start; font-size: .8rem; color: #cbd5e1; }
 .consent input { margin-top: .2rem; accent-color: #22c55e; }
 .err { color: #fca5a5; font-size: .85rem; min-height: 1.2em; margin-top: .3rem; }
+
+/* ---------- Cloud save ---------- */
+#cloud-new[hidden], #cloud-have[hidden] { display: none; }
+#cloud-new .btn { margin-top: .6rem; }
+.keybox { display: flex; gap: .5rem; align-items: center; margin: .6rem 0 .3rem; flex-wrap: wrap; }
+.keybox code {
+  flex: 1; min-width: 14rem; font: 700 1.15rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em;
+  background: #1e293b; color: #fde68a; border: 2px dashed #475569; border-radius: 8px; padding: .45rem .7rem; text-align: center;
+  user-select: all;
+}
+.keybox .btn { padding: .45rem .9rem; }
+.cloud-actions { display: flex; gap: 1rem; align-items: center; margin-top: .5rem; flex-wrap: wrap; }
+#cloud-input { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .06em; text-transform: uppercase; }
