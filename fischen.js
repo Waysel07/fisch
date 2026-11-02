@@ -58,7 +58,7 @@
   const save = Object.assign({
     coins: 0, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity },
     dex: {}, total: 0, sound: true, seen: false,
-    lvl: 1, xp: 0, rebirths: 0, scales: 0, perks: {}, quests: [], questsDone: 0, lifeCoins: 0,
+    dexClaimed: [], lvl: 1, xp: 0, rebirths: 0, scales: 0, perks: {}, quests: [], questsDone: 0, lifeCoins: 0,
   }, load());
   save.baits.wurm = Infinity;
   function load() {
@@ -228,13 +228,15 @@
     hint('Warten …', 1.2);
   }
   function retract(msg) {
+    // a fish that was on the line darts away
+    if (approacher && (state === 'bite' || state === 'reel')) approacher.vx = 35 + Math.random() * 15;
     state = 'idle'; hooked = null; approacher = null; $('reel').hidden = true;
     if (msg) hint(msg, 1.8);
   }
 
   function pickFish() {
     const d = castDistance(), night = isNight(), b = bait(), r = rod();
-    const luck = b.luck * r.luck * (1 + .08 * perk('glueck'));
+    const luck = b.luck * r.luck * (1 + .08 * perk('glueck')) * (dexPerk('luck10') ? 1.1 : 1);
     const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night));
     const weights = pool.map(f => {
       let w = RARITY[f.r].w;
@@ -268,28 +270,64 @@
   }
 
   function land_catch() {
-    const { f, size } = hooked;
-    const val = Math.max(1, Math.round(f.val * (0.7 + .6 * (size - f.min) / (f.max - f.min || 1)) * coinMult()));
+    const { f } = hooked;
+    const mut = rollMutation(f);
+    const size = mut ? Math.max(1, Math.round(hooked.size * mut.size)) : hooked.size;
+    if (approacher) {
+      const i = fishes.indexOf(approacher), n = newSwimmer();
+      n.x = W + 5; n.vx = -Math.abs(n.vx);
+      fishes[i] = n; approacher = null;
+    }
+    const base = Math.max(0, Math.min(1, (hooked.size - f.min) / (f.max - f.min || 1)));
+    const val = Math.max(1, Math.round(f.val * (0.7 + .6 * base) * coinMult() * (mut ? mut.val : 1)));
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
     e.n++; e.best = Math.max(e.best, size); save.dex[f.id] = e;
+    let newMut = false;
+    if (mut) { e.muts = e.muts || {}; newMut = !e.muts[mut.id]; e.muts[mut.id] = (e.muts[mut.id] || 0) + 1; }
     save.coins += val; save.total++; save.lifeCoins += val;
     progressCatch(f, size, val, first);
+    if (dexClaimable().length) { updateDexBadge(); if (first || newMut) toast('📖 Fischdex-Belohnung bereit!'); }
     persist(); updateCoins();
     splash(bob.x, SURFACE, 22, '#ffffff');
     state = 'show'; $('reel').hidden = true; holding = false; hint('');
     const reveal = () => {
-      showCatch(f, size, val, first);
+      showCatch(f, size, val, first, mut, newMut);
       if (f.clip) playClip(f.clip); else if (f.sound) playFile(f.sound); else playFile('fish.mp3');
       sfx.coin();
     };
-    const fx = FANFARE[f.r];
-    floaters.push({ x: bob.x, y: SURFACE - 14, text: `${fx ? '' : f.name + ' · '}${size} cm`, c: fx ? fx.c : '#ffffff', life: 2.4 });
+    const fx = FANFARE[f.r] || (mut && { label: `${mut.name.toUpperCase()}!`, c: mut.c, hi: '#ffffff', dur: 1.1, notes: [659, 880, 1175] });
+    floaters.push({ x: bob.x, y: SURFACE - 14, text: `${mut ? mut.icon + ' ' : ''}${fx ? '' : f.name + ' · '}${size} cm`, c: mut ? mut.c : fx ? fx.c : '#ffffff', life: 2.4 });
+    if (mut && FANFARE[f.r]) floaters.push({ x: bob.x, y: SURFACE - 24, text: `${mut.icon} ${mut.name}`, c: mut.c, life: 2.4 });
     if (fx && !reduceMotion) {
-      fanfare = { ...fx, r: f.r, x: bob.x, t: 0, done: reveal };
+      fanfare = { ...fx, r: FANFARE[f.r] ? f.r : 'rare', x: bob.x, t: 0, done: reveal };
       fx.notes.forEach((n, i) => setTimeout(() => tone(n, .18, 'triangle', .09), i * 110));
       if (f.r === 'legendary') setTimeout(() => tone(1568, .6, 'sine', .07, 400), fx.notes.length * 110);
     } else reveal();
+  }
+
+  // ------------------------------------------------------------------ mutations
+  // A catch can come out mutated: changes its look, size and value. Luck helps.
+  const MUTATIONS = [
+    { id: 'riesig',  name: 'Riesig',      icon: '🦣', c: '#fb923c', w: 6,   size: 1.7, val: 2,   desc: 'Viel zu groß geraten.' },
+    { id: 'winzig',  name: 'Winzig',      icon: '🔬', c: '#a3e635', w: 5,   size: .45, val: 1.6, desc: 'Passt in eine Streichholzschachtel.' },
+    { id: 'albino',  name: 'Albino',      icon: '🤍', c: '#f1f5f9', w: 3,   size: 1,   val: 3,   desc: 'Ganz ohne Farbe.' },
+    { id: 'leucht',  name: 'Leuchtend',   icon: '💡', c: '#67e8f9', w: 2.5, size: 1,   val: 3.5, desc: 'Leuchtet nachts besonders oft.', night: 2.5 },
+    { id: 'schatten', name: 'Schattenhaft', icon: '🌑', c: '#818cf8', w: 1.5, size: 1.1, val: 4, desc: 'Nur nachts. Kaum zu sehen.', nightOnly: true },
+    { id: 'golden',  name: 'Golden',      icon: '🪙', c: '#fbbf24', w: 1.5, size: 1,   val: 6,   desc: 'Pures Fischgold.' },
+    { id: 'regen',   name: 'Regenbogen',  icon: '🌈', c: '#f472b6', w: .5,  size: 1.2, val: 12,  desc: 'Schimmert in allen Farben. Extrem selten.' },
+  ];
+  function mutLuck() { return Math.sqrt(bait().luck * rod().luck) * (1 + .08 * perk('glueck')) * (dexPerk('mutchance') ? 1.25 : 1); }
+  function rollMutation(f) {
+    if (f.r === 'junk') return null;
+    const forced = window.__fischen && window.__fischen.forceMut;
+    if (forced) return MUTATIONS.find(m => m.id === forced);
+    const night = isNight();
+    const pool = MUTATIONS.filter(m => !(m.nightOnly && !night));
+    const ws = pool.map(m => m.w * (m.night && night ? m.night : 1) / 150 * mutLuck());
+    let roll = Math.random();
+    for (let i = 0; i < pool.length; i++) { roll -= ws[i]; if (roll < 0) return pool[i]; }
+    return null;
   }
 
   // ------------------------------------------------------------------ rare catch fanfare
@@ -473,14 +511,18 @@
         break;
       }
       case 'bite':
+        if (approacher) followLine(approacher, dt, 6);
         biteT -= dt;
         bob.dunk = 4 + Math.sin(t * 40);
         if (biteT <= 0) {
-          if (approacher) { approacher.vx = (approacher.x < bob.x ? -1 : 1) * 30; }
           retract('Zu spät! Er ist weg.');
         }
         break;
-      case 'reel': updateReel(dt); break;
+      case 'reel':
+        if (!approacher) approacher = fishes.reduce((a, b) => Math.abs(b.x - bob.x) < Math.abs(a.x - bob.x) ? b : a);
+        followLine(approacher, dt, 12);
+        updateReel(dt);
+        break;
     }
 
     // particles
@@ -494,6 +536,17 @@
     if (npcTalk > 0) npcTalk -= dt;
     updateFx(dt);
     hintTick(dt);
+  }
+
+  // the hooked fish's shadow hangs on the line: it follows the bobber,
+  // faces away from the dock while it pulls and whips around when it thrashes
+  function followLine(f, dt, k) {
+    const th = state === 'reel' && reel.thrash;
+    const tx = bob.x + 5 + (th ? Math.sin(t * 22) * 4 : Math.sin(t * 3) * 1.5);
+    const ty = SURFACE + 7 + (th ? Math.cos(t * 17) * 2 : 0);
+    f.x += (tx - f.x) * Math.min(1, dt * k);
+    f.y += (ty - f.y) * Math.min(1, dt * k);
+    f.vx = th ? (Math.sin(t * 22) > 0 ? 1 : -1) : 1;
   }
 
   function updateReel(dt) {
@@ -1103,7 +1156,7 @@
   }
 
   let lastCatchVal = 0;
-  function showCatch(f, size, val, first) {
+  function showCatch(f, size, val, first, mut, newMut) {
     lastCatchVal = val;
     $('catch-double').hidden = false; $('catch-double').disabled = false;
     $('catch-double').textContent = `🎲 Doppelt oder nichts (${val})`;
@@ -1114,6 +1167,11 @@
     $('catch-img').classList.toggle('pixel', !!f.pixel);
     $('catch-img').classList.toggle('photo', !!f.photo);
     $('catch-name').textContent = f.name;
+    $('catch-img').className = $('catch-img').className.replace(/\bmut-\S+/g, '').trim();
+    if (mut) $('catch-img').classList.add('mut-' + mut.id);
+    const mb = $('catch-mut');
+    mb.hidden = !mut;
+    if (mut) { mb.textContent = `${mut.icon} ${mut.name} · ×${mut.val} Wert${newMut ? ' · neue Mutation!' : ''}`; mb.style.setProperty('--mc', mut.c); }
     $('catch-desc').textContent = f.desc;
     $('catch-say').textContent = `„${f.say}“`;
     const sheet = $('catch').querySelector('.sheet');
@@ -1142,7 +1200,8 @@
   function renderDex() {
     const got = FISH.filter(f => save.dex[f.id]).length;
     const g = save.gamble || 0;
-    $('dex-count').textContent = `${got} von ${FISH.length} entdeckt · ${save.total} Fänge insgesamt` + (save.gamble !== undefined ? ` · Glücksspiel ${g >= 0 ? '+' : ''}${g} Taler` : '');
+    $('dex-count').textContent = `${got} von ${FISH.length} entdeckt · ${mutsFound().length} von ${MUTATIONS.length} Mutationen · ${save.total} Fänge insgesamt` + (save.gamble !== undefined ? ` · Glücksspiel ${g >= 0 ? '+' : ''}${g} Taler` : '');
+    renderDexRewards();
     $('dex-grid').replaceChildren(...FISH.map(f => {
       const e = save.dex[f.id];
       const c = document.createElement('div');
@@ -1156,6 +1215,13 @@
       const info = document.createElement('small');
       info.textContent = e ? `${e.n}× · Rekord ${e.best} cm` : hintFor(f);
       c.append(img, name, r, info);
+      if (e && e.muts) {
+        const m = document.createElement('div'); m.className = 'muts';
+        for (const mu of MUTATIONS) if (e.muts[mu.id]) {
+          const sp = document.createElement('span'); sp.textContent = mu.icon; sp.title = `${mu.name} ×${e.muts[mu.id]}`; m.append(sp);
+        }
+        c.append(m);
+      }
       if (e) {
         const q = document.createElement('q'); q.textContent = f.say;
         c.append(q); c.title = f.desc;
@@ -1163,6 +1229,54 @@
       return c;
     }));
   }
+  // ---- Fischdex rewards: milestones for discovering fish and mutations
+  const DEX_REWARDS = [
+    { id: 'f5',   name: '5 Fische entdeckt',   need: () => [discovered(), 5],   coins: 150 },
+    { id: 'f10',  name: '10 Fische entdeckt',  need: () => [discovered(), 10],  coins: 400,  scales: 2 },
+    { id: 'f15',  name: '15 Fische entdeckt',  need: () => [discovered(), 15],  coins: 1000, scales: 4 },
+    { id: 'fall', name: 'Fischdex komplett',   need: () => [discovered(), FISH.length], coins: 2500, scales: 8, perk: 'taler10', perkText: 'dauerhaft +10 % Taler' },
+    ...['common', 'uncommon', 'rare', 'epic', 'legendary', 'junk'].map(r => ({
+      id: 'r-' + r, name: { common: 'Alle Gewöhnlichen', uncommon: 'Alle Ungewöhnlichen', rare: 'Alle Seltenen', epic: 'Alle Epischen', legendary: 'Alle Legendären', junk: 'Aller Müll' }[r],
+      need: () => [FISH.filter(f => f.r === r && save.dex[f.id]).length, FISH.filter(f => f.r === r).length],
+      coins: { common: 100, uncommon: 250, rare: 500, epic: 1200, legendary: 2000, junk: 150 }[r],
+      scales: { common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 5, junk: 1 }[r],
+      perk: r === 'legendary' ? 'luck10' : undefined, perkText: r === 'legendary' ? 'dauerhaft +10 % Glück' : undefined,
+    })),
+    { id: 'm1',   name: 'Erste Mutation',      need: () => [mutsFound().length, 1], coins: 100 },
+    { id: 'm4',   name: '4 Mutationen',        need: () => [mutsFound().length, 4], coins: 600, scales: 2 },
+    { id: 'mall', name: 'Alle Mutationen',     need: () => [mutsFound().length, MUTATIONS.length], coins: 2000, scales: 6, perk: 'mutchance', perkText: 'dauerhaft +25 % Mutationschance' },
+  ];
+  function discovered() { return FISH.filter(f => save.dex[f.id]).length; }
+  function mutsFound() { return MUTATIONS.filter(m => FISH.some(f => save.dex[f.id] && save.dex[f.id].muts && save.dex[f.id].muts[m.id])); }
+  function dexPerk(p) { return (save.dexClaimed || []).some(id => (DEX_REWARDS.find(r => r.id === id) || {}).perk === p); }
+  function dexClaimable() { return DEX_REWARDS.filter(r => { const [h, n] = r.need(); return h >= n && !(save.dexClaimed || []).includes(r.id); }); }
+  function claimDex(r) {
+    save.dexClaimed = save.dexClaimed || [];
+    if (save.dexClaimed.includes(r.id)) return;
+    save.dexClaimed.push(r.id);
+    save.coins += r.coins; save.scales += r.scales || 0;
+    sfx.coin(); setTimeout(sfx.coin, 150);
+    toast(`📖 ${r.name}: +${r.coins} Taler${r.scales ? ` · +${r.scales} 🐚` : ''}${r.perkText ? ' · ' + r.perkText : ''}`);
+    persist(); updateCoins(); updateDexBadge(); renderDex();
+  }
+  function updateDexBadge() { $('btn-dex').classList.toggle('ready', dexClaimable().length > 0); }
+  function renderDexRewards() {
+    const claimed = save.dexClaimed || [];
+    $('dex-rewards').replaceChildren(...DEX_REWARDS.map(r => {
+      const [h, n] = r.need(), done = h >= n, got = claimed.includes(r.id);
+      const d = document.createElement('div'); d.className = 'reward' + (got ? ' got' : done ? ' ready' : '');
+      const b = document.createElement('b'); b.textContent = r.name;
+      const s = document.createElement('small');
+      s.textContent = `${Math.min(h, n)}/${n} · ${r.coins} Taler${r.scales ? ` · ${r.scales} 🐚` : ''}${r.perkText ? ' · ' + r.perkText : ''}`;
+      const bar = document.createElement('div'); bar.className = 'qbar';
+      const fi = document.createElement('i'); fi.style.width = Math.min(100, h / n * 100) + '%'; bar.append(fi);
+      d.append(b, bar, s);
+      if (got) { const ok = document.createElement('span'); ok.className = 'tick'; ok.textContent = '✓'; d.append(ok); }
+      else if (done) { const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = 'Abholen'; btn.addEventListener('click', () => claimDex(r)); d.append(btn); }
+      return d;
+    }));
+  }
+
   function hintFor(f) {
     if (f.hint) return f.hint;
     if (f.dayOff) return 'Nur nachts, weit draußen';
@@ -1250,7 +1364,7 @@
   const PERK_MAX = 5;
   const perkCost = l => 2 + l * 2;
   function perk(id) { return save.perks[id] || 0; }
-  function coinMult() { return (1 + .2 * save.rebirths) * (1 + .1 * perk('taler')); }
+  function coinMult() { return (1 + .2 * save.rebirths) * (1 + .1 * perk('taler')) * (dexPerk('taler10') ? 1.1 : 1); }
   function lockText(item) {
     if (item.reb && save.rebirths < item.reb) return `🔒 ${item.reb}× Wiedergeburt`;
     if (item.lvl && save.lvl < item.lvl) return `🔒 Level ${item.lvl}`;
@@ -1418,7 +1532,7 @@
 
   // ------------------------------------------------------------------ boot
   $('btn-sound').textContent = save.sound ? '🔊' : '🔇';
-  updateCoins(); updateGear(); updateLevel();
+  updateCoins(); updateGear(); updateLevel(); updateDexBadge();
   if (save.seen) $('start').textContent = 'Weiter fischen';
 
   let last = performance.now();
@@ -1430,6 +1544,6 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  window.__fischen = { save, gainXp, rebirth, get state() { return state; }, setTime: v => { time = v; },
+  window.__fischen = { save, gainXp, rebirth, MUTATIONS, forceMut: null, get state() { return state; }, setTime: v => { time = v; },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); } };
 })();
