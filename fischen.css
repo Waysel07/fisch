@@ -778,3 +778,18 @@ h3 { font-size: 1.15rem; text-shadow: 2px 2px 0 var(--ink); }
 }
 /* Pixelify Sans turns "fi" into a ligature that reads like "A" ("Ölfisch" -> "ÖlAsch"); switch ligatures off */
 body, button, input { font-variant-ligatures: none; font-feature-settings: "liga" 0, "clig" 0, "calt" 0; }
+
+/* ---------- language switch (DE / EN) */
+.lang-switch { display: inline-flex; align-items: center; gap: 2px; }
+.lang-switch button {
+  font-family: var(--px); font-weight: 700; font-size: .9rem; color: #94a3b8;
+  background: transparent; border: 0; padding: .1rem .35rem; cursor: pointer; border-radius: 0;
+}
+.lang-switch button.on { color: var(--ink); background: var(--gold); }
+.lang-switch button:not(.on):hover { color: #e2e8f0; }
+.lang-switch button:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+.lang-switch.pill { padding: .25rem .35rem; }
+.title-sheet { position: relative; }
+.title-lang { position: absolute; top: .9rem; right: .9rem; z-index: 1; }
+.title-lang button { font-size: 1rem; padding: .25rem .7rem; background: var(--slot); box-shadow: 0 0 0 3px var(--ink); margin: 0 3px; }
+.title-lang button.on { background: var(--gold); }

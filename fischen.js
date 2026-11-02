@@ -2,6 +2,10 @@
 // Pixel scene on a 384x216 canvas, UI in the DOM so the site's GIFs animate.
 (() => {
   'use strict';
+  // texts are written in German; fischen-i18n.js swaps in English when that language is picked
+  const I18N = window.I18N || { tr: (t, v) => t.replace(/\{(\w+)\}/g, (m, k) => (v && k in v ? v[k] : m)), locale: 'de-DE', lang: 'de' };
+  const tr = I18N.tr;
+  const trAll = (list, keys) => { for (const o of list) for (const k of keys) if (typeof o[k] === 'string') o[k] = tr(o[k]); };
 
   // ------------------------------------------------------------------ data
   const RARITY = {
@@ -68,6 +72,7 @@
     { id: 'wiik',   name: 'Wii-Köder',     price: 30, pack: 5, lvl: 3, luck: 1.5, speed: 1.4, wii: 2, img: 'wii-bait.png', desc: '5 Stück. Zeigt auf die Wii-Fische. Die beißen doppelt so oft.' },
     { id: 'mond',   name: 'Mondköder',     price: 90, pack: 5, reb: 2, luck: 4.2, speed: 2,  desc: '5 Stück. Leuchtet. Legenden können nicht widerstehen.' },
   ];
+  trAll(Object.values(RARITY), ['label']); trAll(FISH, ['name', 'say', 'desc']); trAll(RODS, ['name', 'desc']); trAll(BAITS, ['name', 'desc']);
 
   // ------------------------------------------------------------------ save
   const SAVE_KEY = 'fischen-save-v1';
@@ -91,7 +96,7 @@
       flashSaved();
     } catch {
       // storage blocked or full: keep playing, tell the player once
-      if (saveOk) { saveOk = false; setTimeout(() => toast('Speichern nicht möglich – Fortschritt geht beim Schließen verloren.'), 0); }
+      if (saveOk) { saveOk = false; setTimeout(() => toast(tr('Speichern nicht möglich – Fortschritt geht beim Schließen verloren.')), 0); }
     }
   }
   function saveData() {
@@ -246,7 +251,7 @@
     waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss'));
     nibbles = Math.floor(Math.random() * 3); nibbleT = waitT - 1.2;
     approacher = null;
-    hint('Warten …', 1.2);
+    hint(tr('Warten …'), 1.2);
   }
   function retract(msg) {
     // a fish that was on the line darts away
@@ -281,7 +286,7 @@
     // bait gets used up on a hook attempt
     if (save.bait !== 'wurm') {
       save.baits[save.bait] = (save.baits[save.bait] || 1) - 1;
-      if (save.baits[save.bait] <= 0) { delete save.baits[save.bait]; save.bait = 'wurm'; toast('Köder aufgebraucht – zurück zum Wurm.'); }
+      if (save.baits[save.bait] <= 0) { delete save.baits[save.bait]; save.bait = 'wurm'; toast(tr('Köder aufgebraucht – zurück zum Wurm.')); }
       persist(); updateGear();
     }
     const skew = Math.pow(Math.random(), 1.6);
@@ -313,7 +318,7 @@
     save.coins += val; save.total++; save.lifeCoins += val; save.totalEarned += val;
     const gain = progressCatch(f, size, val, first, mut, newMut, reel.maxT < .7, shiny, newShiny);
     setTimeout(() => lbSubmit(), 3000);
-    if (dexClaimable().length) { updateDexBadge(); if (first || newMut || newShiny) toast('📖 Fischdex-Belohnung bereit!'); }
+    if (dexClaimable().length) { updateDexBadge(); if (first || newMut || newShiny) toast(tr('📖 Fischdex-Belohnung bereit!')); }
     persist(); updateCoins();
     splash(bob.x, SURFACE, 22, '#ffffff');
     state = 'show'; $('reel').hidden = true; holding = false; hint('');
@@ -323,15 +328,15 @@
       sfx.coin();
     };
     const fx = FANFARE[f.r] || (mut && { label: `${mut.name.toUpperCase()}!`, c: mut.c, hi: '#ffffff', dur: 1.1, notes: [659, 880, 1175] })
-      || (shiny && { label: 'SHINY!', c: '#fde047', hi: '#ffffff', dur: 1.2, notes: [1047, 1319, 1568, 2093] });
+      || (shiny && { label: tr('SHINY!'), c: '#fde047', hi: '#ffffff', dur: 1.2, notes: [1047, 1319, 1568, 2093] });
     if (shiny) {
-      floaters.push({ x: bob.x, y: SURFACE - 34, text: newShiny ? '💫 Neuer Shiny!' : '💫 Shiny!', c: '#fde047', life: 2.6 });
+      floaters.push({ x: bob.x, y: SURFACE - 34, text: newShiny ? tr('💫 Neuer Shiny!') : tr('💫 Shiny!'), c: '#fde047', life: 2.6 });
       for (let i = 0; i < 40; i++) glints.push({ x: bob.x + (Math.random() - .5) * 24, y: SURFACE - Math.random() * 10, vx: (Math.random() - .5) * 40, vy: -25 - Math.random() * 45, life: .8 + Math.random(), c: ['#fde047', '#ffffff', '#f9a8d4', '#a5f3fc'][i % 4] });
       [1568, 2093, 2637].forEach((n, i) => setTimeout(() => tone(n, .12, 'sine', .06), 600 + i * 90));
     }
     floaters.push({ x: bob.x, y: SURFACE - 14, text: `${mut ? mut.icon + ' ' : ''}${fx ? '' : f.name + ' · '}${size} cm`, c: mut ? mut.c : fx ? fx.c : '#ffffff', life: 2.4 });
     if (mut && FANFARE[f.r]) floaters.push({ x: bob.x, y: SURFACE - 24, text: `${mut.icon} ${mut.name}`, c: mut.c, life: 2.4 });
-    floaters.push({ x: bob.x, y: SURFACE - 4, text: `+${gain.xp} EP${streak > 1 ? ` · 🔥${streak}` : ''}`, c: '#86efac', life: 2.4 });
+    floaters.push({ x: bob.x, y: SURFACE - 4, text: tr('+{n} EP', { n: gain.xp }) + (streak > 1 ? ` · 🔥${streak}` : ''), c: '#86efac', life: 2.4 });
     if (fx && !reduceMotion) {
       fanfare = { ...fx, r: FANFARE[f.r] ? f.r : 'rare', x: bob.x, t: 0, done: reveal };
       fx.notes.forEach((n, i) => setTimeout(() => tone(n, .18, 'triangle', .09), i * 110));
@@ -350,6 +355,7 @@
     { id: 'golden',  name: 'Golden',      icon: '🪙', c: '#fbbf24', w: 1.5, size: 1,   val: 6,   desc: 'Pures Fischgold.' },
     { id: 'regen',   name: 'Regenbogen',  icon: '🌈', c: '#f472b6', w: .5,  size: 1.2, val: 12,  desc: 'Schimmert in allen Farben. Extrem selten.' },
   ];
+  trAll(MUTATIONS, ['name', 'desc']);
   // Shinys: any catch can rarely come out shiny (other colours, sparkles, triple value).
   // They are collected in the Shinydex. Luck from rod and bait helps a little.
   const SHINY_BASE = 1 / 100, SHINY_VAL = 3;
@@ -377,10 +383,10 @@
   // ------------------------------------------------------------------ rare catch fanfare
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const FANFARE = {
-    rare:      { label: 'SELTEN!',   c: '#38bdf8', hi: '#e0f2fe', dur: 1.0, notes: [523, 659, 784] },
-    wii:       { label: 'WII!',      c: '#5ccdf6', hi: '#ffffff', dur: 1.2, notes: [659, 784, 988, 1319] },
-    epic:      { label: 'EPISCH!',   c: '#c084fc', hi: '#f3e8ff', dur: 1.4, notes: [523, 659, 784, 1047] },
-    legendary: { label: 'LEGENDÄR!', c: '#fbbf24', hi: '#fffbeb', dur: 2.0, notes: [392, 523, 659, 784, 1047, 1319] },
+    rare:      { label: tr('SELTEN!'),   c: '#38bdf8', hi: '#e0f2fe', dur: 1.0, notes: [523, 659, 784] },
+    wii:       { label: tr('WII!'),      c: '#5ccdf6', hi: '#ffffff', dur: 1.2, notes: [659, 784, 988, 1319] },
+    epic:      { label: tr('EPISCH!'),   c: '#c084fc', hi: '#f3e8ff', dur: 1.4, notes: [523, 659, 784, 1047] },
+    legendary: { label: tr('LEGENDÄR!'), c: '#fbbf24', hi: '#fffbeb', dur: 2.0, notes: [392, 523, 659, 784, 1047, 1319] },
   };
   let fanfare = null;
   const floaters = [], glints = [];
@@ -461,7 +467,7 @@
     if (anyModal()) return;
     holding = true;
     if (state === 'idle') startCharge();
-    else if (state === 'wait') retract('Eingeholt. Nichts dran.');
+    else if (state === 'wait') retract(tr('Eingeholt. Nichts dran.'));
     else if (state === 'bite') hook();
   }
   function up() {
@@ -561,7 +567,7 @@
         if (waitT <= 0) {
           state = 'bite'; biteT = .85;
           bob.dunk = 5; splash(bob.x, SURFACE, 8, '#e0f7ff'); ripple(bob.x); sfx.bite();
-          hint('!  JETZT KLICKEN  !', .9);
+          hint(tr('!  JETZT KLICKEN  !'), .9);
         }
         break;
       }
@@ -570,7 +576,7 @@
         biteT -= dt;
         bob.dunk = 4 + Math.sin(t * 40);
         if (biteT <= 0) {
-          endStreak(); retract('Zu spät! Er ist weg.');
+          endStreak(); retract(tr('Zu spät! Er ist weg.'));
         }
         break;
       case 'reel':
@@ -637,8 +643,8 @@
     $('progress').style.width = Math.max(0, Math.min(100, reel.progress * 100)) + '%';
     $('reel').classList.toggle('thrash', !!reel.thrash);
 
-    if (reel.tension >= 1) { sfx.snap(); retract('Schnur gerissen! 💥' + lostXp(h.f)); return; }
-    if (reel.progress <= 0) { retract('Entkommen …' + lostXp(h.f)); return; }
+    if (reel.tension >= 1) { sfx.snap(); retract(tr('Schnur gerissen! 💥') + lostXp(h.f)); return; }
+    if (reel.progress <= 0) { retract(tr('Entkommen …') + lostXp(h.f)); return; }
     if (reel.progress >= 1) land_catch();
   }
 
@@ -1102,11 +1108,11 @@
     px(x0 + 2.25, y - 18.75, .5, .5, '#ef4444'); px(x0 + 6, y - 18.25, .5, .5, '#22c55e'); px(x0 + 3.75, y - 14.75, .5, .5, '#3b82f6');
   }
   const PROPS = [
-    { id: 'casino', label: 'Fischautomat',  x: 2.5, y: DOCK_Y - 20, w: 12.5, h: 20, draw: drawSlotMachine, open: () => toggleModal('casino') },
-    { id: 'dex',    label: 'Fischdex & Shinydex', x: 28.5, y: DOCK_Y - 8.5, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
-    { id: 'lb',     label: 'Bestenliste',   x: KIOSK.x + KIOSK.w / 2 - 5, y: DOCK_Y - 48, w: 10, h: 10.5, draw: drawTrophy, open: () => toggleModal('lb') },
-    { id: 'prog',   label: 'Aufträge & Fortschritt', x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
-    { id: 'shop',   label: 'Laden',         x: KIOSK.x - 3, y: DOCK_Y - 37.5, w: KIOSK.w + 6, h: 37.5, open: () => toggleModal('shop') },
+    { id: 'casino', label: tr('Fischautomat'),  x: 2.5, y: DOCK_Y - 20, w: 12.5, h: 20, draw: drawSlotMachine, open: () => toggleModal('casino') },
+    { id: 'dex',    label: tr('Fischdex & Shinydex'), x: 28.5, y: DOCK_Y - 8.5, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
+    { id: 'lb',     label: tr('Bestenliste'),   x: KIOSK.x + KIOSK.w / 2 - 5, y: DOCK_Y - 48, w: 10, h: 10.5, draw: drawTrophy, open: () => toggleModal('lb') },
+    { id: 'prog',   label: tr('Aufträge & Fortschritt'), x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
+    { id: 'shop',   label: tr('Laden'),         x: KIOSK.x - 3, y: DOCK_Y - 37.5, w: KIOSK.w + 6, h: 37.5, open: () => toggleModal('shop') },
     { id: 'npc',    label: 'Spezifischfischer', x: NPC.x - 1, y: DOCK_Y - NPC.h - 2, w: NPC.w + 2, h: NPC.h + 2, open: () => talkNpc() },
   ];
   let hoverProp = null;
@@ -1153,7 +1159,7 @@
     // sign on the counter
     px(x0 + 5, y - 7.5, 14, 5, '#fef3c7'); px(x0 + 5, y - 7.5, 14, .5, '#fffbeb'); px(x0 + 5, y - 3, 14, .5, '#d6c49a');
     ctx.fillStyle = '#7f1d1d'; setFont('700 4px Poppins, sans-serif'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('LADEN', x0 + 12, y - 5); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText(tr('LADEN'), x0 + 12, y - 5); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
     // goods on the counter: a jar of worms and a sparkly lure
     px(x0 + 1, y - 13.5, 3, 3, '#bae6fd'); px(x0 + 1.5, y - 12.5, 2, 1.5, '#f472b6'); px(x0 + 1, y - 14, 3, .5, '#475569');
     const tw = (Math.sin(t * 6) + 1) / 2;
@@ -1251,7 +1257,7 @@
   function hintTick(dt) {
     if (hintTimer > 0) { hintTimer -= dt; if (hintTimer <= 0) hint(''); }
     if (state === 'idle' && hintTimer <= 0 && !anyModal() && $('hint').textContent === '') {
-      $('hint').textContent = 'Halten zum Auswerfen';
+      $('hint').textContent = tr('Halten zum Auswerfen');
       $('hint').style.opacity = .55;
     }
   }
@@ -1264,7 +1270,7 @@
   const ownedBaits = () => BAITS.filter(b => !b.pack || (save.baits[b.id] || 0) > 0);
   function selectBait(id) {
     if (save.bait === id) return;
-    if (state !== 'idle') { hint('Erst einholen, dann Köder wechseln', 1.4); return; }
+    if (state !== 'idle') { hint(tr('Erst einholen, dann Köder wechseln'), 1.4); return; }
     save.bait = id; persist(); updateGear(); sfx.tick();
     hint(`🪝 ${bait().name}`, 1.2);
   }
@@ -1274,9 +1280,9 @@
       const n = save.baits[b.id], on = b.id === save.bait;
       const btn = document.createElement('button');
       btn.className = 'bslot' + (on ? ' on' : '');
-      btn.title = `${b.name}${b.pack ? ' ×' + n : ''} – Taste ${i + 1}`;
+      btn.title = `${b.name}${b.pack ? ' ×' + n : ''} – ` + tr('Taste {k}', { k: i + 1 });
       btn.setAttribute('aria-pressed', on);
-      btn.setAttribute('aria-label', `${b.name}${b.pack ? ', ' + n + ' Stück' : ''}`);
+      btn.setAttribute('aria-label', `${b.name}${b.pack ? ', ' + tr('{n} Stück', { n }) : ''}`);
       const im = document.createElement('img'); im.src = ICONS[b.id]; im.alt = '';
       if (!ICONS[b.id].startsWith('data:')) im.className = 'photo';
       const key = document.createElement('small'); key.className = 'key'; key.textContent = i + 1;
@@ -1328,7 +1334,7 @@
     btn.disabled = true; ok.disabled = true;
     flip.hidden = false; flip.className = 'flip rolling'; flip.textContent = '🪙 …';
     let n = 0;
-    const iv = setInterval(() => { flip.textContent = n++ % 2 ? '🪙 Kopf …' : '🐟 Fisch …'; sfx.tick(); }, 110);
+    const iv = setInterval(() => { flip.textContent = n++ % 2 ? tr('🪙 Kopf …') : tr('🐟 Fisch …'); sfx.tick(); }, 110);
     setTimeout(() => {
       clearInterval(iv);
       const win = Math.random() < .5;
@@ -1336,8 +1342,8 @@
       save.gamble = (save.gamble || 0) + (win ? lastCatchVal : -lastCatchVal);
       persist(); updateCoins();
       flip.className = 'flip ' + (win ? 'win' : 'lose');
-      flip.textContent = win ? `🐟 Fisch! +${lastCatchVal} Taler extra` : `🪙 Kopf. Die ${lastCatchVal} Taler sind weg.`;
-      $('catch-value').textContent = win ? `+${lastCatchVal * 2} Taler` : '+0 Taler';
+      flip.textContent = win ? tr('🐟 Fisch! +{n} Taler extra', { n: lastCatchVal }) : tr('🪙 Kopf. Die {n} Taler sind weg.', { n: lastCatchVal });
+      $('catch-value').textContent = tr('+{n} Taler', { n: win ? lastCatchVal * 2 : 0 });
       if (win) sfx.coin(); else tone(220, .4, 'sawtooth', .07, -120);
       btn.hidden = true; ok.disabled = false; ok.focus();
     }, 1300);
@@ -1399,7 +1405,7 @@
       btn.classList.toggle('on', v === bet);
     });
     $('spin').disabled = spinning || save.coins < bet;
-    $('spin').textContent = save.coins < bet && !spinning ? 'Zu wenig Taler – geh fischen!' : `Drehen (${bet} Taler)`;
+    $('spin').textContent = save.coins < bet && !spinning ? tr('Zu wenig Taler – geh fischen!') : tr('Drehen ({n} Taler)', { n: bet });
     if (!$('paytable').childElementCount) {
       const rows = SYMBOLS.filter(s => s.pay).sort((a, b) => b.pay - a.pay).flatMap(s => {
         const icons = document.createElement('span');
@@ -1407,10 +1413,10 @@
         const v = document.createElement('b'); v.textContent = `× ${s.pay}`;
         return [icons, v];
       });
-      const pi = document.createElement('span'); pi.textContent = 'Zwei gleiche';
+      const pi = document.createElement('span'); pi.textContent = tr('Zwei gleiche');
       const pv = document.createElement('b'); pv.textContent = `× ${PAIR}`;
-      const ri = document.createElement('span'); ri.textContent = '🐀 Ratten';
-      const rv = document.createElement('b'); rv.textContent = 'fressen alles';
+      const ri = document.createElement('span'); ri.textContent = tr('🐀 Ratten');
+      const rv = document.createElement('b'); rv.textContent = tr('fressen alles');
       $('paytable').append(...rows, pi, pv, ri, rv);
     }
   }
@@ -1444,9 +1450,9 @@
     persist(); updateCoins();
     hits.forEach(i => slots[i].classList.add('hit'));
     const r = $('slot-result');
-    if (mult >= 40) { r.className = 'result big'; r.textContent = `JACKPOT! +${win} Taler`; playFile(result[0].id === 'odfisch' ? 'fish.mp3' : 'jetzt-kommt-travis.mp3'); sfx.coin(); setTimeout(sfx.coin, 200); setTimeout(sfx.coin, 400); }
-    else if (win > 0) { r.className = 'result win'; r.textContent = `Gewonnen! +${win} Taler`; sfx.coin(); }
-    else { r.className = 'result lose'; r.textContent = rat ? 'Die Ratten haben deinen Einsatz gefressen.' : 'Nichts. Nochmal?'; tone(200, .3, 'triangle', .06, -80); }
+    if (mult >= 40) { r.className = 'result big'; r.textContent = tr('JACKPOT! +{n} Taler', { n: win }); playFile(result[0].id === 'odfisch' ? 'fish.mp3' : 'jetzt-kommt-travis.mp3'); sfx.coin(); setTimeout(sfx.coin, 200); setTimeout(sfx.coin, 400); }
+    else if (win > 0) { r.className = 'result win'; r.textContent = tr('Gewonnen! +{n} Taler', { n: win }); sfx.coin(); }
+    else { r.className = 'result lose'; r.textContent = rat ? tr('Die Ratten haben deinen Einsatz gefressen.') : tr('Nichts. Nochmal?'); tone(200, .3, 'triangle', .06, -80); }
     spinning = false;
     renderCasino();
   }
@@ -1455,7 +1461,7 @@
   function showCatch(f, size, val, first, mut, newMut, gain, shiny, newShiny) {
     lastCatchVal = val;
     $('catch-double').hidden = false; $('catch-double').disabled = false;
-    $('catch-double').textContent = `🎲 Doppelt oder nichts (${val})`;
+    $('catch-double').textContent = tr('🎲 Doppelt oder nichts ({n})', { n: val });
     $('catch-flip').hidden = true; $('catch-ok').disabled = false;
     $('catch-rarity').textContent = RARITY[f.r].label;
     $('catch-rarity').className = 'rarity r-' + f.r;
@@ -1468,12 +1474,12 @@
     $('catch-img').classList.toggle('shiny', !!shiny);
     $('catch-img').style.setProperty('--shiny-hue', shiny ? shinyHue(f.id) + 'deg' : '');
     $('catch-shiny').hidden = !shiny;
-    if (shiny) $('catch-shiny').textContent = `💫 Shiny · ×${SHINY_VAL} Wert${newShiny ? ' · neu im Shinydex!' : ''}`;
+    if (shiny) $('catch-shiny').textContent = tr('💫 Shiny · ×{n} Wert', { n: SHINY_VAL }) + (newShiny ? tr(' · neu im Shinydex!') : '');
     const mb = $('catch-mut');
     mb.hidden = !mut;
-    if (mut) { mb.textContent = `${mut.icon} ${mut.name} · ×${mut.val} Wert${newMut ? ' · neue Mutation!' : ''}`; mb.style.setProperty('--mc', mut.c); }
+    if (mut) { mb.textContent = `${mut.icon} ${mut.name} · ` + tr('×{n} Wert', { n: mut.val }) + (newMut ? tr(' · neue Mutation!') : ''); mb.style.setProperty('--mc', mut.c); }
     $('catch-desc').textContent = f.desc;
-    $('catch-xp').textContent = gain ? [`+${gain.xp} EP`, ...gain.tags].join(' · ') : '';
+    $('catch-xp').textContent = gain ? [tr('+{n} EP', { n: gain.xp }), ...gain.tags].join(' · ') : '';
     $('catch-say').textContent = `„${f.say}“`;
     const sheet = $('catch').querySelector('.sheet');
     sheet.classList.remove('fx-rare', 'fx-wii', 'fx-epic', 'fx-legendary');
@@ -1493,7 +1499,7 @@
       conf.append(p);
     }
     $('catch-size').textContent = size + ' cm' + (save.dex[f.id].best === size && !first ? ' 🏆' : '');
-    $('catch-value').textContent = '+' + val + ' Taler';
+    $('catch-value').textContent = tr('+{n} Taler', { n: val });
     $('catch-new').hidden = !first;
     $('catch').hidden = false;
     $('catch-ok').focus();
@@ -1503,7 +1509,7 @@
   const SHINY_REWARDS = ['s1', 's5', 'sall'];
   function shinysFound() { return FISH.filter(f => save.dex[f.id] && save.dex[f.id].shiny).length; }
   function renderShinydex() {
-    $('dex-count').textContent = `${shinysFound()} von ${FISH.length} Shinys gefunden · Chance pro Fang gerade ${(shinyChance() * 100).toFixed(1).replace('.', ',')} %`;
+    $('dex-count').textContent = tr('{a} von {b} Shinys gefunden · Chance pro Fang gerade {c} %', { a: shinysFound(), b: FISH.length, c: (shinyChance() * 100).toLocaleString(I18N.locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) });
     renderDexRewards();
     $('dex-grid').replaceChildren(...FISH.map(f => {
       const e = save.dex[f.id], sh = e && e.shiny;
@@ -1511,12 +1517,12 @@
       c.className = 'card ' + (sh ? 'b-' + f.r + ' shiny-card' : 'unknown');
       const img = document.createElement('img'); img.loading = 'lazy';
       if (sh) { img.style.setProperty('--shiny-hue', shinyHue(f.id) + 'deg'); img.src = f.img; img.alt = f.name + ' (Shiny)'; img.className = ['shiny', f.pixel ? 'pixel' : '', f.photo ? 'photo' : ''].join(' ').trim(); }
-      else if (e && !f.photo) { img.src = f.img; img.alt = 'Noch kein Shiny'; img.className = 'shadow' + (f.pixel ? ' pixel' : ''); }
-      else { img.src = 'fish-icon.png'; img.alt = 'Unbekannt'; img.className = 'pixel shadow'; }
+      else if (e && !f.photo) { img.src = f.img; img.alt = tr('Noch kein Shiny'); img.className = 'shadow' + (f.pixel ? ' pixel' : ''); }
+      else { img.src = 'fish-icon.png'; img.alt = tr('Unbekannt'); img.className = 'pixel shadow'; }
       const name = document.createElement('b'); name.textContent = sh ? '💫 ' + f.name : e ? f.name : '???';
       const r = document.createElement('small'); r.className = 'r-' + f.r; r.textContent = RARITY[f.r].label;
       const info = document.createElement('small');
-      info.textContent = sh ? `${e.shiny}× shiny gefangen` : e ? 'Noch kein Shiny' : 'Erst normal fangen';
+      info.textContent = sh ? tr('{n}× shiny gefangen', { n: e.shiny }) : e ? tr('Noch kein Shiny') : tr('Erst normal fangen');
       c.append(img, name, r, info);
       return c;
     }));
@@ -1525,11 +1531,11 @@
     document.querySelectorAll('[data-dex-tab]').forEach(t => {
       const on = t.dataset.dexTab === dexTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
-    $('dex-title').textContent = dexTab === 'shiny' ? 'Shinydex' : 'Fischdex';
+    $('dex-title').textContent = dexTab === 'shiny' ? tr('Shinydex') : tr('Fischdex');
     if (dexTab === 'shiny') return renderShinydex();
     const got = FISH.filter(f => save.dex[f.id]).length;
     const g = save.gamble || 0;
-    $('dex-count').textContent = `${got} von ${FISH.length} entdeckt · ${mutsFound().length} von ${MUTATIONS.length} Mutationen · ${save.total} Fänge insgesamt` + (save.gamble !== undefined ? ` · Glücksspiel ${g >= 0 ? '+' : ''}${g} Taler` : '');
+    $('dex-count').textContent = tr('{a} von {b} entdeckt · {c} von {d} Mutationen · {e} Fänge insgesamt', { a: got, b: FISH.length, c: mutsFound().length, d: MUTATIONS.length, e: save.total }) + (save.gamble !== undefined ? tr(' · Glücksspiel {n} Taler', { n: (g >= 0 ? '+' : '') + g }) : '');
     renderDexRewards();
     $('dex-grid').replaceChildren(...FISH.map(f => {
       const e = save.dex[f.id];
@@ -1537,15 +1543,15 @@
       c.className = 'card ' + (e ? 'b-' + f.r : 'unknown');
       const img = document.createElement('img');
       const hide = !e && f.photo;
-      img.src = hide ? 'fish-icon.png' : f.img; img.alt = e ? f.name : 'Unbekannt'; img.loading = 'lazy';
+      img.src = hide ? 'fish-icon.png' : f.img; img.alt = e ? f.name : tr('Unbekannt'); img.loading = 'lazy';
       img.className = [f.pixel || hide ? 'pixel' : '', e && f.photo ? 'photo' : ''].join(' ').trim();
       const name = document.createElement('b'); name.textContent = e ? f.name : '???';
       const r = document.createElement('small'); r.className = 'r-' + f.r; r.textContent = RARITY[f.r].label;
       const info = document.createElement('small');
-      info.textContent = e ? `${e.n}× · Rekord ${e.best} cm` : hintFor(f);
+      info.textContent = e ? tr('{n}× · Rekord {b} cm', { n: e.n, b: e.best }) : hintFor(f);
       c.append(img, name, r, info);
       if (e && f.page) {
-        const a = document.createElement('a'); a.className = 'page'; a.href = f.page; a.textContent = 'Seite ansehen ↗';
+        const a = document.createElement('a'); a.className = 'page'; a.href = f.page; a.textContent = tr('Seite ansehen ↗');
         c.append(a);
       }
       if (e && e.muts) {
@@ -1582,6 +1588,7 @@
     { id: 'sall', name: 'Shinydex komplett',   need: () => [shinysFound(), FISH.length], coins: 10000, scales: 15, perk: 'shiny2', perkText: 'dauerhaft doppelte Shiny-Chance' },
     { id: 'mall', name: 'Alle Mutationen',     need: () => [mutsFound().length, MUTATIONS.length], coins: 2000, scales: 6, perk: 'mutchance', perkText: 'dauerhaft +25 % Mutationschance' },
   ];
+  trAll(DEX_REWARDS, ['name', 'perkText']);
   function discovered() { return FISH.filter(f => save.dex[f.id]).length; }
   function mutsFound() { return MUTATIONS.filter(m => FISH.some(f => save.dex[f.id] && save.dex[f.id].muts && save.dex[f.id].muts[m.id])); }
   function dexPerk(p) { return (save.dexClaimed || []).some(id => (DEX_REWARDS.find(r => r.id === id) || {}).perk === p); }
@@ -1593,7 +1600,7 @@
     save.coins += r.coins; save.scales += r.scales || 0; save.totalEarned += r.coins;
     sfx.coin(); setTimeout(sfx.coin, 150);
     const ep = gainXp(r.coins / 5);
-    toast(`📖 ${r.name}: +${r.coins} Taler · +${ep} EP${r.scales ? ` · +${r.scales} 🐚` : ''}${r.perkText ? ' · ' + r.perkText : ''}`);
+    toast(`📖 ${r.name}: ` + tr('+{c} Taler · +{e} EP', { c: r.coins, e: ep }) + `${r.scales ? ` · +${r.scales} 🐚` : ''}${r.perkText ? ' · ' + r.perkText : ''}`);
     persist(); updateCoins(); updateDexBadge(); renderDex();
   }
   function updateDexBadge() { $('btn-dex').classList.toggle('ready', dexClaimable().length > 0); }
@@ -1606,22 +1613,22 @@
       const d = document.createElement('div'); d.className = 'reward' + (got ? ' got' : done ? ' ready' : '');
       const b = document.createElement('b'); b.textContent = r.name;
       const s = document.createElement('small');
-      s.textContent = `${Math.min(h, n)}/${n} · ${r.coins} Taler${r.scales ? ` · ${r.scales} 🐚` : ''}${r.perkText ? ' · ' + r.perkText : ''}`;
+      s.textContent = `${Math.min(h, n)}/${n} · ` + tr('{n} Taler', { n: r.coins }) + `${r.scales ? ` · ${r.scales} 🐚` : ''}${r.perkText ? ' · ' + r.perkText : ''}`;
       const bar = document.createElement('div'); bar.className = 'qbar';
       const fi = document.createElement('i'); fi.style.width = Math.min(100, h / n * 100) + '%'; bar.append(fi);
       d.append(b, bar, s);
       if (got) { const ok = document.createElement('span'); ok.className = 'tick'; ok.textContent = '✓'; d.append(ok); }
-      else if (done) { const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = 'Abholen'; btn.addEventListener('click', () => claimDex(r)); d.append(btn); }
+      else if (done) { const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = tr('Abholen'); btn.addEventListener('click', () => claimDex(r)); d.append(btn); }
       return d;
     }));
   }
 
   function hintFor(f) {
     if (f.hint) return f.hint;
-    if (f.dayOff) return 'Nur nachts, weit draußen';
-    if (f.far) return 'Weit draußen';
-    if (f.night) return 'Lieber nachts';
-    return 'Noch nicht gefangen';
+    if (f.dayOff) return tr('Nur nachts, weit draußen');
+    if (f.far) return tr('Weit draußen');
+    if (f.night) return tr('Lieber nachts');
+    return tr('Noch nicht gefangen');
   }
 
   // ---- shop: Herr Zylinderwels sells rods and bait; every item has its own pixel icon
@@ -1630,9 +1637,10 @@
     buy: ['Exzellente Wahl!', 'Ein Kauf mit Stil.', 'Möge sie Ihnen viele Fische bringen.', 'Sehr wohl, sehr wohl.'],
     bait: ['Frisch eingetroffen!', 'Die Fische werden Sie lieben.', 'Mit Vergnügen.'],
     equip: ['Steht Ihnen ausgezeichnet.', 'Eine gute Hand für gutes Gerät.'],
-    poor: n => `Da fehlen noch ${n} Taler, mein Bester.`,
-    locked: l => `Dafür ist es noch zu früh. ${l.replace('🔒 ', '')}, dann reden wir.`,
+    poor: n => tr('Da fehlen noch {n} Taler, mein Bester.', { n }),
+    locked: l => tr('Dafür ist es noch zu früh. {l}, dann reden wir.', { l: l.replace('🔒 ', '') }),
   };
+  for (const k of ['hello', 'buy', 'bait', 'equip']) KEEPER[k] = KEEPER[k].map(l => tr(l));
   const pick = a => a[Math.floor(Math.random() * a.length)];
   let shopTab = 'rods';
   function keeper(line) {
@@ -1708,9 +1716,9 @@
       const owned = save.rods.includes(r.id), active = save.rod === r.id, lock = !owned && lockText(r);
       return ware({
         id: r.id, name: r.name, desc: r.desc,
-        stats: [statBar('Wurf', r.cast, 1), statBar('Kurbel', r.reel, 2.6), statBar('Glück', r.luck, 2.1), statBar('Ruhe', 1.1 - r.tens, .7)],
+        stats: [statBar(tr('Wurf'), r.cast, 1), statBar(tr('Kurbel'), r.reel, 2.6), statBar(tr('Glück'), r.luck, 2.1), statBar(tr('Ruhe'), 1.1 - r.tens, .7)],
         state: active ? 'active' : lock ? 'locked' : owned ? 'owned' : '',
-        btnText: active ? 'In der Hand' : owned ? 'Nehmen' : lock || `${r.price} Taler`,
+        btnText: active ? tr('In der Hand') : owned ? tr('Nehmen') : lock || tr('{n} Taler', { n: r.price }),
         disabled: active || (!owned && (!!lock || save.coins < r.price)),
         onClick: () => {
           if (active) return keeper(pick(KEEPER.equip));
@@ -1725,13 +1733,13 @@
       const n = save.baits[b.id] || 0, active = save.bait === b.id, lock = b.pack && lockText(b);
       return ware({
         id: b.id, name: b.name, desc: b.desc,
-        stats: [statBar('Glück', b.luck, 4.2), statBar('Tempo', b.speed, 2)],
+        stats: [statBar(tr('Glück'), b.luck, 4.2), statBar(tr('Tempo'), b.speed, 2)],
         state: active ? 'active' : lock ? 'locked' : '',
-        owned: b.pack ? (n ? `${n} im Beutel` : '') : '∞',
-        btnText: !b.pack ? (active ? 'Am Haken' : 'Anködern') : lock || `+${b.pack} für ${b.price}`,
+        owned: b.pack ? (n ? tr('{n} im Beutel', { n }) : '') : '∞',
+        btnText: !b.pack ? (active ? tr('Am Haken') : tr('Anködern')) : lock || tr('+{a} für {b}', { a: b.pack, b: b.price }),
         disabled: !b.pack ? active : (!!lock || save.coins < b.price),
         onClick: () => {
-          if (!b.pack) { save.bait = 'wurm'; keeper('Der gute alte Wurm. Klassisch.'); persist(); updateGear(); return renderShop(false); }
+          if (!b.pack) { save.bait = 'wurm'; keeper(tr('Der gute alte Wurm. Klassisch.')); persist(); updateGear(); return renderShop(false); }
           if (lock) return keeper(KEEPER.locked(lock));
           if (save.coins < b.price) return keeper(KEEPER.poor(b.price - save.coins));
           save.coins -= b.price; save.baits[b.id] = n + b.pack; save.bait = b.id; sfx.coin();
@@ -1753,7 +1761,7 @@
   document.addEventListener('visibilitychange', () => { if (document.hidden) persist(); });
   window.addEventListener('pagehide', persist);
   $('btn-reset').addEventListener('click', async () => {
-    if (!confirm('Spielstand wirklich löschen? Fischdex, Taler und Ausrüstung sind dann weg.' + (save.lb ? ' Dein Bestenlisten-Eintrag wird ebenfalls gelöscht.' : ''))) return;
+    if (!confirm(tr('Spielstand wirklich löschen? Fischdex, Taler und Ausrüstung sind dann weg.') + (save.lb ? tr(' Dein Bestenlisten-Eintrag wird ebenfalls gelöscht.') : ''))) return;
     if (save.lb) { try { await fetch('/api/leaderboard', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: save.lb.id, token: save.lb.token }) }); } catch { /* offline: entry stays, can be removed on request */ } }
     leaving = true;
     try { localStorage.removeItem(SAVE_KEY); } catch { /* ignore */ }
@@ -1772,20 +1780,21 @@
   const rebirthLvl = () => 12 + save.rebirths * 3;
   const RARITY_ORDER = ['junk', 'common', 'uncommon', 'rare', 'wii', 'epic', 'legendary'];
   const PERKS = [
-    { id: 'taler',  icon: '🪝', name: 'Goldener Haken', desc: l => `+${l * 10} % Taler pro Fang` },
-    { id: 'glueck', icon: '🍀', name: 'Glückspilz',     desc: l => `+${l * 8} % Glück für seltene Fische` },
-    { id: 'biss',   icon: '⏱️', name: 'Lockruf',        desc: l => `Bisse kommen ${l * 8} % schneller` },
-    { id: 'schnur', icon: '🧵', name: 'Starke Schnur',  desc: l => `${l * 6} % weniger Spannung` },
-    { id: 'wissen', icon: '📚', name: 'Anglerwissen',   desc: l => `+${l * 15} % Erfahrung` },
-    { id: 'erbe',   icon: '💰', name: 'Erbstück',       desc: l => `Start mit ${l * 150} Talern nach der Wiedergeburt` },
+    { id: 'taler',  icon: '🪝', name: 'Goldener Haken', desc: l => tr('+{n} % Taler pro Fang', { n: l * 10 }) },
+    { id: 'glueck', icon: '🍀', name: 'Glückspilz',     desc: l => tr('+{n} % Glück für seltene Fische', { n: l * 8 }) },
+    { id: 'biss',   icon: '⏱️', name: 'Lockruf',        desc: l => tr('Bisse kommen {n} % schneller', { n: l * 8 }) },
+    { id: 'schnur', icon: '🧵', name: 'Starke Schnur',  desc: l => tr('{n} % weniger Spannung', { n: l * 6 }) },
+    { id: 'wissen', icon: '📚', name: 'Anglerwissen',   desc: l => tr('+{n} % Erfahrung', { n: l * 15 }) },
+    { id: 'erbe',   icon: '💰', name: 'Erbstück',       desc: l => tr('Start mit {n} Talern nach der Wiedergeburt', { n: l * 150 }) },
   ];
+  trAll(PERKS, ['name']);
   const PERK_MAX = 5;
   const perkCost = l => 2 + l * 2;
   function perk(id) { return save.perks[id] || 0; }
   function coinMult() { return (1 + .2 * save.rebirths) * (1 + .1 * perk('taler')) * (dexPerk('taler10') ? 1.1 : 1); }
   function lockText(item) {
-    if (item.reb && save.rebirths < item.reb) return `🔒 ${item.reb}× Wiedergeburt`;
-    if (item.lvl && save.lvl < item.lvl) return `🔒 Level ${item.lvl}`;
+    if (item.reb && save.rebirths < item.reb) return tr('🔒 {n}× Wiedergeburt', { n: item.reb });
+    if (item.lvl && save.lvl < item.lvl) return tr('🔒 Level {n}', { n: item.lvl });
     return '';
   }
   function scalesFor() { return Math.floor(save.lvl / 2) + Math.floor(Math.sqrt(save.lifeCoins / 40)); }
@@ -1798,10 +1807,10 @@
     while (save.xp >= xpNeed(save.lvl)) { save.xp -= xpNeed(save.lvl); save.lvl++; reward += 20 * save.lvl; }
     if (save.lvl > from && !quiet) {
       save.coins += reward; updateCoins();
-      toast(`⭐ Level ${save.lvl}! +${reward} Taler`);
+      toast(tr('⭐ Level {l}! +{n} Taler', { l: save.lvl, n: reward }));
       const unlocked = [...RODS, ...BAITS].filter(it => it.lvl > from && it.lvl <= save.lvl && !lockText(it)).map(it => it.name);
-      if (unlocked.length) toast(`🔓 Freigeschaltet: ${unlocked.join(', ')}`);
-      if (from < rebirthLvl() && save.lvl >= rebirthLvl()) toast('🌀 Wiedergeburt möglich – schau in den Fortschritt!');
+      if (unlocked.length) toast(tr('🔓 Freigeschaltet: {l}', { l: unlocked.join(', ') }));
+      if (from < rebirthLvl() && save.lvl >= rebirthLvl()) toast(tr('🌀 Wiedergeburt möglich – schau in den Fortschritt!'));
       [523, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .14, 'square', .05), i * 90));
     }
     updateLevel();
@@ -1810,7 +1819,7 @@
   function updateLevel() {
     $('lvl-num').textContent = save.lvl;
     $('lvl-bar').style.width = Math.min(100, save.xp / xpNeed(save.lvl) * 100) + '%';
-    $('lvl').title = `Level ${save.lvl} · ${save.xp}/${xpNeed(save.lvl)} EP` + (save.rebirths ? ` · ${save.rebirths}× wiedergeboren` : '');
+    $('lvl').title = tr('Level {l} · {x}/{n} EP', { l: save.lvl, x: save.xp, n: xpNeed(save.lvl) }) + (save.rebirths ? tr(' · {n}× wiedergeboren', { n: save.rebirths }) : '');
     $('lvl-reb').textContent = save.rebirths ? '🌀' + save.rebirths : '';
     $('btn-prog').classList.toggle('ready', save.lvl >= rebirthLvl() || save.quests.some(q => q.p >= q.n));
   }
@@ -1839,11 +1848,11 @@
   }
   function questText(q) {
     switch (q.kind) {
-      case 'count': return `Fange ${q.n} Fische`;
-      case 'rar': return `Fange ${q.n}× ${RARITY[q.r].label} oder besser`;
-      case 'size': return `Fange einen Fang ab ${q.cm} cm`;
-      case 'coins': return `Verdiene ${q.n} Taler mit Fängen`;
-      case 'fish': return `Fange ${q.n}× ${FISH.find(f => f.id === q.id).name}`;
+      case 'count': return tr('Fange {n} Fische', { n: q.n });
+      case 'rar': return tr('Fange {n}× {r} oder besser', { n: q.n, r: RARITY[q.r].label });
+      case 'size': return tr('Fange einen Fang ab {n} cm', { n: q.cm });
+      case 'coins': return tr('Verdiene {n} Taler mit Fängen', { n: q.n });
+      case 'fish': return tr('Fange {n}× {f}', { n: q.n, f: FISH.find(f => f.id === q.id).name });
     }
   }
   function fillQuests() { while (save.quests.length < 3) save.quests.push(makeQuest()); }
@@ -1858,14 +1867,14 @@
     let m = 1; const tags = [];
     if (f.r !== 'junk') {
       streak++; save.bestStreak = Math.max(save.bestStreak || 0, streak);
-      if (streak > 1) { m += Math.min(.5, .1 * (streak - 1)); tags.push(`🔥 Serie ×${streak}`); }
-      if (clean) { m += .25; tags.push('✨ Sauber'); }
+      if (streak > 1) { m += Math.min(.5, .1 * (streak - 1)); tags.push(tr('🔥 Serie ×{n}', { n: streak })); }
+      if (clean) { m += .25; tags.push(tr('✨ Sauber')); }
     }
     if (mut) { m += mut.val / 4; tags.push(`${mut.icon} ${mut.name}`); }
-    if (shiny) { m += 1; tags.push('💫 Shiny'); }
-    if (isNight()) { m += .2; tags.push('🌙 Nacht'); }
-    if (dailyLeft() > 0) { save.daily.n++; m += 1; tags.push(`☀️ Tagesbonus ${save.daily.n}/${DAILY_N}`); }
-    if (first) tags.push('📖 Neu');
+    if (shiny) { m += 1; tags.push(tr('💫 Shiny')); }
+    if (isNight()) { m += .2; tags.push(tr('🌙 Nacht')); }
+    if (dailyLeft() > 0) { save.daily.n++; m += 1; tags.push(tr('☀️ Tagesbonus {a}/{b}', { a: save.daily.n, b: DAILY_N })); }
+    if (first) tags.push(tr('📖 Neu'));
     return { n: base * m + (newMut ? 40 : 0) + (newShiny ? 60 : 0), tags };
   }
   function endStreak() { streak = 0; }
@@ -1873,7 +1882,7 @@
     endStreak();
     const n = gainXp(Math.max(1, XP[f.r] / 4));
     persist();
-    return ` (+${n} EP)`;
+    return tr(' (+{n} EP)', { n });
   }
   function progressCatch(f, size, val, first, mut, newMut, clean, shiny, newShiny) {
     const c = catchXp(f, size, first, mut, newMut, clean, shiny, newShiny);
@@ -1885,7 +1894,7 @@
       if (q.kind === 'size' && size >= q.cm) q.p++;
       if (q.kind === 'coins') q.p = Math.min(q.n, q.p + val);
       if (q.kind === 'fish' && f.id === q.id) q.p++;
-      if (q.p >= q.n) toast(`📜 Auftrag erledigt: ${questText(q)} – im Fortschritt abholen`);
+      if (q.p >= q.n) toast(tr('📜 Auftrag erledigt: {q} – im Fortschritt abholen', { q: questText(q) }));
     }
     updateLevel();
     return gain;
@@ -1894,7 +1903,7 @@
     const q = save.quests[i]; if (!q || q.p < q.n) return;
     save.quests.splice(i, 1); save.questsDone++;
     save.coins += q.coins; save.lifeCoins += q.coins; save.totalEarned += q.coins;
-    sfx.coin(); toast(`📜 +${q.coins} Taler · +${q.xp} EP`);
+    sfx.coin(); toast(tr('📜 +{c} Taler · +{x} EP', { c: q.coins, x: q.xp }));
     gainXp(q.xp); fillQuests(); persist(); updateCoins(); renderProg();
   }
   function rerollQuest(i) {
@@ -1907,13 +1916,13 @@
   function rebirth() {
     if (save.lvl < rebirthLvl()) return;
     const gain = scalesFor();
-    if (!confirm(`Wiedergeburt?\n\nDu bekommst ${gain} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level und Aufträge werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.`)) return;
+    if (!confirm(tr('Wiedergeburt?\n\nDu bekommst {n} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level und Aufträge werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.', { n: gain }))) return;
     save.rebirths++; save.scales += gain;
     Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [] });
     fillQuests(); persist(); updateCoins(); updateGear(); updateLevel(); renderProg();
     const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
     [262, 330, 392, 523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .25, 'triangle', .08), i * 120));
-    toast(`🌀 Wiedergeboren! +${gain} Schuppen · Taler-Bonus jetzt +${Math.round((coinMult() - 1) * 100)} %`);
+    toast(tr('🌀 Wiedergeboren! +{n} Schuppen · Taler-Bonus jetzt +{p} %', { n: gain, p: Math.round((coinMult() - 1) * 100) }));
   }
   function buyPerk(id) {
     const l = perk(id), c = perkCost(l);
@@ -1925,12 +1934,12 @@
     updateLevel();
     const need = xpNeed(save.lvl);
     $('prog-level').textContent = save.lvl;
-    $('prog-xp').textContent = `${save.xp} / ${need} EP`;
+    $('prog-xp').textContent = tr('{x} / {n} EP', { x: save.xp, n: need });
     $('prog-xpbar').style.width = Math.min(100, save.xp / need * 100) + '%';
-    $('prog-stats').textContent = `${save.total} Fänge · ${save.questsDone} Aufträge · ${save.rebirths}× wiedergeboren · Taler-Bonus +${Math.round((coinMult() - 1) * 100)} %`;
+    $('prog-stats').textContent = tr('{a} Fänge · {b} Aufträge · {c}× wiedergeboren · Taler-Bonus +{p} %', { a: save.total, b: save.questsDone, c: save.rebirths, p: Math.round((coinMult() - 1) * 100) });
     const left = dailyLeft();
-    $('prog-bonus').textContent = (left ? `☀️ Tagesbonus: noch ${left} Fänge mit doppelten EP` : '☀️ Tagesbonus für heute aufgebraucht – morgen wieder') +
-      ` · 🔥 Serie ${streak} (Rekord ${save.bestStreak || 0})`;
+    $('prog-bonus').textContent = (left ? tr('☀️ Tagesbonus: noch {n} Fänge mit doppelten EP', { n: left }) : tr('☀️ Tagesbonus für heute aufgebraucht – morgen wieder')) +
+      tr(' · 🔥 Serie {n} (Rekord {r})', { n: streak, r: save.bestStreak || 0 });
     $('prog-quests').replaceChildren(...save.quests.map((q, i) => {
       const done = q.p >= q.n, d = document.createElement('div');
       d.className = 'quest' + (done ? ' done' : '');
@@ -1938,12 +1947,12 @@
       const b = document.createElement('b'); b.textContent = questText(q);
       const bar = document.createElement('div'); bar.className = 'qbar';
       const fill = document.createElement('i'); fill.style.width = Math.min(100, q.p / q.n * 100) + '%'; bar.append(fill);
-      const s = document.createElement('small'); s.textContent = `${Math.min(q.p, q.n)} / ${q.n} · Belohnung ${q.coins} Taler, ${q.xp} EP`;
+      const s = document.createElement('small'); s.textContent = tr('{a} / {b} · Belohnung {c} Taler, {x} EP', { a: Math.min(q.p, q.n), b: q.n, c: q.coins, x: q.xp });
       txt.append(b, bar, s);
       const btn = document.createElement('button'); btn.className = 'btn' + (done ? '' : ' ghost');
       const cost = 10 + save.lvl * 2;
-      btn.textContent = done ? 'Abholen' : `🔄 ${cost}`;
-      btn.title = done ? 'Belohnung abholen' : `Neuer Auftrag für ${cost} Taler`;
+      btn.textContent = done ? tr('Abholen') : `🔄 ${cost}`;
+      btn.title = done ? tr('Belohnung abholen') : tr('Neuer Auftrag für {n} Taler', { n: cost });
       btn.disabled = !done && save.coins < cost;
       btn.addEventListener('click', () => done ? claimQuest(i) : rerollQuest(i));
       d.append(txt, btn);
@@ -1951,11 +1960,11 @@
     }));
     const req = rebirthLvl(), can = save.lvl >= req;
     $('reb-info').textContent = can
-      ? `Bereit! Du bekommst ${scalesFor()} Schuppen und dauerhaft +20 % Taler. Taler, Ruten, Köder und Level werden zurückgesetzt. Fischdex, Rekorde und Talente bleiben.`
-      : `Ab Level ${req} möglich (noch ${req - save.lvl}). Je höher dein Level und je mehr Taler du verdienst, desto mehr Schuppen gibt es (aktuell ${scalesFor()}).`;
+      ? tr('Bereit! Du bekommst {n} Schuppen und dauerhaft +20 % Taler. Taler, Ruten, Köder und Level werden zurückgesetzt. Fischdex, Rekorde und Talente bleiben.', { n: scalesFor() })
+      : tr('Ab Level {r} möglich (noch {d}). Je höher dein Level und je mehr Taler du verdienst, desto mehr Schuppen gibt es (aktuell {n}).', { r: req, d: req - save.lvl, n: scalesFor() });
     $('btn-rebirth').disabled = !can;
-    $('reb-next').textContent = save.rebirths < 1 ? 'Freischaltung: Regenbogenrute (1×), Mondköder (2×), Sternenrute (3×), neue Hutfarben.'
-      : save.rebirths < 3 ? `Nächste Freischaltung bei ${save.rebirths < 2 ? '2× – Mondköder' : '3× – Sternenrute'}.` : 'Alles freigeschaltet. Jede weitere Wiedergeburt: +20 % Taler.';
+    $('reb-next').textContent = save.rebirths < 1 ? tr('Freischaltung: Regenbogenrute (1×), Mondköder (2×), Sternenrute (3×), neue Hutfarben.')
+      : save.rebirths < 3 ? tr('Nächste Freischaltung bei {x}.', { x: save.rebirths < 2 ? tr('2× – Mondköder') : tr('3× – Sternenrute') }) : tr('Alles freigeschaltet. Jede weitere Wiedergeburt: +20 % Taler.');
     $('prog-scales').textContent = save.scales;
     $('prog-perks').replaceChildren(...PERKS.map(p => {
       const l = perk(p.id), max = l >= PERK_MAX, c = perkCost(l);
@@ -1989,10 +1998,10 @@
   // (Vercel Function + Upstash Redis). At most every 2 minutes and only when something improved.
   const LB_API = '/api/leaderboard';
   const LB_TABS = {
-    taler:  { label: '🪙 Taler',          fmt: s => s.toLocaleString('de-DE') + ' Taler' },
-    wieder: { label: '🌀 Wiedergeburten', fmt: s => s + '×' },
-    dex:    { label: '📖 Fischdex',       fmt: s => `${Math.floor(s / 100)} Fische · ${s % 100} Mut.` },
-    rekord: { label: '📏 Rekordfang',     fmt: s => s + ' cm' },
+    taler:  { label: tr('🪙 Taler'),          fmt: s => tr('{n} Taler', { n: s.toLocaleString(I18N.locale) }) },
+    wieder: { label: tr('🌀 Wiedergeburten'), fmt: s => s + '×' },
+    dex:    { label: tr('📖 Fischdex'),       fmt: s => tr('{a} Fische · {b} Mut.', { a: Math.floor(s / 100), b: s % 100 }) },
+    rekord: { label: tr('📏 Rekordfang'),     fmt: s => s + ' cm' },
   };
   const LB = { boards: null, tab: 'taler', ranks: null, err: '', busy: false };
   if (!save.totalEarned) save.totalEarned = Math.max(save.lifeCoins || 0, save.coins || 0);
@@ -2008,7 +2017,7 @@
   async function lbFetch(method, body) {
     const r = await fetch(LB_API, { method, headers: { 'Content-Type': 'application/json' }, body: body && JSON.stringify(body) });
     let j = {}; try { j = await r.json(); } catch { /* not json */ }
-    if (!r.ok) throw Object.assign(new Error(j.error || 'Bestenliste gerade nicht erreichbar.'), { status: r.status });
+    if (!r.ok) throw Object.assign(new Error(j.error || tr('Bestenliste gerade nicht erreichbar.')), { status: r.status });
     return j;
   }
   async function lbSubmit(force) {
@@ -2041,8 +2050,8 @@
     }));
     const rows = LB.boards && LB.boards[LB.tab];
     const list = $('lb-list');
-    if (!rows) list.replaceChildren(Object.assign(document.createElement('li'), { className: 'empty', textContent: LB.err || 'Lädt …' }));
-    else if (!rows.length) list.replaceChildren(Object.assign(document.createElement('li'), { className: 'empty', textContent: 'Noch niemand eingetragen. Sei der Erste!' }));
+    if (!rows) list.replaceChildren(Object.assign(document.createElement('li'), { className: 'empty', textContent: LB.err || tr('Lädt …') }));
+    else if (!rows.length) list.replaceChildren(Object.assign(document.createElement('li'), { className: 'empty', textContent: tr('Noch niemand eingetragen. Sei der Erste!') }));
     else list.replaceChildren(...rows.map((r, i) => {
       const li = document.createElement('li'); if (save.lb && r.me === save.lb.me) li.className = 'mine';
       const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = ['🥇', '🥈', '🥉'][i] || i + 1;
@@ -2052,7 +2061,7 @@
     }));
     const my = LB.ranks && LB.ranks[LB.tab];
     $('lb-me').textContent = save.lb
-      ? (my && my.rank ? `Dein Platz: ${my.rank} von ${my.of} · ${LB_TABS[LB.tab].fmt(lbScores()[LB.tab])}` : `Dein Wert: ${LB_TABS[LB.tab].fmt(lbScores()[LB.tab])}`) + (LB.err && LB.boards ? ` · ${LB.err}` : '')
+      ? (my && my.rank ? tr('Dein Platz: {a} von {b} · {c}', { a: my.rank, b: my.of, c: LB_TABS[LB.tab].fmt(lbScores()[LB.tab]) }) : tr('Dein Wert: {c}', { c: LB_TABS[LB.tab].fmt(lbScores()[LB.tab]) })) + (LB.err && LB.boards ? ` · ${LB.err}` : '')
       : '';
     $('lb-join').hidden = !!save.lb; $('lb-joined').hidden = !save.lb;
     if (save.lb) $('lb-myname').textContent = save.lb.name;
@@ -2060,8 +2069,8 @@
   $('lb-join-btn').addEventListener('click', async () => {
     const name = $('lb-name').value.replace(/\s+/g, ' ').trim();
     const err = $('lb-err');
-    if (!/^[\p{L}\p{N} ._\-!?]{2,16}$/u.test(name)) { err.textContent = 'Name: 2–16 Zeichen (Buchstaben, Zahlen, Leerzeichen, . _ - ! ?).'; return; }
-    if (!$('lb-consent').checked) { err.textContent = 'Bitte bestätige die Einwilligung.'; return; }
+    if (!/^[\p{L}\p{N} ._\-!?]{2,16}$/u.test(name)) { err.textContent = tr('Name: 2–16 Zeichen (Buchstaben, Zahlen, Leerzeichen, . _ - ! ?).'); return; }
+    if (!$('lb-consent').checked) { err.textContent = tr('Bitte bestätige die Einwilligung.'); return; }
     err.textContent = ''; $('lb-join-btn').disabled = true;
     save.lb = { id: hex(20), token: hex(32), name }; save.lbKey = ''; save.lbT = 0;
     await lbSubmit(true);
@@ -2070,11 +2079,11 @@
     openLb();
   });
   $('lb-leave').addEventListener('click', async () => {
-    if (!save.lb || !confirm('Eintrag aus der Bestenliste löschen? Dein Spielstand bleibt erhalten.')) return;
+    if (!save.lb || !confirm(tr('Eintrag aus der Bestenliste löschen? Dein Spielstand bleibt erhalten.'))) return;
     try { await lbFetch('DELETE', { id: save.lb.id, token: save.lb.token }); }
     catch (e) { if (e.status !== 403) { LB.err = e.message; renderLb(); return; } }
     delete save.lb; delete save.lbKey; delete save.lbT; LB.ranks = null; persist();
-    toast('Aus der Bestenliste ausgetragen.'); openLb();
+    toast(tr('Aus der Bestenliste ausgetragen.')); openLb();
   });
 
 
@@ -2091,7 +2100,7 @@
   async function cloudCall(body, keepalive) {
     const r = await fetch(CLOUD_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), keepalive });
     let j = {}; try { j = await r.json(); } catch { /* not json */ }
-    if (!r.ok) throw Object.assign(new Error(j.error || 'Cloud-Speicher gerade nicht erreichbar.'), { status: r.status });
+    if (!r.ok) throw Object.assign(new Error(j.error || tr('Cloud-Speicher gerade nicht erreichbar.')), { status: r.status });
     return j;
   }
   let cloudBusy = false, cloudErr = '';
@@ -2113,34 +2122,34 @@
     $('cloud-new').hidden = has; $('cloud-have').hidden = !has;
     if (has) {
       $('cloud-key').textContent = save.cloudKey;
-      $('cloud-when').textContent = save.cloudT ? 'Zuletzt gesichert: ' + new Date(save.cloudT).toLocaleString('de-DE') : 'Noch nicht gesichert.';
+      $('cloud-when').textContent = save.cloudT ? tr('Zuletzt gesichert: {d}', { d: new Date(save.cloudT).toLocaleString(I18N.locale) }) : tr('Noch nicht gesichert.');
     }
     $('cloud-err').textContent = cloudErr;
   }
   $('cloud-create').addEventListener('click', async () => {
     save.cloudKey = newKey(); save.cloudSum = '';
     await cloudPush(true);
-    if (cloudErr) { delete save.cloudKey; } else toast('☁️ Schlüssel erstellt – schreib ihn dir auf!');
+    if (cloudErr) { delete save.cloudKey; } else toast(tr('☁️ Schlüssel erstellt – schreib ihn dir auf!'));
     persist(); renderCloud();
   });
   $('cloud-copy').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(save.cloudKey); toast('Schlüssel kopiert.'); } catch { toast('Kopieren nicht möglich – bitte abschreiben.'); }
+    try { await navigator.clipboard.writeText(save.cloudKey); toast(tr('Schlüssel kopiert.')); } catch { toast(tr('Kopieren nicht möglich – bitte abschreiben.')); }
   });
   $('cloud-sync').addEventListener('click', () => cloudPush(true));
   $('cloud-del').addEventListener('click', async () => {
-    if (!confirm('Cloud-Kopie löschen? Dein Spielstand auf diesem Gerät bleibt erhalten, der Schlüssel funktioniert danach nicht mehr.')) return;
+    if (!confirm(tr('Cloud-Kopie löschen? Dein Spielstand auf diesem Gerät bleibt erhalten, der Schlüssel funktioniert danach nicht mehr.'))) return;
     try { await cloudCall({ action: 'del', key: save.cloudKey }); }
     catch (e) { cloudErr = e.message; renderCloud(); return; }
     delete save.cloudKey; delete save.cloudT; delete save.cloudSum; cloudErr = ''; persist(); renderCloud();
-    toast('Cloud-Kopie gelöscht.');
+    toast(tr('Cloud-Kopie gelöscht.'));
   });
   $('cloud-load').addEventListener('click', async () => {
     const key = $('cloud-input').value.toUpperCase().replace(/[^0-9A-Z]/g, '').replace(/(.{4})(?=.)/g, '$1-');
-    if (!/^[2-9A-Z]{4}(-[2-9A-Z]{4}){3}$/.test(key)) { cloudErr = 'Der Schlüssel hat 16 Zeichen, z. B. ABCD-EF23-GH45-JK67.'; renderCloud(); return; }
+    if (!/^[2-9A-Z]{4}(-[2-9A-Z]{4}){3}$/.test(key)) { cloudErr = tr('Der Schlüssel hat 16 Zeichen, z. B. ABCD-EF23-GH45-JK67.'); renderCloud(); return; }
     try {
       const j = await cloudCall({ action: 'get', key });
       const d = j.data;
-      if (!confirm(`Spielstand vom ${new Date(j.t).toLocaleString('de-DE')} laden (${d.total || 0} Fänge, Level ${d.lvl || 1})?\nDer aktuelle Spielstand auf diesem Gerät wird ersetzt.`)) return;
+      if (!confirm(tr('Spielstand vom {d} laden ({n} Fänge, Level {l})?\nDer aktuelle Spielstand auf diesem Gerät wird ersetzt.', { d: new Date(j.t).toLocaleString(I18N.locale), n: d.total || 0, l: d.lvl || 1 }))) return;
       d.cloudKey = key; d.cloudT = j.t; d.cloudSum = '';
       leaving = true;
       localStorage.setItem(SAVE_KEY, JSON.stringify(d));
@@ -2153,7 +2162,7 @@
   // ------------------------------------------------------------------ boot
   $('btn-sound').textContent = save.sound ? '🔊' : '🔇';
   updateCoins(); updateGear(); updateLevel(); updateDexBadge();
-  if (save.seen) $('start').textContent = 'Weiter fischen';
+  if (save.seen) $('start').textContent = tr('Weiter fischen');
 
   let last = performance.now();
   function frame(now) {
