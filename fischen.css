@@ -408,3 +408,33 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
   .lbl { display: none; }
   .xpbar { width: 28px; }
 }
+
+/* ---------- Mutations & Fischdex rewards ---------- */
+.mutbadge {
+  display: inline-block; margin: .3rem auto 0; padding: .2rem .6rem; border-radius: 999px;
+  font-weight: 800; font-size: .8rem; color: #0f172a; background: var(--mc, #fbbf24);
+}
+.mutbadge[hidden] { display: none; }
+#catch-img.mut-golden   { filter: sepia(1) saturate(4) hue-rotate(-12deg) brightness(1.1); }
+#catch-img.mut-albino   { filter: grayscale(1) brightness(1.45) contrast(.8); }
+#catch-img.mut-schatten { filter: brightness(.35) contrast(1.4) drop-shadow(0 0 10px #818cf8); }
+#catch-img.mut-leucht   { filter: brightness(1.2) drop-shadow(0 0 6px #67e8f9) drop-shadow(0 0 16px #22d3ee); }
+#catch-img.mut-regen    { animation: rainbow 2s linear infinite, float 3s ease-in-out infinite; }
+#catch-img.mut-riesig   { scale: 1.12; }
+#catch-img.mut-winzig   { scale: .55; }
+@keyframes rainbow { from { filter: saturate(2.5) hue-rotate(0deg); } to { filter: saturate(2.5) hue-rotate(360deg); } }
+.card .muts { display: flex; justify-content: center; gap: .15rem; margin-top: .25rem; font-size: .85rem; }
+
+#btn-dex.ready { border-color: #fbbf24; animation: nudge 1.2s ease-in-out infinite alternate; }
+.dexrew { margin-top: .7rem; }
+.dexrew summary { cursor: pointer; font-weight: 700; color: #e2e8f0; }
+.rewards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: .5rem; margin-top: .5rem; }
+.reward {
+  position: relative; background: #1e293b; border-radius: 10px; padding: .5rem .65rem; border: 2px solid transparent;
+  display: grid; gap: .1rem; font-size: .82rem;
+}
+.reward small { color: #94a3b8; font-size: .72rem; }
+.reward.ready { border-color: #fbbf24; }
+.reward.got { opacity: .6; }
+.reward .btn { padding: .3rem .7rem; font-size: .8rem; margin-top: .3rem; justify-self: start; }
+.reward .tick { position: absolute; top: .4rem; right: .6rem; color: #4ade80; font-weight: 800; }
