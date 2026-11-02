@@ -6,23 +6,79 @@
   <title>Pinguine!</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    body { overflow-x: hidden; }
+
+    /* Comic Sans, as nature intended */
+    .card, .card h1, .card p {
+      font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Comic Neue", cursive;
+    }
+
+    /* Wobbly title, one letter at a time */
+    .card h1 span {
+      display: inline-block;
+      animation: wobble 0.9s ease-in-out infinite;
+    }
+    @keyframes wobble {
+      0%, 100% { transform: translateY(0) rotate(-8deg); }
+      50%      { transform: translateY(-10px) rotate(8deg); }
+    }
+
+    /* Whole card slowly cycles through every colour there is */
+    .card { animation: rainbow 6s linear infinite; }
+    @keyframes rainbow {
+      to { filter: hue-rotate(360deg); }
+    }
+
+    /* Crawling marquee */
+    .marquee {
+      overflow: hidden;
+      white-space: nowrap;
+      margin-bottom: 1rem;
+    }
+    .marquee span {
+      display: inline-block;
+      padding-left: 100%;
+      color: #facc15;
+      font-weight: 800;
+      animation: crawl 7s linear infinite;
+    }
+    @keyframes crawl {
+      to { transform: translateX(-100%); }
+    }
+
     .stage {
-      perspective: 900px;
+      perspective: 600px;
       height: min(320px, 80vw);
       display: flex;
       align-items: center;
       margin-bottom: 1.5rem;
     }
-    /* Spin around the diagonal axis */
+    /* Faster spin, and the axis itself wanders */
     .card .stage img {
       aspect-ratio: auto;
       max-width: min(300px, 75vw);
       margin: 0 auto;
-      animation: diagonal-spin 4s linear infinite;
+      animation: chaos-spin 1.6s linear infinite;
     }
-    @keyframes diagonal-spin {
-      from { transform: rotate3d(1, 1, 0, 0deg); }
-      to   { transform: rotate3d(1, 1, 0, 360deg); }
+    @keyframes chaos-spin {
+      0%   { transform: rotate3d(1, 1, 0, 0deg)    scale(1); }
+      25%  { transform: rotate3d(1, -1, 0.5, 90deg) scale(1.15); }
+      50%  { transform: rotate3d(-1, 1, 1, 180deg) scale(0.85); }
+      75%  { transform: rotate3d(1, 0.3, -1, 270deg) scale(1.1); }
+      100% { transform: rotate3d(1, 1, 0, 360deg)  scale(1); }
+    }
+
+    /* Penguin rain */
+    .rain {
+      position: fixed;
+      top: -80px;
+      width: 60px;
+      z-index: -1;
+      pointer-events: none;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      to { transform: translateY(calc(100vh + 160px)) rotate(var(--turn)); }
     }
   </style>
   <link rel="stylesheet" href="legal.css">
@@ -30,16 +86,39 @@
 <body>
 
   <main class="card">
-    <h1>Pinguine!</h1>
+    <h1 aria-label="Pinguine!"><span>P</span><span>i</span><span>n</span><span>g</span><span>u</span><span>i</span><span>n</span><span>e</span><span>!</span></h1>
+    <div class="marquee" aria-hidden="true"><span>🐧 LÄCHELN UND WINKEN 🐧 LÄCHELN UND WINKEN 🐧 KEIN FISCH 🐧</span></div>
     <p>Lächeln und winken, Jungs. Lächeln und winken.</p>
     <div class="stage">
-      <img src="rotierendepinguine.gif" alt="Vier Pinguine, diagonal drehend">
+      <img src="rotierendepinguine.gif" alt="Vier Pinguine, chaotisch drehend">
     </div>
     <nav class="links">
       <a href="index.html">Fisch!</a>
       <a href="rat.html">Ratte!</a>
     </nav>
   </main>
+
+  <script>
+    // Stagger the title letters so they wobble like a wave
+    document.querySelectorAll('.card h1 span').forEach((s, i) => {
+      s.style.animationDelay = (i * -0.1) + 's';
+    });
+
+    // It's raining penguins
+    function dropPenguin() {
+      const p = document.createElement('img');
+      p.src = 'rotierendepinguine.gif';
+      p.alt = '';
+      p.className = 'rain';
+      p.style.left = (Math.random() * 100) + 'vw';
+      p.style.width = (30 + Math.random() * 60) + 'px';
+      p.style.animationDuration = (3 + Math.random() * 4) + 's';
+      p.style.setProperty('--turn', ((Math.random() < 0.5 ? -1 : 1) * (180 + Math.random() * 720)) + 'deg');
+      p.addEventListener('animationend', () => p.remove());
+      document.body.appendChild(p);
+    }
+    setInterval(dropPenguin, 400);
+  </script>
 
 <script src="/fish.js" defer></script>
 <footer class="legal"><a href="datenschutz.html">Datenschutz</a></footer>
