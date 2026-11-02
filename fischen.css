@@ -599,8 +599,8 @@ button.pill:active, a.pill:active { translate: 0 2px; }
 
 #toast div {
   font-family: var(--px); font-size: .95rem; background: var(--panel); border: 0;
-  border-left: 6px solid var(--gold); padding: .4rem .8rem .4rem .7rem;
-  box-shadow: 0 -3px 0 var(--ink), 0 3px 0 var(--ink), -3px 0 0 var(--ink), 3px 0 0 var(--ink), inset 0 3px 0 var(--panel-hi), 0 6px 0 rgba(0,0,0,.35);
+  padding: .4rem .8rem;
+  box-shadow: 0 -3px 0 var(--ink), 0 3px 0 var(--ink), -3px 0 0 var(--ink), 3px 0 0 var(--ink), inset 0 3px 0 var(--gold), inset 0 -3px 0 var(--panel-lo), 0 6px 0 rgba(0,0,0,.35);
   animation: toast-px 3.2s steps(1, end) forwards, toast 3.2s forwards;
 }
 @keyframes toast-px { 0% { translate: 40px 0; } 4% { translate: 20px 0; } 8% { translate: 0 0; } }
@@ -624,7 +624,7 @@ button.pill:active, a.pill:active { translate: 0 2px; }
 .sheet {
   background: var(--panel); border: 0;
   box-shadow: 0 -5px 0 var(--ink), 0 5px 0 var(--ink), -5px 0 0 var(--ink), 5px 0 0 var(--ink),
-              inset 0 5px 0 var(--panel-hi), inset 0 -5px 0 var(--panel-lo), inset 5px 0 0 #222d52, inset -5px 0 0 #151d38,
+              inset 0 5px 0 var(--panel-hi), inset 0 -5px 0 var(--panel-lo),
               0 14px 0 rgba(0,0,0,.4);
   animation: pop-px .22s steps(3, end);
   scrollbar-color: var(--panel-hi) var(--slot);
@@ -721,7 +721,7 @@ h3 { font-size: 1.15rem; text-shadow: 2px 2px 0 var(--ink); }
 
 /* casino */
 .casino-sheet { box-shadow: 0 -5px 0 var(--ink), 0 5px 0 var(--ink), -5px 0 0 var(--ink), 5px 0 0 var(--ink),
-  inset 0 5px 0 #fcd34d, inset 0 -5px 0 var(--gold-d), inset 5px 0 0 #f59e0b, inset -5px 0 0 #b45309, 0 14px 0 rgba(0,0,0,.4); }
+  inset 0 5px 0 #fcd34d, inset 0 -5px 0 var(--gold-d), 0 14px 0 rgba(0,0,0,.4); }
 .reels { border-radius: 0; border: 0; box-shadow: 0 0 0 4px var(--ink), inset 0 0 0 3px var(--gold-d); }
 .slot { border-radius: 0; box-shadow: 0 0 0 3px var(--ink), inset 0 8px 10px -6px rgba(0,0,0,.45), inset 0 -8px 10px -6px rgba(0,0,0,.45); }
 .bets button { font-family: var(--px); font-size: 1rem; border-radius: 0; border: 0; background: var(--slot); margin: 3px;
