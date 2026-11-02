@@ -236,8 +236,10 @@
   function retract(msg) {
     // a fish that was on the line darts away
     if (approacher && (state === 'bite' || state === 'reel')) approacher.vx = 35 + Math.random() * 15;
+    const lost = msg && !msg.startsWith('Eingeholt');
     state = 'idle'; hooked = null; approacher = null; $('reel').hidden = true;
     if (msg) hint(msg, 1.8);
+    if (lost && Math.random() < .6) setTimeout(() => oleSay(), 700);
   }
 
   function pickFish() {
@@ -293,6 +295,7 @@
     if (mut) { e.muts = e.muts || {}; newMut = !e.muts[mut.id]; e.muts[mut.id] = (e.muts[mut.id] || 0) + 1; }
     save.coins += val; save.total++; save.lifeCoins += val; save.totalEarned += val;
     progressCatch(f, size, val, first);
+    if (Math.random() < .3) setTimeout(() => oleSay(), 1200);
     setTimeout(() => lbSubmit(), 3000);
     if (dexClaimable().length) { updateDexBadge(); if (first || newMut) toast('📖 Fischdex-Belohnung bereit!'); }
     persist(); updateCoins();
@@ -435,6 +438,7 @@
     e.preventDefault();
     const rc = cv.getBoundingClientRect();
     const wx = (e.clientX - rc.left) / rc.width * W, wy = (e.clientY - rc.top) / rc.height * H;
+    if (!anyModal() && wx > OLE.x - 4 && wx < OLE.x + OLE.w + 4 && wy > OLE.y - OLE.h - 4 && wy < OLE.y + 2) { audio(); oleSay(true); return; }
     if (state === 'idle' && !anyModal() && wx > KIOSK.x - 3 && wx < KIOSK.x + KIOSK.w + 3 && wy > DOCK_Y - 40 && wy < DOCK_Y + 2) { audio(); toggleModal('shop'); return; }
     if (state === 'idle' && !anyModal() && wx > NPC.x - 3 && wx < NPC.x + NPC.w + 6 && wy > DOCK_Y - NPC.h - 4 && wy < DOCK_Y + 2) { audio(); talkNpc(); return; }
     down();
@@ -545,6 +549,7 @@
 
     if (npcTalk > 0) npcTalk -= dt;
     if (welsTalk > 0) welsTalk -= dt;
+    if (oleTalk > 0) oleTalk -= dt;
     updateFx(dt);
     hintTick(dt);
   }
@@ -793,6 +798,7 @@
     }
 
     ctx.restore();
+    drawOle(dark);
     // lighthouse beam
     if (dark > .3) {
       const sw = Math.sin(t * 1.2);
@@ -921,6 +927,58 @@
     }
   }
 
+
+
+  // ------------------------------------------------------------------ Ole, the lighthouse keeper
+  // An original NPC on the island who has exactly one line. He says it when clicked and whenever
+  // something happens. Clicking him faster only makes him say it louder.
+  const OLE_LINE = 'Ahoi! Heute beißen sie gut.';
+  const OLE_PAL = { k: '#1b1f2e', h: '#facc15', H: '#ca8a04', s: '#f2c9a0', e: '#0f172a', b: '#e5e7eb', y: '#fde047', Y: '#a16207', p: '#1e3a8a', o: '#3f2a1c' };
+  const OLE_ROWS = [
+    '...kkkk...', '..khhhhk..', '.khhhhhhk.', 'kHHHHHHHHk', '.kssessk..', '.kbsssbk..', '.kbbbbbk..', '..kbbbk...',
+    '.kyyyyyk..', 'kyyYyyyyk.', 'kyyYyyyyk.', 'ksyYyyyyk.', '.kyYyyyk..', '.kppkppk..', '.kppkppk..', '.kookook..',
+  ];
+  const oleImg = bake(OLE_ROWS, OLE_PAL);
+  const OLE = { x: 326, w: 5, h: 8 };
+  OLE.y = HORIZON + 1 - 15 * Math.pow(Math.sin(Math.PI * (OLE.x + 2.5 - 246) / 110), .7);
+  let oleTalk = 0, oleHeat = 0, oleLast = 0;
+  function oleSay(fromClick) {
+    if (fromClick) {
+      // rapid clicking turns up the volume, never the vocabulary
+      oleHeat = performance.now() - oleLast < 2500 ? Math.min(6, oleHeat + 1) : 0;
+      oleLast = performance.now();
+      save.oleTalks = (save.oleTalks || 0) + 1;
+      if (save.oleTalks === 10) setTimeout(() => toast('Ole hat genau einen Satz. Er sagt ihn gern.'), 600);
+      if (save.oleTalks === 25 && !save.oleReward) {
+        save.oleReward = true; save.coins += 100; save.totalEarned = (save.totalEarned || 0) + 100; updateCoins();
+        setTimeout(() => toast('🏅 Bester Gesprächspartner: 25× mit Ole geredet · +100 Taler'), 600);
+      }
+      persist();
+    } else if (oleTalk > 0) return;
+    oleTalk = 2.6;
+    // same melody every single time
+    [392, 440, 392, 330, 392, 494].forEach((f, i) => setTimeout(() => tone(f, .06, 'square', .035 + oleHeat * .01), i * 75));
+  }
+  function drawOle(dark) {
+    const x = OLE.x, y = OLE.y, wave = oleTalk > 0;
+    ctx.drawImage(oleImg, x, y - OLE.h, OLE.w, OLE.h);
+    // waving arm while talking
+    const arm = wave && Math.sin(t * 12) > 0;
+    px(x + 4, y - (arm ? 6.5 : 4.5), 1, 2, '#fde047'); px(x + 4.5, y - (arm ? 7.5 : 3), .5, .5, '#f2c9a0');
+    if (dark > 0) { ctx.globalAlpha = dark * .55; px(x - .5, y - OLE.h - .5, OLE.w + 1.5, OLE.h + 1, '#0b1020'); ctx.globalAlpha = 1; }
+    if (oleTalk > 0) {
+      const sc = 1 + oleHeat * .14, shake = oleHeat > 2 ? Math.sin(t * 60) * oleHeat * .15 : 0;
+      ctx.save();
+      ctx.font = `${oleHeat > 3 ? 700 : 400} 6px Poppins, sans-serif`;
+      const tw = ctx.measureText(OLE_LINE).width + 4;
+      const cx = Math.min(W - tw * sc / 2 - 2, x + 2.5), cy = y - OLE.h - 4;
+      ctx.translate(snap(cx + shake), snap(cy)); ctx.scale(sc, sc);
+      ctx.globalAlpha = Math.min(1, oleTalk * 3);
+      px(-tw / 2 - .5, -9.5, tw + 1, 9, '#0f172a'); px(-tw / 2, -9, tw, 8, '#fffbeb'); px(-.5, -1, 2, 1.5, '#0f172a');
+      ctx.fillStyle = '#0f172a'; ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillText(OLE_LINE, 0, -8);
+      ctx.restore();
+    }
+  }
 
   // ------------------------------------------------------------------ shop kiosk with Herr Zylinderwels
   // An original pixel catfish in a top hat runs the shop from a little striped kiosk on the dock.
@@ -1550,6 +1608,7 @@
     if (save.lvl > from && !quiet) {
       save.coins += reward; updateCoins();
       toast(`⭐ Level ${save.lvl}! +${reward} Taler`);
+      setTimeout(() => oleSay(), 900);
       const unlocked = [...RODS, ...BAITS].filter(it => it.lvl > from && it.lvl <= save.lvl && !lockText(it)).map(it => it.name);
       if (unlocked.length) toast(`🔓 Freigeschaltet: ${unlocked.join(', ')}`);
       if (from < rebirthLvl() && save.lvl >= rebirthLvl()) toast('🌀 Wiedergeburt möglich – schau in den Fortschritt!');
