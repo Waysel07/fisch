@@ -5,19 +5,148 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fisch 5!</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Speech bubble */
+    #bubble {
+      position: relative;
+      display: inline-block;
+      background: #e2e8f0;
+      color: #0f172a;
+      font-weight: 600;
+      padding: 0.6rem 1rem;
+      border-radius: 14px;
+      margin-bottom: 1.25rem;
+      max-width: 100%;
+    }
+    #bubble::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -10px;
+      translate: -50% 0;
+      border: 10px solid transparent;
+      border-bottom: 0;
+      border-top-color: #e2e8f0;
+    }
+
+    #lippenfisch { cursor: pointer; }
+
+    /* Lips flap while the fish talks */
+    .card img.talking { animation: flap 0.16s ease-in-out infinite alternate; }
+    @keyframes flap {
+      from { transform: scale(1, 1); }
+      to   { transform: scale(1.04, 0.9) translateY(4px); }
+    }
+
+    /* Text-to-Fisch */
+    .ttf {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+    .ttf input {
+      flex: 1;
+      min-width: 0;
+      max-width: 260px;
+      font: inherit;
+      padding: 0.55rem 0.8rem;
+      border-radius: 8px;
+      border: 2px solid #22c55e;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+    .ttf button {
+      font: inherit;
+      font-weight: 600;
+      background: #22c55e;
+      color: #0f172a;
+      border: 0;
+      border-radius: 8px;
+      padding: 0.55rem 1rem;
+      cursor: pointer;
+    }
+    .ttf button:hover { background: #4ade80; }
+  </style>
   <link rel="stylesheet" href="legal.css">
 </head>
 <body>
 
   <main class="card">
     <h1>Fisch 5!</h1>
-    <p>Hallo. Ich bin der Lippenfisch. Ich habe Zähne.</p>
-    <img src="lippenfisch-spin.gif" alt="Drehender Fisch mit dicken Lippen und Menschenzähnen">
+    <div id="bubble" aria-live="polite">Hallo. Ich bin der Lippenfisch. Ich habe Zähne.</div>
+    <img id="lippenfisch" src="lippenfisch-spin.gif"
+         alt="Drehender Fisch mit dicken Lippen und Menschenzähnen"
+         title="Klick mich, ich rede!">
+    <form class="ttf" id="ttf">
+      <input id="say" type="text" maxlength="200" placeholder="Was soll der Fisch sagen?" aria-label="Was soll der Fisch sagen?">
+      <button type="submit">Sprich, Fisch!</button>
+    </form>
     <nav class="links">
       <a href="index.html">Fisch!</a>
       <a href="fish3.html">Fisch 3!</a>
     </nav>
   </main>
+
+  <script>
+    // REVOLUTIONÄR: Der Lippenfisch spricht.
+    const fish = document.getElementById('lippenfisch');
+    const bubble = document.getElementById('bubble');
+    const synth = window.speechSynthesis;
+
+    const lines = [
+      'Hallo. Ich bin der Lippenfisch. Ich habe Zähne.',
+      'Ich habe heute schon dreimal Zähne geputzt. Unter Wasser.',
+      'Blub.',
+      'Ich bin kein Fisch. Ich bin ein Lebensgefühl.',
+      'Hast du Lippenpflege dabei?',
+      'Meine Zahnärztin hat Angst vor mir.',
+      'Die Pinguine schulden mir noch Geld.',
+      'Absolute Odfisch.',
+      'Ich rede nur, weil du geklickt hast.',
+      'Kuss?'
+    ];
+    let last = -1;
+
+    function germanVoice() {
+      if (!synth) return null;
+      const voices = synth.getVoices();
+      return voices.find(v => v.lang && v.lang.toLowerCase().startsWith('de')) || null;
+    }
+
+    function speak(text) {
+      bubble.textContent = text;
+      fish.classList.add('talking');
+      if (!synth) {                       // no speech in this browser: just flap for a bit
+        setTimeout(() => fish.classList.remove('talking'), 300 + text.length * 60);
+        return;
+      }
+      synth.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'de-DE';
+      const v = germanVoice();
+      if (v) u.voice = v;
+      u.pitch = 0.3 + Math.random() * 0.4;  // deep fish voice
+      u.rate = 0.8 + Math.random() * 0.4;
+      u.onend = u.onerror = () => fish.classList.remove('talking');
+      synth.speak(u);
+    }
+
+    fish.addEventListener('click', () => {
+      let i;
+      do { i = Math.floor(Math.random() * lines.length); } while (i === last && lines.length > 1);
+      last = i;
+      speak(lines[i]);
+    });
+
+    document.getElementById('ttf').addEventListener('submit', e => {
+      e.preventDefault();
+      const input = document.getElementById('say');
+      const text = input.value.trim();
+      if (text) speak(text);
+      input.value = '';
+    });
+  </script>
 
 <script src="/fish.js" defer></script>
 <footer class="legal"><a href="datenschutz.html">Datenschutz</a></footer>
