@@ -277,7 +277,14 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
 .result.win { color: #4ade80; }
 .result.big { color: #fbbf24; font-size: 1.3rem; }
 .result.lose { color: #94a3b8; }
-.bets { display: flex; gap: .4rem; justify-content: center; margin-bottom: .8rem; }
+.bets { display: flex; flex-direction: column; align-items: center; gap: .5rem; margin-bottom: .8rem; }
+.bet-pick, .bet-quick { display: flex; gap: .4rem; justify-content: center; align-items: center; flex-wrap: wrap; }
+.bet-pick button { min-width: 2.4rem; font-size: 1.2rem; }
+#bet-input { width: 7.5rem; text-align: center; font-family: var(--px); font-size: 1.15rem; color: var(--gold);
+  background: var(--ink); border: 0; padding: .35rem .4rem; box-shadow: 0 0 0 3px var(--ink), inset 0 0 0 3px var(--gold-d); margin: 3px; }
+#bet-input:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--ink), inset 0 0 0 3px var(--gold); }
+#bet-input::-webkit-inner-spin-button, #bet-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+#bet-input { -moz-appearance: textfield; appearance: textfield; }
 .bets button {
   font: inherit; font-weight: 600; font-size: .85rem;
   background: #1e293b; color: #e2e8f0; border: 2px solid #334155; border-radius: 8px; padding: .3rem .7rem;

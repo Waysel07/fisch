@@ -1327,8 +1327,21 @@
     { id: 'odfisch', img: 'odfish.jpg',           w: 3,  pay: 150 },
     { id: 'ratte',   img: 'rat.gif',              w: 6,  pay: 0 },
   ];
-  const PAIR = 1.5, BETS = [100, 1000];
+  const PAIR = 1.5, MIN_BET = 100, STEP = 100;
   let bet = 100, spinning = false;
+  const maxBet = () => Math.max(MIN_BET, Math.floor(save.coins / STEP) * STEP);
+  function setBet(v) {
+    v = Math.round(+v);
+    bet = Number.isFinite(v) ? Math.max(MIN_BET, v) : MIN_BET;
+    renderCasino();
+  }
+  $('bet-down').addEventListener('click', () => setBet(Math.ceil(bet / STEP) * STEP - STEP));
+  $('bet-up').addEventListener('click', () => setBet(Math.floor(bet / STEP) * STEP + STEP));
+  $('bet-input').addEventListener('input', e => { const v = Math.round(+e.target.value); if (v >= MIN_BET) { bet = v; renderCasino(); } });
+  $('bet-input').addEventListener('change', e => setBet(e.target.value));
+  $('bet-input').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); setBet(e.target.value); e.target.blur(); } });
+  $('bets').querySelectorAll('[data-bet]').forEach(btn => btn.addEventListener('click', () =>
+    setBet(btn.dataset.bet === 'max' ? maxBet() : btn.dataset.bet)));
   const symW = SYMBOLS.reduce((a, s) => a + s.w, 0);
   function rollSymbol() {
     let r = Math.random() * symW;
@@ -1350,13 +1363,15 @@
   }
   function renderCasino() {
     $('casino-coins').textContent = save.coins;
-    $('bets').replaceChildren(...BETS.map(b => {
-      const btn = document.createElement('button');
-      btn.textContent = b; btn.className = b === bet ? 'on' : '';
-      btn.disabled = spinning;
-      btn.addEventListener('click', () => { bet = b; renderCasino(); });
-      return btn;
-    }));
+    $('bet-input').disabled = spinning;
+    if (document.activeElement !== $('bet-input')) $('bet-input').value = bet;
+    $('bet-down').disabled = spinning || bet <= MIN_BET;
+    $('bet-up').disabled = spinning;
+    $('bets').querySelectorAll('[data-bet]').forEach(btn => {
+      const v = btn.dataset.bet === 'max' ? maxBet() : +btn.dataset.bet;
+      btn.disabled = spinning || (btn.dataset.bet === 'max' && save.coins < MIN_BET);
+      btn.classList.toggle('on', v === bet);
+    });
     $('spin').disabled = spinning || save.coins < bet;
     $('spin').textContent = save.coins < bet && !spinning ? 'Zu wenig Taler – geh fischen!' : `Drehen (${bet} Taler)`;
     if (!$('paytable').childElementCount) {
