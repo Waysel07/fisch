@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pinguine!</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .stage {
+      perspective: 900px;
+      height: min(320px, 80vw);
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    /* Spin around the diagonal axis */
+    .card .stage img {
+      aspect-ratio: auto;
+      max-width: min(300px, 75vw);
+      margin: 0 auto;
+      animation: diagonal-spin 4s linear infinite;
+    }
+    @keyframes diagonal-spin {
+      from { transform: rotate3d(1, 1, 0, 0deg); }
+      to   { transform: rotate3d(1, 1, 0, 360deg); }
+    }
+  </style>
+  <link rel="stylesheet" href="legal.css">
+</head>
+<body>
+
+  <main class="card">
+    <h1>Pinguine!</h1>
+    <p>Lächeln und winken, Jungs. Lächeln und winken.</p>
+    <div class="stage">
+      <img src="pinguine.jpg" alt="Vier Pinguine, diagonal drehend">
+    </div>
+    <nav class="links">
+      <a href="index.html">Fisch!</a>
+      <a href="rat.html">Ratte!</a>
+    </nav>
+  </main>
+
+<script src="/fish.js" defer></script>
+<footer class="legal"><a href="datenschutz.html">Datenschutz</a></footer>
+</body>
+</html>
