@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Fischen!</title>
-  <link rel="icon" href="/fish-icon.png" type="image/png">
+  <link rel="icon" href="/img/fish-icon.png" type="image/png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="preload" href="pixelify-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="pixelify-700.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="poppins-400.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="poppins-800.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="fischen.css">
+  <link rel="preload" href="fonts/pixelify-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/pixelify-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/poppins-800.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/fischen.css">
 </head>
 <body>
 
@@ -21,7 +21,7 @@
     <div id="hud">
       <div class="hud-left">
         <a class="pill back" href="index.html" title="Zurück">&larr;</a>
-        <span class="pill" title="Fischtaler"><img src="fish-icon.png" alt="" class="coin"> <b id="coins">0</b></span>
+        <span class="pill" title="Fischtaler"><img src="img/fish-icon.png" alt="" class="coin"> <b id="coins">0</b></span>
         <button class="pill lvl" id="lvl" title="Level">⭐ <b id="lvl-num">1</b><span class="xpbar"><i id="lvl-bar"></i></span><span id="lvl-reb"></span></button>
         <span class="pill" id="clock" title="Tageszeit">☀️ Tag</span>
         <span class="pill saved" id="saved" title="Spielstand wird in deinem Browser gespeichert">💾 <span class="lbl">Gespeichert</span></span>
@@ -58,7 +58,7 @@
         <div class="catch-art">
           <div class="rays" aria-hidden="true"></div>
           <div class="sparkles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <img id="catch-img" src="fsh-spin.gif" alt="">
+          <img id="catch-img" src="img/fsh-spin.gif" alt="">
           <p class="say" id="catch-say"></p>
         </div>
         <h2 id="catch-name"></h2>
@@ -98,7 +98,7 @@
       <div class="sheet wide shop-sheet" role="dialog" aria-modal="true" aria-labelledby="shop-title">
         <button class="close" data-close aria-label="Schließen">✕</button>
         <div class="keeper">
-          <img src="tophat-fish-fish.gif" alt="Herr Zylinderwels, ein Wels mit Zylinder" class="keeper-photo">
+          <img src="img/tophat-fish-fish.gif" alt="Herr Zylinderwels, ein Wels mit Zylinder" class="keeper-photo">
           <div class="keeper-talk">
             <h2 id="shop-title">Zylinderwels &amp; Söhne</h2>
             <p class="keeper-name">Herr Zylinderwels, Inhaber</p>
@@ -110,7 +110,7 @@
             <button class="tab on" data-shop-tab="rods" role="tab" aria-selected="true">🎣 Ruten</button>
             <button class="tab" data-shop-tab="baits" role="tab" aria-selected="false">🪱 Köder</button>
           </div>
-          <span class="purse"><img src="fish-icon.png" alt="" class="coin"> <b id="shop-coins">0</b></span>
+          <span class="purse"><img src="img/fish-icon.png" alt="" class="coin"> <b id="shop-coins">0</b></span>
         </div>
         <div class="wares" id="shop-wares"></div>
       </div>
@@ -123,9 +123,9 @@
         <h2 id="casino-title">Fischautomat</h2>
         <p class="sub">Du hast <b id="casino-coins">0</b> Fischtaler.</p>
         <div class="reels" id="reels">
-          <div class="slot"><img src="odfish.jpg" alt=""></div>
-          <div class="slot"><img src="lippenfisch-spin.gif" alt=""></div>
-          <div class="slot"><img src="lo.gif" alt=""></div>
+          <div class="slot"><img src="img/odfish.jpg" alt=""></div>
+          <div class="slot"><img src="img/lippenfisch-spin.gif" alt=""></div>
+          <div class="slot"><img src="img/lo.gif" alt=""></div>
         </div>
         <p class="result" id="slot-result">Dreh am Fisch!</p>
         <div class="bets" id="bets">
@@ -240,7 +240,7 @@
     <!-- Title -->
     <div class="modal" id="title">
       <div class="sheet title-sheet">
-        <img src="fsh-spin.gif" alt="" class="title-fish">
+        <img src="img/fsh-spin.gif" alt="" class="title-fish">
         <h1>Fischen!</h1>
         <p class="desc">Wirf die Angel aus, warte auf den Biss und hol den Fang ein.<br>Fang sie alle für den Fischdex.</p>
         <ul class="how">
@@ -264,7 +264,7 @@
     </div>
   </div>
 
-  <script src="fischen-i18n.js"></script>
-  <script src="fischen.js"></script>
+  <script src="js/fischen-i18n.js"></script>
+  <script src="js/fischen.js"></script>
 </body>
 </html>
