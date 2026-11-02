@@ -212,12 +212,14 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
 .r-common { color: #94a3b8; }
 .r-uncommon { color: #4ade80; }
 .r-rare { color: #38bdf8; }
+.r-wii { color: #5ccdf6; }
 .r-epic { color: #c084fc; }
 .r-legendary { color: #fbbf24; }
 .r-junk { color: #a8a29e; }
 .card.b-common { border-color: #475569; }
 .card.b-uncommon { border-color: #22c55e; }
 .card.b-rare { border-color: #0ea5e9; }
+.card.b-wii { border-color: #5ccdf6; }
 .card.b-epic { border-color: #a855f7; }
 .card.b-legendary { border-color: #f59e0b; }
 .card.b-junk { border-color: #78716c; }
@@ -337,10 +339,11 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
 @keyframes twinkle { 0%, 100% { transform: scale(0) rotate(0); opacity: 0; } 50% { transform: scale(1) rotate(90deg); opacity: 1; } }
 
 .catch-sheet.fx-rare      { --fx: #38bdf8; --fx-hi: #e0f2fe; }
+.catch-sheet.fx-wii       { --fx: #5ccdf6; --fx-hi: #ffffff; }
 .catch-sheet.fx-epic      { --fx: #c084fc; --fx-hi: #f3e8ff; }
 .catch-sheet.fx-legendary { --fx: #fbbf24; --fx-hi: #fffbeb; }
-.fx-rare, .fx-epic, .fx-legendary { border-color: var(--fx); box-shadow: 0 10px 0 color-mix(in srgb, var(--fx) 55%, #000), 0 0 40px color-mix(in srgb, var(--fx) 45%, transparent); }
-.fx-rare .sparkles, .fx-epic .sparkles, .fx-legendary .sparkles,
+.fx-rare, .fx-wii, .fx-epic, .fx-legendary { border-color: var(--fx); box-shadow: 0 10px 0 color-mix(in srgb, var(--fx) 55%, #000), 0 0 40px color-mix(in srgb, var(--fx) 45%, transparent); }
+.fx-rare .sparkles, .fx-wii .sparkles, .fx-epic .sparkles, .fx-legendary .sparkles,
 .fx-epic .rays, .fx-legendary .rays { display: block; }
 .fx-legendary .rays { opacity: .6; animation-duration: 5s; }
 .fx-epic, .fx-legendary { animation: pop .25s ease-out, glow 1.6s ease-in-out infinite alternate; }
@@ -349,7 +352,7 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
 .fx-legendary #catch-img { animation: enter-legend 1s cubic-bezier(.2, 1.4, .4, 1), float 3s ease-in-out 1s infinite; }
 @keyframes enter-epic { from { transform: scale(.2) rotate(-25deg); opacity: 0; } }
 @keyframes enter-legend { 0% { transform: scale(0) rotate(-540deg); opacity: 0; filter: brightness(4); } 70% { filter: brightness(1.6); } }
-.fx-rare .rarity, .fx-epic .rarity, .fx-legendary .rarity { font-size: .95rem; text-shadow: 0 0 12px var(--fx); }
+.fx-rare .rarity, .fx-wii .rarity, .fx-epic .rarity, .fx-legendary .rarity { font-size: .95rem; text-shadow: 0 0 12px var(--fx); }
 .fx-legendary #catch-name { color: #fbbf24; animation: shine 1.6s ease-in-out infinite alternate; }
 .fx-epic #catch-name { color: #d8b4fe; }
 @keyframes shine { to { color: #fde68a; } }
