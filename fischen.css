@@ -55,6 +55,7 @@ button.pill:hover, a.pill:hover { border-color: #4ade80; }
 .coin { width: 18px; height: 18px; image-rendering: pixelated; }
 #coins { color: #fbbf24; }
 
+.gear-bait { width: 1.3em; height: 1.3em; vertical-align: -.35em; object-fit: contain; image-rendering: auto; }
 #gear {
   position: absolute; left: .75rem; bottom: max(.75rem, env(safe-area-inset-bottom));
   font-size: .8rem; font-weight: 400; pointer-events: none;

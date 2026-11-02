@@ -1120,7 +1120,13 @@
   function updateCoins() { $('coins').textContent = save.coins; $('shop-coins').textContent = save.coins; $('casino-coins').textContent = save.coins; }
   function updateGear() {
     const b = bait(), n = save.baits[b.id];
-    $('gear').textContent = `🎣 ${rod().name} · 🪱 ${b.name}${n === Infinity ? '' : ' ×' + n}`;
+    const g = $('gear'); g.replaceChildren();
+    g.append(`🎣 ${rod().name} · `.trimEnd());
+    g.append(' ');
+    if (b.img) { // baits with their own picture show it in the HUD
+      const im = document.createElement('img'); im.className = 'gear-bait'; im.src = ICONS[b.id]; im.alt = ''; g.append(im, ` ${b.name}`);
+    } else g.append(`🪱 ${b.name}`);
+    g.append(n === Infinity ? '' : ' ×' + n);
   }
   let lastClock = '';
   function updateClock() {
