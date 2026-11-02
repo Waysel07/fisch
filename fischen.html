@@ -130,12 +130,13 @@
         <p class="result" id="slot-result">Dreh am Fisch!</p>
         <div class="bets" id="bets">
           <div class="bet-pick">
-            <button type="button" id="bet-down" aria-label="100 Taler weniger">−</button>
+            <button type="button" id="bet-down" aria-label="50 Taler weniger">−</button>
             <label class="sr-only" for="bet-input">Einsatz in Talern</label>
-            <input id="bet-input" type="number" inputmode="numeric" min="100" max="1000" step="100" value="100">
-            <button type="button" id="bet-up" aria-label="100 Taler mehr">+</button>
+            <input id="bet-input" type="number" inputmode="numeric" min="50" max="1000" step="50" value="100">
+            <button type="button" id="bet-up" aria-label="50 Taler mehr">+</button>
           </div>
           <div class="bet-quick">
+            <button type="button" data-bet="50">50</button>
             <button type="button" data-bet="100">100</button>
             <button type="button" data-bet="500">500</button>
             <button type="button" data-bet="1000">1000</button>

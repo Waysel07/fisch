@@ -1359,7 +1359,7 @@
     { id: 'odfisch', img: 'img/odfish.jpg',           w: 3,  pay: 150 },
     { id: 'ratte',   img: 'img/rat.gif',              w: 6,  pay: 0 },
   ];
-  const PAIR = 1.5, MIN_BET = 100, MAX_BET = 1000, STEP = 100;
+  const PAIR = 1.5, MIN_BET = 50, MAX_BET = 1000, STEP = 50;
   let bet = 100, spinning = false;
   const maxBet = () => Math.min(MAX_BET, Math.max(MIN_BET, Math.floor(save.coins / STEP) * STEP));
   function setBet(v) {
