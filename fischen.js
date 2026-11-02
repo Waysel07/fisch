@@ -346,6 +346,9 @@
   // Shinys: any catch can rarely come out shiny (other colours, sparkles, triple value).
   // They are collected in the Shinydex. Luck from rod and bait helps a little.
   const SHINY_BASE = 1 / 100, SHINY_VAL = 3;
+  // each fish gets its own shiny colour (green, teal, cyan, blue, purple or pink), never gold
+  const SHINY_HUES = [90, 140, 180, 220, 260, 300];
+  function shinyHue(id) { return SHINY_HUES[[...id].reduce((a, c) => a + c.charCodeAt(0), 0) % SHINY_HUES.length]; }
   function shinyChance() { return Math.min(.05, SHINY_BASE * Math.sqrt(bait().luck * rod().luck) * (dexPerk('shiny2') ? 2 : 1)); }
   function rollShiny() {
     if (window.__fischen && window.__fischen.forceShiny) return true;
@@ -1398,6 +1401,7 @@
     $('catch-img').className = $('catch-img').className.replace(/\bmut-\S+/g, '').trim();
     if (mut) $('catch-img').classList.add('mut-' + mut.id);
     $('catch-img').classList.toggle('shiny', !!shiny);
+    $('catch-img').style.setProperty('--shiny-hue', shiny ? shinyHue(f.id) + 'deg' : '');
     $('catch-shiny').hidden = !shiny;
     if (shiny) $('catch-shiny').textContent = `💫 Shiny · ×${SHINY_VAL} Wert${newShiny ? ' · neu im Shinydex!' : ''}`;
     const mb = $('catch-mut');
@@ -1441,7 +1445,7 @@
       const c = document.createElement('div');
       c.className = 'card ' + (sh ? 'b-' + f.r + ' shiny-card' : 'unknown');
       const img = document.createElement('img'); img.loading = 'lazy';
-      if (sh) { img.src = f.img; img.alt = f.name + ' (Shiny)'; img.className = ['shiny', f.pixel ? 'pixel' : '', f.photo ? 'photo' : ''].join(' ').trim(); }
+      if (sh) { img.style.setProperty('--shiny-hue', shinyHue(f.id) + 'deg'); img.src = f.img; img.alt = f.name + ' (Shiny)'; img.className = ['shiny', f.pixel ? 'pixel' : '', f.photo ? 'photo' : ''].join(' ').trim(); }
       else if (e && !f.photo) { img.src = f.img; img.alt = 'Noch kein Shiny'; img.className = 'shadow' + (f.pixel ? ' pixel' : ''); }
       else { img.src = 'fish-icon.png'; img.alt = 'Unbekannt'; img.className = 'pixel shadow'; }
       const name = document.createElement('b'); name.textContent = sh ? '💫 ' + f.name : e ? f.name : '???';

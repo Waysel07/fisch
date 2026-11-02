@@ -544,7 +544,8 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
 
 /* ---------- Shinys */
 .shinybadge { --mc: #fde047; margin-left: .3rem; }
-#catch-img.shiny:not([class*="mut-"]), .card img.shiny { filter: hue-rotate(150deg) saturate(1.6) brightness(1.08); }
+/* sepia first so grey and white fish get colour too, then turn it to the fish's own shiny hue */
+#catch-img.shiny:not([class*="mut-"]), .card img.shiny { filter: sepia(1) saturate(3.5) hue-rotate(var(--shiny-hue, 180deg)) brightness(1.05); }
 #catch-img.shiny[class*="mut-"] { outline: 2px solid #fde047; outline-offset: 4px; border-radius: 6px; }
 .catch-sheet.is-shiny .sparkles { display: block; }
 .catch-sheet.is-shiny:not(.fx-rare):not(.fx-wii):not(.fx-epic):not(.fx-legendary) { --fx-hi: #fde047; }
