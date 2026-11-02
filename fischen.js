@@ -40,14 +40,17 @@
 
   const RODS = [
     { id: 'stock',  name: 'Stock mit Schnur', price: 0,    cast: .55, reel: 1.0,  tens: 1.0,  luck: 1,   desc: 'Hat schon Opa benutzt.' },
-    { id: 'bambus', name: 'Bambusrute',       price: 60,   cast: .75, reel: 1.25, tens: .85,  luck: 1,   desc: 'Wirft weiter, kurbelt schneller.' },
-    { id: 'carbon', name: 'Carbonrute',       price: 260,  cast: .92, reel: 1.5,  tens: .7,   luck: 1.15, desc: 'Leicht, stark, weit.' },
-    { id: 'gold',   name: 'Goldene Rute',     price: 900,  cast: 1.0, reel: 1.85, tens: .55,  luck: 1.4, desc: 'Glänzt. Fische lieben Glanz.' },
+    { id: 'bambus', name: 'Bambusrute',       price: 60,   lvl: 2,  cast: .75, reel: 1.25, tens: .85,  luck: 1,   desc: 'Wirft weiter, kurbelt schneller.' },
+    { id: 'carbon', name: 'Carbonrute',       price: 260,  lvl: 5,  cast: .92, reel: 1.5,  tens: .7,   luck: 1.15, desc: 'Leicht, stark, weit.' },
+    { id: 'gold',   name: 'Goldene Rute',     price: 900,  lvl: 9,  cast: 1.0, reel: 1.85, tens: .55,  luck: 1.4, desc: 'Glänzt. Fische lieben Glanz.' },
+    { id: 'regen',  name: 'Regenbogenrute',   price: 2500, reb: 1, cast: 1.0, reel: 2.2,  tens: .48,  luck: 1.7, desc: 'Nur für Wiedergeborene. Schillert in allen Farben.' },
+    { id: 'stern',  name: 'Sternenrute',      price: 6000, reb: 3, cast: 1.0, reel: 2.6,  tens: .4,   luck: 2.1, desc: 'Aus einer Sternschnuppe geschnitzt.' },
   ];
   const BAITS = [
     { id: 'wurm',   name: 'Wurm',          price: 0,  pack: 0, luck: 1,   speed: 1,   desc: 'Unbegrenzt. Wurmig.' },
     { id: 'spezi',  name: 'Spezi-Köder',   price: 12, pack: 5, luck: 1.7, speed: 1.35, desc: '5 Stück. Seltene Fische beißen öfter.' },
-    { id: 'glitzer', name: 'Glitzerköder', price: 35, pack: 5, luck: 2.8, speed: 1.6, desc: '5 Stück. Für die ganz großen Fänge.' },
+    { id: 'glitzer', name: 'Glitzerköder', price: 35, pack: 5, lvl: 4, luck: 2.8, speed: 1.6, desc: '5 Stück. Für die ganz großen Fänge.' },
+    { id: 'mond',   name: 'Mondköder',     price: 90, pack: 5, reb: 2, luck: 4.2, speed: 2,  desc: '5 Stück. Leuchtet. Legenden können nicht widerstehen.' },
   ];
 
   // ------------------------------------------------------------------ save
@@ -55,6 +58,7 @@
   const save = Object.assign({
     coins: 0, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity },
     dex: {}, total: 0, sound: true, seen: false,
+    lvl: 1, xp: 0, rebirths: 0, scales: 0, perks: {}, quests: [], questsDone: 0, lifeCoins: 0,
   }, load());
   save.baits.wurm = Infinity;
   function load() {
@@ -218,7 +222,7 @@
   function land() {
     state = 'wait'; bob.y = SURFACE; bob.dunk = 0;
     splash(bob.x, SURFACE, 10, '#bfe9ff'); ripple(bob.x); sfx.splash();
-    waitT = (2.5 + Math.random() * 6) / bait().speed;
+    waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss'));
     nibbles = Math.floor(Math.random() * 3); nibbleT = waitT - 1.2;
     approacher = null;
     hint('Warten …', 1.2);
@@ -230,7 +234,7 @@
 
   function pickFish() {
     const d = castDistance(), night = isNight(), b = bait(), r = rod();
-    const luck = b.luck * r.luck;
+    const luck = b.luck * r.luck * (1 + .08 * perk('glueck'));
     const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night));
     const weights = pool.map(f => {
       let w = RARITY[f.r].w;
@@ -265,11 +269,12 @@
 
   function land_catch() {
     const { f, size } = hooked;
-    const val = Math.max(1, Math.round(f.val * (0.7 + .6 * (size - f.min) / (f.max - f.min || 1))));
+    const val = Math.max(1, Math.round(f.val * (0.7 + .6 * (size - f.min) / (f.max - f.min || 1)) * coinMult()));
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
     e.n++; e.best = Math.max(e.best, size); save.dex[f.id] = e;
-    save.coins += val; save.total++;
+    save.coins += val; save.total++; save.lifeCoins += val;
+    progressCatch(f, size, val, first);
     persist(); updateCoins();
     splash(bob.x, SURFACE, 22, '#ffffff');
     state = 'show'; $('reel').hidden = true; holding = false; hint('');
@@ -399,6 +404,7 @@
     if (k === 'f') { toggleModal('dex'); return; }
     if (k === 'l') { toggleModal('shop'); return; }
     if (k === 'c') { toggleModal('casino'); return; }
+    if (k === 'p') { toggleModal('prog'); return; }
     if (!$('casino').hidden && (k === ' ' || k === 'enter')) { e.preventDefault(); $('spin').click(); return; }
     if (k === 'm') { $('btn-sound').click(); return; }
     if (anyModal()) return;
@@ -501,7 +507,7 @@
     }
     const pull = h.str * (reel.thrash ? 2.6 : .55);
     if (holding) {
-      reel.tension += (0.38 + pull * .75) * r.tens * dt;
+      reel.tension += (0.38 + pull * .75) * r.tens * (1 - .06 * perk('schnur')) * dt;
       const gain = reel.thrash ? .05 : .2;
       reel.progress += gain * r.reel / (.6 + h.str) * dt;
       if (Math.random() < dt * 14) sfx.tick();
@@ -572,7 +578,17 @@
     }));
     return c;
   }
-  const playerFrames = [false, true].map(flip => PLAYER_LEGS.map(l => bake(PLAYER_BODY.concat(l), PLAYER_PAL, flip)));
+  // hat colour shows how often you have been reborn
+  const HATS = [['#22c55e', '#15803d', '#86efac'], ['#38bdf8', '#0369a1', '#bae6fd'], ['#c084fc', '#7e22ce', '#f3e8ff'], ['#fbbf24', '#b45309', '#fef3c7']];
+  const hatFrames = [];
+  function playerFrames() {
+    const tier = Math.min(HATS.length - 1, save.rebirths);
+    if (!hatFrames[tier]) {
+      const [h, H, l] = HATS[tier], pal = { ...PLAYER_PAL, h, H, l };
+      hatFrames[tier] = [false, true].map(flip => PLAYER_LEGS.map(g => bake(PLAYER_BODY.concat(g), pal, flip)));
+    }
+    return hatFrames[tier];
+  }
 
   const npcImg = new Image(); npcImg.src = 'spezifischfischer-pixel.png';
   const NPC = { x: 18, w: 10, h: 22 };
@@ -880,7 +896,7 @@
   function drawPlayer(dark) {
     const x = snap(player.x), y = DOCK_Y, d = player.dir;
     const frame = player.walk ? [0, 1, 0, 2][Math.floor(player.walk / 1.6) % 4] : 0;
-    const img = playerFrames[d > 0 ? 0 : 1][frame];
+    const img = playerFrames()[d > 0 ? 0 : 1][frame];
     ctx.drawImage(img, x - 5.5, y - img.height / 2, img.width / 2, img.height / 2);
     // arm + hand holding the rod
     const tip = rodTip();
@@ -946,14 +962,14 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog']) $(id).hidden = true;
   }
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
     if (['charge', 'fly', 'bite', 'reel'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -962,6 +978,8 @@
   $('btn-dex').addEventListener('click', () => toggleModal('dex'));
   $('btn-shop').addEventListener('click', () => toggleModal('shop'));
   $('btn-casino').addEventListener('click', () => toggleModal('casino'));
+  $('btn-prog').addEventListener('click', () => toggleModal('prog'));
+  $('lvl').addEventListener('click', () => toggleModal('prog'));
   $('btn-sound').addEventListener('click', () => {
     save.sound = !save.sound; persist();
     $('btn-sound').textContent = save.sound ? '🔊' : '🔇';
@@ -1156,10 +1174,10 @@
   function renderShop() {
     updateCoins();
     $('shop-rods').replaceChildren(...RODS.map(r => {
-      const owned = save.rods.includes(r.id), active = save.rod === r.id;
+      const owned = save.rods.includes(r.id), active = save.rod === r.id, lock = lockText(r);
       return shopItem(r.name, `${r.desc} Wurf ${Math.round(r.cast * 100)} · Kurbel ${r.reel}×`, active,
-        active ? 'Ausgerüstet' : owned ? 'Ausrüsten' : `${r.price} Taler`,
-        active || (!owned && save.coins < r.price),
+        active ? 'Ausgerüstet' : owned ? 'Ausrüsten' : lock || `${r.price} Taler`,
+        active || (!owned && (!!lock || save.coins < r.price)),
         () => {
           if (!owned) { save.coins -= r.price; save.rods.push(r.id); sfx.coin(); toast(r.name + ' gekauft!'); }
           save.rod = r.id; persist(); updateGear(); renderShop();
@@ -1172,8 +1190,9 @@
         () => { save.bait = b.id; persist(); updateGear(); renderShop(); })];
       if (b.pack) {
         const buy = items[0].querySelector('.btn');
-        const b2 = document.createElement('button'); b2.className = 'btn'; b2.textContent = `+${b.pack} für ${b.price}`;
-        b2.disabled = save.coins < b.price;
+        const b2 = document.createElement('button'); b2.className = 'btn'; const lock = lockText(b);
+        b2.textContent = lock || `+${b.pack} für ${b.price}`;
+        b2.disabled = !!lock || save.coins < b.price;
         b2.addEventListener('click', () => {
           save.coins -= b.price; save.baits[b.id] = n + b.pack; sfx.coin();
           persist(); updateCoins(); updateGear(); renderShop();
@@ -1211,9 +1230,195 @@
     location.reload();
   });
 
+
+  // ------------------------------------------------------------------ progression
+  // Angler level (XP from catches), quests, and rebirth: reset coins, gear and level
+  // for Schuppen, spent on permanent talents. Rebirths also raise the Taler bonus,
+  // unlock new gear and recolour the hat.
+  const XP = { common: 6, uncommon: 12, rare: 30, epic: 70, legendary: 180, junk: 3 };
+  const xpNeed = l => Math.round(40 * Math.pow(l, 1.45));
+  const rebirthLvl = () => 12 + save.rebirths * 3;
+  const RARITY_ORDER = ['junk', 'common', 'uncommon', 'rare', 'epic', 'legendary'];
+  const PERKS = [
+    { id: 'taler',  icon: '🪝', name: 'Goldener Haken', desc: l => `+${l * 10} % Taler pro Fang` },
+    { id: 'glueck', icon: '🍀', name: 'Glückspilz',     desc: l => `+${l * 8} % Glück für seltene Fische` },
+    { id: 'biss',   icon: '⏱️', name: 'Lockruf',        desc: l => `Bisse kommen ${l * 8} % schneller` },
+    { id: 'schnur', icon: '🧵', name: 'Starke Schnur',  desc: l => `${l * 6} % weniger Spannung` },
+    { id: 'wissen', icon: '📚', name: 'Anglerwissen',   desc: l => `+${l * 15} % Erfahrung` },
+    { id: 'erbe',   icon: '💰', name: 'Erbstück',       desc: l => `Start mit ${l * 150} Talern nach der Wiedergeburt` },
+  ];
+  const PERK_MAX = 5;
+  const perkCost = l => 2 + l * 2;
+  function perk(id) { return save.perks[id] || 0; }
+  function coinMult() { return (1 + .2 * save.rebirths) * (1 + .1 * perk('taler')); }
+  function lockText(item) {
+    if (item.reb && save.rebirths < item.reb) return `🔒 ${item.reb}× Wiedergeburt`;
+    if (item.lvl && save.lvl < item.lvl) return `🔒 Level ${item.lvl}`;
+    return '';
+  }
+  function scalesFor() { return Math.floor(save.lvl / 2) + Math.floor(Math.sqrt(save.lifeCoins / 40)); }
+
+  function gainXp(n, quiet) {
+    save.xp += Math.round(n * (1 + .15 * perk('wissen')));
+    const from = save.lvl;
+    let reward = 0;
+    while (save.xp >= xpNeed(save.lvl)) { save.xp -= xpNeed(save.lvl); save.lvl++; reward += 20 * save.lvl; }
+    if (save.lvl > from && !quiet) {
+      save.coins += reward; updateCoins();
+      toast(`⭐ Level ${save.lvl}! +${reward} Taler`);
+      const unlocked = [...RODS, ...BAITS].filter(it => it.lvl > from && it.lvl <= save.lvl && !lockText(it)).map(it => it.name);
+      if (unlocked.length) toast(`🔓 Freigeschaltet: ${unlocked.join(', ')}`);
+      if (from < rebirthLvl() && save.lvl >= rebirthLvl()) toast('🌀 Wiedergeburt möglich – schau in den Fortschritt!');
+      [523, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .14, 'square', .05), i * 90));
+    }
+    updateLevel();
+  }
+  function updateLevel() {
+    $('lvl-num').textContent = save.lvl;
+    $('lvl-bar').style.width = Math.min(100, save.xp / xpNeed(save.lvl) * 100) + '%';
+    $('lvl').title = `Level ${save.lvl} · ${save.xp}/${xpNeed(save.lvl)} EP` + (save.rebirths ? ` · ${save.rebirths}× wiedergeboren` : '');
+    $('lvl-reb').textContent = save.rebirths ? '🌀' + save.rebirths : '';
+    $('btn-prog').classList.toggle('ready', save.lvl >= rebirthLvl() || save.quests.some(q => q.p >= q.n));
+  }
+
+  // ---- quests
+  function makeQuest() {
+    const L = save.lvl, used = save.quests.map(q => q.kind);
+    const kinds = ['count', 'rar', 'size', 'coins', 'fish'].filter(k => !used.includes(k));
+    const kind = kinds[Math.floor(Math.random() * kinds.length)];
+    const q = { kind, p: 0 };
+    if (kind === 'count') { q.n = 4 + Math.floor(Math.random() * 3) + Math.floor(L / 3); }
+    if (kind === 'rar') {
+      q.r = L >= 8 && Math.random() < .4 ? 'epic' : L >= 3 && Math.random() < .6 ? 'rare' : 'uncommon';
+      q.n = { uncommon: 3, rare: 2, epic: 1 }[q.r];
+    }
+    if (kind === 'size') { q.n = 1; q.cm = [40, 60, 80, 120, 160][Math.min(4, Math.floor(L / 3))]; }
+    if (kind === 'coins') { q.n = Math.round((60 + L * 45) * coinMult() / 10) * 10; }
+    if (kind === 'fish') {
+      const pool = FISH.filter(f => ['common', 'uncommon', 'rare'].includes(f.r) && (L >= 5 || f.r !== 'rare') && !f.far);
+      q.id = pool[Math.floor(Math.random() * pool.length)].id; q.n = 1 + (Math.random() < .5 ? 1 : 0);
+    }
+    const tier = { count: 1, rar: q.r === 'epic' ? 4 : q.r === 'rare' ? 2.5 : 1.5, size: 2, coins: 1.5, fish: 1.5 }[kind];
+    q.xp = Math.round((20 + L * 6) * tier);
+    q.coins = Math.round((30 + L * 12) * tier / 5) * 5;
+    return q;
+  }
+  function questText(q) {
+    switch (q.kind) {
+      case 'count': return `Fange ${q.n} Fische`;
+      case 'rar': return `Fange ${q.n}× ${RARITY[q.r].label} oder besser`;
+      case 'size': return `Fange einen Fang ab ${q.cm} cm`;
+      case 'coins': return `Verdiene ${q.n} Taler mit Fängen`;
+      case 'fish': return `Fange ${q.n}× ${FISH.find(f => f.id === q.id).name}`;
+    }
+  }
+  function fillQuests() { while (save.quests.length < 3) save.quests.push(makeQuest()); }
+  function progressCatch(f, size, val, first) {
+    gainXp(XP[f.r] * (first ? 3 : 1) * (1 + size / (f.max * 4)));
+    for (const q of save.quests) {
+      if (q.p >= q.n) continue;
+      if (q.kind === 'count' && f.r !== 'junk') q.p++;
+      if (q.kind === 'rar' && f.r !== 'junk' && RARITY_ORDER.indexOf(f.r) >= RARITY_ORDER.indexOf(q.r)) q.p++;
+      if (q.kind === 'size' && size >= q.cm) q.p++;
+      if (q.kind === 'coins') q.p = Math.min(q.n, q.p + val);
+      if (q.kind === 'fish' && f.id === q.id) q.p++;
+      if (q.p >= q.n) toast(`📜 Auftrag erledigt: ${questText(q)} – im Fortschritt abholen`);
+    }
+    updateLevel();
+  }
+  function claimQuest(i) {
+    const q = save.quests[i]; if (!q || q.p < q.n) return;
+    save.quests.splice(i, 1); save.questsDone++;
+    save.coins += q.coins; save.lifeCoins += q.coins;
+    sfx.coin(); toast(`📜 +${q.coins} Taler · +${q.xp} EP`);
+    gainXp(q.xp); fillQuests(); persist(); updateCoins(); renderProg();
+  }
+  function rerollQuest(i) {
+    const cost = 10 + save.lvl * 2;
+    if (save.coins < cost) return;
+    save.coins -= cost; save.quests.splice(i, 1); save.quests.splice(i, 0, makeQuest()); persist(); updateCoins(); renderProg();
+  }
+
+  // ---- rebirth
+  function rebirth() {
+    if (save.lvl < rebirthLvl()) return;
+    const gain = scalesFor();
+    if (!confirm(`Wiedergeburt?\n\nDu bekommst ${gain} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level und Aufträge werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.`)) return;
+    save.rebirths++; save.scales += gain;
+    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [] });
+    fillQuests(); persist(); updateCoins(); updateGear(); updateLevel(); renderProg();
+    const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
+    [262, 330, 392, 523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .25, 'triangle', .08), i * 120));
+    toast(`🌀 Wiedergeboren! +${gain} Schuppen · Taler-Bonus jetzt +${Math.round((coinMult() - 1) * 100)} %`);
+  }
+  function buyPerk(id) {
+    const l = perk(id), c = perkCost(l);
+    if (l >= PERK_MAX || save.scales < c) return;
+    save.scales -= c; save.perks[id] = l + 1; sfx.coin(); persist(); renderProg();
+  }
+
+  function renderProg() {
+    updateLevel();
+    const need = xpNeed(save.lvl);
+    $('prog-level').textContent = save.lvl;
+    $('prog-xp').textContent = `${save.xp} / ${need} EP`;
+    $('prog-xpbar').style.width = Math.min(100, save.xp / need * 100) + '%';
+    $('prog-stats').textContent = `${save.total} Fänge · ${save.questsDone} Aufträge · ${save.rebirths}× wiedergeboren · Taler-Bonus +${Math.round((coinMult() - 1) * 100)} %`;
+    $('prog-quests').replaceChildren(...save.quests.map((q, i) => {
+      const done = q.p >= q.n, d = document.createElement('div');
+      d.className = 'quest' + (done ? ' done' : '');
+      const txt = document.createElement('div');
+      const b = document.createElement('b'); b.textContent = questText(q);
+      const bar = document.createElement('div'); bar.className = 'qbar';
+      const fill = document.createElement('i'); fill.style.width = Math.min(100, q.p / q.n * 100) + '%'; bar.append(fill);
+      const s = document.createElement('small'); s.textContent = `${Math.min(q.p, q.n)} / ${q.n} · Belohnung ${q.coins} Taler, ${q.xp} EP`;
+      txt.append(b, bar, s);
+      const btn = document.createElement('button'); btn.className = 'btn' + (done ? '' : ' ghost');
+      const cost = 10 + save.lvl * 2;
+      btn.textContent = done ? 'Abholen' : `🔄 ${cost}`;
+      btn.title = done ? 'Belohnung abholen' : `Neuer Auftrag für ${cost} Taler`;
+      btn.disabled = !done && save.coins < cost;
+      btn.addEventListener('click', () => done ? claimQuest(i) : rerollQuest(i));
+      d.append(txt, btn);
+      return d;
+    }));
+    const req = rebirthLvl(), can = save.lvl >= req;
+    $('reb-info').textContent = can
+      ? `Bereit! Du bekommst ${scalesFor()} Schuppen und dauerhaft +20 % Taler. Taler, Ruten, Köder und Level werden zurückgesetzt. Fischdex, Rekorde und Talente bleiben.`
+      : `Ab Level ${req} möglich (noch ${req - save.lvl}). Je höher dein Level und je mehr Taler du verdienst, desto mehr Schuppen gibt es (aktuell ${scalesFor()}).`;
+    $('btn-rebirth').disabled = !can;
+    $('reb-next').textContent = save.rebirths < 1 ? 'Freischaltung: Regenbogenrute (1×), Mondköder (2×), Sternenrute (3×), neue Hutfarben.'
+      : save.rebirths < 3 ? `Nächste Freischaltung bei ${save.rebirths < 2 ? '2× – Mondköder' : '3× – Sternenrute'}.` : 'Alles freigeschaltet. Jede weitere Wiedergeburt: +20 % Taler.';
+    $('prog-scales').textContent = save.scales;
+    $('prog-perks').replaceChildren(...PERKS.map(p => {
+      const l = perk(p.id), max = l >= PERK_MAX, c = perkCost(l);
+      const d = document.createElement('div'); d.className = 'item perk';
+      const txt = document.createElement('div');
+      const b = document.createElement('b'); b.textContent = `${p.icon} ${p.name}`;
+      const pips = document.createElement('span'); pips.className = 'pips';
+      pips.textContent = '●'.repeat(l) + '○'.repeat(PERK_MAX - l); b.append(' ', pips);
+      const s = document.createElement('small'); s.textContent = l ? p.desc(l) + (max ? '' : ` → ${p.desc(l + 1)}`) : p.desc(1);
+      txt.append(b, s);
+      const btn = document.createElement('button'); btn.className = 'btn';
+      btn.textContent = max ? 'Max' : `${c} 🐚`; btn.disabled = max || save.scales < c;
+      btn.addEventListener('click', () => buyPerk(p.id));
+      d.append(txt, btn);
+      return d;
+    }));
+  }
+  $('btn-rebirth').addEventListener('click', rebirth);
+
+  // older saves: turn past catches into a starting level, quietly
+  if (!load().lvl) {
+    let xp = 0;
+    for (const f of FISH) if (save.dex[f.id]) xp += XP[f.r] * (save.dex[f.id].n + 2);
+    gainXp(xp, true);
+  }
+  fillQuests();
+
   // ------------------------------------------------------------------ boot
   $('btn-sound').textContent = save.sound ? '🔊' : '🔇';
-  updateCoins(); updateGear();
+  updateCoins(); updateGear(); updateLevel();
   if (save.seen) $('start').textContent = 'Weiter fischen';
 
   let last = performance.now();
@@ -1225,6 +1430,6 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  window.__fischen = { save, get state() { return state; }, setTime: v => { time = v; },
+  window.__fischen = { save, gainXp, rebirth, get state() { return state; }, setTime: v => { time = v; },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); } };
 })();

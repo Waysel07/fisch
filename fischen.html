@@ -18,12 +18,14 @@
       <div class="hud-left">
         <a class="pill back" href="index.html" title="Zurück">&larr;</a>
         <span class="pill" title="Fischtaler"><img src="fish-icon.png" alt="" class="coin"> <b id="coins">0</b></span>
+        <button class="pill lvl" id="lvl" title="Level">⭐ <b id="lvl-num">1</b><span class="xpbar"><i id="lvl-bar"></i></span><span id="lvl-reb"></span></button>
         <span class="pill" id="clock" title="Tageszeit">☀️ Tag</span>
         <span class="pill saved" id="saved" title="Spielstand wird in deinem Browser gespeichert">💾 <span class="lbl">Gespeichert</span></span>
       </div>
       <div class="hud-right">
         <button class="pill" id="btn-dex" title="Fischdex (F)">📖 <span class="lbl">Fischdex</span></button>
         <button class="pill" id="btn-shop" title="Laden (L)">🛒 <span class="lbl">Laden</span></button>
+        <button class="pill" id="btn-prog" title="Fortschritt (P)">📈 <span class="lbl">Fortschritt</span></button>
         <button class="pill" id="btn-casino" title="Fischautomat (C)">🎰 <span class="lbl">Automat</span></button>
         <button class="pill" id="btn-sound" title="Ton an/aus (M)">🔊</button>
       </div>
@@ -109,6 +111,36 @@
       </div>
     </div>
 
+    <!-- Progression -->
+    <div class="modal" id="prog" hidden>
+      <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="prog-title">
+        <button class="close" data-close aria-label="Schließen">✕</button>
+        <h2 id="prog-title">Fortschritt</h2>
+        <div class="levelbox">
+          <div class="lvbig">⭐ <b id="prog-level">1</b></div>
+          <div class="lvinfo">
+            <div class="qbar big"><i id="prog-xpbar"></i></div>
+            <small id="prog-xp"></small>
+          </div>
+        </div>
+        <p class="sub" id="prog-stats"></p>
+
+        <h3>📜 Aufträge</h3>
+        <div class="list" id="prog-quests"></div>
+
+        <h3>🌀 Wiedergeburt</h3>
+        <div class="rebirth">
+          <p id="reb-info"></p>
+          <p class="sub" id="reb-next"></p>
+          <button class="btn" id="btn-rebirth">Wiedergeburt</button>
+        </div>
+
+        <h3>🐚 Talente <span class="sub">· <b id="prog-scales">0</b> Schuppen</span></h3>
+        <p class="sub">Schuppen gibt es bei jeder Wiedergeburt. Talente bleiben für immer.</p>
+        <div class="list" id="prog-perks"></div>
+      </div>
+    </div>
+
     <!-- Title -->
     <div class="modal" id="title">
       <div class="sheet title-sheet">
@@ -120,6 +152,7 @@
           <li><b>Klick bei „!“</b> – anschlagen</li>
           <li><b>Halten</b> – kurbeln, <b>loslassen</b> wenn die Schnur glüht</li>
           <li><b>A / D</b> oder <b>← / →</b> – auf dem Steg laufen</li>
+          <li><b>📈</b> – Level, Aufträge, Wiedergeburt und Talente</li>
           <li><b>🎰</b> – Fischtaler im Fischautomaten verzocken</li>
           <li><b>Klick auf den Spezifischfischer</b> – er hat was zu sagen</li>
         </ul>
