@@ -58,6 +58,7 @@
     { id: 'wurm',   name: 'Wurm',          price: 0,  pack: 0, luck: 1,   speed: 1,   desc: 'Unbegrenzt. Wurmig.' },
     { id: 'spezi',  name: 'Spezi-Köder',   price: 12, pack: 5, luck: 1.7, speed: 1.35, desc: '5 Stück. Seltene Fische beißen öfter.' },
     { id: 'glitzer', name: 'Glitzerköder', price: 35, pack: 5, lvl: 4, luck: 2.8, speed: 1.6, desc: '5 Stück. Für die ganz großen Fänge.' },
+    { id: 'wiik',   name: 'Wii-Köder',     price: 30, pack: 5, lvl: 3, luck: 1.5, speed: 1.4, wii: 5, img: 'wii-bait.png', desc: '5 Stück. Zeigt auf die Wii-Fische. Die beißen fünfmal so oft.' },
     { id: 'mond',   name: 'Mondköder',     price: 90, pack: 5, reb: 2, luck: 4.2, speed: 2,  desc: '5 Stück. Leuchtet. Legenden können nicht widerstehen.' },
   ];
 
@@ -256,7 +257,7 @@
       const n = pool.filter(g => g.r === f.r).length; w /= n;
       if (f.r === 'common') w *= 1.3 - d * .6;
       if (f.r === 'rare') w *= (1 + d) * luck;
-      if (f.r === 'wii') w *= (1 + d) * luck;
+      if (f.r === 'wii') w *= (1 + d) * luck * (b.wii || 1);
       if (f.r === 'epic') w *= (1 + 2 * d) * luck * luck;
       if (f.r === 'legendary') w *= (1 + 3 * d) * luck * luck;
       if (f.r === 'junk') w *= f.rareJunk ? .12 * luck : 1 / luck;
@@ -1443,6 +1444,7 @@
     const [rows, pal] = BAIT_ART[b.id] || BAIT_ART.wurm;
     rows.forEach((row, y) => [...row].forEach((ch, x) => { if (pal[ch]) p(x + 1, y + 3, pal[ch]); }));
   });
+  for (const b of BAITS) if (b.img) ICONS[b.id] = b.img;
 
   function statBar(label, v, max) {
     const d = document.createElement('div'); d.className = 'stat';
@@ -1453,7 +1455,7 @@
   }
   function ware({ id, name, desc, stats, state, btnText, disabled, onClick, owned }) {
     const c = document.createElement('div'); c.className = 'ware' + (state ? ' ' + state : '');
-    const ic = document.createElement('img'); ic.className = 'ware-icon'; ic.src = ICONS[id]; ic.alt = '';
+    const ic = document.createElement('img'); ic.className = 'ware-icon' + (ICONS[id].startsWith('data:') ? '' : ' photo'); ic.src = ICONS[id]; ic.alt = '';
     const b = document.createElement('b'); b.textContent = name;
     const s = document.createElement('small'); s.textContent = desc;
     const st = document.createElement('div'); st.className = 'stats'; st.append(...stats);

@@ -525,6 +525,7 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
 .ware.owned { border-color: #334155; }
 .ware.locked { opacity: .65; }
 .ware-icon { width: 48px; height: 48px; image-rendering: pixelated; background: #0f172a; border-radius: 8px; padding: 4px; }
+.ware-icon.photo { image-rendering: auto; object-fit: contain; }
 .ware b { font-size: .95rem; }
 .ware small { color: #94a3b8; font-size: .78rem; line-height: 1.35; }
 .ware .stats { display: grid; gap: .2rem; margin: .25rem 0 .4rem; }
