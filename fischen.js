@@ -431,11 +431,11 @@
       // banner
       const pop = F.t < .35 ? 1 + Math.sin(F.t / .35 * Math.PI) * .35 : 1;
       ctx.save(); ctx.globalAlpha = a; ctx.translate(W / 2, 46); ctx.scale(pop, pop);
-      ctx.font = '800 16px Poppins, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      setFont('800 16px Poppins, sans-serif'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.lineWidth = 3; ctx.strokeStyle = '#0f172a'; ctx.strokeText(F.label, 0, 0);
       ctx.fillStyle = F.c; ctx.fillText(F.label, 0, 0);
       ctx.fillStyle = F.hi; ctx.globalAlpha = a * (.5 + .5 * Math.sin(t * 12)); ctx.fillText(F.label, 0, -.5);
-      ctx.restore();
+      ctx.restore(); curFont = ''; // restore() put the old font back
       // legendary: white flash at the start
       if (F.r === 'legendary' && F.t < .25) { ctx.globalAlpha = (1 - F.t / .25) * .7; px(0, 0, W, H, '#fffbeb'); }
       ctx.globalAlpha = 1;
@@ -446,7 +446,7 @@
     }
     ctx.globalAlpha = 1;
     // floating catch text
-    ctx.font = '700 7px Poppins, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    setFont('700 7px Poppins, sans-serif'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     for (const fl of floaters) {
       ctx.globalAlpha = Math.min(1, fl.life * 1.5);
       ctx.lineWidth = 2; ctx.strokeStyle = '#0f172a'; ctx.strokeText(fl.text, snap(fl.x), snap(fl.y));
@@ -712,31 +712,56 @@
 
   let lastBg = '';
   const snap = v => Math.round(v * 2) / 2;
+  // setting ctx.font makes some browsers re-parse CSS every time, so only set it when it changes
+  let curFont = '';
+  function setFont(f) { if (f !== curFont) { ctx.font = f; curFont = f; } }
+  if (document.fonts) document.fonts.addEventListener('loadingdone', () => { curFont = ''; });
   function px(x, y, w, h, c) { ctx.fillStyle = c; ctx.fillRect(snap(x), snap(y), w, h); }
-  // filled pixel circle, row by row on the fine grid
+  // filled pixel circle, row by row on the fine grid. Each size/colour is drawn once
+  // into a small sprite and then copied with one drawImage (the row-by-row fillRects
+  // were most of the per-frame work). The result is pixel for pixel the same.
+  const discCache = new Map();
+  function discSprite(r, c) {
+    const key = r + '|' + c;
+    let sp = discCache.get(key);
+    if (sp) return sp;
+    const R = snap(r) + .5, rows = [];
+    for (let dy = -r; dy <= r; dy += .5) rows.push(snap(Math.sqrt(Math.max(0, r * r - dy * dy))));
+    const cv2 = document.createElement('canvas');
+    cv2.width = R * 4; cv2.height = Math.max(1, rows.length);
+    const g = cv2.getContext('2d'); g.fillStyle = c;
+    rows.forEach((hw, k) => g.fillRect((R - hw) * 2, k, hw * 4, 1));
+    sp = { cv: cv2, R };
+    discCache.set(key, sp);
+    return sp;
+  }
   function disc(cx, cy, r, c) {
-    ctx.fillStyle = c;
-    for (let dy = -r; dy <= r; dy += .5) {
-      const hw = snap(Math.sqrt(Math.max(0, r * r - dy * dy)));
-      ctx.fillRect(snap(cx - hw), snap(cy + dy), hw * 2, .5);
-    }
+    const { cv: im, R } = discSprite(r, c);
+    ctx.drawImage(im, snap(cx) - R, snap(cy - r), im.width / 2, im.height / 2);
   }
 
   // Sky + sea + island are cached and only redrawn when the light changes.
   const bgC = document.createElement('canvas'); bgC.width = cv.width; bgC.height = cv.height;
   const bg = bgC.getContext('2d'); bg.imageSmoothingEnabled = false; bg.setTransform(2, 0, 0, 2, 0, 0);
-  let bgKey = '';
+  let bgKey = '', bgAt = -1;
   function bands(c, y0, y1, colors) {
     const n = colors.length, bh = (y1 - y0) / n;
     colors.forEach((col, i) => { c.fillStyle = col; c.fillRect(0, snap(y0 + i * bh), W, Math.ceil(bh) + 1); });
-    // checker dither on each seam
+    // checker dither on each seam: every other device pixel, drawn as one patterned row each
+    c.save(); c.setTransform(1, 0, 0, 1, 0, 0);
     for (let i = 1; i < n; i++) {
-      const y = snap(y0 + i * bh);
-      c.fillStyle = colors[i];
-      for (let x = 0; x < W; x += 1) c.fillRect(x, y - .5, .5, .5);
-      c.fillStyle = colors[i - 1];
-      for (let x = .5; x < W; x += 1) c.fillRect(x, y, .5, .5);
+      const y = snap(y0 + i * bh) * 2;
+      c.fillStyle = ditherPattern(colors[i], 0); c.fillRect(0, y - 1, W * 2, 1);
+      c.fillStyle = ditherPattern(colors[i - 1], 1); c.fillRect(0, y, W * 2, 1);
     }
+    c.restore();
+  }
+  // a 2x1 pattern with one coloured pixel (left or right) and one transparent
+  const ditherTile = document.createElement('canvas'); ditherTile.width = 2; ditherTile.height = 1;
+  const ditherCtx = ditherTile.getContext('2d');
+  function ditherPattern(col, off) {
+    ditherCtx.clearRect(0, 0, 2, 1); ditherCtx.fillStyle = col; ditherCtx.fillRect(off, 0, 1, 1);
+    return bg.createPattern(ditherTile, 'repeat');
   }
   function renderBg(top, bot, dark) {
     const skyTop = top.match(/\d+/g).map(Number), skyBot = bot.match(/\d+/g).map(Number);
@@ -809,7 +834,8 @@
     const deep = mix([8, 40, 80], [4, 10, 28], dark);
     if (deep !== lastBg) { lastBg = deep; $('stage').style.background = `linear-gradient(${top} 0 50%, ${deep} 50% 100%)`; }
     const key = top + bot;
-    if (key !== bgKey) { bgKey = key; renderBg(top, bot, dark); }
+    // at dawn and dusk the colours change every frame; repainting sky and sea 4x a second is plenty
+    if (key !== bgKey && (t - bgAt > .25 || t < bgAt || !bgKey)) { bgKey = key; bgAt = t; renderBg(top, bot, dark); }
 
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(bgC, 0, 0); ctx.restore();
     // sky things stay above the horizon
@@ -1096,7 +1122,7 @@
   function drawPropLabel() {
     const p = hoverProp;
     if (!p || state !== 'idle' || anyModal()) return;
-    ctx.font = '6px Poppins, sans-serif';
+    setFont('6px Poppins, sans-serif');
     const w = Math.ceil(ctx.measureText(p.label).width) + 4;
     const lx = snap(Math.max(1, Math.min(W - w - 1, p.x + p.w / 2 - w / 2))), ly = snap(Math.max(1, p.y - (p.ready && p.ready() ? 21 : 11)));
     px(lx - .5, ly - .5, w + 1, 9, '#fde68a'); px(lx, ly, w, 8, '#0f172a');
@@ -1126,7 +1152,7 @@
     px(x0 - 1, y - 10.5, KIOSK.w + 2, 1.5, woodD); px(x0 - 1, y - 10.5, KIOSK.w + 2, .5, woodL);
     // sign on the counter
     px(x0 + 5, y - 7.5, 14, 5, '#fef3c7'); px(x0 + 5, y - 7.5, 14, .5, '#fffbeb'); px(x0 + 5, y - 3, 14, .5, '#d6c49a');
-    ctx.fillStyle = '#7f1d1d'; ctx.font = '700 4px Poppins, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#7f1d1d'; setFont('700 4px Poppins, sans-serif'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText('LADEN', x0 + 12, y - 5); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
     // goods on the counter: a jar of worms and a sparkly lure
     px(x0 + 1, y - 13.5, 3, 3, '#bae6fd'); px(x0 + 1.5, y - 12.5, 2, 1.5, '#f472b6'); px(x0 + 1, y - 14, 3, .5, '#475569');
@@ -1145,7 +1171,7 @@
     px(x0 - 2.5, y - 37, KIOSK.w + 5, .5, 'rgba(255,255,255,.5)');
     // speech bubble
     if (welsTalk > 0) {
-      ctx.font = '6px Poppins, sans-serif';
+      setFont('6px Poppins, sans-serif');
       const bw = Math.ceil(ctx.measureText(welsLine).width) + 4, bx = Math.min(W - bw - 2, x0 + 14), byy = y - 46;
       ctx.globalAlpha = Math.min(1, welsTalk * 3);
       px(bx - .5, byy - .5, bw + 1, 9, '#0f172a'); px(bx, byy, bw, 8, '#fffbeb'); px(bx + 2, byy + 8, 2, 1.5, '#0f172a');
@@ -1167,11 +1193,11 @@
     ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx + sw, by); ctx.stroke();
     ctx.drawImage(BOTTLE, snap(tx + sw - .75), by, 1.5, 3.5);
     if (npcTalk > 0) {
-      ctx.font = '6px Poppins, sans-serif';
+      setFont('6px Poppins, sans-serif');
       const bw = Math.ceil(ctx.measureText(npcLine).width) + 4, bx = x - 2, byy = y - NPC.h - 12;
       ctx.globalAlpha = Math.min(1, npcTalk * 3);
       px(bx - .5, byy - .5, bw + 1, 9, '#0f172a'); px(bx, byy, bw, 8, '#fffbeb'); px(bx + 6, byy + 8, 2, 1.5, '#0f172a');
-      ctx.fillStyle = '#0f172a'; ctx.font = '6px Poppins, sans-serif'; ctx.textBaseline = 'top';
+      ctx.fillStyle = '#0f172a'; setFont('6px Poppins, sans-serif'); ctx.textBaseline = 'top';
       ctx.fillText(npcLine, bx + 2, byy + 1);
       ctx.globalAlpha = 1;
     }
