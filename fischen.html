@@ -11,7 +11,7 @@
 <body>
 
   <div id="stage">
-    <canvas id="game" width="384" height="216" aria-label="Fischen! Spielfeld"></canvas>
+    <canvas id="game" width="768" height="432" aria-label="Fischen! Spielfeld"></canvas>
 
     <!-- HUD -->
     <div id="hud">
@@ -19,6 +19,7 @@
         <a class="pill back" href="index.html" title="Zurück">&larr;</a>
         <span class="pill" title="Fischtaler"><img src="fish-icon.png" alt="" class="coin"> <b id="coins">0</b></span>
         <span class="pill" id="clock" title="Tageszeit">☀️ Tag</span>
+        <span class="pill saved" id="saved" title="Spielstand wird in deinem Browser gespeichert">💾 <span class="lbl">Gespeichert</span></span>
       </div>
       <div class="hud-right">
         <button class="pill" id="btn-dex" title="Fischdex (F)">📖 <span class="lbl">Fischdex</span></button>
@@ -114,8 +115,10 @@
           <li><b>Halten</b> – kurbeln, <b>loslassen</b> wenn die Schnur glüht</li>
           <li><b>A / D</b> oder <b>← / →</b> – auf dem Steg laufen</li>
           <li><b>🎰</b> – Fischtaler im Fischautomaten verzocken</li>
+          <li><b>Klick auf den Spezifischfischer</b> – er hat was zu sagen</li>
         </ul>
         <button class="btn" id="start">Los geht's!</button>
+        <p class="savenote">Dein Spielstand wird nur lokal in deinem Browser gespeichert (<a href="datenschutz.html#spiel">Datenschutz</a>). <button class="linkbtn" id="btn-reset">Spielstand löschen</button></p>
       </div>
     </div>
   </div>

@@ -4,4 +4,4 @@ Static site, no build step. Deploy on Vercel: import this repo, Framework Preset
 
 ## Fischen!
 
-`fischen.html` is a small browser fishing game (canvas + `fischen.js`/`fischen.css`). Every catch is one of the site's GIFs/PNGs. Progress is saved in `localStorage`.
+`fischen.html` is a small browser fishing game (canvas + `fischen.js`/`fischen.css`). Every catch is one of the site's GIFs/PNGs (incl. cut-outs from the Spezifischfischer page, whose catches speak their line from `spezifischfischer.mp3`). Progress is saved only in the browser's `localStorage` (key `fischen-save-v1`), see `datenschutz.html` section 5.
