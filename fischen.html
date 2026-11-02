@@ -23,11 +23,11 @@
         <span class="pill saved" id="saved" title="Spielstand wird in deinem Browser gespeichert">💾 <span class="lbl">Gespeichert</span></span>
       </div>
       <div class="hud-right">
-        <button class="pill" id="btn-dex" title="Fischdex (F)">📖 <span class="lbl">Fischdex</span></button>
-        <button class="pill" id="btn-shop" title="Laden (L)">🛒 <span class="lbl">Laden</span></button>
-        <button class="pill" id="btn-prog" title="Fortschritt (P)">📈 <span class="lbl">Fortschritt</span></button>
-        <button class="pill" id="btn-lb" title="Bestenliste (B)">🏆 <span class="lbl">Bestenliste</span></button>
-        <button class="pill" id="btn-casino" title="Fischautomat (C)">🎰 <span class="lbl">Automat</span></button>
+        <button class="pill sr-only" id="btn-dex" title="Fischdex (F)">📖 <span class="lbl">Fischdex</span></button>
+        <button class="pill sr-only" id="btn-shop" title="Laden (L)">🛒 <span class="lbl">Laden</span></button>
+        <button class="pill sr-only" id="btn-prog" title="Fortschritt (P)">📈 <span class="lbl">Fortschritt</span></button>
+        <button class="pill sr-only" id="btn-lb" title="Bestenliste (B)">🏆 <span class="lbl">Bestenliste</span></button>
+        <button class="pill sr-only" id="btn-casino" title="Fischautomat (C)">🎰 <span class="lbl">Automat</span></button>
         <button class="pill" id="btn-sound" title="Ton an/aus (M)">🔊</button>
       </div>
     </div>
@@ -58,6 +58,7 @@
         </div>
         <h2 id="catch-name"></h2>
         <p class="mutbadge" id="catch-mut" hidden></p>
+        <p class="mutbadge shinybadge" id="catch-shiny" hidden></p>
         <p id="catch-desc" class="desc"></p>
         <p class="xpline" id="catch-xp"></p>
         <p class="stats"><span id="catch-size"></span> · <span id="catch-value"></span></p>
@@ -74,6 +75,10 @@
       <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="dex-title">
         <button class="close" data-close aria-label="Schließen">✕</button>
         <h2 id="dex-title">Fischdex</h2>
+        <div class="tabs dex-tabs" role="tablist" aria-label="Fischdex oder Shinydex">
+          <button class="tab on" data-dex-tab="fish" role="tab" aria-selected="true">📖 Fischdex</button>
+          <button class="tab" data-dex-tab="shiny" role="tab" aria-selected="false">💫 Shinydex</button>
+        </div>
         <p class="sub" id="dex-count"></p>
         <details class="dexrew" open>
           <summary>🎁 Belohnungen</summary>
@@ -226,10 +231,11 @@
           <li><b>Halten</b> – kurbeln, <b>loslassen</b> wenn die Schnur glüht</li>
           <li><b>A / D</b> oder <b>← / →</b> – auf dem Steg laufen</li>
           <li><b>Klick auf den Kiosk</b> – Herr Zylinderwels verkauft Ruten und Köder</li>
-          <li><b>📖</b> – Fischdex füllen, Mutationen sammeln, Belohnungen abholen</li>
-          <li><b>📈</b> – Level, Aufträge, Wiedergeburt und Talente</li>
-          <li><b>🏆</b> – freiwillig in die Bestenliste eintragen</li>
-          <li><b>🎰</b> – Fischtaler im Fischautomaten verzocken</li>
+          <li><b>Klick auf das Buch auf der Kiste</b> – Fischdex und Shinydex, Belohnungen abholen</li>
+          <li><b>Klick auf das Brett</b> – Level, Aufträge, Wiedergeburt und Talente</li>
+          <li><b>Klick auf den Pokal auf dem Kiosk</b> – freiwillig in die Bestenliste eintragen</li>
+          <li><b>Klick auf den Fischautomaten</b> – Fischtaler verzocken</li>
+          <li><b>💫 Shinys</b> – ganz selten glitzert ein Fang in anderen Farben und ist dreimal so viel wert</li>
           <li><b>Klick auf den Spezifischfischer</b> – er hat was zu sagen</li>
         </ul>
         <button class="btn" id="start">Los geht's!</button>
