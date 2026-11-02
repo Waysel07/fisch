@@ -283,6 +283,8 @@
     if (!$('catch').hidden) { if (k === ' ' || k === 'enter') { e.preventDefault(); $('catch-ok').click(); } return; }
     if (k === 'f') { toggleModal('dex'); return; }
     if (k === 'l') { toggleModal('shop'); return; }
+    if (k === 'c') { toggleModal('casino'); return; }
+    if (!$('casino').hidden && (k === ' ' || k === 'enter')) { e.preventDefault(); $('spin').click(); return; }
     if (k === 'm') { $('btn-sound').click(); return; }
     if (anyModal()) return;
     if (k === ' ') { e.preventDefault(); if (!e.repeat) down(); return; }
@@ -626,7 +628,7 @@
     const d = document.createElement('div'); d.textContent = msg;
     $('toast').appendChild(d); setTimeout(() => d.remove(), 3300);
   }
-  function updateCoins() { $('coins').textContent = save.coins; $('shop-coins').textContent = save.coins; }
+  function updateCoins() { $('coins').textContent = save.coins; $('shop-coins').textContent = save.coins; $('casino-coins').textContent = save.coins; }
   function updateGear() {
     const b = bait(), n = save.baits[b.id];
     $('gear').textContent = `🎣 ${rod().name} · 🪱 ${b.name}${n === Infinity ? '' : ' ×' + n}`;
@@ -640,14 +642,14 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino']) $(id).hidden = true;
   }
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
     if (['charge', 'fly', 'bite', 'reel'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { id === 'dex' ? renderDex() : renderShop(); $(id).hidden = false; }
+    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -655,14 +657,135 @@
   }));
   $('btn-dex').addEventListener('click', () => toggleModal('dex'));
   $('btn-shop').addEventListener('click', () => toggleModal('shop'));
+  $('btn-casino').addEventListener('click', () => toggleModal('casino'));
   $('btn-sound').addEventListener('click', () => {
     save.sound = !save.sound; persist();
     $('btn-sound').textContent = save.sound ? '🔊' : '🔇';
   });
   $('start').addEventListener('click', () => { audio(); $('title').hidden = true; save.seen = true; persist(); });
-  $('catch-ok').addEventListener('click', () => { $('catch').hidden = true; state = 'idle'; hint(''); });
+  $('catch-ok').addEventListener('click', () => { if ($('catch-ok').disabled) return; $('catch').hidden = true; state = 'idle'; hint(''); });
 
+  // ------------------------------------------------------------------ gambling
+  // Double or nothing on a fresh catch: a coin flip, once per catch.
+  $('catch-double').addEventListener('click', () => {
+    const flip = $('catch-flip'), btn = $('catch-double'), ok = $('catch-ok');
+    btn.disabled = true; ok.disabled = true;
+    flip.hidden = false; flip.className = 'flip rolling'; flip.textContent = '🪙 …';
+    let n = 0;
+    const iv = setInterval(() => { flip.textContent = n++ % 2 ? '🪙 Kopf …' : '🐟 Fisch …'; sfx.tick(); }, 110);
+    setTimeout(() => {
+      clearInterval(iv);
+      const win = Math.random() < .5;
+      save.coins += win ? lastCatchVal : -lastCatchVal;
+      save.gamble = (save.gamble || 0) + (win ? lastCatchVal : -lastCatchVal);
+      persist(); updateCoins();
+      flip.className = 'flip ' + (win ? 'win' : 'lose');
+      flip.textContent = win ? `🐟 Fisch! +${lastCatchVal} Taler extra` : `🪙 Kopf. Die ${lastCatchVal} Taler sind weg.`;
+      $('catch-value').textContent = win ? `+${lastCatchVal * 2} Taler` : '+0 Taler';
+      if (win) sfx.coin(); else tone(220, .4, 'sawtooth', .07, -120);
+      btn.hidden = true; ok.disabled = false; ok.focus();
+    }, 1300);
+  });
+
+  // Fischautomat: three reels of the site's fish.
+  const SYMBOLS = [
+    { id: 'pixel',   img: 'fish-icon.png',        w: 30, pay: 4, pixel: true },
+    { id: 'spezi',   img: 'spezifisch3.png',      w: 24, pay: 6 },
+    { id: 'schuh',   img: 'fih.gif',              w: 17, pay: 10 },
+    { id: 'lo',      img: 'lo.gif',               w: 12, pay: 18 },
+    { id: 'lippe',   img: 'lippenfisch-spin.gif', w: 8,  pay: 40 },
+    { id: 'odfisch', img: 'odfish.jpg',           w: 3,  pay: 150 },
+    { id: 'ratte',   img: 'rat.gif',              w: 6,  pay: 0 },
+  ];
+  const PAIR = 1.5, BETS = [5, 10, 25, 50];
+  let bet = 5, spinning = false;
+  const symW = SYMBOLS.reduce((a, s) => a + s.w, 0);
+  function rollSymbol() {
+    let r = Math.random() * symW;
+    for (const s of SYMBOLS) { r -= s.w; if (r <= 0) return s; }
+    return SYMBOLS[0];
+  }
+  function setSlot(el, sym) {
+    const img = el.querySelector('img');
+    if (img.getAttribute('src') !== sym.img) img.src = sym.img;
+    img.className = sym.pixel ? 'pixel' : '';
+  }
+  function slotPayout(r) {
+    const ids = r.map(s => s.id);
+    if (ids[0] === ids[1] && ids[1] === ids[2]) return { mult: r[0].pay, hits: [0, 1, 2] };
+    if (ids.filter(i => i === 'ratte').length >= 2) return { mult: 0, hits: [], rat: true };
+    for (let a = 0; a < 3; a++) for (let b = a + 1; b < 3; b++)
+      if (ids[a] === ids[b] && ids[a] !== 'ratte') return { mult: PAIR, hits: [a, b] };
+    return { mult: 0, hits: [] };
+  }
+  function renderCasino() {
+    $('casino-coins').textContent = save.coins;
+    $('bets').replaceChildren(...BETS.map(b => {
+      const btn = document.createElement('button');
+      btn.textContent = b; btn.className = b === bet ? 'on' : '';
+      btn.disabled = spinning;
+      btn.addEventListener('click', () => { bet = b; renderCasino(); });
+      return btn;
+    }));
+    $('spin').disabled = spinning || save.coins < bet;
+    $('spin').textContent = save.coins < bet && !spinning ? 'Zu wenig Taler – geh fischen!' : `Drehen (${bet} Taler)`;
+    if (!$('paytable').childElementCount) {
+      const rows = SYMBOLS.filter(s => s.pay).sort((a, b) => b.pay - a.pay).flatMap(s => {
+        const icons = document.createElement('span');
+        for (let i = 0; i < 3; i++) { const im = document.createElement('img'); im.src = s.img; im.alt = ''; icons.append(im); }
+        const v = document.createElement('b'); v.textContent = `× ${s.pay}`;
+        return [icons, v];
+      });
+      const pi = document.createElement('span'); pi.textContent = 'Zwei gleiche';
+      const pv = document.createElement('b'); pv.textContent = `× ${PAIR}`;
+      const ri = document.createElement('span'); ri.textContent = '🐀 Ratten';
+      const rv = document.createElement('b'); rv.textContent = 'fressen alles';
+      $('paytable').append(...rows, pi, pv, ri, rv);
+    }
+  }
+  $('reels').querySelectorAll('.slot').forEach((el, i) => setSlot(el, SYMBOLS[[5, 4, 3][i]]));
+  $('spin').addEventListener('click', () => {
+    if (spinning || save.coins < bet) return;
+    spinning = true;
+    const stake = bet;
+    save.coins -= stake; persist(); updateCoins();
+    const result = [rollSymbol(), rollSymbol(), rollSymbol()];
+    const slots = [...$('reels').querySelectorAll('.slot')];
+    slots.forEach(s => s.classList.remove('hit'));
+    $('slot-result').className = 'result'; $('slot-result').textContent = '…';
+    renderCasino();
+    sfx.whoosh();
+    slots.forEach((el, i) => {
+      el.classList.add('spinning');
+      const iv = setInterval(() => setSlot(el, SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]), 70);
+      setTimeout(() => {
+        clearInterval(iv); el.classList.remove('spinning'); setSlot(el, result[i]);
+        tone(300 + i * 120, .08, 'square', .06);
+        if (i === 2) finishSpin(result, stake, slots);
+      }, 700 + i * 450);
+    });
+  });
+  function finishSpin(result, stake, slots) {
+    const { mult, hits, rat } = slotPayout(result);
+    const win = Math.round(stake * mult);
+    save.coins += win;
+    save.gamble = (save.gamble || 0) + win - stake;
+    persist(); updateCoins();
+    hits.forEach(i => slots[i].classList.add('hit'));
+    const r = $('slot-result');
+    if (mult >= 40) { r.className = 'result big'; r.textContent = `JACKPOT! +${win} Taler`; playFile(result[0].id === 'odfisch' ? 'fish.mp3' : 'jetzt-kommt-travis.mp3'); sfx.coin(); setTimeout(sfx.coin, 200); setTimeout(sfx.coin, 400); }
+    else if (win > 0) { r.className = 'result win'; r.textContent = `Gewonnen! +${win} Taler`; sfx.coin(); }
+    else { r.className = 'result lose'; r.textContent = rat ? 'Die Ratten haben deinen Einsatz gefressen.' : 'Nichts. Nochmal?'; tone(200, .3, 'triangle', .06, -80); }
+    spinning = false;
+    renderCasino();
+  }
+
+  let lastCatchVal = 0;
   function showCatch(f, size, val, first) {
+    lastCatchVal = val;
+    $('catch-double').hidden = false; $('catch-double').disabled = false;
+    $('catch-double').textContent = `🎲 Doppelt oder nichts (${val})`;
+    $('catch-flip').hidden = true; $('catch-ok').disabled = false;
     $('catch-rarity').textContent = RARITY[f.r].label;
     $('catch-rarity').className = 'rarity r-' + f.r;
     $('catch-img').src = f.img; $('catch-img').alt = f.name;
@@ -679,7 +802,8 @@
 
   function renderDex() {
     const got = FISH.filter(f => save.dex[f.id]).length;
-    $('dex-count').textContent = `${got} von ${FISH.length} entdeckt · ${save.total} Fänge insgesamt`;
+    const g = save.gamble || 0;
+    $('dex-count').textContent = `${got} von ${FISH.length} entdeckt · ${save.total} Fänge insgesamt` + (save.gamble !== undefined ? ` · Glücksspiel ${g >= 0 ? '+' : ''}${g} Taler` : '');
     $('dex-grid').replaceChildren(...FISH.map(f => {
       const e = save.dex[f.id];
       const c = document.createElement('div');

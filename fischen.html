@@ -23,6 +23,7 @@
       <div class="hud-right">
         <button class="pill" id="btn-dex" title="Fischdex (F)">📖 <span class="lbl">Fischdex</span></button>
         <button class="pill" id="btn-shop" title="Laden (L)">🛒 <span class="lbl">Laden</span></button>
+        <button class="pill" id="btn-casino" title="Fischautomat (C)">🎰 <span class="lbl">Automat</span></button>
         <button class="pill" id="btn-sound" title="Ton an/aus (M)">🔊</button>
       </div>
     </div>
@@ -48,7 +49,11 @@
         <h2 id="catch-name"></h2>
         <p id="catch-desc" class="desc"></p>
         <p class="stats"><span id="catch-size"></span> · <span id="catch-value"></span></p>
-        <button class="btn" id="catch-ok">Weiter fischen</button>
+        <div class="catch-actions">
+          <button class="btn ghost" id="catch-double">🎲 Doppelt oder nichts</button>
+          <button class="btn" id="catch-ok">Weiter fischen</button>
+        </div>
+        <p class="flip" id="catch-flip" hidden></p>
       </div>
     </div>
 
@@ -75,6 +80,28 @@
       </div>
     </div>
 
+    <!-- Slot machine -->
+    <div class="modal" id="casino" hidden>
+      <div class="sheet casino-sheet" role="dialog" aria-modal="true" aria-labelledby="casino-title">
+        <button class="close" data-close aria-label="Schließen">✕</button>
+        <h2 id="casino-title">Fischautomat</h2>
+        <p class="sub">Du hast <b id="casino-coins">0</b> Fischtaler.</p>
+        <div class="reels" id="reels">
+          <div class="slot"><img alt=""></div>
+          <div class="slot"><img alt=""></div>
+          <div class="slot"><img alt=""></div>
+        </div>
+        <p class="result" id="slot-result">Dreh am Fisch!</p>
+        <div class="bets" id="bets"></div>
+        <button class="btn spin" id="spin">Drehen</button>
+        <details class="pay">
+          <summary>Gewinntabelle</summary>
+          <div id="paytable"></div>
+        </details>
+        <p class="fine">Nur Fischtaler, kein echtes Geld. Die Ratte frisst Paare.</p>
+      </div>
+    </div>
+
     <!-- Title -->
     <div class="modal" id="title">
       <div class="sheet title-sheet">
@@ -86,6 +113,7 @@
           <li><b>Klick bei „!“</b> – anschlagen</li>
           <li><b>Halten</b> – kurbeln, <b>loslassen</b> wenn die Schnur glüht</li>
           <li><b>A / D</b> oder <b>← / →</b> – auf dem Steg laufen</li>
+          <li><b>🎰</b> – Fischtaler im Fischautomaten verzocken</li>
         </ul>
         <button class="btn" id="start">Los geht's!</button>
       </div>
