@@ -1327,17 +1327,17 @@
     { id: 'odfisch', img: 'odfish.jpg',           w: 3,  pay: 150 },
     { id: 'ratte',   img: 'rat.gif',              w: 6,  pay: 0 },
   ];
-  const PAIR = 1.5, MIN_BET = 100, STEP = 100;
+  const PAIR = 1.5, MIN_BET = 100, MAX_BET = 1000, STEP = 100;
   let bet = 100, spinning = false;
-  const maxBet = () => Math.max(MIN_BET, Math.floor(save.coins / STEP) * STEP);
+  const maxBet = () => Math.min(MAX_BET, Math.max(MIN_BET, Math.floor(save.coins / STEP) * STEP));
   function setBet(v) {
     v = Math.round(+v);
-    bet = Number.isFinite(v) ? Math.max(MIN_BET, v) : MIN_BET;
+    bet = Number.isFinite(v) ? Math.min(MAX_BET, Math.max(MIN_BET, v)) : MIN_BET;
     renderCasino();
   }
   $('bet-down').addEventListener('click', () => setBet(Math.ceil(bet / STEP) * STEP - STEP));
   $('bet-up').addEventListener('click', () => setBet(Math.floor(bet / STEP) * STEP + STEP));
-  $('bet-input').addEventListener('input', e => { const v = Math.round(+e.target.value); if (v >= MIN_BET) { bet = v; renderCasino(); } });
+  $('bet-input').addEventListener('input', e => { const v = Math.round(+e.target.value); if (v >= MIN_BET && v <= MAX_BET) { bet = v; renderCasino(); } });
   $('bet-input').addEventListener('change', e => setBet(e.target.value));
   $('bet-input').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); setBet(e.target.value); e.target.blur(); } });
   $('bets').querySelectorAll('[data-bet]').forEach(btn => btn.addEventListener('click', () =>
@@ -1366,7 +1366,7 @@
     $('bet-input').disabled = spinning;
     if (document.activeElement !== $('bet-input')) $('bet-input').value = bet;
     $('bet-down').disabled = spinning || bet <= MIN_BET;
-    $('bet-up').disabled = spinning;
+    $('bet-up').disabled = spinning || bet >= MAX_BET;
     $('bets').querySelectorAll('[data-bet]').forEach(btn => {
       const v = btn.dataset.bet === 'max' ? maxBet() : +btn.dataset.bet;
       btn.disabled = spinning || (btn.dataset.bet === 'max' && save.coins < MIN_BET);

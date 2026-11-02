@@ -128,13 +128,13 @@
           <div class="bet-pick">
             <button type="button" id="bet-down" aria-label="100 Taler weniger">−</button>
             <label class="sr-only" for="bet-input">Einsatz in Talern</label>
-            <input id="bet-input" type="number" inputmode="numeric" min="100" step="100" value="100">
+            <input id="bet-input" type="number" inputmode="numeric" min="100" max="1000" step="100" value="100">
             <button type="button" id="bet-up" aria-label="100 Taler mehr">+</button>
           </div>
           <div class="bet-quick">
             <button type="button" data-bet="100">100</button>
+            <button type="button" data-bet="500">500</button>
             <button type="button" data-bet="1000">1000</button>
-            <button type="button" data-bet="10000">10000</button>
             <button type="button" data-bet="max">Max</button>
           </div>
         </div>
