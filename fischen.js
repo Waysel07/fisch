@@ -228,6 +228,8 @@
     hint('Warten …', 1.2);
   }
   function retract(msg) {
+    // a fish that was on the line darts away
+    if (approacher && (state === 'bite' || state === 'reel')) approacher.vx = 35 + Math.random() * 15;
     state = 'idle'; hooked = null; approacher = null; $('reel').hidden = true;
     if (msg) hint(msg, 1.8);
   }
@@ -269,6 +271,11 @@
 
   function land_catch() {
     const { f, size } = hooked;
+    if (approacher) {
+      const i = fishes.indexOf(approacher), n = newSwimmer();
+      n.x = W + 5; n.vx = -Math.abs(n.vx);
+      fishes[i] = n; approacher = null;
+    }
     const val = Math.max(1, Math.round(f.val * (0.7 + .6 * (size - f.min) / (f.max - f.min || 1)) * coinMult()));
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
@@ -473,14 +480,18 @@
         break;
       }
       case 'bite':
+        if (approacher) followLine(approacher, dt, 6);
         biteT -= dt;
         bob.dunk = 4 + Math.sin(t * 40);
         if (biteT <= 0) {
-          if (approacher) { approacher.vx = (approacher.x < bob.x ? -1 : 1) * 30; }
           retract('Zu spät! Er ist weg.');
         }
         break;
-      case 'reel': updateReel(dt); break;
+      case 'reel':
+        if (!approacher) approacher = fishes.reduce((a, b) => Math.abs(b.x - bob.x) < Math.abs(a.x - bob.x) ? b : a);
+        followLine(approacher, dt, 12);
+        updateReel(dt);
+        break;
     }
 
     // particles
@@ -494,6 +505,17 @@
     if (npcTalk > 0) npcTalk -= dt;
     updateFx(dt);
     hintTick(dt);
+  }
+
+  // the hooked fish's shadow hangs on the line: it follows the bobber,
+  // faces away from the dock while it pulls and whips around when it thrashes
+  function followLine(f, dt, k) {
+    const th = state === 'reel' && reel.thrash;
+    const tx = bob.x + 5 + (th ? Math.sin(t * 22) * 4 : Math.sin(t * 3) * 1.5);
+    const ty = SURFACE + 7 + (th ? Math.cos(t * 17) * 2 : 0);
+    f.x += (tx - f.x) * Math.min(1, dt * k);
+    f.y += (ty - f.y) * Math.min(1, dt * k);
+    f.vx = th ? (Math.sin(t * 22) > 0 ? 1 : -1) : 1;
   }
 
   function updateReel(dt) {
