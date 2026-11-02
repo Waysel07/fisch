@@ -44,9 +44,15 @@
     <!-- Catch modal -->
     <div class="modal" id="catch" hidden>
       <div class="sheet catch-sheet" role="dialog" aria-modal="true" aria-labelledby="catch-name">
+        <div class="confetti" id="catch-confetti" aria-hidden="true"></div>
         <p class="rarity" id="catch-rarity"></p>
         <span class="new" id="catch-new" hidden>NEU!</span>
-        <img id="catch-img" src="fsh-spin.gif" alt="">
+        <div class="catch-art">
+          <div class="rays" aria-hidden="true"></div>
+          <div class="sparkles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <img id="catch-img" src="fsh-spin.gif" alt="">
+          <p class="say" id="catch-say"></p>
+        </div>
         <h2 id="catch-name"></h2>
         <p id="catch-desc" class="desc"></p>
         <p class="stats"><span id="catch-size"></span> · <span id="catch-value"></span></p>

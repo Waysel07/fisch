@@ -16,26 +16,26 @@
 
   // far: only bites beyond this cast distance (0..1); night: x weight at night
   const FISH = [
-    { id: 'fisch',   name: 'Fisch',             img: 'fsh-spin.gif',         r: 'common',    min: 20, max: 45,  val: 5,  photo: true, desc: 'Der Klassiker. Dreht sich gern im Kreis.' },
-    { id: 'pixel',   name: 'Pixelfisch',        img: 'fish-icon.png',        r: 'common',    min: 8,  max: 16,  val: 4,  desc: 'Besteht zu 100 % aus Pixeln. Sehr knusprig.', pixel: true },
-    { id: 'poisson', name: 'Poisson',           img: 'frenchfish.gif',       r: 'common',    min: 25, max: 50,  val: 6,  photo: true, desc: 'Kommt aus Frankreich. Hat Schokolade dabei.' },
-    { id: 'spezi3',  name: 'Kleiner Spezifisch', img: 'spezifisch3.png',     r: 'common', clip: [0, .93],    min: 10, max: 22,  val: 6,  desc: 'Ein ganz kleiner, aber sehr spezifischer Fisch.' },
-    { id: 'fisch2',  name: 'Fisch 2',           img: 'fish2-spin.gif',       r: 'uncommon',  min: 45, max: 90,  val: 14, photo: true, desc: 'Die Fortsetzung. Länger als das Original.' },
-    { id: 'spezi2',  name: 'Spezifische Spezifische', img: 'spezifisch2.png', r: 'uncommon', clip: [3.17, 4.9],  min: 22, max: 40,  val: 15, desc: 'Spezifische Spezifische. Gut gekühlt.' },
-    { id: 'fisch3',  name: 'Fisch 3',           img: 'fish3.gif',            r: 'uncommon',  min: 15, max: 30,  val: 16, photo: true, desc: 'Hat dich gesehen. Ist sichtlich schockiert.' },
-    { id: 'spezi1',  name: 'Spezifischer Spezifisch', img: 'spezifisch1.png', r: 'rare', clip: [.93, 3.17],      min: 40, max: 70,  val: 38, desc: 'Ein Prachtexemplar mit extra viel Spezi.' },
-    { id: 'schuh',   name: 'Schuhfisch',        img: 'fih.gif',              r: 'rare',      min: 30, max: 55,  val: 42, desc: 'Trägt Schuhe. Warum auch nicht.' },
-    { id: 'lo',      name: 'Lo',                img: 'lo.gif',               r: 'rare',      min: 80, max: 160, val: 55, desc: 'Ein kleiner Hai. Beißt nur weit draußen.', far: .55 },
-    { id: 'lippe',   name: 'Lippenfisch',       img: 'lippenfisch-spin.gif', r: 'epic',      min: 30, max: 60,  val: 120, photo: true, desc: 'Er möchte reden. Er hat viel zu sagen.', night: 2.5 },
-    { id: 'travis',  name: 'Travis',            img: 'twawis.jpg',           r: 'epic',      min: 35, max: 65,  val: 140, photo: true, desc: 'Jetzt kommt Travis.', far: .4, sound: 'jetzt-kommt-travis.mp3' },
-    { id: 'spee',    name: 'Spee Zierfisch',    img: 'spee-zierfisch.png',   r: 'epic',      min: 6,  max: 9,   val: 110, clip: [12.63, 13.9], desc: 'Ein Zierfisch, frisch gewaschen. Duftet nach Spee.', night: 1.5 },
-    { id: 'spees',   name: 'Spezifische Spee Zierfische', img: 'spee-zierfische.png', r: 'epic', min: 12, max: 18, val: 160, clip: [13.9, 16.43], desc: 'Zwei auf einmal. Spezifischer geht es kaum.', far: .5 },
-    { id: 'fischer', name: 'Spezifischfischer', img: 'spezifischfischer-cut.png', r: 'legendary', min: 175, max: 190, val: 400, clip: [16.43, null], desc: 'Der spezifische Spezifischfischer fischt spezifische Spezifische. Jetzt hast du ihn gefischt.', far: .45, hint: 'Steht am Steg. Fischt man ihn auch?' },
-    { id: 'odfisch', name: 'Absolute Odfisch',  img: 'odfish.jpg',           r: 'legendary', min: 170, max: 190, val: 500, photo: true, desc: 'Absolute Legende. Nur nachts, nur weit draußen.', far: .6, night: 4, dayOff: true },
-    { id: 'ratte',   name: 'Ratte',             img: 'rat.gif',              r: 'junk',      min: 18, max: 28,  val: 1,  desc: 'Nass und beleidigt. Läuft trotzdem weiter.' },
-    { id: 'tisch',   name: 'Tisch',             img: 'tisch.gif',            r: 'junk',      min: 90, max: 140, val: 3,  photo: true, desc: 'Ein Tisch. Kein Fisch. Aber fast.' },
-    { id: 'flasche', name: 'Spezi-Flasche',     img: 'spezi-flasche.png',    r: 'junk',      min: 25, max: 33,  val: 4,  desc: 'Leer. Gehört bestimmt dem Spezifischfischer.' },
-    { id: 'pinguine', name: 'Rotierende Pinguine', img: 'rotierendepinguine.gif', r: 'junk', min: 60, max: 75, val: 25, photo: true, desc: 'Vier Pinguine, rotierend. Selten. Wie kommen die hier rein?', rareJunk: true },
+    { id: 'fisch',   name: 'Fisch',             img: 'fsh-spin.gif',         r: 'common',    min: 20, max: 45,  val: 5,  photo: true, say: 'Ich dreh mich nur kurz um.', desc: 'Der Klassiker. Dreht sich gern im Kreis.' },
+    { id: 'pixel',   name: 'Pixelfisch',        img: 'fish-icon.png',        r: 'common',    min: 8,  max: 16,  val: 4,  say: 'Knusper, knusper.', desc: 'Besteht zu 100 % aus Pixeln. Sehr knusprig.', pixel: true },
+    { id: 'poisson', name: 'Poisson',           img: 'frenchfish.gif',       r: 'common',    min: 25, max: 50,  val: 6,  photo: true, say: 'Bonjour! Du hast mich, non?', desc: 'Kommt aus Frankreich. Hat Schokolade dabei.' },
+    { id: 'spezi3',  name: 'Kleiner Spezifisch', img: 'spezifisch3.png',     r: 'common', clip: [0, .93],    min: 10, max: 22,  val: 6,  say: 'Klein, aber spezifisch.', desc: 'Ein ganz kleiner, aber sehr spezifischer Fisch.' },
+    { id: 'fisch2',  name: 'Fisch 2',           img: 'fish2-spin.gif',       r: 'uncommon',  min: 45, max: 90,  val: 14, photo: true, say: 'Diesmal mit mehr Budget.', desc: 'Die Fortsetzung. Länger als das Original.' },
+    { id: 'spezi2',  name: 'Spezifische Spezifische', img: 'spezifisch2.png', r: 'uncommon', clip: [3.17, 4.9],  min: 22, max: 40,  val: 15, say: 'Spezifisch. Spezifisch.', desc: 'Spezifische Spezifische. Gut gekühlt.' },
+    { id: 'fisch3',  name: 'Fisch 3',           img: 'fish3.gif',            r: 'uncommon',  min: 15, max: 30,  val: 16, photo: true, say: 'WAS?! Wer bist du denn?', desc: 'Hat dich gesehen. Ist sichtlich schockiert.' },
+    { id: 'spezi1',  name: 'Spezifischer Spezifisch', img: 'spezifisch1.png', r: 'rare', clip: [.93, 3.17],      min: 40, max: 70,  val: 38, say: 'Extra Spezi, extra spezifisch.', desc: 'Ein Prachtexemplar mit extra viel Spezi.' },
+    { id: 'schuh',   name: 'Schuhfisch',        img: 'fih.gif',              r: 'rare',      min: 30, max: 55,  val: 42, say: 'Schöne Schuhe hast du auch.', desc: 'Trägt Schuhe. Warum auch nicht.' },
+    { id: 'lo',      name: 'Lo',                img: 'lo.gif',               r: 'rare',      min: 80, max: 160, val: 55, say: 'Ich bin nicht klein, ich bin kompakt.', desc: 'Ein kleiner Hai. Beißt nur weit draußen.', far: .55 },
+    { id: 'lippe',   name: 'Lippenfisch',       img: 'lippenfisch-spin.gif', r: 'epic',      min: 30, max: 60,  val: 120, photo: true, say: 'Also … wo fange ich an?', desc: 'Er möchte reden. Er hat viel zu sagen.', night: 2.5 },
+    { id: 'travis',  name: 'Travis',            img: 'twawis.jpg',           r: 'epic',      min: 35, max: 65,  val: 140, photo: true, say: 'Jetzt bin ich da.', desc: 'Jetzt kommt Travis.', far: .4, sound: 'jetzt-kommt-travis.mp3' },
+    { id: 'spee',    name: 'Spee Zierfisch',    img: 'spee-zierfisch.png',   r: 'epic',      min: 6,  max: 9,   val: 110, clip: [12.63, 13.9], say: 'Riech mal. Frühlingsfrisch!', desc: 'Ein Zierfisch, frisch gewaschen. Duftet nach Spee.', night: 1.5 },
+    { id: 'spees',   name: 'Spezifische Spee Zierfische', img: 'spee-zierfische.png', r: 'epic', min: 12, max: 18, val: 160, clip: [13.9, 16.43], say: 'Wir bleiben zusammen!', desc: 'Zwei auf einmal. Spezifischer geht es kaum.', far: .5 },
+    { id: 'fischer', name: 'Spezifischfischer', img: 'spezifischfischer-cut.png', r: 'legendary', min: 175, max: 190, val: 400, clip: [16.43, null], say: 'Moment … ich bin doch der Fischer!', desc: 'Der spezifische Spezifischfischer fischt spezifische Spezifische. Jetzt hast du ihn gefischt.', far: .45, hint: 'Steht am Steg. Fischt man ihn auch?' },
+    { id: 'odfisch', name: 'Absolute Odfisch',  img: 'odfish.jpg',           r: 'legendary', min: 170, max: 190, val: 500, photo: true, say: 'Absolut.', desc: 'Absolute Legende. Nur nachts, nur weit draußen.', far: .6, night: 4, dayOff: true },
+    { id: 'ratte',   name: 'Ratte',             img: 'rat.gif',              r: 'junk',      min: 18, max: 28,  val: 1,  say: 'Lass mich, ich hab Termine.', desc: 'Nass und beleidigt. Läuft trotzdem weiter.' },
+    { id: 'tisch',   name: 'Tisch',             img: 'tisch.gif',            r: 'junk',      min: 90, max: 140, val: 3,  photo: true, say: 'Ich bin ein Tisch.', desc: 'Ein Tisch. Kein Fisch. Aber fast.' },
+    { id: 'flasche', name: 'Spezi-Flasche',     img: 'spezi-flasche.png',    r: 'junk',      min: 25, max: 33,  val: 4,  say: 'Pfand gibt’s keins.', desc: 'Leer. Gehört bestimmt dem Spezifischfischer.' },
+    { id: 'pinguine', name: 'Rotierende Pinguine', img: 'rotierendepinguine.gif', r: 'junk', min: 60, max: 75, val: 25, photo: true, say: 'Wir drehen uns, also sind wir.', desc: 'Vier Pinguine, rotierend. Selten. Wie kommen die hier rein?', rareJunk: true },
   ];
 
   const RODS = [
@@ -272,10 +272,99 @@
     save.coins += val; save.total++;
     persist(); updateCoins();
     splash(bob.x, SURFACE, 22, '#ffffff');
-    state = 'show'; $('reel').hidden = true; holding = false;
-    showCatch(f, size, val, first);
-    if (f.clip) playClip(f.clip); else if (f.sound) playFile(f.sound); else playFile('fish.mp3');
-    sfx.coin();
+    state = 'show'; $('reel').hidden = true; holding = false; hint('');
+    const reveal = () => {
+      showCatch(f, size, val, first);
+      if (f.clip) playClip(f.clip); else if (f.sound) playFile(f.sound); else playFile('fish.mp3');
+      sfx.coin();
+    };
+    const fx = FANFARE[f.r];
+    floaters.push({ x: bob.x, y: SURFACE - 14, text: `${fx ? '' : f.name + ' · '}${size} cm`, c: fx ? fx.c : '#ffffff', life: 2.4 });
+    if (fx && !reduceMotion) {
+      fanfare = { ...fx, r: f.r, x: bob.x, t: 0, done: reveal };
+      fx.notes.forEach((n, i) => setTimeout(() => tone(n, .18, 'triangle', .09), i * 110));
+      if (f.r === 'legendary') setTimeout(() => tone(1568, .6, 'sine', .07, 400), fx.notes.length * 110);
+    } else reveal();
+  }
+
+  // ------------------------------------------------------------------ rare catch fanfare
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const FANFARE = {
+    rare:      { label: 'SELTEN!',   c: '#38bdf8', hi: '#e0f2fe', dur: 1.0, notes: [523, 659, 784] },
+    epic:      { label: 'EPISCH!',   c: '#c084fc', hi: '#f3e8ff', dur: 1.4, notes: [523, 659, 784, 1047] },
+    legendary: { label: 'LEGENDÄR!', c: '#fbbf24', hi: '#fffbeb', dur: 2.0, notes: [392, 523, 659, 784, 1047, 1319] },
+  };
+  let fanfare = null;
+  const floaters = [], glints = [];
+  function updateFx(dt) {
+    for (let i = floaters.length - 1; i >= 0; i--) { const fl = floaters[i]; fl.y -= 9 * dt; fl.life -= dt; if (fl.life <= 0) floaters.splice(i, 1); }
+    for (let i = glints.length - 1; i >= 0; i--) { const g = glints[i]; g.x += g.vx * dt; g.y += g.vy * dt; g.life -= dt; if (g.life <= 0) glints.splice(i, 1); }
+    if (!fanfare) return;
+    const F = fanfare; F.t += dt;
+    const rate = { rare: 25, epic: 45, legendary: 80 }[F.r];
+    for (let n = 0; n < rate * dt + Math.random(); n++) {
+      glints.push({ x: F.x + (Math.random() - .5) * (F.r === 'legendary' ? 60 : 30), y: SURFACE - Math.random() * 6, vx: (Math.random() - .5) * 14, vy: -20 - Math.random() * 40, life: .8 + Math.random() * .8, c: Math.random() < .3 ? F.hi : F.c });
+    }
+    if (F.t >= F.dur) { fanfare = null; F.done(); }
+  }
+  function star(x, y, s, c) { // little 4-point twinkle
+    px(x - s, y, s * 2 + .5, .5, c); px(x, y - s, .5, s * 2 + .5, c);
+  }
+  function drawFx() {
+    const F = fanfare;
+    if (F) {
+      const k = Math.min(1, F.t / .3), out = Math.max(0, (F.t - F.dur + .3) / .3);
+      const a = k * (1 - out);
+      const x = snap(F.x);
+      // rotating rays (epic + legendary)
+      if (F.r !== 'rare') {
+        ctx.save(); ctx.translate(x, SURFACE); ctx.rotate(t * (F.r === 'legendary' ? .9 : .5));
+        ctx.globalAlpha = a * .22; ctx.fillStyle = F.c;
+        const rays = F.r === 'legendary' ? 12 : 8, len = 140 * k;
+        for (let i = 0; i < rays; i++) {
+          const a0 = i / rays * Math.PI * 2;
+          ctx.beginPath(); ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(a0 - .09) * len, Math.sin(a0 - .09) * len);
+          ctx.lineTo(Math.cos(a0 + .09) * len, Math.sin(a0 + .09) * len); ctx.fill();
+        }
+        ctx.restore();
+      }
+      // light pillar out of the water
+      const pw = snap((F.r === 'legendary' ? 14 : F.r === 'epic' ? 10 : 7) * k + Math.sin(t * 20) * .5);
+      ctx.globalAlpha = a * .35; px(x - pw / 2, 0, pw, SURFACE, F.c);
+      ctx.globalAlpha = a * .6; px(x - pw / 4, 0, snap(pw / 2), SURFACE, F.hi);
+      // expanding rings on the surface
+      ctx.strokeStyle = F.c; ctx.lineWidth = .5;
+      for (let i = 0; i < 3; i++) {
+        const p = (F.t * 1.2 + i / 3) % 1;
+        ctx.globalAlpha = a * (1 - p);
+        ctx.beginPath(); ctx.ellipse(x, SURFACE + 1, 4 + p * 40, (4 + p * 40) * .25, 0, 0, 7); ctx.stroke();
+      }
+      // banner
+      const pop = F.t < .35 ? 1 + Math.sin(F.t / .35 * Math.PI) * .35 : 1;
+      ctx.save(); ctx.globalAlpha = a; ctx.translate(W / 2, 46); ctx.scale(pop, pop);
+      ctx.font = '800 16px Poppins, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.lineWidth = 3; ctx.strokeStyle = '#0f172a'; ctx.strokeText(F.label, 0, 0);
+      ctx.fillStyle = F.c; ctx.fillText(F.label, 0, 0);
+      ctx.fillStyle = F.hi; ctx.globalAlpha = a * (.5 + .5 * Math.sin(t * 12)); ctx.fillText(F.label, 0, -.5);
+      ctx.restore();
+      // legendary: white flash at the start
+      if (F.r === 'legendary' && F.t < .25) { ctx.globalAlpha = (1 - F.t / .25) * .7; px(0, 0, W, H, '#fffbeb'); }
+      ctx.globalAlpha = 1;
+    }
+    for (const g of glints) {
+      ctx.globalAlpha = Math.min(1, g.life * 2) * (.6 + .4 * Math.sin(t * 25 + g.x));
+      star(snap(g.x), snap(g.y), g.life > .6 ? 1.5 : 1, g.c);
+    }
+    ctx.globalAlpha = 1;
+    // floating catch text
+    ctx.font = '700 7px Poppins, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    for (const fl of floaters) {
+      ctx.globalAlpha = Math.min(1, fl.life * 1.5);
+      ctx.lineWidth = 2; ctx.strokeStyle = '#0f172a'; ctx.strokeText(fl.text, snap(fl.x), snap(fl.y));
+      ctx.fillStyle = fl.c; ctx.fillText(fl.text, snap(fl.x), snap(fl.y));
+    }
+    ctx.globalAlpha = 1; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
   }
 
   // ------------------------------------------------------------------ input
@@ -397,6 +486,7 @@
     if (state === 'wait' && Math.random() < dt * .7) ripple(bob.x, .6);
 
     if (npcTalk > 0) npcTalk -= dt;
+    updateFx(dt);
     hintTick(dt);
   }
 
@@ -570,7 +660,9 @@
   }
 
   function draw() {
-    ctx.setTransform(2, 0, 0, 2, 0, 0);
+    // legendary catches shake the screen for a moment
+    const quake = fanfare && fanfare.r === 'legendary' && fanfare.t < .7 ? (1 - fanfare.t / .7) * 3 : 0;
+    ctx.setTransform(2, 0, 0, 2, Math.round((Math.random() - .5) * quake) * 2, Math.round((Math.random() - .5) * quake) * 2);
     const [top, bot, dark] = skyColors();
     // letterbox continues the scene (sky above, deep water below)
     const deep = mix([8, 40, 80], [4, 10, 28], dark);
@@ -675,6 +767,7 @@
     // particles
     for (const p of particles) { ctx.globalAlpha = Math.min(1, p.life * 2); px(p.x, p.y, 1, 1, p.c); px(p.x + .5, p.y - .5, .5, .5, '#ffffff'); }
     ctx.globalAlpha = 1;
+    drawFx();
 
     // power meter
     if (state === 'charge') {
@@ -1004,6 +1097,23 @@
     $('catch-img').classList.toggle('photo', !!f.photo);
     $('catch-name').textContent = f.name;
     $('catch-desc').textContent = f.desc;
+    $('catch-say').textContent = `„${f.say}“`;
+    const sheet = $('catch').querySelector('.sheet');
+    sheet.classList.remove('fx-rare', 'fx-epic', 'fx-legendary');
+    void sheet.offsetWidth; // restart the CSS animations
+    if (FANFARE[f.r]) sheet.classList.add('fx-' + f.r);
+    const conf = $('catch-confetti');
+    conf.replaceChildren();
+    const nConf = { rare: 0, epic: 18, legendary: 36 }[f.r] || 0;
+    for (let i = 0; i < nConf; i++) {
+      const p = document.createElement('i');
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDelay = (Math.random() * 1.2).toFixed(2) + 's';
+      p.style.animationDuration = (1.8 + Math.random() * 1.4).toFixed(2) + 's';
+      p.style.setProperty('--spin', (Math.random() < .5 ? -1 : 1) * (360 + Math.random() * 360) + 'deg');
+      p.style.background = ['#fbbf24', '#fde68a', '#c084fc', '#38bdf8', '#4ade80', '#f472b6'][i % 6];
+      conf.append(p);
+    }
     $('catch-size').textContent = size + ' cm' + (save.dex[f.id].best === size && !first ? ' 🏆' : '');
     $('catch-value').textContent = '+' + val + ' Taler';
     $('catch-new').hidden = !first;
@@ -1028,6 +1138,10 @@
       const info = document.createElement('small');
       info.textContent = e ? `${e.n}× · Rekord ${e.best} cm` : hintFor(f);
       c.append(img, name, r, info);
+      if (e) {
+        const q = document.createElement('q'); q.textContent = f.say;
+        c.append(q); c.title = f.desc;
+      }
       return c;
     }));
   }
@@ -1111,5 +1225,6 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  window.__fischen = { save, get state() { return state; }, setTime: v => { time = v; } };
+  window.__fischen = { save, get state() { return state; }, setTime: v => { time = v; },
+    land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); } };
 })();
