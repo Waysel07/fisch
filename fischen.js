@@ -742,13 +742,22 @@
     bg.fillStyle = red; bg.fillRect(lx - 2, lb - 24, 4, 1.5); bg.fillRect(lx - .5, lb - 25, 1, 1);
   }
 
+  // Wii-style clouds: soft white puffs with a pale blue halo and underside
+  const CLOUD_PUFFS = [[.22, -2, 6], [.5, -5, 8], [.78, -2, 6.5], [.36, 1, 5], [.66, .5, 5.5], [.05, 1.5, 3.5], [.92, 2, 3.5]];
   function cloud(c, dark) {
-    const body = dark > .5 ? '#3b4a66' : '#ffffff', shade = dark > .5 ? '#2a3650' : '#d6e6f5', hi = dark > .5 ? '#52648a' : '#ffffff';
-    const parts = [[0, 0, 4], [c.w * .3, -3, 5.5], [c.w * .6, -1.5, 4.5], [c.w * .85, .5, 3.5]];
-    for (const [ox, oy, r] of parts) disc(c.x + ox, c.y + oy + 1, r, shade);
-    for (const [ox, oy, r] of parts) disc(c.x + ox, c.y + oy, r, body);
-    px(c.x - 4, c.y + 2, c.w + 8, 2.5, shade);
-    px(c.x + c.w * .3 - 2, c.y - 7.5, 3, .5, hi);
+    const night = dark > .5;
+    const body = night ? '#4b5d80' : '#ffffff', under = night ? '#34425e' : '#bfdcf2', halo = night ? '#64748b' : '#e0f2fe';
+    const P = CLOUD_PUFFS.map(([fx, oy, r]) => [c.x + c.w * fx, c.y + oy, r * (c.w / 40) + .5]);
+    const a = ctx.globalAlpha; ctx.globalAlpha = a * .35;
+    for (const [x, y, r] of P) disc(x, y, r + 2, halo);
+    ctx.globalAlpha = a;
+    for (const [x, y, r] of P) disc(x, y + 2, r, under);
+    for (const [x, y, r] of P) disc(x, y, r, body);
+    // flat, rounded base
+    px(c.x + c.w * .05, c.y + 2, c.w * .9, 2.5, under);
+    // little gloss on the top puff
+    const [tx, ty, tr] = P[1];
+    if (!night) px(tx - tr * .6, ty - tr * .55, tr * .55, .5, '#ffffff');
   }
 
   function draw() {
