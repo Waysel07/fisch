@@ -91,6 +91,7 @@
     { id: 'regen',  name: 'Regenbogenrute',   price: 2500, reb: 1, cast: 1.0, reel: 2.2,  tens: .48,  luck: 1.7, desc: 'Nur für Wiedergeborene. Schillert in allen Farben.' },
     { id: 'stern',  name: 'Sternenrute',      price: 6000, reb: 3, cast: 1.0, reel: 2.6,  tens: .4,   luck: 2.1, desc: 'Aus einer Sternschnuppe geschnitzt.' },
     { id: 'tiefsee', name: 'Tiefseerute',     price: 15000, reb: 4, cast: 1.0, reel: 3.0, tens: .34,  luck: 2.5, desc: 'Für die ganz tiefen Wasser. Hält fast alles aus.' },
+    { id: 'krake',  name: 'Krakenrute',       price: 40000, reb: 6, cast: 1.0, reel: 3.4, tens: .3,   luck: 3.0, desc: 'Acht Arme Kraft in einer Rute. Nichts reißt.' },
   ];
   const BAITS = [
     { id: 'wurm',   name: 'Wurm',          price: 0,  pack: 0, luck: 1,   speed: 1,   desc: 'Unbegrenzt. Wurmig.' },
@@ -98,6 +99,7 @@
     { id: 'glitzer', name: 'Glitzerköder', price: 35, pack: 5, lvl: 4, luck: 2.8, speed: 1.6, desc: '5 Stück. Für die ganz großen Fänge.' },
     { id: 'wiik',   name: 'Wii-Köder',     price: 30, pack: 5, lvl: 3, luck: 1.5, speed: 1.4, wii: 2, img: 'img/wii-bait.png', desc: '5 Stück. Zeigt auf die Wii-Fische. Die beißen doppelt so oft.' },
     { id: 'mond',   name: 'Mondköder',     price: 90, pack: 5, reb: 2, luck: 4.2, speed: 2,  desc: '5 Stück. Leuchtet. Legenden können nicht widerstehen.' },
+    { id: 'abyss',  name: 'Abgrundköder',  price: 200, pack: 5, reb: 5, luck: 6, speed: 2.4, desc: '5 Stück. Leuchtet aus der Tiefe. Selbst Legenden werden neugierig.' },
     { id: 'odkoeder', name: 'Odköder',     price: 1500, pack: 1, reb: 3, luck: 1, speed: 1, boss: true, desc: '1 Stück. Nachts auf Hoher See ausgeworfen, ruft er den Odfisch.' },
   ];
   // Mysteryboxen: bought at the kiosk or found on the hook now and then. Opening one rolls a prize.
@@ -123,6 +125,13 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-03-7', date: '03.11.2026', items: [
+      '🏅 Fisch-Meisterschaft: Fang denselben Fisch oft genug für Bronze, Silber und Gold. Jede Medaille gibt EP und Schuppen, jeder Gold-Fisch dauerhaft +1 % Taler.',
+      '⚒️ Rutenschmiede: Die Rute in der Hand lässt sich im Laden bis +10 schmieden.',
+      '🐚 Talente gehen ab der 5. Wiedergeburt bis Stufe 10. Neu: Nachtangler und Bossjäger.',
+      '🎖️ Ränge von Lehrling bis Fischgott – im Fortschritt, in der Lobby und in der Bestenliste.',
+      '🔓 Neu hinter Wiedergeburten: Abgrundköder (5×), Krakenrute (6×), Seebären-Jacke (8×) und Fischgott-Krone (10×).',
+    ] },
     { id: '2026-11-03-6', date: '03.11.2026', items: [
       '🎰 Fischautomat: Höherer Einsatz – bis 2 000 Taler, mit jeder Wiedergeburt mehr (bis 50 000). Neue Knöpfe ½ und ×2.',
       '💰 Jackpot-Topf: 2 % jedes Einsatzes landen im Topf. Drei Odfische gewinnen ihn obendrauf.',
@@ -198,7 +207,18 @@
     delete s.baits.wurm;
     return s;
   }
-  const rod = () => RODS.find(r => r.id === save.rod) || RODS[0];
+  // Rutenschmiede: every forge level adds a little reel, luck, calm and cast to that rod
+  const FORGE_MAX = 10;
+  const forgeLvl = id => Math.max(0, Math.min(FORGE_MAX, (save.forge && save.forge[id]) | 0));
+  const forgeCost = (r, k) => Math.round(Math.max(60, r.price) * .3 * Math.pow(k + 1, 1.6) / 10) * 10;
+  const forgedCache = new Map();
+  function forged(r, k = forgeLvl(r.id)) {
+    if (!k) return r;
+    if (!forgedCache.has(r.id + k)) forgedCache.set(r.id + k, { ...r, forge: k, name: r.name + ' +' + k,
+      cast: Math.min(1, r.cast * (1 + .01 * k)), reel: r.reel * (1 + .03 * k), luck: r.luck * (1 + .03 * k), tens: r.tens * (1 - .02 * k) });
+    return forgedCache.get(r.id + k);
+  }
+  const rod = () => forged(RODS.find(r => r.id === save.rod) || RODS[0]);
   const bait = () => BAITS.find(b => b.id === save.bait) || BAITS[0];
 
   // ------------------------------------------------------------------ dom
@@ -484,11 +504,12 @@
     }
     const cls = hooked.cls === undefined ? 1 : hooked.cls, sc = SIZE_CLASSES[cls];
     const base = Math.max(0, Math.min(1, (hooked.size - f.min) / (f.max - f.min || 1)));
-    const val = Math.max(1, Math.round(f.val * (.85 + .3 * base) * sc.val * coinMult() * (buffOn('broetchen') ? 1.25 : 1) * (mut ? mut.val : 1) * (shiny ? SHINY_VAL : 1)));
+    const val = Math.max(1, Math.round(f.val * (.85 + .3 * base) * sc.val * coinMult() * nightMult() * (buffOn('broetchen') ? 1.25 : 1) * (mut ? mut.val : 1) * (shiny ? SHINY_VAL : 1)));
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
     e.n++; e.best = Math.max(e.best, size); if (f.r !== 'junk') e.small = Math.min(e.small || Infinity, size); save.dex[f.id] = e;
     if (f.r !== 'junk') { e.cls = Math.max(e.cls || 0, cls); if (cls === 4) save.monsters = (save.monsters || 0) + 1; }
+    checkMastery(f);
     let newMut = false;
     if (mut) { e.muts = e.muts || {}; newMut = !e.muts[mut.id]; e.muts[mut.id] = (e.muts[mut.id] || 0) + 1; }
     let newShiny = false;
@@ -675,6 +696,7 @@
   }
   function bossHit(d) {
     if (!boss.on || boss.won || d <= 0) return;
+    d *= 1 + .1 * perk('boss'); // Bossjäger talent
     boss.mine += d; boss.hp = Math.max(0, boss.hp - d);
     if (!boss.solo) boss.pend += d;
     else if (boss.hp <= 0) bossWin();
@@ -1200,6 +1222,8 @@
     { id: 'jacke-gold',  slot: 'jacket', name: 'Goldjacke',          col: ['#facc15', '#a16207', '#fef9c3'], desc: 'Nur für Wiedergeborene.', ach: 'Werde einmal wiedergeboren.', got: () => save.rebirths >= 1 },
     { id: 'hut-odfisch', slot: 'hat',    name: 'Odfisch-Hut',        col: ['#a9bccd', '#6f86a0', '#e2ecf5'], desc: 'Silbergrau wie der Odfisch. Fih.', ach: 'Besiege den Odfisch.', got: () => (save.bossWins || 0) >= 1 },
     { id: 'jacke-sturm', slot: 'jacket', name: 'Sturmjacke',         col: ['#475569', '#1e293b', '#facc15'], desc: 'Gewittergrau mit Blitzkante. Hält dicht.', ach: 'Fange 10 Fische bei Gewitter.', got: () => cosmStat('sturm') >= 10 },
+    { id: 'jacke-seebaer', slot: 'jacket', name: 'Seebären-Jacke',   col: ['#0f766e', '#134e4a', '#fde68a'], desc: 'Hat schon jeden Sturm gesehen.', ach: 'Werde 8× wiedergeboren.', got: () => save.rebirths >= 8 },
+    { id: 'hut-fischgott', slot: 'hat',  name: 'Fischgott-Krone',    col: ['#f0abfc', '#7e22ce', '#fef9c3'], sparkle: true, desc: 'Die Fische verneigen sich. Fast.', ach: 'Werde 10× wiedergeboren.', got: () => save.rebirths >= 10 },
     { id: 'pose-monster', slot: 'bob',   name: 'Monster-Pose',       col: '#f43f5e', desc: 'Für Angler, die Großes vorhaben.', ach: 'Fange einen Monster-Fisch.', got: () => (save.monsters || 0) >= 1 },
     { id: 'pose-gold',   slot: 'bob',    name: 'Goldene Pose',       col: '#facc15', desc: 'Glänzt, wenn ein Fisch anbeißt.', ach: 'Erreiche Level 10.', got: () => save.lvl >= 10 || save.rebirths > 0 },
     { id: 'pose-regen',  slot: 'bob',    name: 'Regenbogen-Pose',    col: null, desc: 'Wechselt ständig die Farbe.', ach: 'Entdecke 20 verschiedene Fische.', got: () => FISH.filter(f => save.dex[f.id]).length >= 20 },
@@ -2081,7 +2105,7 @@
     px(x + (d > 0 ? 1.5 : -3.5), y - 9.5, 2, 1.5, '#c2410c');
     px(hx - .5, hy - .5, 1.5, 1.5, '#f2c9a0');
     const r = rod();
-    const col = { stock: '#7c4a1e', bambus: '#a3a34a', carbon: '#1f2937', gold: '#f59e0b', tiefsee: '#0e3a4a' }[r.id] || '#7c4a1e';
+    const col = { stock: '#7c4a1e', bambus: '#a3a34a', carbon: '#1f2937', gold: '#f59e0b', tiefsee: '#0e3a4a', krake: '#7e1d4f' }[r.id] || '#7c4a1e';
     ctx.strokeStyle = col; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(hx + .25, hy + .25); ctx.lineTo((hx + tip.x) / 2, (hy + tip.y) / 2); ctx.stroke();
     ctx.lineWidth = .5;
@@ -2113,7 +2137,7 @@
         px(bx - .75, by - 1.5, 1.5, 1.5, bobColor(p.cb)); px(bx - .75, by - .25, 1.5, 1, '#f8fafc');
       }
       ctx.globalAlpha = 1;
-      const label = p.name;
+      const label = p.rk !== undefined ? `${p.name} · ${rankOf(p.rk).name}` : p.name;
       const w = Math.ceil(ctx.measureText(label).width) + 4;
       px(x - w / 2, y - 31, w, 7, 'rgba(15,23,42,.75)');
       ctx.fillStyle = '#e2e8f0'; ctx.fillText(label, x, y - 24.5);
@@ -2504,7 +2528,8 @@
     if (dexTab === 'shiny') return renderShinydex();
     const got = FISH.filter(f => save.dex[f.id]).length;
     const g = save.gamble || 0;
-    $('dex-count').textContent = tr('{a} von {b} entdeckt · {c} von {d} Mutationen · {e} Fänge insgesamt', { a: got, b: FISH.length, c: mutsFound().length, d: MUTATIONS.length, e: save.total }) + (save.gamble !== undefined ? tr(' · Glücksspiel {n} Taler', { n: (g >= 0 ? '+' : '') + g }) : '');
+    $('dex-count').textContent = tr('{a} von {b} entdeckt · {c} von {d} Mutationen · {e} Fänge insgesamt', { a: got, b: FISH.length, c: mutsFound().length, d: MUTATIONS.length, e: save.total })
+      + tr(' · Meisterschaft: {g} 🥇 (+{p} % Taler)', { g: masteryCount(3), p: goldBonus() }) + (save.gamble !== undefined ? tr(' · Glücksspiel {n} Taler', { n: (g >= 0 ? '+' : '') + g }) : '');
     renderDexRewards();
     $('dex-grid').replaceChildren(...FISH.map(f => {
       const e = save.dex[f.id];
@@ -2520,6 +2545,12 @@
       info.textContent = e ? tr('{n}× · Rekord {b} cm', { n: e.n, b: e.best }) + (e.cls >= 2 ? ' ' + SIZE_CLASSES[e.cls].icon : '') : hintFor(f);
       if (e && e.cls >= 2) info.title = tr('Beste Größenklasse: {c}', { c: SIZE_CLASSES[e.cls].name });
       c.append(img, name, r, info);
+      if (e) { // mastery: medal and the way to the next one
+        const m = e.m || 0, need = masteryNeed(f), ms = document.createElement('small'); ms.className = 'mastery m' + m;
+        ms.textContent = (m ? MEDALS[m] + ' ' : '') + (m < 3 ? tr('{a}/{b} bis {m}', { a: e.n, b: need[m], m: MEDALS[m + 1] }) : tr('Gold-Meister'));
+        ms.title = tr('Meisterschaft: Bronze, Silber und Gold für viele Fänge dieses Fischs. Jeder Gold-Fisch gibt dauerhaft +1 % Taler.');
+        c.append(ms);
+      }
       if (e && f.page) {
         const a = document.createElement('a'); a.className = 'page'; a.href = f.page; a.textContent = tr('Seite ansehen ↗');
         c.append(a);
@@ -2555,6 +2586,9 @@
     { id: 'wall', name: 'Alle Wetterfische',   need: () => [FISH.filter(f => f.weather && f.map !== 'see' && save.dex[f.id]).length, FISH.filter(f => f.weather && f.map !== 'see').length], coins: 2000, scales: 4 },
     { id: 'seeall', name: 'Alle Fische der Hohen See', need: () => [FISH.filter(f => f.map === 'see' && !f.boss && save.dex[f.id]).length, FISH.filter(f => f.map === 'see' && !f.boss).length], coins: 5000, scales: 8 },
     { id: 'odboss', name: 'Odfisch besiegt',   need: () => [save.bossWins || 0, 1], coins: 3000, scales: 5 },
+    { id: 'ma10', name: '10× Bronze-Meister',  need: () => [masteryCount(1), 10], coins: 1500, scales: 3 },
+    { id: 'mg10', name: '10× Gold-Meister',    need: () => [masteryCount(3), 10], coins: 8000, scales: 10 },
+    { id: 'mgall', name: 'Alles in Gold',      need: () => [masteryCount(3), FISH.length], coins: 50000, scales: 40 },
     { id: 'm1',   name: 'Erste Mutation',      need: () => [mutsFound().length, 1], coins: 100 },
     { id: 'm4',   name: '4 Mutationen',        need: () => [mutsFound().length, 4], coins: 600, scales: 2 },
     { id: 's1',   name: 'Erster Shiny',        need: () => [shinysFound(), 1],  coins: 300,  scales: 1 },
@@ -2641,6 +2675,7 @@
     regen: i => ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#a855f7'][i % 6],
     stern: i => i % 4 === 0 ? '#e0e7ff' : '#312e81',
     tiefsee: i => i % 5 === 0 ? '#5eead4' : '#0e3a4a',
+    krake: i => i % 3 === 0 ? '#f472b6' : '#7e1d4f',
   };
   const ICONS = {};
   for (const r of RODS) ICONS[r.id] = iconCanvas(p => {
@@ -2659,6 +2694,8 @@
     mond: [['.....kkkk.......', '...kkMMMMk......', '..kMMMmmkk......', '..kMMmk.........', '.kMMmk..........', '.kMMmk..........', '.kMMmk..........', '..kMMmk.........', '..kMMMmmkk......', '...kkMMMMk......', '.....kkkk.......'], { k: '#1b1f2e', M: '#fde68a', m: '#fbbf24' }],
   };
   // the Odköder: a black-and-white lure with a glaring eye and a big hook
+  BAIT_ART.abyss = [['......kk........', '.....kAAk.......', '....kAaaAk......', '...kAaWWaAk.....', '...kAaWWaAk.....', '....kAaaAk......', '.....kAAk.......', '......kk........', '......k.........', '......k..k......', '.......kk.......'],
+    { k: '#0b0f19', A: '#0e7490', a: '#22d3ee', W: '#ecfeff' }];
   BAIT_ART.odkoeder = [['................', '....kkkkkk......', '..kkWWWWwwkk....', '.kWWkkWWwwwwk...', 'kWWkRkWwwwwwkk.k', 'kWWWkkWwwwwwwkkk', '.kWWWWwwwwwwkk.k', '..kkwwwwwwkk....', '....kkkkkk......', '......k.........', '......k..k......', '.......kk.......'],
     { k: '#0b0f19', W: '#f8fafc', w: '#94a3b8', R: '#ef4444' }];
   for (const b of BAITS) ICONS[b.id] = iconCanvas(p => {
@@ -2793,6 +2830,23 @@
     c.append(btn);
     return c;
   }
+  // Rutenschmiede: a second button on the rod in hand
+  function forgeButton(r) {
+    const k = forgeLvl(r.id), cost = forgeCost(r, k), btn = document.createElement('button');
+    btn.className = 'btn forge';
+    btn.textContent = k >= FORGE_MAX ? tr('⚒️ Voll geschmiedet') : tr('⚒️ Schmieden +{n} · {c} Taler', { n: k + 1, c: cost.toLocaleString(I18N.locale) });
+    btn.title = tr('Jede Stufe: +3 % Kurbel, +3 % Glück, 2 % weniger Spannung, etwas mehr Wurf. Bei der Wiedergeburt weg.');
+    btn.setAttribute('aria-disabled', k >= FORGE_MAX || save.coins < cost ? 'true' : 'false');
+    btn.addEventListener('click', () => {
+      if (k >= FORGE_MAX) return keeper(tr('Besser wird die nicht mehr. Ehrlich.'));
+      if (save.coins < cost) return keeper(KEEPER.poor(cost - save.coins));
+      spend(cost); if (!save.forge || typeof save.forge !== 'object') save.forge = {};
+      save.forge[r.id] = k + 1; sfx.coin(); [330, 330, 523].forEach((n, i) => setTimeout(() => tone(n, .07, 'square', .06), i * 120));
+      keeper(tr('Klong, klong! {r} ist jetzt +{n}.', { r: r.name, n: k + 1 }));
+      persist(); updateCoins(); updateGear(); renderShop(false);
+    });
+    return btn;
+  }
   function snackWare(sn) {
     const left = save.buffs && save.buffs[sn.id] > Date.now() ? save.buffs[sn.id] - Date.now() : 0, full = left > SNACK_MAX - SNACK_MS;
     return ware({
@@ -2895,11 +2949,11 @@
     document.querySelectorAll('[data-shop-tab]').forEach(t => {
       const on = t.dataset.shopTab === shopTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
-    const wares = shopTab === 'snacks' ? SNACKS.map(snackWare) : shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'cosm' ? COSMETICS.filter(c => c.price).map(cosmWare) : shopTab === 'rods' ? RODS.map(r => {
-      const owned = save.rods.includes(r.id), active = save.rod === r.id, lock = !owned && lockText(r);
-      return ware({
+    const wares = shopTab === 'snacks' ? SNACKS.map(snackWare) : shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'cosm' ? COSMETICS.filter(c => c.price).map(cosmWare) : shopTab === 'rods' ? RODS.map(r0 => {
+      const owned = save.rods.includes(r0.id), active = save.rod === r0.id, lock = !owned && lockText(r0), r = owned ? forged(r0) : r0;
+      const w = ware({
         id: r.id, name: r.name, desc: r.desc,
-        stats: [statBar(tr('Wurf'), r.cast, 1), statBar(tr('Kurbel'), r.reel, 2.6), statBar(tr('Glück'), r.luck, 2.1), statBar(tr('Ruhe'), 1.1 - r.tens, .7)],
+        stats: [statBar(tr('Wurf'), r.cast, 1), statBar(tr('Kurbel'), r.reel, 3.4), statBar(tr('Glück'), r.luck, 3), statBar(tr('Ruhe'), 1.1 - r.tens, .8)],
         state: active ? 'active' : lock ? 'locked' : owned ? 'owned' : '',
         btnText: active ? tr('In der Hand') : owned ? tr('Nehmen') : lock || tr('{n} Taler', { n: r.price }),
         disabled: active || (!owned && (!!lock || save.coins < r.price)),
@@ -2912,6 +2966,8 @@
           save.rod = r.id; persist(); updateGear(); renderShop(false);
         },
       });
+      if (active) w.append(forgeButton(r0));
+      return w;
     }) : BAITS.map(b => {
       const n = save.baits[b.id] || 0, active = save.bait === b.id, lock = b.pack && lockText(b);
       return ware({
@@ -3016,12 +3072,47 @@
     { id: 'erbe',   icon: '💰', name: 'Erbstück',       desc: l => tr('Start mit {n} Talern nach der Wiedergeburt', { n: l * 150 }) },
     { id: 'mass',   icon: '📏', name: 'Maßband',        desc: l => tr('+{n} % Chance auf Kapital- und Monster-Fänge', { n: l * 15 }) },
     { id: 'wetter', icon: '🌦️', name: 'Wetterfrosch',   desc: l => tr('Wetterboni +{n} % stärker', { n: l * 10 }) },
+    { id: 'nacht',  icon: '🌙', name: 'Nachtangler',    reb: 5, desc: l => tr('Nachts +{n} % Taler und EP', { n: l * 10 }) },
+    { id: 'boss',   icon: '🦈', name: 'Bossjäger',      reb: 5, desc: l => tr('+{n} % Schaden gegen den Odfisch', { n: l * 10 }) },
   ];
   trAll(PERKS, ['name']);
-  const PERK_MAX = 5;
+  const perkMax = () => save.rebirths >= 5 ? 10 : 5; // from the 5th rebirth talents go up to level 10
+  const nightMult = () => isNight() ? 1 + .1 * perk('nacht') : 1;
+  // Fisch-Meisterschaft: bronze, silver and gold for catching the same fish again and again
+  const MASTERY = { common: [10, 50, 200], junk: [10, 50, 200], uncommon: [8, 40, 150], rare: [5, 25, 100], wii: [5, 25, 100], epic: [3, 15, 60], legendary: [2, 8, 30] };
+  const MASTERY_XP = { common: 1, junk: 1, uncommon: 1.3, rare: 1.8, wii: 2, epic: 2.5, legendary: 4 };
+  const MEDALS = ['', '🥉', '🥈', '🥇'], MEDAL_NAMES = ['', tr('Bronze'), tr('Silber'), tr('Gold')];
+  const masteryNeed = f => f.boss ? [1, 3, 10] : MASTERY[f.r] || MASTERY.common;
+  const masteryCount = m => FISH.filter(f => ((save.dex[f.id] || {}).m || 0) >= m).length;
+  const goldBonus = () => Math.min(40, masteryCount(3)); // +1 % Taler per gold fish, at most +40 %
+  function masteryTier(f) { const e = save.dex[f.id], need = masteryNeed(f); let m = 0; while (e && m < 3 && e.n >= need[m]) m++; return m; }
+  function checkMastery(f) {
+    const e = save.dex[f.id]; if (!e) return;
+    const to = masteryTier(f);
+    for (let m = (e.m || 0) + 1; m <= to; m++) {
+      const xp = Math.round([0, 50, 200, 600][m] * (MASTERY_XP[f.r] || 1)), sc = [0, 0, 1, 3][m];
+      e.m = m; save.scales += sc; gainXp(xp);
+      setTimeout(() => {
+        toast(tr('{i} {m}-Meister: {f}! +{x} EP', { i: MEDALS[m], m: MEDAL_NAMES[m], f: f.name, x: xp }) + (sc ? ` · +${sc} 🐚` : '') + (m === 3 ? tr(' · dauerhaft +1 % Taler') : ''));
+        (m === 3 ? [523, 659, 784, 1047] : [523, 659, 784]).forEach((n, i) => setTimeout(() => tone(n, .12, 'triangle', .06), i * 90));
+      }, 2600 + m * 300);
+    }
+  }
+  // older saves: medals for catches made before mastery existed, quietly (only the Schuppen)
+  { let medals = 0, sc = 0;
+    for (const f of FISH) { const e = save.dex[f.id]; if (!e || e.m !== undefined) continue; const m = masteryTier(f); e.m = m; medals += m; for (let i = 1; i <= m; i++) sc += [0, 0, 1, 3][i]; }
+    if (medals) { save.scales += sc; setTimeout(() => toast(tr('🏅 Fisch-Meisterschaft nachgetragen: {n} Medaillen, +{s} 🐚. Schau in den Fischdex!', { n: medals, s: sc })), 3000); } }
+  // ranks by rebirths, and what each rebirth unlocks
+  const RANKS = [[0, 'Lehrling'], [1, 'Angler'], [2, 'Fischer'], [3, 'Seemann'], [4, 'Kapitän'], [5, 'Seebär'], [6, 'Tiefseetaucher'], [8, 'Meeresmeister'], [10, 'Fischgott']].map(([r, n]) => ({ r, name: tr(n) }));
+  const rankOf = n => RANKS.filter(k => (n | 0) >= k.r).pop();
+  const MILESTONES = [
+    { r: 1, t: 'Regenbogenrute' }, { r: 2, t: 'Mondköder' }, { r: 3, t: 'Sternenrute, Hohe See und Odköder' }, { r: 4, t: 'Tiefseerute' },
+    { r: 5, t: 'Abgrundköder, Talente bis Stufe 10 und zwei neue Talente' }, { r: 6, t: 'Krakenrute' }, { r: 8, t: 'Seebären-Jacke' }, { r: 10, t: 'Fischgott-Krone' },
+  ];
+  trAll(MILESTONES, ['t']);
   const perkCost = l => 2 + l * 2;
   function perk(id) { return save.perks[id] || 0; }
-  function coinMult() { return (1 + .2 * save.rebirths) * (1 + .1 * perk('taler')) * (dexPerk('taler10') ? 1.1 : 1); }
+  function coinMult() { return (1 + .2 * save.rebirths) * (1 + .1 * perk('taler')) * (dexPerk('taler10') ? 1.1 : 1) * (1 + goldBonus() / 100); }
   function lockText(item) {
     if (item.reb && save.rebirths < item.reb) return tr('🔒 {n}× Wiedergeburt', { n: item.reb });
     if (item.lvl && save.lvl < item.lvl) return tr('🔒 Level {n}', { n: item.lvl });
@@ -3049,7 +3140,7 @@
   function updateLevel() {
     $('lvl-num').textContent = save.lvl;
     $('lvl-bar').style.width = Math.min(100, save.xp / xpNeed(save.lvl) * 100) + '%';
-    $('lvl').title = tr('Level {l} · {x}/{n} EP', { l: save.lvl, x: save.xp, n: xpNeed(save.lvl) }) + (save.rebirths ? tr(' · {n}× wiedergeboren', { n: save.rebirths }) : '');
+    $('lvl').title = tr('Level {l} · {x}/{n} EP', { l: save.lvl, x: save.xp, n: xpNeed(save.lvl) }) + (save.rebirths ? tr(' · {n}× wiedergeboren', { n: save.rebirths }) : '') + ' · ' + rankOf(save.rebirths).name;
     $('lvl-reb').textContent = save.rebirths ? '🌀' + save.rebirths : '';
     $('btn-prog').classList.toggle('ready', save.lvl >= rebirthLvl() || save.quests.some(q => q.p >= q.n));
   }
@@ -3116,7 +3207,7 @@
   }
   function progressCatch(f, size, val, first, mut, newMut, clean, shiny, newShiny) {
     const c = catchXp(f, size, first, mut, newMut, clean, shiny, newShiny);
-    const gain = { xp: gainXp(c.n), tags: c.tags };
+    const gain = { xp: gainXp(Math.round(c.n * nightMult())), tags: c.tags };
     for (const q of save.quests) {
       if (q.p >= q.n) continue;
       if (q.kind === 'count' && f.r !== 'junk') q.p++;
@@ -3147,8 +3238,13 @@
     if (save.lvl < rebirthLvl()) return;
     const gain = scalesFor();
     if (!confirm(tr('Wiedergeburt?\n\nDu bekommst {n} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level und Aufträge werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.', { n: gain }))) return;
+    const oldRank = rankOf(save.rebirths);
     save.rebirths++; save.scales += gain;
-    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [] });
+    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    const newRank = rankOf(save.rebirths), ms = MILESTONES.find(m => m.r === save.rebirths);
+    if (newRank !== oldRank) setTimeout(() => toast(tr('🎖️ Neuer Rang: {r}!', { r: newRank.name })), 2400);
+    if (ms) setTimeout(() => toast(tr('🔓 Neu freigeschaltet: {t}', { t: ms.t })), 4400);
+    checkCosm();
     fillQuests(); persist(); updateCoins(); updateGear(); updateLevel(); renderProg();
     const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
     [262, 330, 392, 523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .25, 'triangle', .08), i * 120));
@@ -3157,7 +3253,7 @@
   }
   function buyPerk(id) {
     const l = perk(id), c = perkCost(l);
-    if (l >= PERK_MAX || save.scales < c) return;
+    if (l >= perkMax() || save.scales < c) return;
     save.scales -= c; save.perks[id] = l + 1; sfx.coin(); persist(); renderProg();
   }
 
@@ -3167,6 +3263,8 @@
     $('prog-level').textContent = save.lvl;
     $('prog-xp').textContent = tr('{x} / {n} EP', { x: save.xp, n: need });
     $('prog-xpbar').style.width = Math.min(100, save.xp / need * 100) + '%';
+    const rk = rankOf(save.rebirths), nrk = RANKS.find(k => k.r > save.rebirths);
+    $('prog-rank').textContent = tr('🎖️ Rang: {r}', { r: rk.name }) + (nrk ? tr(' · nächster Rang: {r} bei {n}× Wiedergeburt', { r: nrk.name, n: nrk.r }) : tr(' · höchster Rang erreicht'));
     $('prog-stats').textContent = tr('{a} Fänge · {b} Aufträge · {c}× wiedergeboren · Taler-Bonus +{p} %', { a: save.total, b: save.questsDone, c: save.rebirths, p: Math.round((coinMult() - 1) * 100) });
     const left = dailyLeft();
     $('prog-bonus').textContent = (left ? tr('☀️ Tagesbonus: noch {n} Fänge mit doppelten EP', { n: left }) : tr('☀️ Tagesbonus für heute aufgebraucht – morgen wieder')) +
@@ -3194,16 +3292,17 @@
       ? tr('Bereit! Du bekommst {n} Schuppen und dauerhaft +20 % Taler. Taler, Ruten, Köder und Level werden zurückgesetzt. Fischdex, Rekorde und Talente bleiben.', { n: scalesFor() })
       : tr('Ab Level {r} möglich (noch {d}). Je höher dein Level und je mehr Taler du verdienst, desto mehr Schuppen gibt es (aktuell {n}).', { r: req, d: req - save.lvl, n: scalesFor() });
     $('btn-rebirth').disabled = !can;
-    $('reb-next').textContent = save.rebirths < 1 ? tr('Freischaltung: Regenbogenrute (1×), Mondköder (2×), Sternenrute (3×), neue Hutfarben.')
-      : save.rebirths < 3 ? tr('Nächste Freischaltung bei {x}.', { x: save.rebirths < 2 ? tr('2× – Mondköder') : tr('3× – Sternenrute') }) : tr('Alles freigeschaltet. Jede weitere Wiedergeburt: +20 % Taler.');
+    const ms = MILESTONES.find(m => m.r > save.rebirths);
+    $('reb-next').textContent = ms ? tr('Nächste Freischaltung bei {n}×: {t}. Dazu jedes Mal eine neue Hutfarbe und +20 % Taler.', { n: ms.r, t: ms.t }) : tr('Alles freigeschaltet. Jede weitere Wiedergeburt: +20 % Taler.');
     $('prog-scales').textContent = save.scales;
-    $('prog-perks').replaceChildren(...PERKS.map(p => {
-      const l = perk(p.id), max = l >= PERK_MAX, c = perkCost(l);
+    $('prog-perk-lock').hidden = save.rebirths >= 5;
+    $('prog-perks').replaceChildren(...PERKS.filter(p => !p.reb || save.rebirths >= p.reb).map(p => {
+      const l = perk(p.id), max = l >= perkMax(), c = perkCost(l);
       const d = document.createElement('div'); d.className = 'item perk';
       const txt = document.createElement('div');
       const b = document.createElement('b'); b.textContent = `${p.icon} ${p.name}`;
       const pips = document.createElement('span'); pips.className = 'pips';
-      pips.textContent = '●'.repeat(l) + '○'.repeat(PERK_MAX - l); b.append(' ', pips);
+      pips.textContent = '●'.repeat(l) + '○'.repeat(Math.max(0, perkMax() - l)); b.append(' ', pips);
       const s = document.createElement('small'); s.textContent = l ? p.desc(l) + (max ? '' : ` → ${p.desc(l + 1)}`) : p.desc(1);
       txt.append(b, s);
       const btn = document.createElement('button'); btn.className = 'btn';
@@ -3230,7 +3329,7 @@
   const LB_API = '/api/leaderboard';
   const LB_TABS = {
     taler:  { label: tr('🪙 Taler'),          fmt: s => tr('{n} Taler', { n: s.toLocaleString(I18N.locale) }) },
-    wieder: { label: tr('🌀 Wiedergeburten'), fmt: s => s + '×' },
+    wieder: { label: tr('🌀 Wiedergeburten'), fmt: s => s + '× · ' + rankOf(s).name },
     dex:    { label: tr('📖 Fischdex'),       fmt: s => tr('{a} Fische · {b} Mut.', { a: Math.floor(s / 100), b: s % 100 }) },
     rekord: { label: tr('📏 Rekordfang'),     fmt: s => s + ' cm' },
     klein:  { label: tr('🔬 Kleinster Fisch'), fmt: s => s ? s + ' cm' : '–' },
@@ -3339,7 +3438,7 @@
     return j;
   }
   function lobbyMe() {
-    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'boss'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0 };
+    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'boss'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: save.rebirths };
   }
   async function lobbySync() {
     if (!save.lobby || LOBBY.busy || document.hidden) return;
@@ -3478,6 +3577,7 @@
       const pos = document.createElement('span'); pos.textContent = ['🥇', '🥈', '🥉'][i] || i + 1;
       const n = document.createElement('b'); n.textContent = (p.m === 'see' ? '⛵ ' : '') + p.name;
       if (p.m === 'see') n.title = tr('Auf Hoher See');
+      if (p.rk !== undefined) { const rk = document.createElement('small'); rk.className = 'rank'; rk.textContent = ' ' + rankOf(p.rk).name; n.append(rk); }
       const sc = document.createElement('span'); sc.className = 'sc'; sc.textContent = tr('{n} Taler', { n: (p.sc || 0).toLocaleString(I18N.locale) });
       li.append(pos, n, sc);
       if (p.big) { const b = document.createElement('span'); b.className = 'big'; b.textContent = tr('Größter: {f} ({cm} cm)', { f: p.big.f, cm: p.big.cm }); li.append(b); }

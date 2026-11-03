@@ -984,3 +984,13 @@ button#btn-boss:hover { background: #be123c; }
 .bets button[hidden] { display: none; }
 /* active snacks */
 #buffs { cursor: pointer; font-variant-numeric: tabular-nums; }
+
+/* progression: forge button, mastery medal, rank */
+.ware .btn.forge { margin-top: .4rem; background: #f97316; box-shadow: 0 4px 0 #9a3412; color: #1c1917; }
+.ware .btn.forge[aria-disabled="true"] { opacity: .5; }
+.card .mastery { display: block; font-size: .7rem; color: #94a3b8; }
+.card .mastery.m1 { color: #d6a06b; }
+.card .mastery.m2 { color: #e2e8f0; }
+.card .mastery.m3 { color: var(--gold); font-weight: 700; }
+.rank-line { font-weight: 700; color: var(--gold); margin: .4rem 0 0; }
+#lobby-players .rank { font-weight: 400; color: #94a3b8; font-size: .75em; }
