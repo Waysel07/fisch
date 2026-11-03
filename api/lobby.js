@@ -68,6 +68,7 @@ function cleanMe(me) {
     s: ['i', 'w', 'r'].includes(me.s) ? me.s : 'i', // idle, waiting for a bite, reeling
     hat: Math.round(num(me.hat, 0, 3)),
     ch: cosm(me.ch), cj: cosm(me.cj), cb: cosm(me.cb),  // Kosmetik: Hut, Jacke, Pose (IDs aus dem Laden)
+    sk: cosm(me.sk), hr: cosm(me.hr),                   // Haut- und Haarfarbe
     sc: Math.round(num(me.sc, 0, 1e9)),               // Taler gefangen, seit man in der Lobby ist
     n: Math.round(num(me.n, 0, 1e6)),                 // Fänge in der Lobby
   };

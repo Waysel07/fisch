@@ -222,7 +222,7 @@
     // time sync + cosmetics
     '🕒 Gemeinsame Uhrzeit: Tag und Nacht laufen jetzt für alle gleich – in einer Lobby angelt ihr also immer zur selben Tageszeit.': '🕒 Shared clock: day and night now run the same for everyone – so in a lobby you always fish at the same time of day.',
     '🎩 Kosmetik: Hüte, Regenjacken und Posen – ein paar im Laden, die besonderen nur durch Erfolge. Andere in deiner Lobby sehen deinen Look.': '🎩 Cosmetics: hats, rain jackets and bobbers – a few in the shop, the special ones only through achievements. Others in your lobby see your look.',
-    '👕 Kleiderschrank: Klick auf dich selbst (oder K), um anzuziehen, was du hast – und zu sehen, wie du den Rest bekommst.': '👕 Wardrobe: click yourself (or K) to put on what you have – and see how to get the rest.',
+    '👕 Kleiderschrank: Klick auf dich selbst (oder K), um anzuziehen, was du hast – und zu sehen, wie du den Rest bekommst. Haut- und Haarfarbe kannst du dort frei wählen.': '👕 Wardrobe: click yourself (or K) to put on what you have – and see how to get the rest. You can also pick your skin tone and hair colour there for free.',
     '💬 Lobby-Chat: In einer Lobby mit Enter oder T schreiben. Nachrichten erscheinen als Sprechblase über dem Angler.': '💬 Lobby chat: in a lobby, press Enter or T to type. Messages appear as a speech bubble above the angler.',
     'Goldener Hut': 'Golden Hat', 'Für alle, die einen legendären Fisch gelandet haben.': 'For everyone who has landed a legendary fish.', 'Fange einen legendären Fisch.': 'Catch a legendary fish.',
     'Glitzerhut': 'Glitter Hat', 'Funkelt fast so schön wie ein Shiny.': 'Sparkles almost as nicely as a shiny.', 'Fange einen Shiny.': 'Catch a shiny.',
@@ -233,6 +233,7 @@
     'Erreiche Level 10.': 'Reach level 10.', 'Entdecke 20 verschiedene Fische.': 'Discover 20 different fish.',
     '🎁 Freigeschaltet: {c}! Anziehen im Kleiderschrank (K oder auf dich klicken).': '🎁 Unlocked: {c}! Put it on in the wardrobe (K or click yourself).',
     '🎁 {n} neue Kosmetik-Teile freigeschaltet! Schau in den Kleiderschrank (K).': '🎁 {n} new cosmetics unlocked! Check the wardrobe (K).',
+    'Hautfarbe': 'Skin tone', 'Haar- & Bartfarbe': 'Hair & beard colour', 'Hell': 'Light', 'Rosig': 'Rosy', 'Oliv': 'Olive', 'Braun': 'Brown', 'Dunkel': 'Dark', 'Blond': 'Blond', 'Schwarz': 'Black', 'Rot': 'Red', 'Grau': 'Grey', 'Weiß': 'White',
     '👕 Kleiderschrank': '👕 Wardrobe', 'Kleiderschrank': 'Wardrobe', 'Standard': 'Default', 'Hutfarbe nach Wiedergeburten': 'Hat colour by rebirths', 'Klassisch': 'Classic',
     'Angezogen': 'Wearing', '🛒 Laden · {n} Taler': '🛒 Shop · {n} coins',
     'Trag, was du gekauft oder dir verdient hast. Gesperrte Teile bekommst du durch Erfolge – der Hinweis sagt, wie.': 'Wear what you bought or earned. Locked items come from achievements – the hint tells you how.',

@@ -93,7 +93,7 @@
     { id: '2026-11-03-4', date: '03.11.2026', items: [
       '🕒 Gemeinsame Uhrzeit: Tag und Nacht laufen jetzt für alle gleich – in einer Lobby angelt ihr also immer zur selben Tageszeit.',
       '🎩 Kosmetik: Hüte, Regenjacken und Posen – ein paar im Laden, die besonderen nur durch Erfolge. Andere in deiner Lobby sehen deinen Look.',
-      '👕 Kleiderschrank: Klick auf dich selbst (oder K), um anzuziehen, was du hast – und zu sehen, wie du den Rest bekommst.',
+      '👕 Kleiderschrank: Klick auf dich selbst (oder K), um anzuziehen, was du hast – und zu sehen, wie du den Rest bekommst. Haut- und Haarfarbe kannst du dort frei wählen.',
       '💬 Lobby-Chat: In einer Lobby mit Enter oder T schreiben. Nachrichten erscheinen als Sprechblase über dem Angler.',
     ] },
     { id: '2026-11-03-3', date: '03.11.2026', items: [
@@ -891,7 +891,12 @@
     persist();
     return got;
   }
-  const myLook = () => ({ tier: Math.min(HATS.length - 1, save.rebirths), hat: save.cosm.hat, jacket: save.cosm.jacket, bob: save.cosm.bob });
+  // free choices in the wardrobe: skin tone and hair/beard colour [main, shade(, nose)]
+  const SKINS = { hell: ['#f2c9a0', '#d9a47a', '#e8a87c'], rosa: ['#f5d0c5', '#e0a99a', '#e79b8f'], oliv: ['#d6a77a', '#b98559', '#c98e63'], braun: ['#a8714a', '#865534', '#94603d'], dunkel: ['#6e4429', '#52301b', '#5d3820'] };
+  const HAIRS = { braun: ['#7c4a24', '#a0662f'], blond: ['#d4a72c', '#f0cc5a'], schwarz: ['#1f1a17', '#3a302a'], rot: ['#b4441c', '#d9682f'], grau: ['#8b8f97', '#b3b7bf'], weiss: ['#e5e7eb', '#f8fafc'] };
+  const SKIN_NAMES = { hell: tr('Hell'), rosa: tr('Rosig'), oliv: tr('Oliv'), braun: tr('Braun'), dunkel: tr('Dunkel') };
+  const HAIR_NAMES = { braun: tr('Braun'), blond: tr('Blond'), schwarz: tr('Schwarz'), rot: tr('Rot'), grau: tr('Grau'), weiss: tr('Weiß') };
+  const myLook = () => ({ tier: Math.min(HATS.length - 1, save.rebirths), hat: save.cosm.hat, jacket: save.cosm.jacket, bob: save.cosm.bob, skin: save.cosm.skin, hair: save.cosm.hair });
   function bobColor(id) {
     const c = COSM[id];
     if (!c || c.slot !== 'bob') return '#ef4444';
@@ -902,10 +907,13 @@
     const tier = Math.max(0, Math.min(HATS.length - 1, look.tier | 0));
     const hat = COSM[look.hat] && COSM[look.hat].slot === 'hat' ? COSM[look.hat] : null;
     const jacket = COSM[look.jacket] && COSM[look.jacket].slot === 'jacket' ? COSM[look.jacket] : null;
-    const key = `${hat ? hat.id : tier}|${jacket ? jacket.id : ''}`;
+    const skin = SKINS[look.skin] ? look.skin : 'hell', hair = HAIRS[look.hair] ? look.hair : 'braun';
+    const key = `${hat ? hat.id : tier}|${jacket ? jacket.id : ''}|${skin}|${hair}`;
     if (!lookFrames.has(key)) {
       const [h, H, l] = hat ? hat.col : HATS[tier], pal = { ...PLAYER_PAL, h, H, l };
       if (jacket) { const [c, C, y] = jacket.col; Object.assign(pal, { c, C, y }); }
+      const [s, S, r] = SKINS[skin], [B, b] = HAIRS[hair];
+      Object.assign(pal, { s, S, r, B, b });
       lookFrames.set(key, [false, true].map(flip => PLAYER_LEGS.map(g => bake(PLAYER_BODY.concat(g), pal, flip))));
     }
     return lookFrames.get(key);
@@ -1579,7 +1587,7 @@
       if (p.k === LOBBY.me) continue;
       p.dx = p.dx === undefined ? p.x : p.dx + (p.x - p.dx) * .1;
       const x = snap(p.dx), y = DOCK_Y, d = p.d > 0 ? 1 : -1;
-      const img = playerFrames({ tier: p.hat, hat: p.ch, jacket: p.cj })[d > 0 ? 0 : 1][0];
+      const img = playerFrames({ tier: p.hat, hat: p.ch, jacket: p.cj, skin: p.sk, hair: p.hr })[d > 0 ? 0 : 1][0];
       ctx.globalAlpha = .8;
       ctx.drawImage(img, x - 5.5, y - img.height / 2, img.width / 2, img.height / 2);
       const hx = x + d * 3.5, hy = y - 8.5, tx = x + d * 15, ty = y - 21;
@@ -2163,7 +2171,19 @@
     const bc = bobColor(save.cosm.bob), by = cv.height - 22, bx = cv.width - 30;
     x.fillStyle = '#1b1f2e'; x.fillRect(bx - 2, by - 2, 20, 20); x.fillRect(bx + 7, by - 10, 2, 8);
     x.fillStyle = bc; x.fillRect(bx, by, 16, 8); x.fillStyle = '#f8fafc'; x.fillRect(bx, by + 8, 16, 8);
-    $('wardrobe-list').replaceChildren(...Object.entries(SLOT_NAMES).map(([slot, label]) => {
+    const swatches = (title, opts, names, key, def) => {
+      const sec = document.createElement('section'); sec.className = 'wd-slot';
+      const h = document.createElement('h3'); h.textContent = title;
+      const row = document.createElement('div'); row.className = 'wd-swatches'; row.setAttribute('role', 'radiogroup'); row.setAttribute('aria-label', title);
+      for (const [id, col] of Object.entries(opts)) {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'wd-swatch' + ((save.cosm[key] || def) === id ? ' on' : '');
+        b.style.setProperty('--sw', col[0]); b.title = names[id]; b.setAttribute('aria-label', names[id]); b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', (save.cosm[key] || def) === id);
+        b.addEventListener('click', () => { save.cosm[key] = id === def ? null : id; persist(); renderWardrobe(); sfx.tick(); });
+        row.append(b);
+      }
+      sec.append(h, row); return sec;
+    };
+    $('wardrobe-list').replaceChildren(swatches(tr('Hautfarbe'), SKINS, SKIN_NAMES, 'skin', 'hell'), swatches(tr('Haar- & Bartfarbe'), HAIRS, HAIR_NAMES, 'hair', 'braun'), ...Object.entries(SLOT_NAMES).map(([slot, label]) => {
       const sec = document.createElement('section'); sec.className = 'wd-slot';
       const h = document.createElement('h3'); h.textContent = label;
       const grid = document.createElement('div'); grid.className = 'wd-grid';
@@ -2712,7 +2732,7 @@
     return j;
   }
   function lobbyMe() {
-    return { x: player.x, d: player.dir, s: ['wait', 'bite'].includes(state) ? 'w' : ['reel', 'rhythm'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0 };
+    return { x: player.x, d: player.dir, s: ['wait', 'bite'].includes(state) ? 'w' : ['reel', 'rhythm'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0 };
   }
   async function lobbySync() {
     if (!save.lobby || LOBBY.busy || document.hidden) return;
