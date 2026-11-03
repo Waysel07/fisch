@@ -83,6 +83,7 @@ function cleanMe(me) {
     sk: cosm(me.sk), hr: cosm(me.hr),                   // Haut- und Haarfarbe
     sc: Math.round(num(me.sc, 0, 1e9)),               // Taler gefangen, seit man in der Lobby ist
     n: Math.round(num(me.n, 0, 1e6)),                 // Fänge in der Lobby
+    rk: Math.round(num(me.rk, 0, 99)),                // Wiedergeburten, für den Rang am Namensschild
   };
 }
 
