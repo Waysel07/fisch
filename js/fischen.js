@@ -55,6 +55,7 @@
     { id: 'odfisch', name: 'Absolute Odfisch',  img: 'img/odfish.jpg',           r: 'legendary', min: 170, max: 190, val: 500, photo: true, say: 'Absolut.', desc: 'Absolute Legende. Nur nachts, nur weit draußen.', far: .6, night: 4, dayOff: true },
     { id: 'katze',   name: 'Katzenfisch',       img: 'img/katzenfisch.png',  r: 'legendary', min: 40, max: 70,  val: 450, photo: true, page: 'seiten/katzenfisch.html', say: 'Miau. Ich meine: Blubb.', desc: 'Halb Katze, halb Fisch, ganz flauschig. Kommt lieber nachts.', far: .4, night: 2.5 },
     { id: 'uhrzeit', name: 'UhrZeitFisch',      img: 'img/uhrzeitfisch.gif', r: 'legendary', min: 160, max: 190, val: 480, photo: true, page: 'seiten/uhrzeitfisch.html', say: 'Ich bin pünktlich. Seit 66 Millionen Jahren.', desc: 'Ein Fisch aus der Urzeit, sehr cool. Beißt nur zur vollen Stunde.', fullHour: true, hint: 'Beißt nur zur vollen Stunde' },
+    { id: 'drache',  name: 'Drachenkarpfen',    img: 'img/drachenkarpfen.png', r: 'legendary', min: 150, max: 240, val: 520, pixel: true, page: 'seiten/drachenkarpfen.html', say: 'Ich bin den Wasserfall hochgesprungen. Jetzt bin ich sauer.', desc: 'Ein Karpfen, der es durchs Drachentor geschafft hat. Jade, Gold und schlechte Laune.', needs: { platsch: 25 }, bigSplash: true, hint: 'Erst wenn du 25 Karpador gefangen hast' },
     { id: 'ratte',   name: 'Ratte',             img: 'img/rat.gif',              r: 'junk',      min: 18, max: 28,  val: 1,  say: 'Lass mich, ich hab Termine.', desc: 'Nass und beleidigt. Läuft trotzdem weiter.' },
     { id: 'tisch',   name: 'Tisch',             img: 'img/tisch.gif',            r: 'junk',      min: 90, max: 140, val: 3,  photo: true, say: 'Ich bin ein Tisch.', desc: 'Ein Tisch. Kein Fisch. Aber fast.' },
     { id: 'flasche', name: 'Spezi-Flasche',     img: 'img/spezi-flasche.png',    r: 'junk',      min: 25, max: 33,  val: 4,  say: 'Pfand gibt’s keins.', desc: 'Leer. Gehört bestimmt dem Spezifischfischer.' },
@@ -280,7 +281,8 @@
     const d = castDistance(), night = isNight(), b = bait(), r = rod();
     const luck = b.luck * r.luck * (1 + .08 * perk('glueck')) * (dexPerk('luck10') ? 1.1 : 1);
     const fullHour = (time * 24) % 1 < 1 / 6; // the clock shows xx:00
-    const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night) && !(f.fullHour && !fullHour));
+    const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night) && !(f.fullHour && !fullHour)
+      && !(f.needs && Object.entries(f.needs).some(([id, n]) => ((save.dex[id] || {}).n || 0) < n)));
     const weights = pool.map(f => {
       let w = RARITY[f.r].w;
       const n = pool.filter(g => g.r === f.r).length; w /= n;
@@ -343,6 +345,7 @@
     if (dexClaimable().length) { updateDexBadge(); if (first || newMut || newShiny) toast(tr('📖 Fischdex-Belohnung bereit!')); }
     persist(); updateCoins();
     splash(bob.x, SURFACE, 22, '#ffffff');
+    if (f.bigSplash) { splash(bob.x, SURFACE, 60, '#5eead4'); splash(bob.x, SURFACE, 40, '#ffffff'); }
     state = 'show'; $('reel').hidden = true; holding = false; hint('');
     const reveal = () => {
       showCatch(f, size, val, first, mut, newMut, gain, shiny, newShiny);
