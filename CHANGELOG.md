@@ -2,6 +2,18 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 03.11.2026 · `2026-11-03-13`
+
+- 🔥 New currency: Glutsteine (ember stones)! Every catch in the Ember Cave drops some – the rarer the fish, the more (legendaries 40, trophy and monster double, shinies triple).
+- ⛏️ The Ember Cave now has 5 depths: Ember Chamber, Ash Hall, Magma Maw, Dragon Hoard and Phoenix Nest. Glimm digs deeper for ember stones – every depth brings new fish, a new lava rod and +20 % coins. At the very bottom waits the phoenix feather rod.
+- 🔧 Glimm’s workshop: ember stones buy permanent cave upgrades – Ember Net (more coins), Heat Shield (less tension), Spark Light (more luck) and Ember Crystal (more ember stones).
+
+## 03.11.2026 · `2026-11-03-12`
+
+- 💰 The Ember Cave now really pays: every cave fish is worth three times as much, and down there you get a +50 % heat bonus on every catch.
+- ⛏️ Glimm’s jobs: in the cave Glimm always has three jobs of his own with big rewards. Epic catches even earn you a pearl.
+- 🤝 Glimm’s trust: every three jobs done he trusts you more – each level gives a permanent +5 % coins in the cave, up to +50 %.
+
 ## 03.11.2026 · `2026-11-03-11`
 
 - 🐉 Gyarados now bites after just 14.5 Karpador instead of 25.

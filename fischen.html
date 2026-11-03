@@ -22,6 +22,7 @@
       <div class="hud-left">
         <a class="pill back" href="index.html" title="Zurück">&larr;</a>
         <span class="pill" title="Fischtaler"><img src="img/fish-icon.png" alt="" class="coin"> <b id="coins">0</b></span>
+        <span class="pill" id="glut-pill" hidden>🔥 <b id="glut">0</b></span>
         <button class="pill lvl" id="lvl" title="Level">⭐ <b id="lvl-num">1</b><span class="xpbar"><i id="lvl-bar"></i></span><span id="lvl-reb"></span></button>
         <span class="pill" id="clock" title="Tageszeit">☀️ Tag</span>
         <button class="pill" id="weather" title="Wetter">☀️ <span class="lbl" id="weather-name">Sonnig</span></button>
@@ -264,6 +265,23 @@
 
         <h3>📜 Aufträge</h3>
         <div class="list" id="prog-quests"></div>
+
+        <div id="glimm-sec" hidden>
+          <h3>⛏️ Grabung in der Glutgrotte</h3>
+          <p class="sub">Grotten-Fänge geben Glutsteine 🔥. Damit gräbst du mit Glimm tiefer: Jede Tiefe bringt neue Fische, eine neue Lavarute und mehr Taler.</p>
+          <div class="rebirth prestige">
+            <p id="dig-info"></p>
+            <p class="sub" id="dig-next"></p>
+            <button class="btn" id="btn-dig">Tiefer graben</button>
+          </div>
+          <h3>🔧 Glimms Werkstatt <span class="sub">· <b id="glut-have">0</b> 🔥</span></h3>
+          <p class="sub">Dauerhafte Verbesserungen für die Glutgrotte. Sie bleiben auch nach Wiedergeburt und Prestige.</p>
+          <div class="list" id="glut-ups"></div>
+          <h3 id="glimm-head">⛏️ Glimms Aufträge</h3>
+          <p class="sub">Nur Fänge in der Glutgrotte zählen. Glimm zahlt gut, und alle drei Aufträge vertraut er dir ein Stück mehr.</p>
+          <p class="sub bonus" id="glimm-trust"></p>
+          <div class="list" id="glimm-quests"></div>
+        </div>
 
         <h3>🌀 Wiedergeburt</h3>
         <div class="rebirth">
