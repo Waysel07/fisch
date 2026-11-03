@@ -603,6 +603,7 @@
     if (state === 'wait' && Math.random() < dt * .7) ripple(bob.x, .6);
 
     if (npcTalk > 0) npcTalk -= dt;
+    if (kalleTalk > 0) kalleTalk -= dt;
     if (welsTalk > 0) welsTalk -= dt;
     updateFx(dt);
     hintTick(dt);
@@ -721,6 +722,84 @@
   function talkNpc() {
     const [line, clip] = NPC_LINES[npcIdx++ % NPC_LINES.length];
     npcLine = line; npcTalk = 2.2; playClip(clip);
+  }
+  // Käpt'n Kalle: an original old angler in yellow rain gear who rows his little boat out on
+  // the water and is always far too excited about the fishing weather. Click him to chat.
+  const KALLE_PAL = { k: '#1b1f2e', y: '#facc15', Y: '#ca8a04', l: '#fef08a', s: '#f2c9a0', S: '#d9a47a', w: '#f1f5f9', W: '#cbd5e1', e: '#0f172a', r: '#e57373', p: '#6b3a1f' };
+  const KALLE_BODY = bake([
+    '....kkkkkkk.....',
+    '...kyyyllyyk....',
+    '..kyyyyyyyyyk...',
+    '.kkkkkkkkkkkkk..',
+    'kYYYYYYYYYYYYYk.',
+    '.kkssssssssskk..',
+    '..ksseesseessk..',
+    '..kssssrrsssSk..',
+    '..kwwssssssswk..',
+    '..kwwwwwwwwwwkpp',
+    '..kwwWwwwwwwwkp.',
+    '...kwwwwwwwwk...',
+    '..kkyyywwyyykk..',
+    '.kyyyyyyyyyyyyk.',
+    'kyyyyykyyyyyyyyk',
+    'kyyyyykyyyyyYYYk',
+    'kyyyyykyyyyyYYYk',
+    'kYYYYYkYYYYYYYYk',
+  ], KALLE_PAL);
+  const KALLE = { x: 322, w: 30, h: 22 };
+  const KALLE_LINES = [
+    'Moin! Herrliches Angelwetter heute!',
+    'Ahoi! Hier draußen beißen sie am besten.',
+    'Regen, Sonne, Sturm – Hauptsache Wasser!',
+    'Pssst … die Fische hören mit.',
+    'Mein Boot leckt. Aber nur ein bisschen.',
+    'Seit 40 Jahren warte ich auf den Großen.',
+    'Der Kiosk-Wels schuldet mir noch einen Taler.',
+    'Hoho! Fast hätte einer gebissen!',
+  ];
+  const KALLE_NIGHT = ['Nachtangeln! Das beste Angeln!', 'Der Mond ist mein Leuchtturm.'];
+  let kalleTalk = 0, kalleLine = '', kalleIdx = 0;
+  function talkKalle() {
+    const night = darkness() > .5 && Math.random() < .5;
+    kalleLine = tr(night ? KALLE_NIGHT[Math.floor(Math.random() * KALLE_NIGHT.length)] : KALLE_LINES[kalleIdx++ % KALLE_LINES.length]);
+    kalleTalk = 3;
+    tone(220, .08, 'square', .08, 60); setTimeout(() => tone(330, .1, 'square', .08, -40), 90);
+  }
+  function kalleBob() { return Math.sin(t * 1.6) * 1; }
+  function drawKalle(dark) {
+    const k = '#1b1f2e', x = KALLE.x, y = SURFACE - 1 + kalleBob();
+    const hull = mix([150, 62, 40], [70, 35, 30], dark), hullD = mix([110, 42, 28], [50, 25, 22], dark), rim = mix([222, 200, 160], [100, 92, 80], dark);
+    // the old man sits in the middle of the boat
+    ctx.drawImage(KALLE_BODY, snap(x + 10), snap(y - 13), 8, 9);
+    // his rod points out over the water toward the island, line and red float bobbing
+    const rx = x + 17, ry = y - 7, tx = x + 30, ty = y - 18;
+    ctx.strokeStyle = '#3a2416'; ctx.lineWidth = .75;
+    ctx.beginPath(); ctx.moveTo(rx, ry); ctx.lineTo(tx, ty); ctx.stroke();
+    const fx = tx + 2 + Math.sin(t * .9) * .8, fy = SURFACE + .5 + Math.sin(t * 2.3) * .4;
+    ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = .5;
+    ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(fx, fy); ctx.stroke();
+    px(fx - .75, fy - 1, 1.5, 1, '#ef4444'); px(fx - .75, fy, 1.5, .5, '#f8fafc');
+    // rowboat
+    px(x - .5, y - 4.5, 29, 1.5, k); px(x, y - 4, 28, 1, rim);
+    px(x + .5, y - 3, 27, 3.5, k); px(x + 1, y - 3, 26, 3, hull); px(x + 1, y - 1, 26, 1, hullD);
+    px(x + 2.5, y + .5, 23, 1, k); px(x + 3, y + .5, 22, .5, hullD);
+    px(x - 1, y - 6, 2, 3, k); px(x - .5, y - 5.5, 1, 2, rim);
+    // oar resting on the side
+    px(x + 4, y - 6, 1, 4, '#a0662f'); px(x + 3.5, y - 2, 2, 3, '#a0662f');
+    // lantern at the bow lights up at night
+    px(x + 26, y - 7.5, 2, 2.5, k); px(x + 26.5, y - 7, 1, 1.5, dark > .3 ? '#fde68a' : '#94a3b8');
+    if (dark > .3) { ctx.globalAlpha = (dark - .3) * .35; disc(x + 27, y - 6.5, 6, '#fde68a'); ctx.globalAlpha = 1; }
+    // wake ripples around the hull
+    ctx.globalAlpha = .45; px(x - 2 + Math.sin(t * 1.6) * .5, y + 1, 3, .5, '#e0f7ff'); px(x + 27 - Math.sin(t * 1.6) * .5, y + 1, 3, .5, '#e0f7ff'); ctx.globalAlpha = 1;
+    if (kalleTalk > 0) {
+      setFont('6px Poppins, sans-serif');
+      const bw = Math.ceil(ctx.measureText(kalleLine).width) + 4, bx = snap(Math.max(1, Math.min(W - bw - 1, x + 14 - bw / 2))), byy = snap(y - 26);
+      ctx.globalAlpha = Math.min(1, kalleTalk * 3);
+      px(bx - .5, byy - .5, bw + 1, 9, '#0f172a'); px(bx, byy, bw, 8, '#fffbeb'); px(snap(x + 14), byy + 8, 2, 1.5, '#0f172a');
+      ctx.fillStyle = '#0f172a'; ctx.textBaseline = 'top';
+      ctx.fillText(kalleLine, bx + 2, byy + 1);
+      ctx.textBaseline = 'alphabetic'; ctx.globalAlpha = 1;
+    }
   }
   const BOTTLE = bake(['.k.', '.k.', 'kbk', 'bob', 'byb', 'bob', 'kbk'], { k: '#1b1f2e', b: '#6b2d0f', o: '#f97316', y: '#a855f7' });
 
@@ -940,6 +1019,7 @@
     }
     ctx.globalAlpha = 1;
 
+    drawKalle(dark);
     drawDock(dark);
     drawNpc();
     drawKiosk(dark);
@@ -1121,6 +1201,7 @@
     { id: 'lb',     label: tr('Bestenliste'),   x: KIOSK.x + KIOSK.w / 2 - 5, y: DOCK_Y - 48, w: 10, h: 10.5, draw: drawTrophy, open: () => toggleModal('lb') },
     { id: 'prog',   label: tr('Aufträge & Fortschritt'), x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
     { id: 'shop',   label: tr('Laden'),         x: KIOSK.x - 3, y: DOCK_Y - 37.5, w: KIOSK.w + 6, h: 37.5, open: () => toggleModal('shop') },
+    { id: 'kalle',  label: tr("Käpt'n Kalle"), x: KALLE.x - 1, y: SURFACE - 16, w: KALLE.w + 2, h: 18, open: () => talkKalle() },
     { id: 'npc',    label: 'Spezifischfischer', x: NPC.x - 1, y: DOCK_Y - NPC.h - 2, w: NPC.w + 2, h: NPC.h + 2, open: () => talkNpc() },
   ];
   let hoverProp = null;
