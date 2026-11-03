@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 03.11.2026 · `2026-11-03-16`
+
+- ⏩ New settings: the catch card can close by itself after 2.5 seconds (not for new fish, legendaries and shinies), and empty bait can be rebought automatically.
+
 ## 03.11.2026 · `2026-11-03-15`
 
 - ⚙️ New settings (gear at the top or key E): sound, volume, less screen shake and short numbers (1.2 M).

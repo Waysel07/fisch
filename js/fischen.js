@@ -146,6 +146,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-03-16', date: '03.11.2026', items: [
+      '⏩ Neue Einstellungen: Die Fangkarte kann sich nach 2,5 Sekunden von selbst schließen (nicht bei neuen Fischen, Legendären und Shinys), und leere Köder lassen sich automatisch nachkaufen.',
+    ] },
     { id: '2026-11-03-15', date: '03.11.2026', items: [
       '⚙️ Neue Einstellungen (Zahnrad oben oder Taste E): Ton, Lautstärke, weniger Bildschirmwackeln und kurze Zahlen (1,2 Mio.).',
       '📜 „Alle abholen“: Fertige Aufträge – auch Glimms – holst du jetzt mit einem Klick ab.',
@@ -593,7 +596,16 @@
     // bait gets used up on a hook attempt
     if (save.bait !== 'wurm' && !bait().boss) {
       save.baits[save.bait] = (save.baits[save.bait] || 1) - 1;
-      if (save.baits[save.bait] <= 0) { delete save.baits[save.bait]; save.bait = 'wurm'; toast(tr('Köder aufgebraucht – zurück zum Wurm.')); }
+      if (save.baits[save.bait] <= 0) {
+        const b = bait(); delete save.baits[save.bait];
+        // QoL: buy the same bait again (Taler, or Glutsteine for lava bait) when it runs out
+        const cost = b.lava ? b.glut : b.price, have = b.lava ? save.glut : save.coins;
+        if (save.autoBait && b.pack && cost && !lockText(b) && have >= cost) {
+          if (b.lava) save.glut -= cost; else spend(cost);
+          save.baits[b.id] = b.pack; updateCoins();
+          toast(tr('🔁 {b} nachgekauft: +{n} für {c}', { b: b.name, n: b.pack, c: b.lava ? cost + ' 🔥' : tr('{n} Taler', { n: cost }) }));
+        } else { save.bait = 'wurm'; toast(save.autoBait ? tr('Köder aufgebraucht und zu wenig zum Nachkaufen – zurück zum Wurm.') : tr('Köder aufgebraucht – zurück zum Wurm.')); }
+      }
       persist(); updateGear();
     }
     hooked = { f, ...rollSize(f), str: STRENGTH[f.r] };
@@ -2482,6 +2494,7 @@
     $('set-vol-val').textContent = Math.round(vol() * 100) + ' %';
     $('set-calm').checked = reduceMotion; $('set-calm').disabled = motionPref; $('set-short').checked = !!save.short;
     $('set-tamper').hidden = !save.tampered;
+    $('set-autoclose').checked = !!save.autoClose; $('set-autobait').checked = !!save.autoBait;
   }
   function updateCoins() {
     $('coins').textContent = save.short ? shortN(save.coins) : save.coins; $('shop-coins').textContent = save.coins; $('casino-coins').textContent = save.coins;
@@ -2586,6 +2599,8 @@
   $('set-vol').addEventListener('change', () => { persist(); tone(660, .12, 'triangle', .1); });
   $('set-calm').addEventListener('change', () => { save.calm = $('set-calm').checked; reduceMotion = motionPref || save.calm; persist(); });
   $('set-code-btn').addEventListener('click', redeemCode);
+  $('set-autoclose').addEventListener('change', () => { save.autoClose = $('set-autoclose').checked; persist(); });
+  $('set-autobait').addEventListener('change', () => { save.autoBait = $('set-autobait').checked; persist(); });
   $('set-code').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); redeemCode(); } });
   $('set-short').addEventListener('change', () => { save.short = $('set-short').checked; persist(); updateCoins(); });
   $('start').addEventListener('click', () => {
@@ -2814,7 +2829,14 @@
     $('catch-new').hidden = !first;
     $('catch').hidden = false;
     $('catch-ok').focus();
+    // QoL: the card closes by itself after a moment, except for new fish, legendaries, shinies and new mutations
+    clearTimeout(autoCloseT);
+    if (save.autoClose && !first && f.r !== 'legendary' && !shiny && !newMut && !newShiny) autoCloseT = setTimeout(() => {
+      if (!$('catch').hidden && !$('catch-ok').disabled) $('catch-ok').click();
+    }, 2500);
   }
+  let autoCloseT = 0;
+  $('catch').addEventListener('pointerdown', () => clearTimeout(autoCloseT)); // touching the card keeps it open
 
   let dexTab = 'fish';
   const SHINY_REWARDS = ['s1', 's5', 'sall'];
