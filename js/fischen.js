@@ -90,6 +90,12 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-03-4', date: '03.11.2026', items: [
+      '🕒 Gemeinsame Uhrzeit: Tag und Nacht laufen jetzt für alle gleich – in einer Lobby angelt ihr also immer zur selben Tageszeit.',
+      '🎩 Kosmetik: Hüte, Regenjacken und Posen – ein paar im Laden, die besonderen nur durch Erfolge. Andere in deiner Lobby sehen deinen Look.',
+      '👕 Kleiderschrank: Klick auf dich selbst (oder K), um anzuziehen, was du hast – und zu sehen, wie du den Rest bekommst. Haut- und Haarfarbe kannst du dort frei wählen.',
+      '💬 Lobby-Chat: In einer Lobby mit Enter oder T schreiben. Nachrichten erscheinen als Sprechblase über dem Angler.',
+    ] },
     { id: '2026-11-03-3', date: '03.11.2026', items: [
       '👥 Multiplayer-Lobbys: Erstelle eine Lobby (👥 oder O) und schick Freunden den Code oder Link. Ihr seht euch am Steg, eure Fänge und wer seit dem Beitreten die meisten Taler geangelt hat – bis zu 8 Angler.',
     ] },
@@ -229,7 +235,11 @@
 
   // ------------------------------------------------------------------ world
   const DAY_LENGTH = 300; // seconds for a full day
-  let time = 0.3;         // 0..1, 0.25 = morning, 0.5 = noon, 0.75 = evening
+  // The time of day comes from the real clock, so every player (and everyone in a lobby) has the
+  // same in-game time: one in-game day every DAY_LENGTH seconds, counted from the Unix epoch.
+  let timeShift = 0;      // only for tests (__fischen.setTime)
+  const worldTime = () => ((Date.now() / 1000 / DAY_LENGTH + timeShift) % 1 + 1) % 1;
+  let time = worldTime(); // 0..1, 0.25 = morning, 0.5 = noon, 0.75 = evening
   let t = 0;              // seconds running
   const isNight = () => time < .2 || time > .82;
 
@@ -366,6 +376,8 @@
     }
     setTimeout(() => lbSubmit(), 3000);
     lobbyCatch(f, size, val, shiny);
+    if (f.r !== 'junk') { if (isNight()) cosmCount('night'); if (save.lobby) cosmCount('lobby'); }
+    checkCosm();
     if (dexClaimable().length) { updateDexBadge(); if (first || newMut || newShiny) toast(tr('📖 Fischdex-Belohnung bereit!')); }
     persist(); updateCoins();
     splash(bob.x, SURFACE, 22, '#ffffff');
@@ -467,6 +479,7 @@
     if (acc >= RHYTHM_PASS) {
       reel.maxT = acc >= .9 ? 0 : .8; // nearly perfect counts as a clean catch
       toast(tr('🎵 Im Takt gefangen! Genauigkeit {n} %', { n: Math.round(acc * 100) }));
+      cosmCount('takt');
       land_catch();
     } else {
       retract(tr('Aus dem Takt! {f} ist weg. ({n} %)', { f: f.name, n: Math.round(acc * 100) }) + lostXp(f));
@@ -636,6 +649,8 @@
     if (k === 'b') { toggleModal('lb'); return; }
     if (k === 'n') { toggleModal('patch'); return; }
     if (k === 'o') { toggleModal('lobby'); return; }
+    if (k === 'k') { toggleModal('wardrobe'); return; }
+    if ((k === 'enter' || k === 't') && save.lobby && !anyModal() && state !== 'rhythm') { e.preventDefault(); openChatbar(); return; }
     if (!$('casino').hidden && (k === ' ' || k === 'enter')) { e.preventDefault(); $('spin').click(); return; }
     if (k === 'm') { $('btn-sound').click(); return; }
     if (anyModal()) return;
@@ -652,7 +667,7 @@
   // ------------------------------------------------------------------ update
   function update(dt) {
     t += dt;
-    time = (time + dt / DAY_LENGTH) % 1;
+    time = worldTime();
 
     // walking (only when not busy with the line)
     const left = keys['a'] || keys['arrowleft'], right = keys['d'] || keys['arrowright'];
@@ -830,14 +845,78 @@
   }
   // hat colour shows how often you have been reborn
   const HATS = [['#22c55e', '#15803d', '#86efac'], ['#38bdf8', '#0369a1', '#bae6fd'], ['#c084fc', '#7e22ce', '#f3e8ff'], ['#fbbf24', '#b45309', '#fef3c7']];
-  const hatFrames = [];
-  function playerFrames(t) {
-    const tier = Math.min(HATS.length - 1, t === undefined ? save.rebirths : t);
-    if (!hatFrames[tier]) {
-      const [h, H, l] = HATS[tier], pal = { ...PLAYER_PAL, h, H, l };
-      hatFrames[tier] = [false, true].map(flip => PLAYER_LEGS.map(g => bake(PLAYER_BODY.concat(g), pal, flip)));
+  // cosmetics (bought in the shop) recolour the hat, the jacket or the bobber; without a hat
+  // cosmetic the hat keeps the rebirth colour
+  const COSMETICS = [
+    // in the shop
+    { id: 'hut-rot',     slot: 'hat',    name: 'Roter Hut',          price: 400,  col: ['#ef4444', '#b91c1c', '#fca5a5'], desc: 'Leuchtet über den ganzen Steg.' },
+    { id: 'hut-pink',    slot: 'hat',    name: 'Pinker Hut',         price: 600,  col: ['#f472b6', '#be185d', '#fbcfe8'], desc: 'Die Fische finden ihn mutig.' },
+    { id: 'hut-weiss',   slot: 'hat',    name: 'Weißer Hut',         price: 900,  col: ['#f8fafc', '#cbd5e1', '#ffffff'], desc: 'Bleibt garantiert nicht lange sauber.' },
+    { id: 'jacke-blau',  slot: 'jacket', name: 'Blaue Regenjacke',   price: 700,  col: ['#3b82f6', '#1d4ed8', '#bfdbfe'], desc: 'Klassisch nordisch.' },
+    { id: 'jacke-rot',   slot: 'jacket', name: 'Rote Regenjacke',    price: 700,  col: ['#ef4444', '#991b1b', '#fecaca'], desc: 'Sieht man sogar im Nebel.' },
+    { id: 'jacke-gruen', slot: 'jacket', name: 'Grüne Regenjacke',   price: 900,  col: ['#22c55e', '#15803d', '#bbf7d0'], desc: 'Tarnung für Fortgeschrittene.' },
+    { id: 'pose-blau',   slot: 'bob',    name: 'Blaue Pose',         price: 150,  col: '#3b82f6', desc: 'Schwimmt genauso gut, nur blauer.' },
+    { id: 'pose-gruen',  slot: 'bob',    name: 'Grüne Pose',         price: 150,  col: '#22c55e', desc: 'Für Angler mit Gartenliebe.' },
+    { id: 'pose-pink',   slot: 'bob',    name: 'Pinke Pose',         price: 250,  col: '#f472b6', desc: 'Unübersehbar.' },
+    // unlocked by achievements
+    { id: 'hut-gold',    slot: 'hat',    name: 'Goldener Hut',       col: ['#facc15', '#b45309', '#fef08a'], desc: 'Für alle, die einen legendären Fisch gelandet haben.', ach: 'Fange einen legendären Fisch.', got: () => FISH.some(f => f.r === 'legendary' && save.dex[f.id]) },
+    { id: 'hut-glitzer', slot: 'hat',    name: 'Glitzerhut',         col: ['#f0abfc', '#a21caf', '#fdf4ff'], desc: 'Funkelt fast so schön wie ein Shiny.', ach: 'Fange einen Shiny.', got: () => Object.values(save.dex).some(e => e.shiny) },
+    { id: 'hut-schwarz', slot: 'hat',    name: 'Nachteulen-Hut',     col: ['#334155', '#0f172a', '#64748b'], desc: 'Für Angler, die lieber im Dunkeln fischen.', ach: 'Fange 25 Fische bei Nacht.', got: () => cosmStat('night') >= 25 },
+    { id: 'hut-lobby',   slot: 'hat',    name: 'Freundschaftshut',   col: ['#2dd4bf', '#0f766e', '#ccfbf1'], desc: 'Zusammen angelt es sich besser.', ach: 'Fange 10 Fische in einer Multiplayer-Lobby.', got: () => cosmStat('lobby') >= 10 },
+    { id: 'jacke-lila',  slot: 'jacket', name: 'Taktjacke',          col: ['#a855f7', '#6b21a8', '#e9d5ff'], desc: 'Hat den Rhythmus im Blut.', ach: 'Gewinne einen Taktdrill.', got: () => cosmStat('takt') >= 1 },
+    { id: 'jacke-gold',  slot: 'jacket', name: 'Goldjacke',          col: ['#facc15', '#a16207', '#fef9c3'], desc: 'Nur für Wiedergeborene.', ach: 'Werde einmal wiedergeboren.', got: () => save.rebirths >= 1 },
+    { id: 'pose-gold',   slot: 'bob',    name: 'Goldene Pose',       col: '#facc15', desc: 'Glänzt, wenn ein Fisch anbeißt.', ach: 'Erreiche Level 10.', got: () => save.lvl >= 10 || save.rebirths > 0 },
+    { id: 'pose-regen',  slot: 'bob',    name: 'Regenbogen-Pose',    col: null, desc: 'Wechselt ständig die Farbe.', ach: 'Entdecke 20 verschiedene Fische.', got: () => FISH.filter(f => save.dex[f.id]).length >= 20 },
+  ];
+  trAll(COSMETICS, ['name', 'desc', 'ach']);
+  const COSM = Object.fromEntries(COSMETICS.map(c => [c.id, c]));
+  const SLOT_NAMES = { hat: tr('Hut'), jacket: tr('Jacke'), bob: tr('Pose') };
+  if (!save.cosm || typeof save.cosm !== 'object') save.cosm = { owned: [] };
+  if (!Array.isArray(save.cosm.owned)) save.cosm.owned = [];
+  if (!save.cosm.st || typeof save.cosm.st !== 'object') save.cosm.st = {};
+  const cosmStat = k => save.cosm.st[k] || 0;
+  function cosmCount(k) { save.cosm.st[k] = cosmStat(k) + 1; }
+  // achievements: unlock cosmetics as soon as their condition holds (checked after catches etc.)
+  function checkCosm(quiet) {
+    const got = [];
+    for (const c of COSMETICS) {
+      if (!c.got || save.cosm.owned.includes(c.id)) continue;
+      let ok = false; try { ok = c.got(); } catch { /* data not there yet */ }
+      if (ok) { save.cosm.owned.push(c.id); got.push(c); }
     }
-    return hatFrames[tier];
+    if (!got.length || quiet) return got;
+    setTimeout(() => toast(got.length === 1
+      ? tr('🎁 Freigeschaltet: {c}! Anziehen im Kleiderschrank (K oder auf dich klicken).', { c: got[0].name })
+      : tr('🎁 {n} neue Kosmetik-Teile freigeschaltet! Schau in den Kleiderschrank (K).', { n: got.length })), 2200);
+    persist();
+    return got;
+  }
+  // free choices in the wardrobe: skin tone and hair/beard colour [main, shade(, nose)]
+  const SKINS = { hell: ['#f2c9a0', '#d9a47a', '#e8a87c'], rosa: ['#f5d0c5', '#e0a99a', '#e79b8f'], oliv: ['#d6a77a', '#b98559', '#c98e63'], braun: ['#a8714a', '#865534', '#94603d'], dunkel: ['#6e4429', '#52301b', '#5d3820'] };
+  const HAIRS = { braun: ['#7c4a24', '#a0662f'], blond: ['#d4a72c', '#f0cc5a'], schwarz: ['#1f1a17', '#3a302a'], rot: ['#b4441c', '#d9682f'], grau: ['#8b8f97', '#b3b7bf'], weiss: ['#e5e7eb', '#f8fafc'] };
+  const SKIN_NAMES = { hell: tr('Hell'), rosa: tr('Rosig'), oliv: tr('Oliv'), braun: tr('Braun'), dunkel: tr('Dunkel') };
+  const HAIR_NAMES = { braun: tr('Braun'), blond: tr('Blond'), schwarz: tr('Schwarz'), rot: tr('Rot'), grau: tr('Grau'), weiss: tr('Weiß') };
+  const myLook = () => ({ tier: Math.min(HATS.length - 1, save.rebirths), hat: save.cosm.hat, jacket: save.cosm.jacket, bob: save.cosm.bob, skin: save.cosm.skin, hair: save.cosm.hair });
+  function bobColor(id) {
+    const c = COSM[id];
+    if (!c || c.slot !== 'bob') return '#ef4444';
+    return c.col || ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#a855f7'][Math.floor(t * 4) % 6];
+  }
+  const lookFrames = new Map();
+  function playerFrames(look = myLook()) {
+    const tier = Math.max(0, Math.min(HATS.length - 1, look.tier | 0));
+    const hat = COSM[look.hat] && COSM[look.hat].slot === 'hat' ? COSM[look.hat] : null;
+    const jacket = COSM[look.jacket] && COSM[look.jacket].slot === 'jacket' ? COSM[look.jacket] : null;
+    const skin = SKINS[look.skin] ? look.skin : 'hell', hair = HAIRS[look.hair] ? look.hair : 'braun';
+    const key = `${hat ? hat.id : tier}|${jacket ? jacket.id : ''}|${skin}|${hair}`;
+    if (!lookFrames.has(key)) {
+      const [h, H, l] = hat ? hat.col : HATS[tier], pal = { ...PLAYER_PAL, h, H, l };
+      if (jacket) { const [c, C, y] = jacket.col; Object.assign(pal, { c, C, y }); }
+      const [s, S, r] = SKINS[skin], [B, b] = HAIRS[hair];
+      Object.assign(pal, { s, S, r, B, b });
+      lookFrames.set(key, [false, true].map(flip => PLAYER_LEGS.map(g => bake(PLAYER_BODY.concat(g), pal, flip))));
+    }
+    return lookFrames.get(key);
   }
 
   const npcImg = new Image(); npcImg.src = 'img/spezifischfischer-pixel.png';
@@ -1380,6 +1459,7 @@
     { id: 'prog',   label: tr('Aufträge & Fortschritt'), x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
     { id: 'shop',   label: tr('Laden'),         x: KIOSK.x - 3, y: DOCK_Y - 37.5, w: KIOSK.w + 6, h: 37.5, open: () => toggleModal('shop') },
     { id: 'bealin',  label: tr("Käpt'n Bealin"), x: BEALIN.x - 1, y: SURFACE - 16, w: BEALIN.w + 2, h: 18, open: () => talkBealin() },
+    { id: 'me',     label: tr('Kleiderschrank'), get x() { return player.x - 5; }, y: DOCK_Y - 26, w: 10, h: 18, open: () => toggleModal('wardrobe') },
     { id: 'npc',    label: 'Spezifischfischer', x: NPC.x - 1, y: DOCK_Y - NPC.h - 2, w: NPC.w + 2, h: NPC.h + 2, open: () => talkNpc() },
   ];
   let hoverProp = null;
@@ -1507,7 +1587,7 @@
       if (p.k === LOBBY.me) continue;
       p.dx = p.dx === undefined ? p.x : p.dx + (p.x - p.dx) * .1;
       const x = snap(p.dx), y = DOCK_Y, d = p.d > 0 ? 1 : -1;
-      const img = playerFrames(p.hat)[d > 0 ? 0 : 1][0];
+      const img = playerFrames({ tier: p.hat, hat: p.ch, jacket: p.cj, skin: p.sk, hair: p.hr })[d > 0 ? 0 : 1][0];
       ctx.globalAlpha = .8;
       ctx.drawImage(img, x - 5.5, y - img.height / 2, img.width / 2, img.height / 2);
       const hx = x + d * 3.5, hy = y - 8.5, tx = x + d * 15, ty = y - 21;
@@ -1517,15 +1597,17 @@
         const bx = x + d * (44 + (p.k.charCodeAt(0) % 5) * 6), by = SURFACE + (p.s === 'r' ? Math.sin(t * 30) : Math.sin(t * 2));
         ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = .3;
         ctx.beginPath(); ctx.moveTo(tx, ty); ctx.quadraticCurveTo((tx + bx) / 2, by - 4, bx, by); ctx.stroke();
-        px(bx - .75, by - 1.5, 1.5, 1.5, '#ef4444'); px(bx - .75, by - .25, 1.5, 1, '#f8fafc');
+        px(bx - .75, by - 1.5, 1.5, 1.5, bobColor(p.cb)); px(bx - .75, by - .25, 1.5, 1, '#f8fafc');
       }
       ctx.globalAlpha = 1;
       const label = p.name;
       const w = Math.ceil(ctx.measureText(label).width) + 4;
       px(x - w / 2, y - 31, w, 7, 'rgba(15,23,42,.75)');
       ctx.fillStyle = '#e2e8f0'; ctx.fillText(label, x, y - 24.5);
+      ctx.textAlign = 'left'; drawChatBubble(p.k, x); ctx.textAlign = 'center'; setFont('5px Poppins, sans-serif'); ctx.textBaseline = 'bottom';
     }
     ctx.textAlign = 'left';
+    if (LOBBY.me) drawChatBubble(LOBBY.me, player.x);
   }
 
   function drawLine() {
@@ -1540,9 +1622,10 @@
     ctx.stroke();
     // bobber: red cap, white belly, antenna, outline
     const bx = snap(bob.x) - 2, byy = snap(by) - 3;
-    if (state === 'reel' || state === 'bite') { px(bx + .5, byy + 1.5, 3, 2, '#1b1f2e'); px(bx + 1, byy + 2, 2, 1.5, '#ef4444'); return; }
+    const cap = bobColor(save.cosm.bob);
+    if (state === 'reel' || state === 'bite') { px(bx + .5, byy + 1.5, 3, 2, '#1b1f2e'); px(bx + 1, byy + 2, 2, 1.5, cap); return; }
     px(bx - .5, byy - .5, 5, 5, '#1b1f2e');
-    px(bx, byy, 4, 2, '#ef4444'); px(bx, byy, 1, 1, '#fca5a5');
+    px(bx, byy, 4, 2, cap); px(bx, byy, 1, 1, 'rgba(255,255,255,.45)');
     px(bx, byy + 2, 4, 2, '#f8fafc'); px(bx + 3, byy + 2, 1, 2, '#cbd5e1');
     px(bx + 1.5, byy - 2, .5, 2, '#1b1f2e');
   }
@@ -1597,7 +1680,7 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe']) $(id).hidden = true;
   }
   function unreadPatches() { // how many entries are new since the last read (at least the newest 3 when nothing is new)
     const i = PATCH_NOTES.findIndex(p => p.id === save.patchSeen);
@@ -1617,7 +1700,7 @@
     if (['charge', 'fly', 'bite', 'reel', 'rhythm'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -2039,6 +2122,95 @@
     f.style.width = Math.min(100, v / max * 100) + '%'; bar.append(f);
     d.append(l, bar); return d;
   }
+  for (const c of COSMETICS) ICONS[c.id] = iconCanvas(p => {
+    const k = '#1b1f2e';
+    if (c.slot === 'hat') {
+      const [h, H, l] = c.col;
+      for (let x = 5; x <= 10; x++) p(x, 4, k); for (let x = 4; x <= 11; x++) for (let y = 5; y <= 8; y++) p(x, y, x === 4 || x === 11 ? k : y === 5 ? l : h);
+      for (let x = 1; x <= 14; x++) { p(x, 9, k); p(x, 10, H); p(x, 11, k); } p(0, 10, k); p(15, 10, k);
+    } else if (c.slot === 'jacket') {
+      const [cc, C, y] = c.col;
+      for (let yy = 3; yy <= 13; yy++) for (let x = 3; x <= 12; x++) p(x, yy, x === 3 || x === 12 || yy === 13 ? k : x === 7 ? y : x > 9 ? C : cc);
+      for (let x = 5; x <= 10; x++) p(x, 2, k); p(6, 3, '#f2c9a0'); p(7, 3, '#f2c9a0'); p(8, 3, '#f2c9a0'); p(9, 3, '#f2c9a0');
+      for (let yy = 5; yy <= 11; yy++) { p(1, yy, k); p(2, yy, cc); p(13, yy, C); p(14, yy, k); }
+    } else {
+      const rb = ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#a855f7'];
+      for (let x = 4; x <= 11; x++) for (let y = 3; y <= 12; y++) {
+        const edge = x === 4 || x === 11 || y === 3 || y === 12;
+        p(x, y, edge ? k : y < 8 ? (c.col || rb[(x + y) % 6]) : y === 8 ? k : '#f8fafc');
+      }
+      p(7, 1, k); p(7, 2, k); p(8, 1, k); p(8, 2, k);
+    }
+  });
+  function cosmWare(c) {
+    const owned = save.cosm.owned.includes(c.id), worn = save.cosm[c.slot] === c.id;
+    return ware({
+      id: c.id, name: c.name, desc: c.desc, stats: [],
+      state: worn ? 'active' : owned ? 'owned' : '',
+      owned: SLOT_NAMES[c.slot],
+      btnText: worn ? tr('Ablegen') : owned ? tr('Anziehen') : tr('{n} Taler', { n: c.price }),
+      disabled: !owned && save.coins < c.price,
+      onClick: () => {
+        if (worn) { save.cosm[c.slot] = null; keeper(tr('Wieder ganz klassisch. Steht dir auch.')); }
+        else if (owned) { save.cosm[c.slot] = c.id; keeper(tr('Schick, schick!')); }
+        else {
+          if (save.coins < c.price) return keeper(KEEPER.poor(c.price - save.coins));
+          save.coins -= c.price; save.cosm.owned.push(c.id); save.cosm[c.slot] = c.id; sfx.coin();
+          keeper(tr('Ausgezeichnete Wahl. Die Fische werden staunen.'));
+        }
+        persist(); updateCoins(); renderShop(false);
+      },
+    });
+  }
+  function renderWardrobe() {
+    const cv = $('wardrobe-preview'), x = cv.getContext('2d'), img = playerFrames()[0][0];
+    x.clearRect(0, 0, cv.width, cv.height); x.imageSmoothingEnabled = false;
+    const sc = Math.floor(Math.min(cv.width / img.width, (cv.height - 30) / img.height) * 2) / 2;
+    x.drawImage(img, (cv.width - img.width * sc) / 2, 4, img.width * sc, img.height * sc);
+    // the bobber in front of the angler
+    const bc = bobColor(save.cosm.bob), by = cv.height - 22, bx = cv.width - 30;
+    x.fillStyle = '#1b1f2e'; x.fillRect(bx - 2, by - 2, 20, 20); x.fillRect(bx + 7, by - 10, 2, 8);
+    x.fillStyle = bc; x.fillRect(bx, by, 16, 8); x.fillStyle = '#f8fafc'; x.fillRect(bx, by + 8, 16, 8);
+    const swatches = (title, opts, names, key, def) => {
+      const sec = document.createElement('section'); sec.className = 'wd-slot';
+      const h = document.createElement('h3'); h.textContent = title;
+      const row = document.createElement('div'); row.className = 'wd-swatches'; row.setAttribute('role', 'radiogroup'); row.setAttribute('aria-label', title);
+      for (const [id, col] of Object.entries(opts)) {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'wd-swatch' + ((save.cosm[key] || def) === id ? ' on' : '');
+        b.style.setProperty('--sw', col[0]); b.title = names[id]; b.setAttribute('aria-label', names[id]); b.setAttribute('role', 'radio'); b.setAttribute('aria-checked', (save.cosm[key] || def) === id);
+        b.addEventListener('click', () => { save.cosm[key] = id === def ? null : id; persist(); renderWardrobe(); sfx.tick(); });
+        row.append(b);
+      }
+      sec.append(h, row); return sec;
+    };
+    $('wardrobe-list').replaceChildren(swatches(tr('Hautfarbe'), SKINS, SKIN_NAMES, 'skin', 'hell'), swatches(tr('Haar- & Bartfarbe'), HAIRS, HAIR_NAMES, 'hair', 'braun'), ...Object.entries(SLOT_NAMES).map(([slot, label]) => {
+      const sec = document.createElement('section'); sec.className = 'wd-slot';
+      const h = document.createElement('h3'); h.textContent = label;
+      const grid = document.createElement('div'); grid.className = 'wd-grid';
+      const tile = (icon, name, sub, cls, onClick, title) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'wd-item ' + cls;
+        if (title) b.title = title;
+        const im = document.createElement('img'); im.src = icon; im.alt = '';
+        const n = document.createElement('span'); n.textContent = name;
+        const s = document.createElement('small'); s.textContent = sub;
+        b.append(im, n, s); b.addEventListener('click', onClick); return b;
+      };
+      const worn = save.cosm[slot];
+      grid.append(tile(slot === 'bob' ? ICONS['pose-std'] : slot === 'hat' ? ICONS['hut-std'] : ICONS['jacke-std'], tr('Standard'), slot === 'hat' ? tr('Hutfarbe nach Wiedergeburten') : tr('Klassisch'),
+        worn ? '' : 'on', () => { save.cosm[slot] = null; persist(); renderWardrobe(); }));
+      for (const c of COSMETICS.filter(c => c.slot === slot)) {
+        const owned = save.cosm.owned.includes(c.id);
+        if (owned) grid.append(tile(ICONS[c.id], c.name, worn === c.id ? tr('Angezogen') : tr('Anziehen'), worn === c.id ? 'on' : '',
+          () => { save.cosm[slot] = worn === c.id ? null : c.id; persist(); renderWardrobe(); sfx.tick(); }));
+        else if (c.price) grid.append(tile(ICONS[c.id], c.name, tr('🛒 Laden · {n} Taler', { n: c.price }), 'locked', () => { closeModals(); shopTab = 'cosm'; toggleModal('shop'); }));
+        else grid.append(tile(ICONS[c.id], c.name, '🔒 ' + c.ach, 'locked', () => toast('🔒 ' + c.ach), c.ach));
+      }
+      sec.append(h, grid); return sec;
+    }));
+  }
+  ICONS['hut-std'] = iconCanvas(p => { const [h, H, l] = HATS[Math.min(HATS.length - 1, save.rebirths)]; for (let x = 5; x <= 10; x++) p(x, 4, '#1b1f2e'); for (let x = 4; x <= 11; x++) for (let y = 5; y <= 8; y++) p(x, y, x === 4 || x === 11 ? '#1b1f2e' : y === 5 ? l : h); for (let x = 1; x <= 14; x++) { p(x, 9, '#1b1f2e'); p(x, 10, H); p(x, 11, '#1b1f2e'); } });
+  ICONS['jacke-std'] = iconCanvas(p => { for (let yy = 3; yy <= 13; yy++) for (let x = 3; x <= 12; x++) p(x, yy, x === 3 || x === 12 || yy === 13 ? '#1b1f2e' : x === 7 ? '#fcd34d' : x > 9 ? '#c2410c' : '#f59e0b'); });
+  ICONS['pose-std'] = iconCanvas(p => { for (let x = 4; x <= 11; x++) for (let y = 3; y <= 12; y++) p(x, y, x === 4 || x === 11 || y === 3 || y === 12 ? '#1b1f2e' : y < 8 ? '#ef4444' : y === 8 ? '#1b1f2e' : '#f8fafc'); });
   function ware({ id, name, desc, stats, state, btnText, disabled, onClick, owned }) {
     const c = document.createElement('div'); c.className = 'ware' + (state ? ' ' + state : '');
     const ic = document.createElement('img'); ic.className = 'ware-icon' + (ICONS[id].startsWith('data:') ? '' : ' photo'); ic.src = ICONS[id]; ic.alt = '';
@@ -2124,7 +2296,7 @@
     document.querySelectorAll('[data-shop-tab]').forEach(t => {
       const on = t.dataset.shopTab === shopTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
-    const wares = shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'rods' ? RODS.map(r => {
+    const wares = shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'cosm' ? COSMETICS.filter(c => c.price).map(cosmWare) : shopTab === 'rods' ? RODS.map(r => {
       const owned = save.rods.includes(r.id), active = save.rod === r.id, lock = !owned && lockText(r);
       return ware({
         id: r.id, name: r.name, desc: r.desc,
@@ -2380,6 +2552,7 @@
     const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
     [262, 330, 392, 523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .25, 'triangle', .08), i * 120));
     toast(tr('🌀 Wiedergeboren! +{n} Schuppen · Taler-Bonus jetzt +{p} %', { n: gain, p: Math.round((coinMult() - 1) * 100) }));
+    checkCosm();
   }
   function buyPerk(id) {
     const l = perk(id), c = perkCost(l);
@@ -2551,7 +2724,7 @@
   // catches and who has fished the most Taler since joining. No sockets: the game syncs with
   // api/lobby.js every 3 seconds while the tab is visible.
   const LOBBY_API = '/api/lobby', LOBBY_EVERY = 3000;
-  const LOBBY = { code: null, me: null, players: [], feed: [], err: '', busy: false, pending: [], seenFeed: 0, timer: 0 };
+  const LOBBY = { code: null, me: null, players: [], feed: [], chat: [], outbox: [], seenChat: 0, err: '', busy: false, pending: [], seenFeed: 0, timer: 0 };
   async function lobbyFetch(body) {
     const r = await fetch(LOBBY_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     let j = {}; try { j = await r.json(); } catch { /* not json */ }
@@ -2559,14 +2732,15 @@
     return j;
   }
   function lobbyMe() {
-    return { x: player.x, d: player.dir, s: ['wait', 'bite'].includes(state) ? 'w' : ['reel', 'rhythm'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0 };
+    return { x: player.x, d: player.dir, s: ['wait', 'bite'].includes(state) ? 'w' : ['reel', 'rhythm'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0 };
   }
   async function lobbySync() {
     if (!save.lobby || LOBBY.busy || document.hidden) return;
     LOBBY.busy = true;
-    const ev = LOBBY.pending.shift();
+    const ev = LOBBY.pending.shift(), msg = LOBBY.outbox.shift();
     try {
-      const j = await lobbyFetch({ action: 'sync', code: save.lobby.code, id: save.lobby.id, me: lobbyMe(), ev });
+      const j = await lobbyFetch({ action: 'sync', code: save.lobby.code, id: save.lobby.id, me: lobbyMe(), ev, msg });
+      receiveChat(j.chat || [], j.me);
       LOBBY.code = save.lobby.code; LOBBY.me = j.me; LOBBY.err = '';
       const old = new Map(LOBBY.players.map(p => [p.k, p]));
       LOBBY.players = j.players.map(p => Object.assign(p, { dx: old.has(p.k) ? old.get(p.k).dx : undefined }));
@@ -2579,6 +2753,7 @@
       LOBBY.feed = j.feed;
     } catch (e) {
       if (ev && e.status !== 404 && e.status !== 410) LOBBY.pending.unshift(ev);
+      if (msg && e.status !== 404 && e.status !== 410) LOBBY.outbox.unshift(msg);
       if (e.status === 404 || e.status === 410) { toast(tr('👥 Lobby beendet: {e}', { e: e.message })); lobbyReset(); }
       else LOBBY.err = e.status === 429 ? '' : e.message;
     }
@@ -2588,14 +2763,15 @@
   }
   function lobbyStart() {
     clearInterval(LOBBY.timer);
-    LOBBY.code = save.lobby.code; LOBBY.seenFeed = 0;
+    LOBBY.code = save.lobby.code; LOBBY.seenFeed = 0; LOBBY.chatReady = false;
     LOBBY.timer = setInterval(lobbySync, LOBBY_EVERY);
     lobbySync();
   }
   function lobbyReset() {
     clearInterval(LOBBY.timer);
     delete save.lobby; persist();
-    Object.assign(LOBBY, { code: null, me: null, players: [], feed: [], pending: [], seenFeed: 0 });
+    Object.assign(LOBBY, { code: null, me: null, players: [], feed: [], chat: [], outbox: [], seenChat: 0, chatReady: false, pending: [], seenFeed: 0 });
+    $('chatlog').replaceChildren(); $('chatbar').hidden = true;
     updateLobbyPill();
     if (!$('lobby').hidden) renderLobby();
   }
@@ -2605,10 +2781,56 @@
     LOBBY.pending.push({ f: f.name, cm: size, r: f.r, sh: !!shiny });
     if (LOBBY.pending.length > 5) LOBBY.pending.shift();
   }
+  // ---- chat: messages ride along with the next sync; new ones show as bubbles over the angler,
+  // in a fading log bottom left and in the lobby window
+  const bubbles = new Map(); // player key -> { m, until }
+  function receiveChat(list, me) {
+    const fresh = list.filter(c => c.t > LOBBY.seenChat).reverse();
+    const first = !LOBBY.chatReady; LOBBY.chatReady = true;
+    if (list.length) LOBBY.seenChat = Math.max(LOBBY.seenChat, list[0].t);
+    LOBBY.chat = list;
+    if (first) return; // don't replay the backlog after joining or reloading
+    for (const c of fresh) {
+      bubbles.set(c.k, { m: c.m, until: performance.now() + 6000 });
+      if (c.k === me) continue;
+      const p = document.createElement('p');
+      const b = document.createElement('b'); b.textContent = c.n + ': ';
+      p.append(b, document.createTextNode(c.m));
+      $('chatlog').append(p);
+      while ($('chatlog').children.length > 5) $('chatlog').firstChild.remove();
+      setTimeout(() => p.classList.add('old'), 9000); setTimeout(() => p.remove(), 9700);
+      tone(880, .05, 'sine', .04);
+    }
+  }
+  function sendChat(text) {
+    text = text.replace(/\s+/g, ' ').trim().slice(0, 100);
+    if (!text || !save.lobby) return;
+    LOBBY.outbox.push(text);
+    if (LOBBY.outbox.length > 3) LOBBY.outbox.shift();
+    bubbles.set(LOBBY.me, { m: text, until: performance.now() + 6000 });
+    setTimeout(lobbySync, 50);
+  }
+  function openChatbar() { $('chatbar').hidden = false; $('chatbar-msg').focus(); }
+  $('chatbar').addEventListener('submit', e => { e.preventDefault(); sendChat($('chatbar-msg').value); $('chatbar-msg').value = ''; $('chatbar').hidden = true; $('chatbar-msg').blur(); });
+  $('chatbar-msg').addEventListener('keydown', e => { if (e.key === 'Escape') { $('chatbar').hidden = true; e.target.blur(); } e.stopPropagation(); });
+  $('chatbar-msg').addEventListener('blur', () => setTimeout(() => { if (!$('chatbar-msg').value) $('chatbar').hidden = true; }, 150));
+  $('lobby-say').addEventListener('submit', e => { e.preventDefault(); sendChat($('lobby-msg').value); $('lobby-msg').value = ''; });
+  $('btn-chat').addEventListener('click', openChatbar);
+  function drawChatBubble(key, x) {
+    const b = bubbles.get(key);
+    if (!b) return;
+    if (performance.now() > b.until) { bubbles.delete(key); return; }
+    setFont('5px Poppins, sans-serif'); ctx.textBaseline = 'top'; ctx.textAlign = 'left';
+    const text = b.m.length > 34 ? b.m.slice(0, 33) + '…' : b.m;
+    const w = Math.ceil(ctx.measureText(text).width) + 4, bx = snap(Math.max(1, Math.min(W - w - 1, x - w / 2))), by = DOCK_Y - 42;
+    px(bx - .5, by - .5, w + 1, 8, '#0f172a'); px(bx, by, w, 7, '#fffbeb'); px(snap(x) - 1, by + 7, 2, 1.5, '#0f172a');
+    ctx.fillStyle = '#0f172a'; ctx.fillText(text, bx + 2, by + .8);
+  }
   function updateLobbyPill() {
     const n = LOBBY.players.length;
     $('lobby-pill').textContent = save.lobby ? `${save.lobby.code} · ${n || 1}` : tr('Lobby');
     $('btn-lobby').classList.toggle('on', !!save.lobby);
+    $('btn-chat').hidden = !save.lobby;
   }
   function lobbyName() {
     const n = $('lobby-name').value.replace(/\s+/g, ' ').trim();
@@ -2652,6 +2874,12 @@
       li.textContent = `${e.sh ? '💫 ' : ''}${e.n}: ${e.f} · ${e.cm} cm`;
       return li;
     }) : [Object.assign(document.createElement('li'), { textContent: tr('Noch nichts gefangen. Los geht’s!') })]));
+    $('lobby-chat').replaceChildren(...(LOBBY.chat.length ? LOBBY.chat.slice().reverse().map(c => {
+      const li = document.createElement('li'); if (c.k === LOBBY.me) li.className = 'me';
+      const b = document.createElement('b'); b.textContent = c.n + ': ';
+      li.append(b, document.createTextNode(c.m)); return li;
+    }) : [Object.assign(document.createElement('li'), { textContent: tr('Noch keine Nachrichten. Sag hallo!') })]));
+    const cl = $('lobby-chat'); cl.scrollTop = cl.scrollHeight;
     $('lobby-err').textContent = LOBBY.err;
   }
   $('lobby-create').addEventListener('click', () => lobbyEnter('create'));
@@ -2765,7 +2993,7 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  window.__fischen = { save, gainXp, rebirth, MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { time = v; },
+  window.__fischen = { save, gainXp, rebirth, MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); },
     rhythm: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; reel.maxT = 0; startRhythm(); },
     get notes() { return rhythm.notes; } };
