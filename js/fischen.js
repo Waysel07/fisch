@@ -1891,7 +1891,7 @@
     const table = [
       { w: 55, f: () => { const c = Math.round(P * (.6 + Math.random() * .8)); save.coins += c; save.totalEarned += c; return tr('🪙 {n} Taler', { n: c }); } },
       { w: 14, f: () => { const x = pick(baits), c = [5, 10, 20][T]; save.baits[x.id] = (save.baits[x.id] || 0) + c; updateGear(); return tr('{n}× {b}', { n: c, b: x.name }); } },
-      { w: 14, f: () => tr('⭐ {n} EP', { n: gainXp(xpNeed(save.lvl) * [.05, .1, .2][T]) }) },
+      { w: 14, f: () => tr('⭐ {n} EP', { n: gainXp([15, 40, 100][T]) }) },
       { w: 6, f: () => { save.coins += 5; return tr('🧦 Eine alte Socke. Und 5 Taler.'); } },
       { w: 2, f: () => { const c = P * 5; save.coins += c; save.totalEarned += c; return tr('💰 JACKPOT! {n} Taler', { n: c }); }, big: true },
     ];
