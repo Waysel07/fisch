@@ -400,6 +400,23 @@
     'Besuch mich mal, wenn man die Sterne sieht.': 'Visit me sometime when the stars are out.',
     'Ich mag Gesellschaft. Viel Gesellschaft.': 'I like company. Lots of company.',
     'Redest du eigentlich gern? Ich schon. Sehr oft.': 'Do you like talking? I do. Very often.',
+    // mystery boxes
+    'Holzkiste': 'Wooden box', 'Silberkiste': 'Silver box', 'Goldkiste': 'Golden box',
+    'Knarzt und riecht nach Steg. Drin ist … irgendwas.': 'Creaks and smells of the dock. There’s … something inside.',
+    'Schwer und kühl. Klappert vielversprechend.': 'Heavy and cool. Rattles promisingly.',
+    'Glänzt so sehr, dass die Fische neidisch werden.': 'Shines so much the fish get jealous.',
+    '📦 Mysteryboxen': '📦 Mystery boxes',
+    'Weiter': 'Continue',
+    'Was drin ist, weiß nicht mal ich.': 'What’s inside? Not even I know.',
+    '🪙 {n} Taler': '🪙 {n} coins',
+    '{n}× {b}': '{n}× {b}',
+    '⭐ {n} EP': '⭐ {n} XP',
+    '🐚 Schuppen: {n}': '🐚 Scales: {n}',
+    '🧦 Eine alte Socke. Und 5 Taler.': '🧦 An old sock. And 5 coins.',
+    '💰 JACKPOT! {n} Taler': '💰 JACKPOT! {n} coins',
+    'Nächste öffnen ({n})': 'Open the next one ({n})',
+    'Noch eine ({n} Taler)': 'Another one ({n} coins)',
+    '📦 Am Haken hing noch eine {b}! Öffnen im Laden.': '📦 A {b} was hanging on the hook too! Open it in the shop.',
     'Albino': 'Albino', 'Golden': 'Golden', 'ABCD-EF23-GH45-JK67': 'ABCD-EF23-GH45-JK67',
   };
 

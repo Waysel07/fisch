@@ -109,10 +109,24 @@
           <div class="tabs" role="tablist">
             <button class="tab on" data-shop-tab="rods" role="tab" aria-selected="true">🎣 Ruten</button>
             <button class="tab" data-shop-tab="baits" role="tab" aria-selected="false">🪱 Köder</button>
+            <button class="tab" data-shop-tab="boxes" role="tab" aria-selected="false">📦 Mysteryboxen</button>
           </div>
           <span class="purse"><img src="img/fish-icon.png" alt="" class="coin"> <b id="shop-coins">0</b></span>
         </div>
         <div class="wares" id="shop-wares"></div>
+      </div>
+    </div>
+
+    <!-- Mystery box opening -->
+    <div class="modal" id="box" hidden>
+      <div class="sheet box-sheet" role="dialog" aria-modal="true" aria-labelledby="box-title">
+        <h2 id="box-title"></h2>
+        <div class="box-art" id="box-art"><img id="box-img" src="img/fish-icon.png" alt=""></div>
+        <p class="box-prize" id="box-prize" aria-live="polite"></p>
+        <div class="catch-actions">
+          <button class="btn ghost" id="box-again" hidden></button>
+          <button class="btn" id="box-ok">Weiter</button>
+        </div>
       </div>
     </div>
 

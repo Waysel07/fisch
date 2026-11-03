@@ -75,6 +75,13 @@
     { id: 'wiik',   name: 'Wii-Köder',     price: 30, pack: 5, lvl: 3, luck: 1.5, speed: 1.4, wii: 2, img: 'img/wii-bait.png', desc: '5 Stück. Zeigt auf die Wii-Fische. Die beißen doppelt so oft.' },
     { id: 'mond',   name: 'Mondköder',     price: 90, pack: 5, reb: 2, luck: 4.2, speed: 2,  desc: '5 Stück. Leuchtet. Legenden können nicht widerstehen.' },
   ];
+  // Mysteryboxen: bought at the kiosk or found on the hook now and then. Opening one rolls a prize.
+  const BOXES = [
+    { id: 'boxwood',   name: 'Holzkiste',   price: 120,  tier: 0, desc: 'Knarzt und riecht nach Steg. Drin ist … irgendwas.', col: ['#a0662f', '#6b3a1f', '#fbbf24'] },
+    { id: 'boxsilver', name: 'Silberkiste', price: 450,  tier: 1, lvl: 4, desc: 'Schwer und kühl. Klappert vielversprechend.', col: ['#cbd5e1', '#64748b', '#38bdf8'] },
+    { id: 'boxgold',   name: 'Goldkiste',   price: 1500, tier: 2, lvl: 8, desc: 'Glänzt so sehr, dass die Fische neidisch werden.', col: ['#facc15', '#b45309', '#f472b6'] },
+  ];
+  trAll(BOXES, ['name', 'desc']);
   trAll(Object.values(RARITY), ['label']); trAll(FISH, ['name', 'say', 'desc', 'hint']); trAll(RODS, ['name', 'desc']); trAll(BAITS, ['name', 'desc']);
 
   // ------------------------------------------------------------------ save
@@ -82,7 +89,7 @@
   const save = Object.assign({
     coins: 0, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity },
     dex: {}, total: 0, sound: true, seen: false,
-    dexClaimed: [], lvl: 1, xp: 0, daily: { d: '', n: 0 }, bestStreak: 0, rebirths: 0, scales: 0, perks: {}, quests: [], questsDone: 0, lifeCoins: 0, totalEarned: 0,
+    boxes: {}, dexClaimed: [], lvl: 1, xp: 0, daily: { d: '', n: 0 }, bestStreak: 0, rebirths: 0, scales: 0, perks: {}, quests: [], questsDone: 0, lifeCoins: 0, totalEarned: 0,
   }, load());
   save.baits.wurm = Infinity;
   function load() {
@@ -327,6 +334,10 @@
     save.coins += val; save.total++; save.lifeCoins += val; save.totalEarned += val;
     const gain = progressCatch(f, size, val, first, mut, newMut, reel.maxT < .7, shiny, newShiny);
     bealinEvent({ type: 'catch', f, size, mut, clean: reel.maxT < .7, night: darkness() > .5 });
+    if (f.r !== 'junk') { // now and then a mystery box hangs on the line too
+      const r = Math.random(), found = r < .002 ? BOXES[2] : r < .01 ? BOXES[1] : r < .035 ? BOXES[0] : null;
+      if (found) { save.boxes[found.id] = (save.boxes[found.id] || 0) + 1; setTimeout(() => toast(tr('📦 Am Haken hing noch eine {b}! Öffnen im Laden.', { b: found.name })), 1600); }
+    }
     setTimeout(() => lbSubmit(), 3000);
     if (dexClaimable().length) { updateDexBadge(); if (first || newMut || newShiny) toast(tr('📖 Fischdex-Belohnung bereit!')); }
     persist(); updateCoins();
@@ -1434,7 +1445,7 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box']) $(id).hidden = true;
   }
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
@@ -1818,6 +1829,17 @@
     rows.forEach((row, y) => [...row].forEach((ch, x) => { if (pal[ch]) p(x + 1, y + 3, pal[ch]); }));
   });
   for (const b of BAITS) if (b.img) ICONS[b.id] = b.img;
+  for (const b of BOXES) ICONS[b.id] = iconCanvas(p => {
+    const [m, d, g] = b.col, k = '#1b1f2e';
+    for (let x = 2; x < 14; x++) { p(x, 3, k); p(x, 14, k); }
+    for (let y = 3; y < 15; y++) { p(1, y, k); p(14, y, k); }
+    for (let y = 4; y < 14; y++) for (let x = 2; x < 14; x++) p(x, y, y < 7 ? (y === 4 ? g : m) : (x + y) % 5 ? m : d);
+    for (let x = 2; x < 14; x++) p(x, 7, k);                       // lid edge
+    for (let y = 4; y < 14; y++) { p(4, y, d); p(11, y, d); }       // bands
+    p(7, 7, g); p(8, 7, g); p(7, 8, g); p(8, 8, g); p(7, 9, k); p(8, 9, k); // lock
+    p(6, 1, '#fde68a'); p(9, 0, '#fde68a'); p(12, 1, '#fff');       // sparkle
+    p(7, 5, '#fff'); p(8, 5, '#fff');                               // question mark hint
+  });
 
   function statBar(label, v, max) {
     const d = document.createElement('div'); d.className = 'stat';
@@ -1840,13 +1862,76 @@
     c.append(btn);
     return c;
   }
+  function boxWare(b) {
+    const n = save.boxes[b.id] || 0, lock = lockText(b);
+    return ware({
+      id: b.id, name: b.name, desc: b.desc, stats: [],
+      state: lock ? 'locked' : '',
+      owned: n ? tr('{n} im Beutel', { n }) : '',
+      btnText: n ? tr('Öffnen') : lock || tr('{n} Taler', { n: b.price }),
+      disabled: !n && (!!lock || save.coins < b.price),
+      onClick: () => {
+        if (!n) {
+          if (lock) return keeper(KEEPER.locked(lock));
+          if (save.coins < b.price) return keeper(KEEPER.poor(b.price - save.coins));
+          save.coins -= b.price; sfx.coin(); keeper(tr('Was drin ist, weiß nicht mal ich.'));
+        } else save.boxes[b.id] = n - 1;
+        openBox(b);
+      },
+    });
+  }
+  // roll and pay out the prize right away (so a reload mid-animation loses nothing), then reveal it
+  function rollBox(b) {
+    const T = b.tier, P = b.price;
+    const baits = BAITS.filter(x => x.pack && !lockText(x));
+    const table = [
+      { w: 46, f: () => { const c = Math.round(P * (.4 + Math.random() * .9) * coinMult()); save.coins += c; save.totalEarned += c; return tr('🪙 {n} Taler', { n: c }); } },
+      { w: 18, f: () => { const x = pick(baits), c = [3, 6, 12][T]; save.baits[x.id] = (save.baits[x.id] || 0) + c; updateGear(); return tr('{n}× {b}', { n: c, b: x.name }); } },
+      { w: 16, f: () => tr('⭐ {n} EP', { n: gainXp([40, 140, 450][T]) }) },
+      { w: T ? 8 : 3, f: () => { const c = [1, 1, 3][T]; save.scales += c; return tr('🐚 Schuppen: {n}', { n: c }); } },
+      { w: 9, f: () => { save.coins += 5; return tr('🧦 Eine alte Socke. Und 5 Taler.'); } },
+      { w: 3, f: () => { const c = Math.round(P * 5 * coinMult()); save.coins += c; save.totalEarned += c; return tr('💰 JACKPOT! {n} Taler', { n: c }); }, big: true },
+    ];
+    let r = Math.random() * table.reduce((a, t) => a + t.w, 0), hit = table[0];
+    for (const t of table) { r -= t.w; if (r <= 0) { hit = t; break; } }
+    const text = hit.f();
+    persist(); updateCoins();
+    return { text, big: !!hit.big };
+  }
+  let boxTimer = 0;
+  function openBox(b) {
+    const prize = rollBox(b);
+    if (!$('shop').hidden) renderShop(false);
+    $('box-title').textContent = b.name;
+    $('box-img').src = ICONS[b.id];
+    $('box-prize').textContent = '…';
+    const art = $('box-art'); art.classList.remove('open', 'big'); void art.offsetWidth; art.classList.add('shake');
+    $('box-ok').disabled = true; $('box-again').hidden = true;
+    $('box').hidden = false;
+    [0, 1, 2, 3].forEach(i => setTimeout(() => tone(260 + i * 40, .06, 'square', .05), i * 250));
+    clearTimeout(boxTimer);
+    boxTimer = setTimeout(() => {
+      art.classList.remove('shake'); art.classList.add('open'); if (prize.big) art.classList.add('big');
+      $('box-prize').textContent = prize.text;
+      [523, 659, 784, prize.big ? 1319 : 1047].forEach((n, i) => setTimeout(() => tone(n, .12, 'square', .06), i * 80));
+      if (prize.big) setTimeout(sfx.coin, 300);
+      $('box-ok').disabled = false; $('box-ok').focus();
+      const n = save.boxes[b.id] || 0;
+      if (n || (!lockText(b) && save.coins >= b.price)) {
+        $('box-again').hidden = false;
+        $('box-again').textContent = n ? tr('Nächste öffnen ({n})', { n }) : tr('Noch eine ({n} Taler)', { n: b.price });
+        $('box-again').onclick = () => { if (save.boxes[b.id]) save.boxes[b.id]--; else if (save.coins >= b.price) save.coins -= b.price; else return; openBox(b); };
+      }
+    }, 1100);
+  }
+  $('box-ok').addEventListener('click', () => { if (!$('box-ok').disabled) $('box').hidden = true; });
   function renderShop(greet) {
     updateCoins();
     if (greet !== false) keeper(pick(KEEPER.hello));
     document.querySelectorAll('[data-shop-tab]').forEach(t => {
       const on = t.dataset.shopTab === shopTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
-    const wares = shopTab === 'rods' ? RODS.map(r => {
+    const wares = shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'rods' ? RODS.map(r => {
       const owned = save.rods.includes(r.id), active = save.rod === r.id, lock = !owned && lockText(r);
       return ware({
         id: r.id, name: r.name, desc: r.desc,
@@ -2319,6 +2404,6 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  window.__fischen = { save, gainXp, rebirth, MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), line: () => bealinLine, setTime: v => { time = v; },
+  window.__fischen = { save, gainXp, rebirth, MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { time = v; },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); } };
 })();
