@@ -2,6 +2,11 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 03.11.2026 · `2026-11-03-14`
+
+- 🌋 New lava store in the kiosk: here you only pay with ember stones 🔥, not coins. Lava rods and ember bait are now sold only there.
+- 🎩 New lava cosmetics for ember stones: Ember Bobber, Ash Jacket, Magma Helmet and the sparkling Obsidian Crown.
+
 ## 03.11.2026 · `2026-11-03-13`
 
 - 🔥 New currency: Glutsteine (ember stones)! Every catch in the Ember Cave drops some – the rarer the fish, the more (legendaries 40, trophy and monster double, shinies triple).

@@ -58,7 +58,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
     - `bake()` erzeugt Sprites aus Zeichen-Rastern;
     - `iconCanvas()` erzeugt 16×16-Icons für den Laden (`ICONS[id]`).
   - Requisiten am Steg, auf See und in der Glutgrotte stehen in `PROPS` (Feld `map`: `steg`, `see`, `lava` oder `all`; Filter `propOn`).
-  - Maps: `steg`, `see` (ab 3× Wiedergeburt, `seaOpen()`) und `lava` (Glutgrotte ab 1× Prestige, `lavaOpen()`, `inLava()`). In der Grotte gibt es kein Wetter (`CAVE_WX`), und nur Ruten mit `lava: true` funktionieren dort (`save.lavaRod`). Fortschritt dort: Glutsteine (`save.glut`), Tiefen (`CAVE_DEPTHS`, `caveDepth()`, Feld `depth` an Fischen und Ruten), Glimms Werkstatt (`GLUT_UPS`, `glutUp()`) und Glimms Aufträge (`save.glimmQ`); der Taler-Bonus läuft über `caveMult()`.
+  - Maps: `steg`, `see` (ab 3× Wiedergeburt, `seaOpen()`) und `lava` (Glutgrotte ab 1× Prestige, `lavaOpen()`, `inLava()`). In der Grotte gibt es kein Wetter (`CAVE_WX`), und nur Ruten mit `lava: true` funktionieren dort (`save.lavaRod`). Fortschritt dort: Glutsteine (`save.glut`), Tiefen (`CAVE_DEPTHS`, `caveDepth()`, Feld `depth` an Fischen und Ruten), Glimms Werkstatt (`GLUT_UPS`, `glutUp()`) und Glimms Aufträge (`save.glimmQ`); der Taler-Bonus läuft über `caveMult()`. Der Lava-Laden (`lavaWares()`, Shop-Tab `lava`) verkauft alles mit Feld `glut` nur gegen Glutsteine; Glutsteine werden nie in Taler getauscht.
 - **Fang-Ablauf:**
   - `pickFish()` wählt nach Gewichten, Glück, Wurfweite, Nacht, Wetter und Map.
   - `hook()` würfelt die Größe (`rollSize`/`sizeIn`).

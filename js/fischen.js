@@ -107,11 +107,11 @@
     { id: 'tiefsee', name: 'Tiefseerute',     price: 15000, reb: 4, cast: 1.0, reel: 3.0, tens: .34,  luck: 2.5, desc: 'Für die ganz tiefen Wasser. Hält fast alles aus.' },
     { id: 'krake',  name: 'Krakenrute',       price: 40000, reb: 6, cast: 1.0, reel: 3.4, tens: .3,   luck: 3.0, desc: 'Acht Arme Kraft in einer Rute. Nichts reißt.' },
     // Lavaruten: normal rods melt in the Glutgrotte, there only these work (and they only work there)
-    { id: 'basalt',   name: 'Basaltrute',         price: 400,   pres: 1, lava: true, cast: .8,  reel: 1.5, tens: .7,  luck: 1.1, desc: 'Aus erkalteter Lava. Die erste Rute, die in der Glutgrotte nicht schmilzt.' },
-    { id: 'obsidian', name: 'Obsidianrute',       price: 4000,  pres: 1, depth: 2, lava: true, cast: .95, reel: 2.2, tens: .5,  luck: 1.6, desc: 'Schwarzes Vulkanglas, hart wie Stahl. Nur für die Glutgrotte.' },
-    { id: 'magma',    name: 'Magmarute',          price: 15000, pres: 1, depth: 3, lava: true, cast: 1.0, reel: 2.9, tens: .38, luck: 2.2, desc: 'In ihr fließt noch Magma. Wird nie kalt. Nur für die Glutgrotte.' },
-    { id: 'drachenknochen', name: 'Drachenknochenrute', price: 50000, pres: 1, depth: 4, lava: true, cast: 1.0, reel: 3.6, tens: .28, luck: 3.0, desc: 'Aus dem Knochen eines Lavadrachen. Hält jede Glut aus. Nur für die Glutgrotte.' },
-    { id: 'phoenixrute', name: 'Phönixfederrute', price: 250000, pres: 1, depth: 5, lava: true, cast: 1.0, reel: 4.2, tens: .24, luck: 3.6, desc: 'Aus einer Feder des Phönixfischs. Brennt, ohne zu verbrennen. Nur für die Glutgrotte.' },
+    { id: 'basalt',   name: 'Basaltrute',         price: 400,   pres: 1, lava: true, glut: 10, cast: .8,  reel: 1.5, tens: .7,  luck: 1.1, desc: 'Aus erkalteter Lava. Die erste Rute, die in der Glutgrotte nicht schmilzt.' },
+    { id: 'obsidian', name: 'Obsidianrute',       price: 4000,  pres: 1, depth: 2, lava: true, glut: 80, cast: .95, reel: 2.2, tens: .5,  luck: 1.6, desc: 'Schwarzes Vulkanglas, hart wie Stahl. Nur für die Glutgrotte.' },
+    { id: 'magma',    name: 'Magmarute',          price: 15000, pres: 1, depth: 3, lava: true, glut: 250, cast: 1.0, reel: 2.9, tens: .38, luck: 2.2, desc: 'In ihr fließt noch Magma. Wird nie kalt. Nur für die Glutgrotte.' },
+    { id: 'drachenknochen', name: 'Drachenknochenrute', price: 50000, pres: 1, depth: 4, lava: true, glut: 700, cast: 1.0, reel: 3.6, tens: .28, luck: 3.0, desc: 'Aus dem Knochen eines Lavadrachen. Hält jede Glut aus. Nur für die Glutgrotte.' },
+    { id: 'phoenixrute', name: 'Phönixfederrute', price: 250000, pres: 1, depth: 5, lava: true, glut: 1800, cast: 1.0, reel: 4.2, tens: .24, luck: 3.6, desc: 'Aus einer Feder des Phönixfischs. Brennt, ohne zu verbrennen. Nur für die Glutgrotte.' },
   ];
   const BAITS = [
     { id: 'wurm',   name: 'Wurm',          price: 0,  pack: 0, luck: 1,   speed: 1,   desc: 'Unbegrenzt. Wurmig.' },
@@ -120,7 +120,7 @@
     { id: 'wiik',   name: 'Wii-Köder',     price: 30, pack: 5, lvl: 3, luck: 1.5, speed: 1.4, wii: 2, img: 'img/wii-bait.png', desc: '5 Stück. Zeigt auf die Wii-Fische. Die beißen doppelt so oft.' },
     { id: 'mond',   name: 'Mondköder',     price: 90, pack: 5, reb: 2, luck: 4.2, speed: 2,  desc: '5 Stück. Leuchtet. Legenden können nicht widerstehen.' },
     { id: 'abyss',  name: 'Abgrundköder',  price: 200, pack: 5, reb: 5, luck: 6, speed: 2.4, desc: '5 Stück. Leuchtet aus der Tiefe. Selbst Legenden werden neugierig.' },
-    { id: 'glutkoeder', name: 'Glutköder', price: 300, pack: 5, pres: 1, luck: 3, speed: 1.8, lava: true, desc: '5 Stück. Glüht wie Kohle. Wirkt nur in der Glutgrotte, dort aber richtig.' },
+    { id: 'glutkoeder', name: 'Glutköder', price: 300, glut: 15, pack: 5, pres: 1, luck: 3, speed: 1.8, lava: true, desc: '5 Stück. Glüht wie Kohle. Wirkt nur in der Glutgrotte, dort aber richtig.' },
     { id: 'odkoeder', name: 'Odköder',     price: 1500, pack: 1, reb: 3, luck: 1, speed: 1, boss: true, desc: '1 Stück. Nachts auf Hoher See ausgeworfen, ruft er den Odfisch.' },
   ];
   // Mysteryboxen: bought at the kiosk or found on the hook now and then. Opening one rolls a prize.
@@ -146,6 +146,10 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-03-14', date: '03.11.2026', items: [
+      '🌋 Neuer Lava-Laden im Kiosk: Hier zahlst du nur mit Glutsteinen 🔥, nicht mit Talern. Lavaruten und Glutköder gibt es jetzt nur noch dort.',
+      '🎩 Neue Lava-Kosmetik für Glutsteine: Glut-Pose, Aschejacke, Magmahelm und die funkelnde Obsidiankrone.',
+    ] },
     { id: '2026-11-03-13', date: '03.11.2026', items: [
       '🔥 Neue Währung: Glutsteine! Jeder Fang in der Glutgrotte bringt welche – je seltener der Fisch, desto mehr (Legendäre 40, Kapital und Monster doppelt, Shinys dreifach).',
       '⛏️ Die Glutgrotte hat jetzt 5 Tiefen: Glutkammer, Aschehalle, Magmaschlund, Drachenhort und Phönixnest. Mit Glutsteinen gräbt Glimm tiefer – jede Tiefe bringt neue Fische, eine neue Lavarute und +20 % Taler. Ganz unten wartet die Phönixfederrute.',
@@ -1335,6 +1339,11 @@
     { id: 'hut-perle',   slot: 'hat',    name: 'Perlenkrone',        col: ['#f5f3ff', '#a78bfa', '#ffffff'], sparkle: true, desc: 'Für alle, die ganz von vorn angefangen haben.', ach: 'Mach einmal Prestige.', got: () => save.prestige >= 1 },
     { id: 'pose-perle',  slot: 'bob',    name: 'Perlen-Pose',        col: '#ede9fe', desc: 'Schimmert wie Perlmutt.', ach: 'Mach 2× Prestige.', got: () => save.prestige >= 2 },
     { id: 'jacke-prestige', slot: 'jacket', name: 'Prestige-Mantel', col: ['#1e1b4b', '#0f0a2e', '#fbbf24'], desc: 'Nachtblau mit Goldsaum. Schon dreimal alles verloren und trotzdem hier.', ach: 'Mach 3× Prestige.', got: () => save.prestige >= 3 },
+    // Lava-Laden: only for Glutsteine
+    { id: 'hut-magma',   slot: 'hat',    name: 'Magmahelm',          glut: 200, col: ['#ea580c', '#7c2d12', '#fde047'], desc: 'Ein Grubenhelm wie der von Glimm, nur heißer.' },
+    { id: 'jacke-asche', slot: 'jacket', name: 'Aschejacke',         glut: 150, col: ['#57534e', '#292524', '#f97316'], desc: 'Grau wie Asche, mit glühenden Nähten.' },
+    { id: 'pose-glut',   slot: 'bob',    name: 'Glut-Pose',          glut: 80,  col: '#f97316', desc: 'Glüht auf der Lava wie ein Stück Kohle.' },
+    { id: 'hut-obsidian', slot: 'hat',   name: 'Obsidiankrone',      glut: 1500, col: ['#1e1b4b', '#0f0a1e', '#a78bfa'], sparkle: true, desc: 'Aus schwarzem Vulkanglas geschliffen. Funkelt lila.' },
     { id: 'jacke-lava',  slot: 'jacket', name: 'Lavamantel',         col: ['#b91c1c', '#450a0a', '#fb923c'], desc: 'Hält warm. Viel zu warm.', ach: 'Grabe bis Tiefe 5 der Glutgrotte.', got: () => (save.caveDepth | 0) >= 5 },
     { id: 'pose-monster', slot: 'bob',   name: 'Monster-Pose',       col: '#f43f5e', desc: 'Für Angler, die Großes vorhaben.', ach: 'Fange einen Monster-Fisch.', got: () => (save.monsters || 0) >= 1 },
     { id: 'pose-gold',   slot: 'bob',    name: 'Goldene Pose',       col: '#facc15', desc: 'Glänzt, wenn ein Fisch anbeißt.', ach: 'Erreiche Level 10.', got: () => save.lvl >= 10 || save.rebirths > 0 },
@@ -2411,7 +2420,7 @@
   }
   function updateCoins() {
     $('coins').textContent = save.coins; $('shop-coins').textContent = save.coins; $('casino-coins').textContent = save.coins;
-    $('glut-pill').hidden = !lavaOpen(); $('glut').textContent = save.glut | 0; $('glut-pill').title = tr('Glutsteine: aus Fängen in der Glutgrotte, zum Graben und für Glimms Werkstatt');
+    $('glut-pill').hidden = !lavaOpen(); $('glut').textContent = save.glut | 0; $('shop-glut').textContent = save.glut | 0; $('glut-pill').title = tr('Glutsteine: aus Fängen in der Glutgrotte, zum Graben und für Glimms Werkstatt');
   }
   // bait hotbar: every bait you own as a slot; click or press 1-9 to switch (only while idle)
   const ownedBaits = () => BAITS.filter(b => !b.pack || (save.baits[b.id] || 0) > 0);
@@ -3051,6 +3060,7 @@
         if (owned) grid.append(tile(ICONS[c.id], c.name, worn === c.id ? tr('Angezogen') : tr('Anziehen'), worn === c.id ? 'on' : '',
           () => { save.cosm[slot] = worn === c.id ? null : c.id; persist(); renderWardrobe(); sfx.tick(); }));
         else if (c.price) grid.append(tile(ICONS[c.id], c.name, tr('🛒 Laden · {n} Taler', { n: c.price }), 'locked', () => { closeModals(); shopTab = 'cosm'; toggleModal('shop'); }));
+        else if (c.glut) grid.append(tile(ICONS[c.id], c.name, tr('🌋 Lava-Laden · {n} 🔥', { n: c.glut }), 'locked', () => { closeModals(); shopTab = 'lava'; toggleModal('shop'); }));
         else grid.append(tile(ICONS[c.id], c.name, '🔒 ' + c.ach, 'locked', () => toast('🔒 ' + c.ach), c.ach));
       }
       sec.append(h, grid); return sec;
@@ -3186,13 +3196,79 @@
     }, 1100);
   }
   $('box-ok').addEventListener('click', () => { if (!$('box-ok').disabled) $('box').hidden = true; });
+  // Lava-Laden: everything here costs Glutsteine 🔥, never Taler (and Glutsteine never turn into Taler)
+  function lavaWares() {
+    const poor = n => keeper(tr('Dafür fehlen dir noch {n} 🔥. Fang mehr in der Glutgrotte!', { n: n - save.glut }));
+    const rods = RODS.filter(r => r.lava).map(r0 => {
+      const owned = save.rods.includes(r0.id), active = save.lavaRod === r0.id, lock = !owned && lockText(r0), r = owned ? forged(r0) : r0;
+      const w = ware({
+        id: r.id, name: '🌋 ' + r.name, desc: r.desc,
+        stats: [statBar(tr('Wurf'), r.cast, 1), statBar(tr('Kurbel'), r.reel, 4.2), statBar(tr('Glück'), r.luck, 3.6), statBar(tr('Ruhe'), 1.1 - r.tens, .8)],
+        state: active ? 'active' : lock ? 'locked' : owned ? 'owned' : '',
+        btnText: active ? tr('In der Hand') : owned ? tr('Nehmen') : lock || `${r0.glut} 🔥`,
+        disabled: active || (!owned && (!!lock || save.glut < r0.glut)),
+        onClick: () => {
+          if (active) return keeper(pick(KEEPER.equip));
+          if (lock) return keeper(KEEPER.locked(lock));
+          if (!owned && save.glut < r0.glut) return poor(r0.glut);
+          if (!owned) { save.glut -= r0.glut; save.rods.push(r0.id); sfx.coin(); keeper(tr('Hält jede Glut aus. Viel Erfolg da unten!')); }
+          else keeper(pick(KEEPER.equip));
+          save.lavaRod = r0.id; persist(); updateCoins(); updateGear(); renderShop(false);
+        },
+      });
+      if (active) w.append(forgeButton(r0));
+      return w;
+    });
+    const baits = BAITS.filter(b => b.lava).map(b => {
+      const n = save.baits[b.id] || 0, active = save.bait === b.id, lock = lockText(b);
+      return ware({
+        id: b.id, name: b.name, desc: b.desc,
+        stats: [statBar(tr('Glück'), b.luck, 4.2), statBar(tr('Tempo'), b.speed, 2)],
+        state: active ? 'active' : lock ? 'locked' : '',
+        owned: n ? tr('{n} im Beutel', { n }) : '',
+        btnText: lock || tr('+{a} für {b} 🔥', { a: b.pack, b: b.glut }),
+        disabled: !!lock || save.glut < b.glut,
+        onClick: () => {
+          if (lock) return keeper(KEEPER.locked(lock));
+          if (save.glut < b.glut) return poor(b.glut);
+          save.glut -= b.glut; save.baits[b.id] = n + b.pack; save.bait = b.id; sfx.coin();
+          keeper(pick(KEEPER.bait)); persist(); updateCoins(); updateGear(); renderShop(false);
+        },
+      });
+    });
+    const cosm = COSMETICS.filter(c => c.glut).map(c => {
+      const owned = save.cosm.owned.includes(c.id), worn = save.cosm[c.slot] === c.id;
+      return ware({
+        id: c.id, name: c.name, desc: c.desc, stats: [],
+        state: worn ? 'active' : owned ? 'owned' : '',
+        owned: SLOT_NAMES[c.slot],
+        btnText: worn ? tr('Ablegen') : owned ? tr('Anziehen') : `${c.glut} 🔥`,
+        disabled: !owned && save.glut < c.glut,
+        onClick: () => {
+          if (worn) save.cosm[c.slot] = null;
+          else if (owned) save.cosm[c.slot] = c.id;
+          else {
+            if (save.glut < c.glut) return poor(c.glut);
+            save.glut -= c.glut; save.cosm.owned.push(c.id); save.cosm[c.slot] = c.id; sfx.coin();
+            keeper(tr('Steht dir. Und schmilzt nicht.'));
+          }
+          persist(); updateCoins(); renderShop(false);
+        },
+      });
+    });
+    return [...rods, ...baits, ...cosm];
+  }
   function renderShop(greet) {
     updateCoins();
-    if (greet !== false) keeper(pick(KEEPER.hello));
+    $('shop-tab-lava').hidden = !lavaOpen();
+    if (shopTab === 'lava' && !lavaOpen()) shopTab = 'rods';
+    if (greet !== false && inLava()) shopTab = 'lava'; // down in the cave the kiosk opens with the lava wares
+    $('shop-glut-p').hidden = shopTab !== 'lava'; $('shop-coins-p').hidden = shopTab === 'lava';
+    if (greet !== false) keeper(shopTab === 'lava' ? tr('Glutsteine? Die nehme ich gern. Taler bitte oben lassen.') : pick(KEEPER.hello));
     document.querySelectorAll('[data-shop-tab]').forEach(t => {
       const on = t.dataset.shopTab === shopTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
-    const wares = shopTab === 'snacks' ? SNACKS.map(snackWare) : shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'cosm' ? COSMETICS.filter(c => c.price).map(cosmWare) : shopTab === 'rods' ? RODS.map(r0 => {
+    const wares = shopTab === 'snacks' ? SNACKS.map(snackWare) : shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'cosm' ? COSMETICS.filter(c => c.price).map(cosmWare) : shopTab === 'lava' ? lavaWares() : shopTab === 'rods' ? RODS.filter(r => !r.lava).map(r0 => {
       const owned = save.rods.includes(r0.id), active = r0.lava ? save.lavaRod === r0.id : save.rod === r0.id, lock = !owned && lockText(r0), r = owned ? forged(r0) : r0;
       const w = ware({
         id: r.id, name: (r.lava ? '🌋 ' : '') + r.name, desc: r.desc,
@@ -3212,7 +3288,7 @@
       });
       if (active) w.append(forgeButton(r0));
       return w;
-    }) : BAITS.map(b => {
+    }) : BAITS.filter(b => !b.lava).map(b => {
       const n = save.baits[b.id] || 0, active = save.bait === b.id, lock = b.pack && lockText(b);
       return ware({
         id: b.id, name: b.name, desc: b.desc,
@@ -3232,7 +3308,7 @@
     });
     $('shop-wares').replaceChildren(...wares);
   }
-  document.querySelectorAll('[data-shop-tab]').forEach(t => t.addEventListener('click', () => { shopTab = t.dataset.shopTab; renderShop(false); }));
+  document.querySelectorAll('[data-shop-tab]').forEach(t => t.addEventListener('click', () => { shopTab = t.dataset.shopTab; renderShop(false); if (shopTab === 'lava') keeper(tr('Glutsteine? Die nehme ich gern. Taler bitte oben lassen.')); }));
 
 
   function flashSaved() {
