@@ -975,3 +975,12 @@ button#btn-boss:hover { background: #be123c; }
 .boss-quit:hover { color: #fff; border-color: #94a3b8; }
 #reel.boss .reel-row:nth-child(2) { display: none; }
 @media (max-height: 480px) { #boss-hud { top: 3rem; padding: .35rem .6rem; } .boss-bar { height: 14px; margin: .3rem 0 .25rem; } #boss-hp-num { line-height: 14px; } }
+
+/* Fischautomat: jackpot pot and stake cap */
+.jackpot { display: flex; justify-content: center; align-items: baseline; gap: .5rem; margin: .4rem 0 -.3rem;
+  font-family: var(--px); color: #fde68a; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+.jackpot b { font-size: 1.35rem; color: var(--gold); text-shadow: 2px 2px 0 var(--ink); }
+.bet-cap { font-size: .72rem; color: #94a3b8; margin: 0; }
+.bets button[hidden] { display: none; }
+/* active snacks */
+#buffs { cursor: pointer; font-variant-numeric: tabular-nums; }
