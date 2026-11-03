@@ -15,6 +15,7 @@
     // ---- game messages
     'Speichern nicht möglich – Fortschritt geht beim Schließen verloren.': 'Can’t save – progress will be lost when you close the page.',
     'Spiel in einem anderen Tab gespeichert – lade den neuen Spielstand …': 'Game saved in another tab – loading the newer save …',
+    '🆕 Neue Version! Lade neu …': '🆕 New version! Reloading …',
     'Warten …': 'Waiting …',
     'Köder aufgebraucht – zurück zum Wurm.': 'Out of bait – back to the worm.',
     '📖 Fischdex-Belohnung bereit!': '📖 Fishdex reward ready!',
