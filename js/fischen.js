@@ -1885,8 +1885,8 @@
   function rollBox(b) {
     const T = b.tier, P = b.price;
     const baits = BAITS.filter(x => x.pack && !lockText(x));
-    // Balance: bought boxes return ~85-90 % of their price on average (coins alone ~70 %, a bit of
-    // rest as bait and XP; no Schuppen, those only come from rebirths). Prizes don't use the Taler bonus, otherwise boxes would
+    // Balance: bought boxes return ~75-80 % of their price on average (coins alone ~70 %, the
+    // rest as bait and a little XP; no Schuppen, those only come from rebirths). Prizes don't use the Taler bonus, otherwise boxes would
     // turn into a money machine for players with many rebirths.
     const table = [
       { w: 55, f: () => { const c = Math.round(P * (.6 + Math.random() * .8)); save.coins += c; save.totalEarned += c; return tr('🪙 {n} Taler', { n: c }); } },
