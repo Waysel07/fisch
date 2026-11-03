@@ -371,6 +371,18 @@
     'Wii': 'Wii', 'Poisson': 'Poisson', 'Kleiner Spezifisch': 'Kleiner Spezifisch', 'Spezifische Spezifische': 'Spezifische Spezifische',
     'Spezifischer Spezifisch': 'Spezifischer Spezifisch', 'Lo': 'Lo', 'Wii-Arowana': 'Wii Arowana', 'Travis': 'Travis', 'Spee Zierfisch': 'Spee Zierfisch',
     'Spezifische Spee Zierfische': 'Spezifische Spee Zierfische', 'Spezifischfischer': 'Spezifischfischer', 'Absolute Odfisch': 'Absolute Odfisch',
+    // Käpt'n Kalle in his rowboat
+    "Käpt'n Kalle": 'Captain Kalle',
+    'Moin! Herrliches Angelwetter heute!': 'Ahoy! Glorious fishing weather today!',
+    'Ahoi! Hier draußen beißen sie am besten.': 'Ahoy! They bite best out here.',
+    'Regen, Sonne, Sturm – Hauptsache Wasser!': 'Rain, sun, storm – as long as there’s water!',
+    'Pssst … die Fische hören mit.': 'Shhh … the fish are listening.',
+    'Mein Boot leckt. Aber nur ein bisschen.': 'My boat leaks. Only a little, though.',
+    'Seit 40 Jahren warte ich auf den Großen.': 'Forty years I’ve been waiting for the big one.',
+    'Der Kiosk-Wels schuldet mir noch einen Taler.': 'That kiosk catfish still owes me a Taler.',
+    'Hoho! Fast hätte einer gebissen!': 'Hoho! One nearly bit!',
+    'Nachtangeln! Das beste Angeln!': 'Night fishing! The best fishing!',
+    'Der Mond ist mein Leuchtturm.': 'The moon is my lighthouse.',
     'Albino': 'Albino', 'Golden': 'Golden', 'ABCD-EF23-GH45-JK67': 'ABCD-EF23-GH45-JK67',
   };
 
