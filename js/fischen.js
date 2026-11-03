@@ -57,6 +57,23 @@
     { id: 'katze',   name: 'Katzenfisch',       img: 'img/katzenfisch.png',  r: 'legendary', min: 40, max: 70,  val: 450, photo: true, page: 'seiten/katzenfisch.html', say: 'Miau. Ich meine: Blubb.', desc: 'Halb Katze, halb Fisch, ganz flauschig. Kommt lieber nachts.', far: .4, night: 2.5 },
     { id: 'uhrzeit', name: 'UhrZeitFisch',      img: 'img/uhrzeitfisch.gif', r: 'legendary', min: 160, max: 190, val: 480, photo: true, page: 'seiten/uhrzeitfisch.html', say: 'Ich bin pünktlich. Seit 66 Millionen Jahren.', desc: 'Ein Fisch aus der Urzeit, sehr cool. Beißt nur zur vollen Stunde.', fullHour: true, hint: 'Beißt nur zur vollen Stunde' },
     { id: 'drache',  name: 'Gyarados',    img: 'img/gyarados-water.gif', r: 'legendary', min: 150, max: 240, val: 520, pixel: true, page: 'seiten/drachenkarpfen.html', say: 'Ich bin den Wasserfall hochgesprungen. Jetzt bin ich sauer.', desc: 'Ein Karpfen, der es durchs Drachentor geschafft hat. Jade, Gold und schlechte Laune.', needs: { platsch: 25 }, bigSplash: true, hint: 'Erst wenn du 25 Karpador gefangen hast' },
+    // weather fish: only bite while their weather is on (weather: id from WEATHER)
+    { id: 'pfuetze',  name: 'Pfützenspringer',   img: 'img/pfuetzenspringer.png', r: 'uncommon', min: 12, max: 24, val: 20, pixel: true, page: 'seiten/pfuetzenspringer.html', weather: 'regen', say: 'Endlich Regen! Ich hüpf mal ein bisschen rum.', desc: 'Kommt nur raus, wenn es regnet. Springt von Tropfen zu Tropfen.' },
+    { id: 'nebelgeist', name: 'Nebelgeist',      img: 'img/nebelgeist.png',       r: 'rare',     min: 30, max: 55, val: 55, pixel: true, page: 'seiten/nebelgeist.html', weather: 'nebel', say: 'Huuuh … ach, nur ein Angler.', desc: 'Halb durchsichtig. Taucht nur im Nebel auf.' },
+    { id: 'blitzwels', name: 'Blitzwels',        img: 'img/blitzwels.png',        r: 'epic',     min: 70, max: 130, val: 150, pixel: true, page: 'seiten/blitzwels.html', weather: 'gewitter', say: 'Bzzzt. Lieber nicht anfassen.', desc: 'Lädt sich bei Gewitter auf. Die Barteln knistern.' },
+    { id: 'bogenforelle', name: 'Regenbogenforelle', img: 'img/regenbogenforelle.png', r: 'epic', min: 35, max: 70, val: 170, pixel: true, page: 'seiten/regenbogenforelle.html', weather: 'bogen', say: 'Ich bin nur kurz da. Wie der Regenbogen.', desc: 'Schimmert in allen Farben – aber nur, solange der Regenbogen am Himmel steht.' },
+    { id: 'kaufland', name: 'Kaufland-Fisch',    img: 'img/kaufland-fisch.png',   r: 'rare',     min: 25, max: 35, val: 49, pixel: true, page: 'seiten/kaufland-fisch.html', say: 'Heute im Angebot.', desc: 'Eingeschweißt, gekühlt, reduziert. Wie er ins Wasser kam, weiß keiner.' },
+    // Hohe See (map: 'see'): only bite out on the open sea, unlocked with the 3rd rebirth
+    { id: 'hering',   name: 'Hering',            img: 'img/hering.png',           r: 'common',   min: 20, max: 35, val: 9,  pixel: true, page: 'seiten/hering.html', map: 'see', say: 'Wir sind viele. Sehr viele.', desc: 'Silbrig und schnell. Kommt selten allein.' },
+    { id: 'makrele',  name: 'Makrele',           img: 'img/makrele.png',          r: 'common',   min: 25, max: 45, val: 11, pixel: true, page: 'seiten/makrele.html', map: 'see', say: 'Streifen sind zeitlos.', desc: 'Gestreift wie ein Matrose.' },
+    { id: 'thunfisch', name: 'Thunfisch',        img: 'img/thunfisch.png',        r: 'rare',     min: 100, max: 200, val: 70, pixel: true, page: 'seiten/thunfisch.html', map: 'see', say: 'Ich schwimme schon seit Portugal.', desc: 'Ein Kraftpaket. Zieht wie ein Motorboot.' },
+    { id: 'schwertfisch', name: 'Schwertfisch',  img: 'img/schwertfisch.png',     r: 'epic',     min: 150, max: 250, val: 180, pixel: true, page: 'seiten/schwertfisch.html', map: 'see', say: 'En garde!', desc: 'Ficht mit seiner Nase. Gewinnt meistens.' },
+    { id: 'seeteufel', name: 'Seeteufel',        img: 'img/seeteufel.png',        r: 'epic',     min: 40, max: 90, val: 190, pixel: true, page: 'seiten/seeteufel.html', map: 'see', night: 3, say: 'Siehst du das Licht? Komm näher …', desc: 'Lockt mit einer Laterne am Kopf. Nachts besonders aktiv.' },
+    { id: 'kalmar',   name: 'Riesenkalmar',      img: 'img/riesenkalmar.png',     r: 'legendary', min: 250, max: 450, val: 600, pixel: true, page: 'seiten/riesenkalmar.html', map: 'see', night: 2, say: 'Acht Arme, zwei Tentakel, null Geduld.', desc: 'Kommt aus der Tiefe. Nur auf Hoher See, am liebsten nachts.' },
+    { id: 'sturmhai', name: 'Sturmhai',          img: 'img/sturmhai.png',         r: 'legendary', min: 220, max: 320, val: 650, pixel: true, page: 'seiten/sturmhai.html', map: 'see', weather: 'gewitter', say: 'Ich reite den Blitz.', desc: 'Jagt nur bei Gewitter auf Hoher See.' },
+    { id: 'flaschenpost', name: 'Flaschenpost',  img: 'img/flaschenpost.png',     r: 'junk',     min: 20, max: 30, val: 2,  pixel: true, page: 'seiten/flaschenpost.html', map: 'see', post: true, say: 'Hilfe, ich stecke in einer Flasche! … Nein, Spaß.', desc: 'Manchmal stecken ein paar Taler drin.' },
+    // the boss of the open sea: never bites normally, only lands after winning the boss fight
+    { id: 'odboss',   name: 'Odfisch',           img: 'img/odfisch-boss.png',     r: 'legendary', min: 260, max: 320, val: 900, pixel: true, page: 'seiten/odfisch.html', map: 'see', boss: true, say: 'Fih.', desc: 'Halb Fisch, halb Katze, ganz Boss. Der Herrscher der Hohen See lässt sich nur im Bossfight bezwingen – am besten zusammen mit der Lobby.' },
     { id: 'schummel', name: 'Ditto',    img: 'img/ditto-dance.gif', r: 'junk', min: 6, max: 14, val: 1, pixel: true, page: 'seiten/schummelfisch.html', fake: true, say: 'Das ist kein Fisch.', desc: '+1 Coin' },
     { id: 'ratte',   name: 'Ratte',             img: 'img/rat.gif',              r: 'junk',      min: 18, max: 28,  val: 1,  say: 'Lass mich, ich hab Termine.', desc: 'Nass und beleidigt. Läuft trotzdem weiter.' },
     { id: 'tisch',   name: 'Tisch',             img: 'img/tisch.gif',            r: 'junk',      min: 90, max: 140, val: 3,  photo: true, say: 'Ich bin ein Tisch.', desc: 'Ein Tisch. Kein Fisch. Aber fast.' },
@@ -71,6 +88,7 @@
     { id: 'gold',   name: 'Goldene Rute',     price: 900,  lvl: 9,  cast: 1.0, reel: 1.85, tens: .55,  luck: 1.4, desc: 'Glänzt. Fische lieben Glanz.' },
     { id: 'regen',  name: 'Regenbogenrute',   price: 2500, reb: 1, cast: 1.0, reel: 2.2,  tens: .48,  luck: 1.7, desc: 'Nur für Wiedergeborene. Schillert in allen Farben.' },
     { id: 'stern',  name: 'Sternenrute',      price: 6000, reb: 3, cast: 1.0, reel: 2.6,  tens: .4,   luck: 2.1, desc: 'Aus einer Sternschnuppe geschnitzt.' },
+    { id: 'tiefsee', name: 'Tiefseerute',     price: 15000, reb: 4, cast: 1.0, reel: 3.0, tens: .34,  luck: 2.5, desc: 'Für die ganz tiefen Wasser. Hält fast alles aus.' },
   ];
   const BAITS = [
     { id: 'wurm',   name: 'Wurm',          price: 0,  pack: 0, luck: 1,   speed: 1,   desc: 'Unbegrenzt. Wurmig.' },
@@ -78,6 +96,7 @@
     { id: 'glitzer', name: 'Glitzerköder', price: 35, pack: 5, lvl: 4, luck: 2.8, speed: 1.6, desc: '5 Stück. Für die ganz großen Fänge.' },
     { id: 'wiik',   name: 'Wii-Köder',     price: 30, pack: 5, lvl: 3, luck: 1.5, speed: 1.4, wii: 2, img: 'img/wii-bait.png', desc: '5 Stück. Zeigt auf die Wii-Fische. Die beißen doppelt so oft.' },
     { id: 'mond',   name: 'Mondköder',     price: 90, pack: 5, reb: 2, luck: 4.2, speed: 2,  desc: '5 Stück. Leuchtet. Legenden können nicht widerstehen.' },
+    { id: 'odkoeder', name: 'Odköder',     price: 1500, pack: 1, reb: 3, luck: 1, speed: 1, boss: true, desc: '1 Stück. Nachts auf Hoher See ausgeworfen, ruft er den Odfisch.' },
   ];
   // Mysteryboxen: bought at the kiosk or found on the hook now and then. Opening one rolls a prize.
   const BOXES = [
@@ -90,6 +109,14 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-03-5', date: '03.11.2026', items: [
+      '📏 Größenklassen: Jeder Fang ist Mini, Normal, Groß, Kapital oder Monster. Kapital und Monster wachsen übers Maximum hinaus und sind bis zu 4× so viel wert.',
+      '🌦️ Wetter: Sonne, Regen, Nebel, Gewitter und manchmal ein Regenbogen – für alle gleich. Jedes Wetter hat seinen Bonus (oben an der Wetter-Pille).',
+      '🐟 Neue Wetterfische: Pfützenspringer, Nebelgeist, Blitzwels und Regenbogenforelle. Dazu im Angebot: der Kaufland-Fisch.',
+      '⛵ Neue Map – Hohe See: Ab der 3. Wiedergeburt fährt Bealin dich raus (Boje am Steg). Mit eigenen Fischen, vom Hering bis zum Riesenkalmar.',
+      '⚔️ Bossfight: Nachts auf Hoher See ruft der Odköder den Odfisch. Drei Phasen, drei Minuten – in einer Lobby kämpft ihr zusammen gegen einen Lebensbalken.',
+      '🏆 Mehr Endgame: Tiefseerute, Talente Maßband und Wetterfrosch, neue Hutfarben bis zur 10. Wiedergeburt, neue Fischdex-Ziele, Kosmetik und Bestenlisten (Monster-Fänge, Odfisch-Siege).',
+    ] },
     { id: '2026-11-03-4', date: '03.11.2026', items: [
       '🕒 Gemeinsame Uhrzeit: Tag und Nacht laufen jetzt für alle gleich – in einer Lobby angelt ihr also immer zur selben Tageszeit.',
       '🎩 Kosmetik: Hüte, Regenjacken und Posen – ein paar im Laden, die besonderen nur durch Erfolge. Andere in deiner Lobby sehen deinen Look.',
@@ -243,6 +270,45 @@
   let t = 0;              // seconds running
   const isNight = () => time < .2 || time > .82;
 
+  // Weather works like the clock: every WEATHER_LEN seconds a new weather, picked by a hash of the
+  // slot number, so every player and every lobby has the same weather without asking a server.
+  // A rainbow can only follow rain.
+  const WEATHER_LEN = 600;
+  const WEATHER = [
+    { id: 'sonne',    icon: '☀️', name: 'Sonnig',     w: 40, desc: 'Ganz normales Angelwetter.' },
+    { id: 'regen',    icon: '🌧️', name: 'Regen',      w: 28, desc: 'Bisse kommen schneller.', bite: .8 },
+    { id: 'nebel',    icon: '🌫️', name: 'Nebel',      w: 20, desc: 'Seltene und epische Fische trauen sich raus.', rare: 1.4 },
+    { id: 'gewitter', icon: '⛈️', name: 'Gewitter',   w: 12, desc: 'Legendäre beißen öfter – aber die Schnur steht unter Spannung.', legend: 1.6, tens: 1.15 },
+    { id: 'bogen',    icon: '🌈', name: 'Regenbogen', w: 0,  desc: 'Doppelte Chance auf Shinys und Mutationen.', shiny: 2 },
+  ];
+  trAll(WEATHER, ['name', 'desc']);
+  const WEATHER_HINT = { regen: 'Nur bei Regen', nebel: 'Nur bei Nebel', gewitter: 'Nur bei Gewitter', bogen: 'Nur beim Regenbogen' };
+  let weatherShift = 0, weatherForce = null; // tests only (__fischen.setWeather)
+  function slotHash(n, salt) {
+    let h = Math.imul((n | 0) ^ salt, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  }
+  function baseWeather(slot) {
+    let r = slotHash(slot, 0x5eed) * 100;
+    for (const w of WEATHER) { r -= w.w; if (r < 0) return w; }
+    return WEATHER[0];
+  }
+  function weatherAt(slot) {
+    const w = baseWeather(slot);
+    if (w.id !== 'regen' && baseWeather(slot - 1).id === 'regen' && slotHash(slot, 0xb06e) < .45) return WEATHER[4];
+    return w;
+  }
+  const weatherSlot = () => Math.floor(Date.now() / 1000 / WEATHER_LEN + weatherShift);
+  function currentWeather() { return (weatherForce && WEATHER.find(w => w.id === weatherForce)) || weatherAt(weatherSlot()); }
+  let wx = currentWeather();
+  // the Wetterfrosch talent makes every weather bonus stronger
+  const wBoost = x => (x ? 1 + (x - 1) * (1 + .1 * perk('wetter')) : 1);
+
+  // Maps: the dock (Steg) and, from the 3rd rebirth, the open sea (Hohe See) on Bealin's boat
+  const SEA_REB = 3;
+  if (save.map !== 'see' || save.rebirths < SEA_REB) save.map = 'steg';
+  const onSea = () => save.map === 'see';
+
   const player = { x: 90, dir: 1, walk: 0 };
   const keys = {};
   const fishes = [];
@@ -273,7 +339,7 @@
   function rodTip() {
     const px = Math.round(player.x), d = player.dir;
     if (state === 'charge') return { x: px - d * 10, y: DOCK_Y - 26 };
-    if (state === 'reel') return { x: px + d * 14, y: DOCK_Y - 22 + Math.sin(t * 30) * reel.tension * 1.5 };
+    if (state === 'reel' || state === 'boss') return { x: px + d * 14, y: DOCK_Y - 22 + Math.sin(t * 30) * reel.tension * 1.5 };
     return { x: px + d * 15, y: DOCK_Y - 24 };
   }
 
@@ -297,7 +363,9 @@
   function land() {
     state = 'wait'; bob.y = SURFACE; bob.dunk = 0;
     splash(bob.x, SURFACE, 10, '#bfe9ff'); ripple(bob.x); sfx.splash();
-    waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss'));
+    waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss')) * (wx.bite ? 1 / wBoost(1 / wx.bite) : 1);
+    if (bait().boss && !bossReady()) hint(tr('Der Odköder wirkt nur nachts auf Hoher See.'), 2.4);
+    else if (bait().boss) { waitT = 2.5; nibbles = 0; hint(tr('Das Wasser wird unruhig …'), 2.4); return; }
     nibbles = Math.floor(Math.random() * 3); nibbleT = waitT - 1.2;
     approacher = null;
     hint(tr('Warten …'), 1.2);
@@ -310,11 +378,13 @@
   }
 
   function pickFish() {
-    const d = castDistance(), night = isNight(), b = bait(), r = rod();
+    // out on the open sea every cast counts as far out
+    const d = onSea() ? Math.max(.7, castDistance()) : castDistance(), night = isNight(), b = bait(), r = rod(), map = save.map;
     const luck = b.luck * r.luck * (1 + .08 * perk('glueck')) * (dexPerk('luck10') ? 1.1 : 1);
     const fullHour = (time * 24) % 1 < 1 / 6; // the clock shows xx:00
     const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night) && !(f.fullHour && !fullHour)
-      && !(f.needs && Object.entries(f.needs).some(([id, n]) => ((save.dex[id] || {}).n || 0) < n)));
+      && !(f.needs && Object.entries(f.needs).some(([id, n]) => ((save.dex[id] || {}).n || 0) < n))
+      && (f.map || 'steg') === map && !f.boss && !(f.weather && f.weather !== wx.id));
     const weights = pool.map(f => {
       let w = RARITY[f.r].w;
       const n = pool.filter(g => g.r === f.r).length; w /= n;
@@ -325,6 +395,9 @@
       if (f.r === 'legendary') w *= (1 + 3 * d) * luck * luck;
       if (f.r === 'junk') w *= f.rareJunk ? .12 * luck : 1 / luck;
       if (f.night) w *= night ? f.night : .5;
+      if (wx.rare && ['rare', 'wii', 'epic'].includes(f.r)) w *= wBoost(wx.rare);
+      if (wx.legend && f.r === 'legendary') w *= wBoost(wx.legend);
+      if (f.weather) w *= 2; // the weather fish are the point of the weather: easier to find while it lasts
       return w;
     });
     let roll = Math.random() * weights.reduce((a, b) => a + b, 0);
@@ -335,17 +408,44 @@
   function hook() {
     const f = pickFish();
     // bait gets used up on a hook attempt
-    if (save.bait !== 'wurm') {
+    if (save.bait !== 'wurm' && !bait().boss) {
       save.baits[save.bait] = (save.baits[save.bait] || 1) - 1;
       if (save.baits[save.bait] <= 0) { delete save.baits[save.bait]; save.bait = 'wurm'; toast(tr('Köder aufgebraucht – zurück zum Wurm.')); }
       persist(); updateGear();
     }
-    const skew = Math.pow(Math.random(), 1.6);
-    hooked = { f, size: Math.round(f.min + (f.max - f.min) * skew), str: STRENGTH[f.r] };
+    hooked = { f, ...rollSize(f), str: STRENGTH[f.r] };
     Object.assign(reel, { tension: .15, progress: .22, thrash: 0, thrashT: 1 + Math.random(), slack: 0, maxT: 0 });
     if (f.r === 'legendary' && !f.fake && Math.random() < RHYTHM_CHANCE) { sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff'); startRhythm(); return; }
     state = 'reel'; $('reel').hidden = false; hint('');
     sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff');
+  }
+
+  // Size classes: every catch is Mini, Normal, Groß, Kapital or Monster. Kapital and Monster grow
+  // beyond the usual maximum of the fish. The class multiplies the value; the Maßband talent helps.
+  const SIZE_CLASSES = [
+    { id: 'mini',    name: 'Mini',    icon: '🔹', c: '#7dd3fc', val: .7,  from: 0,    to: .15 },
+    { id: 'normal',  name: 'Normal',  icon: '',   c: '#e2e8f0', val: 1,   from: .15,  to: .75 },
+    { id: 'gross',   name: 'Groß',    icon: '🔸', c: '#fdba74', val: 1.4, from: .75,  to: 1 },
+    { id: 'kapital', name: 'Kapital', icon: '🔶', c: '#fb923c', val: 2,   from: 1,    to: 1.15 },
+    { id: 'monster', name: 'Monster', icon: '👑', c: '#f43f5e', val: 4,   from: 1.15, to: 1.35 },
+  ];
+  trAll(SIZE_CLASSES, ['name']);
+  function sizeOdds() {
+    const m = perk('mass');
+    return [.12 * (1 - .12 * m), 0, .16 * (1 + .05 * m), .05 * (1 + .15 * m), .007 * (1 + .25 * m)];
+  }
+  function sizeIn(f, cls) {
+    const c = SIZE_CLASSES[cls], u = (Math.random() + Math.random() + Math.random()) / 3; // a little bell curve
+    const k = c.from + (c.to - c.from) * (cls === 1 ? u : Math.random());
+    // up to the maximum the size runs from min to max, beyond it it grows from max on
+    const size = k <= 1 ? f.min + (f.max - f.min) * k : f.max * k;
+    return { size: Math.max(1, Math.round(size)), cls };
+  }
+  function rollSize(f) {
+    const odds = sizeOdds();
+    let r = Math.random(), cls = 1;
+    for (const i of [4, 3, 2, 0]) { if (r < odds[i]) { cls = i; break; } r -= odds[i]; }
+    return sizeIn(f, cls);
   }
 
   function land_catch() {
@@ -358,17 +458,25 @@
       n.x = W + 5; n.vx = -Math.abs(n.vx);
       fishes[i] = n; approacher = null;
     }
+    const cls = hooked.cls === undefined ? 1 : hooked.cls, sc = SIZE_CLASSES[cls];
     const base = Math.max(0, Math.min(1, (hooked.size - f.min) / (f.max - f.min || 1)));
-    const val = Math.max(1, Math.round(f.val * (0.7 + .6 * base) * coinMult() * (mut ? mut.val : 1) * (shiny ? SHINY_VAL : 1)));
+    const val = Math.max(1, Math.round(f.val * (.85 + .3 * base) * sc.val * coinMult() * (mut ? mut.val : 1) * (shiny ? SHINY_VAL : 1)));
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
     e.n++; e.best = Math.max(e.best, size); if (f.r !== 'junk') e.small = Math.min(e.small || Infinity, size); save.dex[f.id] = e;
+    if (f.r !== 'junk') { e.cls = Math.max(e.cls || 0, cls); if (cls === 4) save.monsters = (save.monsters || 0) + 1; }
     let newMut = false;
     if (mut) { e.muts = e.muts || {}; newMut = !e.muts[mut.id]; e.muts[mut.id] = (e.muts[mut.id] || 0) + 1; }
     let newShiny = false;
     if (shiny) { e.shiny = (e.shiny || 0) + 1; newShiny = e.shiny === 1; }
     save.coins += val; save.total++; save.lifeCoins += val; save.totalEarned += val;
     const gain = progressCatch(f, size, val, first, mut, newMut, reel.maxT < .7, shiny, newShiny);
+    if (cls >= 3 && f.r !== 'junk') { gain.xp += gainXp(cls === 4 ? 120 : 30); }
+    if (f.post && Math.random() < .35) { // a message in a bottle sometimes holds a few Taler
+      const extra = Math.round((40 + Math.random() * 260) * coinMult());
+      save.coins += extra; save.lifeCoins += extra; save.totalEarned += extra;
+      setTimeout(() => toast(tr('📜 In der Flasche steckten {n} Taler!', { n: extra })), 1800);
+    }
     bealinEvent({ type: 'catch', f, size, mut, clean: reel.maxT < .7, night: darkness() > .5 });
     if (f.r !== 'junk') { // now and then a mystery box hangs on the line too
       const r = Math.random(), found = r < .002 ? BOXES[2] : r < .01 ? BOXES[1] : r < .035 ? BOXES[0] : null;
@@ -376,7 +484,7 @@
     }
     setTimeout(() => lbSubmit(), 3000);
     lobbyCatch(f, size, val, shiny);
-    if (f.r !== 'junk') { if (isNight()) cosmCount('night'); if (save.lobby) cosmCount('lobby'); }
+    if (f.r !== 'junk') { if (isNight()) cosmCount('night'); if (save.lobby) cosmCount('lobby'); if (wx.id === 'gewitter') cosmCount('sturm'); }
     checkCosm();
     if (dexClaimable().length) { updateDexBadge(); if (first || newMut || newShiny) toast(tr('📖 Fischdex-Belohnung bereit!')); }
     persist(); updateCoins();
@@ -384,7 +492,7 @@
     if (f.bigSplash) { splash(bob.x, SURFACE, 60, '#5eead4'); splash(bob.x, SURFACE, 40, '#ffffff'); }
     state = 'show'; $('reel').hidden = true; holding = false; hint('');
     const reveal = () => {
-      showCatch(f, size, val, first, mut, newMut, gain, shiny, newShiny);
+      showCatch(f, size, val, first, mut, newMut, gain, shiny, newShiny, cls);
       if (f.clip) playClip(f.clip); else if (f.sound) playFile(f.sound); else playFile('sounds/fish.mp3');
       sfx.coin();
       if (f.fake) { // the "legendary" catch was a fish in a joke disguise: sad trombone
@@ -392,14 +500,17 @@
         [392, 370, 349, 294].forEach((n, i) => setTimeout(() => tone(n, i === 3 ? .7 : .28, 'sawtooth', .05), 150 + i * 300));
       }
     };
-    const fx = (f.fake && FANFARE.legendary) || FANFARE[f.r] || (mut && { label: `${mut.name.toUpperCase()}!`, c: mut.c, hi: '#ffffff', dur: 1.1, notes: [659, 880, 1175] })
+    const fx = (f.fake && FANFARE.legendary) || FANFARE[f.r]
+      || (cls >= 3 && f.r !== 'junk' && { label: cls === 4 ? tr('MONSTER!') : tr('KAPITAL!'), c: sc.c, hi: '#ffffff', dur: cls === 4 ? 1.6 : 1.1, notes: cls === 4 ? [196, 262, 330, 392, 523] : [330, 440, 554] })
+      || (mut && { label: `${mut.name.toUpperCase()}!`, c: mut.c, hi: '#ffffff', dur: 1.1, notes: [659, 880, 1175] })
       || (shiny && { label: tr('SHINY!'), c: '#fde047', hi: '#ffffff', dur: 1.2, notes: [1047, 1319, 1568, 2093] });
     if (shiny) {
       floaters.push({ x: bob.x, y: SURFACE - 34, text: newShiny ? tr('💫 Neuer Shiny!') : tr('💫 Shiny!'), c: '#fde047', life: 2.6 });
       for (let i = 0; i < 40; i++) glints.push({ x: bob.x + (Math.random() - .5) * 24, y: SURFACE - Math.random() * 10, vx: (Math.random() - .5) * 40, vy: -25 - Math.random() * 45, life: .8 + Math.random(), c: ['#fde047', '#ffffff', '#f9a8d4', '#a5f3fc'][i % 4] });
       [1568, 2093, 2637].forEach((n, i) => setTimeout(() => tone(n, .12, 'sine', .06), 600 + i * 90));
     }
-    floaters.push({ x: bob.x, y: SURFACE - 14, text: `${mut ? mut.icon + ' ' : ''}${fx ? '' : f.name + ' · '}${f.fake ? 170 + Math.floor(Math.random() * 20) : size} cm`, c: mut ? mut.c : fx ? fx.c : '#ffffff', life: 2.4 });
+    const clsTag = f.fake ? '👑 ' : sc.icon && f.r !== 'junk' ? sc.icon + ' ' : '';
+    floaters.push({ x: bob.x, y: SURFACE - 14, text: `${mut ? mut.icon + ' ' : ''}${clsTag}${fx ? '' : f.name + ' · '}${f.fake ? 170 + Math.floor(Math.random() * 20) : size} cm`, c: mut ? mut.c : fx ? fx.c : '#ffffff', life: 2.4 });
     if (mut && FANFARE[f.r]) floaters.push({ x: bob.x, y: SURFACE - 24, text: `${mut.icon} ${mut.name}`, c: mut.c, life: 2.4 });
     floaters.push({ x: bob.x, y: SURFACE - 4, text: tr('+{n} EP', { n: gain.xp }) + (streak > 1 ? ` · 🔥${streak}` : ''), c: '#86efac', life: 2.4 });
     if (fx && !reduceMotion) {
@@ -414,16 +525,17 @@
   // hit in time when the shrinking ring reaches them (click/tap, or Space / Z / X). Enough
   // accuracy lands the fish, otherwise it gets away.
   const RHYTHM_CHANCE = .3, RHYTHM_N = 12, RHYTHM_GAP = 560, RHYTHM_APPROACH = 950, RHYTHM_PASS = .55;
-  const rhythm = { notes: [], score: 0, combo: 0, judged: 0, end: 0 };
-  function startRhythm() {
+  const rhythm = { notes: [], score: 0, combo: 0, judged: 0, end: 0, onDone: null };
+  // opts (for the boss fight): n circles, own title, onDone(accuracy) instead of landing the fish
+  function startRhythm(opts = {}) {
     state = 'rhythm'; hint(''); closeModals();
     const field = $('rhythm-field');
     field.querySelectorAll('.rnote, .rpop').forEach(n => n.remove());
-    $('rhythm-title').textContent = tr('🎵 Taktdrill! {f} tanzt an der Leine.', { f: hooked.f.name });
-    Object.assign(rhythm, { notes: [], score: 0, combo: 0, judged: 0, end: 0 });
+    $('rhythm-title').textContent = opts.title || tr('🎵 Taktdrill! {f} tanzt an der Leine.', { f: hooked.f.name });
+    Object.assign(rhythm, { notes: [], score: 0, combo: 0, judged: 0, end: 0, onDone: opts.onDone || null });
     const start = performance.now() + 900;
     let x = .5, y = .55;
-    for (let i = 0; i < RHYTHM_N; i++) {
+    for (let i = 0; i < (opts.n || RHYTHM_N); i++) {
       // wander across the field so the circles form a little path
       x = Math.min(.86, Math.max(.14, x + (Math.random() - .5) * .55));
       y = Math.min(.84, Math.max(.24, y + (Math.random() - .5) * .45));
@@ -475,6 +587,7 @@
   function finishRhythm() {
     const acc = rhythm.score / (rhythm.notes.length * 300);
     $('rhythm').hidden = true;
+    if (rhythm.onDone) { const cb = rhythm.onDone; rhythm.onDone = null; return cb(acc); }
     const f = hooked.f;
     if (acc >= RHYTHM_PASS) {
       reel.maxT = acc >= .9 ? 0 : .8; // nearly perfect counts as a clean catch
@@ -485,6 +598,176 @@
       retract(tr('Aus dem Takt! {f} ist weg. ({n} %)', { f: f.name, n: Math.round(acc * 100) }) + lostXp(f));
       bealinEvent({ type: 'lost' });
     }
+  }
+
+  // ------------------------------------------------------------------ boss fight: the Odfisch
+  // The Odköder, cast at night out on the open sea, calls the Odfisch. It has a big health bar:
+  // reeling inside the safe tension does damage, phase 2 throws in Taktdrill salvos, phase 3 is a
+  // rage with harsh tension spikes. A snapped line stuns for 3 s. After 3 minutes it dives away.
+  // In a lobby everyone on the sea fights the same Odfisch (shared HP on the server, api/lobby.js).
+  const BOSS_HP = 1000, BOSS_TIME = 180000, BOSS_RHYTHM_EVERY = 9, BOSS_SCALES = 10;
+  const ODBOSS = FISH.find(f => f.id === 'odboss');
+  const bossImg = new Image(); bossImg.src = ODBOSS.img;
+  const boss = { on: false, id: '', max: 1, hp: 1, ends: 0, mine: 0, pend: 0, stun: 0, solo: true, n: 1, rhythmT: 0, shoutT: 0, won: false, x: W - 80, rise: 0, quake: 0, invite: null, synced: 0 };
+  if (!Array.isArray(save.bossDone)) save.bossDone = [];
+  const bossReady = () => onSea() && isNight();
+  const bossPhase = () => (boss.hp / boss.max > 2 / 3 ? 1 : boss.hp / boss.max > 1 / 3 ? 2 : 3);
+  const BOSS_PHASES = ['', tr('Phase 1/3 · Kurbeln!'), tr('Phase 2/3 · Taktdrill!'), tr('Phase 3/3 · Wut!')];
+  async function summonBoss() {
+    state = 'summon'; hint(tr('Da kommt was Großes …'), 2.5);
+    approacher = null; boss.rise = 0; boss.quake = 1;
+    sfx.bite(); splash(bob.x, SURFACE, 30, '#ffffff'); ripple(bob.x, 2); ripple(bob.x - 8, 2);
+    [98, 92, 87, 82].forEach((n, i) => setTimeout(() => tone(n, .5, 'sawtooth', .07), i * 260));
+    let b = null, fresh = true;
+    if (save.lobby) {
+      try { const j = await lobbyFetch({ action: 'boss', code: save.lobby.code, id: save.lobby.id, me: lobbyMe() }); b = j.boss; fresh = !!j.fresh; }
+      catch (e) { state = 'idle'; boss.rise = 0; hint(''); toast(e.message); return; }
+      b.ends = Date.now() + (b.ends - b.now); // server clock → our clock
+    } else b = { id: 'solo-' + hex(6), max: BOSS_HP, hp: BOSS_HP, ends: Date.now() + BOSS_TIME, mine: 0, n: 1 };
+    if (state !== 'summon') return;
+    if (b.hp <= 0 || b.ends < Date.now() + 3000) { state = 'idle'; boss.rise = 0; toast(tr('🌊 Der Odfisch erholt sich gerade noch. Versuch es gleich nochmal.')); return; }
+    if (fresh) { // only whoever calls him uses up the bait; joining an ongoing fight is free
+      save.baits.odkoeder = (save.baits.odkoeder || 1) - 1;
+      if (save.baits.odkoeder <= 0) { delete save.baits.odkoeder; save.bait = 'wurm'; }
+      persist(); updateGear();
+    }
+    enterBoss(b, !save.lobby);
+  }
+  function enterBoss(b, solo) {
+    Object.assign(boss, { on: true, id: b.id, max: b.max, hp: b.hp, ends: b.ends, mine: b.mine || 0, pend: 0, stun: 0, solo, n: b.n || 1, rhythmT: 6, shoutT: 2, won: false, invite: null, quake: 1 });
+    $('btn-boss').hidden = true;
+    closeModals(); state = 'boss'; holding = false;
+    hooked = { f: ODBOSS, size: ODBOSS.max, cls: 3, str: 1.6 };
+    Object.assign(reel, { tension: .1, progress: 0, thrash: 0, thrashT: 2.5, slack: 0, maxT: 0 });
+    bob.landX = boss.x - 26; bob.x = bob.landX;
+    $('reel').hidden = false; $('reel').classList.add('boss'); $('boss-hud').hidden = false;
+    hint('');
+    toast(solo ? tr('⚔️ Der Odfisch! Du hast 3 Minuten.') : tr('⚔️ Der Odfisch! Kämpft zusammen – ihr habt 3 Minuten.'));
+    updateBossHud();
+  }
+  function bossHit(d) {
+    if (!boss.on || boss.won || d <= 0) return;
+    boss.mine += d; boss.hp = Math.max(0, boss.hp - d);
+    if (!boss.solo) boss.pend += d;
+    else if (boss.hp <= 0) bossWin();
+  }
+  function updateBoss(dt) {
+    const ph = bossPhase(), r = rod();
+    if (ph === 3) {
+      boss.shoutT -= dt;
+      if (boss.shoutT <= 0) {
+        boss.shoutT = 2.5 + Math.random() * 3; boss.quake = .7;
+        floaters.push({ x: boss.x, y: SURFACE - 46, text: tr('FIH!'), c: '#f8fafc', life: 1.6 });
+        tone(520, .35, 'triangle', .07, 260); setTimeout(() => tone(700, .4, 'triangle', .06, -380), 180); // miau
+      }
+    }
+    if (ph === 2 && boss.stun <= 0) {
+      boss.rhythmT -= dt;
+      if (boss.rhythmT <= 0) {
+        boss.rhythmT = BOSS_RHYTHM_EVERY; holding = false;
+        $('reel').hidden = true;
+        startRhythm({ n: 6, title: tr('🎵 Der Odfisch tanzt! Triff den Takt für Extraschaden.'), onDone: acc => {
+          if (!boss.on) return;
+          const d = Math.round(acc * 160);
+          bossHit(d); floaters.push({ x: boss.x, y: SURFACE - 36, text: tr('🎵 −{n} HP', { n: d }), c: '#c084fc', life: 2 });
+          if (boss.on) { state = 'boss'; $('reel').hidden = false; }
+        } });
+        return;
+      }
+    }
+    if (boss.stun > 0) {
+      boss.stun -= dt; reel.tension = Math.max(0, reel.tension - dt); reel.thrash = 0;
+      return showBossReel();
+    }
+    // calm phases and thrash bursts like a normal fish, only angrier in phase 3
+    reel.thrashT -= dt;
+    if (reel.thrashT <= 0) {
+      if (reel.thrash) { reel.thrash = 0; reel.thrashT = (ph === 3 ? .7 : 1.3) + Math.random() * 1.4; }
+      else { reel.thrash = 1; reel.thrashT = .5 + Math.random() * .8; sfx.bite(); splash(boss.x, SURFACE, 10, '#ffffff'); }
+    }
+    const pull = (ph === 3 ? 2.1 : 1.5) * (reel.thrash ? 1.6 : .4);
+    if (holding) {
+      reel.tension += (.3 + pull * .55) * r.tens * (1 - .06 * perk('schnur')) * (wx.tens || 1) * dt;
+      bossHit((reel.thrash ? 3 : 12 + 8 * r.reel) * dt);
+      if (Math.random() < dt * 14) sfx.tick();
+    } else reel.tension -= (.8 - pull * .15) * dt;
+    reel.tension = Math.max(0, reel.tension);
+    if (reel.thrash && Math.random() < dt * 12) splash(boss.x + (Math.random() - .5) * 30, SURFACE, 3, '#ffffff');
+    if (reel.tension >= 1) {
+      sfx.snap(); boss.stun = 3; reel.tension = 0; reel.thrash = 0;
+      floaters.push({ x: player.x + 20, y: DOCK_Y - 34, text: tr('Schnur gerissen! Neu einfädeln …'), c: '#fca5a5', life: 2.4 });
+    }
+    showBossReel();
+  }
+  function showBossReel() {
+    $('tension').style.width = Math.min(100, reel.tension * 100) + '%';
+    $('reel').classList.toggle('thrash', !!reel.thrash);
+    updateBossHud();
+  }
+  let bossHudKey = '';
+  function updateBossHud() {
+    const left = Math.max(0, Math.ceil((boss.ends - Date.now()) / 1000));
+    const key = [Math.ceil(boss.hp), left, Math.round(boss.mine), boss.n, boss.stun > 0].join('|');
+    if (key === bossHudKey) return; bossHudKey = key;
+    $('boss-hp').style.width = Math.max(0, boss.hp / boss.max * 100) + '%';
+    $('boss-hp-num').textContent = `${Math.ceil(boss.hp)} / ${boss.max}`;
+    $('boss-phase').textContent = boss.stun > 0 ? tr('Betäubt …') : BOSS_PHASES[bossPhase()];
+    $('boss-time').textContent = `⏱ ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
+    $('boss-info').textContent = boss.solo ? tr('Dein Schaden: {n}', { n: Math.round(boss.mine) })
+      : tr('Dein Schaden: {n} · {p} Angler kämpfen', { n: Math.round(boss.mine), p: boss.n });
+  }
+  // lobby sync: send our damage, take the shared HP
+  function bossFromServer(b) {
+    if (boss.on && !boss.solo) {
+      if (!b || b.id !== boss.id) return bossEnd(tr('🌊 Der Odfisch ist abgetaucht …'));
+      boss.hp = Math.max(0, b.hp - boss.pend); boss.n = b.n; boss.max = b.max;
+      boss.ends = Date.now() + (b.ends - b.now);
+      if (b.hp <= 0) bossWin();
+      return;
+    }
+    if (boss.on) return;
+    const live = b && b.hp > 0 && b.ends - b.now > 8000 && !save.bossDone.includes(b.id);
+    boss.invite = live && onSea() ? { ...b, ends: Date.now() + (b.ends - b.now) } : null;
+    $('btn-boss').hidden = !boss.invite;
+    if (live && LOBBY.bossSeen !== b.id) {
+      LOBBY.bossSeen = b.id;
+      toast(onSea() ? tr('⚔️ Der Odfisch ist aufgetaucht! Klick auf „Mitmachen“.')
+        : save.rebirths >= SEA_REB ? tr('⚔️ Deine Lobby kämpft gegen den Odfisch! Fahr raus auf die Hohe See (Boje am Steg).')
+          : tr('⚔️ Deine Lobby kämpft gegen den Odfisch auf Hoher See (ab 3× Wiedergeburt).'));
+    }
+  }
+  $('btn-boss').addEventListener('click', () => {
+    if (!boss.invite) return;
+    if (state !== 'idle') { toast(tr('Hol erst deine Angel ein.')); return; }
+    enterBoss(boss.invite, false);
+  });
+  $('boss-quit').addEventListener('click', () => { if (boss.on && confirm(tr('Den Kampf aufgeben?'))) bossEnd(tr('🏳️ Du hast den Kampf aufgegeben.')); });
+  function bossLeave() {
+    boss.on = false; boss.invite = null; holding = false;
+    $('boss-hud').hidden = true; $('rhythm').hidden = true; $('reel').hidden = true; $('reel').classList.remove('boss');
+    rhythm.onDone = null;
+  }
+  function bossEnd(msg) {
+    if (!boss.on) return;
+    bossLeave(); state = 'idle'; hooked = null;
+    toast(msg || tr('🌊 Der Odfisch ist abgetaucht … Nächstes Mal!'));
+    tone(220, .5, 'triangle', .06, -120);
+  }
+  function bossWin() {
+    if (boss.won || !boss.on) return;
+    boss.won = true;
+    const id = boss.id, mine = boss.mine, share = boss.solo ? 1 : Math.min(1, mine / boss.max);
+    bossLeave(); boss.quake = 1.2;
+    if (mine <= 0 || save.bossDone.includes(id)) { state = 'idle'; toast(tr('⚔️ Der Odfisch wurde besiegt!')); return; }
+    save.bossDone = [...save.bossDone.slice(-19), id];
+    save.bossWins = (save.bossWins || 0) + 1;
+    const bonus = Math.round((800 + 2200 * share) * coinMult());
+    save.scales += BOSS_SCALES; save.coins += bonus; save.lifeCoins += bonus; save.totalEarned += bonus;
+    setTimeout(() => toast(tr('⚔️ Odfisch besiegt! +{s} 🐚 · +{n} Taler Beute', { s: BOSS_SCALES, n: bonus })), 400);
+    // and the Odfisch himself comes on board – at least Kapital size
+    hooked = { f: ODBOSS, ...sizeIn(ODBOSS, Math.random() < .25 ? 4 : 3), str: 1.6 };
+    reel.maxT = 0; bob.x = boss.x - 20; state = 'reel';
+    land_catch();
   }
 
   // ------------------------------------------------------------------ mutations
@@ -505,12 +788,12 @@
   // each fish gets its own shiny colour (green, teal, cyan, blue, purple or pink), never gold
   const SHINY_HUES = [90, 140, 180, 220, 260, 300];
   function shinyHue(id) { return SHINY_HUES[[...id].reduce((a, c) => a + c.charCodeAt(0), 0) % SHINY_HUES.length]; }
-  function shinyChance() { return Math.min(.05, SHINY_BASE * Math.sqrt(bait().luck * rod().luck) * (dexPerk('shiny2') ? 2 : 1)); }
+  function shinyChance() { return Math.min(.05, SHINY_BASE * Math.sqrt(bait().luck * rod().luck) * (dexPerk('shiny2') ? 2 : 1) * wBoost(wx.shiny)); }
   function rollShiny() {
     if (window.__fischen && window.__fischen.forceShiny) return true;
     return Math.random() < shinyChance();
   }
-  function mutLuck() { return Math.sqrt(bait().luck * rod().luck) * (1 + .08 * perk('glueck')) * (dexPerk('mutchance') ? 1.25 : 1); }
+  function mutLuck() { return Math.sqrt(bait().luck * rod().luck) * (1 + .08 * perk('glueck')) * (dexPerk('mutchance') ? 1.25 : 1) * wBoost(wx.shiny); }
   function rollMutation(f) {
     if (f.r === 'junk') return null;
     const forced = window.__fischen && window.__fischen.forceMut;
@@ -668,6 +951,18 @@
   function update(dt) {
     t += dt;
     time = worldTime();
+    const w = currentWeather();
+    if (w !== wx) {
+      if ($('title').hidden) toast(tr('{i} Wetterumschwung: {n} – {d}', { i: w.icon, n: w.name, d: w.desc }));
+      wx = w; updateWeatherPill();
+    }
+    updateWeather(dt);
+    if (boss.on) {
+      if (Date.now() > boss.ends && boss.hp > 0) bossEnd();
+      else if (!boss.solo && Date.now() - boss.synced > 1500) { boss.synced = Date.now(); lobbySync(); }
+    }
+    boss.quake = Math.max(0, boss.quake - dt);
+    boss.rise = state === 'summon' || boss.on ? Math.min(1, boss.rise + dt * .7) : Math.max(0, boss.rise - dt * .5);
 
     // walking (only when not busy with the line)
     const left = keys['a'] || keys['arrowleft'], right = keys['d'] || keys['arrowright'];
@@ -712,6 +1007,7 @@
           nibbles--; nibbleT = waitT - .5 - Math.random() * .4;
           bob.dunk = 2; ripple(bob.x); sfx.plip();
         }
+        if (waitT <= 0 && bait().boss && bossReady()) { summonBoss(); break; }
         if (waitT <= 0) {
           state = 'bite'; biteT = .85;
           bob.dunk = 5; splash(bob.x, SURFACE, 8, '#e0f7ff'); ripple(bob.x); sfx.bite();
@@ -726,6 +1022,9 @@
         if (biteT <= 0) {
           endStreak(); retract(tr('Zu spät! Er ist weg.'));
         }
+        break;
+      case 'boss':
+        updateBoss(dt);
         break;
       case 'reel':
         if (!approacher) approacher = fishes.reduce((a, b) => Math.abs(b.x - bob.x) < Math.abs(a.x - bob.x) ? b : a);
@@ -771,7 +1070,7 @@
     }
     const pull = h.str * (reel.thrash ? 2.6 : .55);
     if (holding) {
-      reel.tension += (0.38 + pull * .75) * r.tens * (1 - .06 * perk('schnur')) * dt;
+      reel.tension += (0.38 + pull * .75) * r.tens * (1 - .06 * perk('schnur')) * (wx.tens || 1) * dt;
       const gain = reel.thrash ? .05 : .2;
       reel.progress += gain * r.reel / (.6 + h.str) * dt;
       if (Math.random() < dt * 14) sfx.tick();
@@ -844,7 +1143,8 @@
     return c;
   }
   // hat colour shows how often you have been reborn
-  const HATS = [['#22c55e', '#15803d', '#86efac'], ['#38bdf8', '#0369a1', '#bae6fd'], ['#c084fc', '#7e22ce', '#f3e8ff'], ['#fbbf24', '#b45309', '#fef3c7']];
+  const HATS = [['#22c55e', '#15803d', '#86efac'], ['#38bdf8', '#0369a1', '#bae6fd'], ['#c084fc', '#7e22ce', '#f3e8ff'], ['#fbbf24', '#b45309', '#fef3c7'],
+    ['#ef4444', '#991b1b', '#fecaca'], ['#f472b6', '#9d174d', '#fce7f3'], ['#2dd4bf', '#0f766e', '#ccfbf1'], ['#f97316', '#9a3412', '#fed7aa'], ['#e2e8f0', '#64748b', '#ffffff'], ['#1e293b', '#020617', '#94a3b8']];
   // cosmetics (bought in the shop) recolour the hat, the jacket or the bobber; without a hat
   // cosmetic the hat keeps the rebirth colour
   const COSMETICS = [
@@ -865,6 +1165,9 @@
     { id: 'hut-lobby',   slot: 'hat',    name: 'Freundschaftshut',   col: ['#2dd4bf', '#0f766e', '#ccfbf1'], desc: 'Zusammen angelt es sich besser.', ach: 'Fange 10 Fische in einer Multiplayer-Lobby.', got: () => cosmStat('lobby') >= 10 },
     { id: 'jacke-lila',  slot: 'jacket', name: 'Taktjacke',          col: ['#a855f7', '#6b21a8', '#e9d5ff'], desc: 'Hat den Rhythmus im Blut.', ach: 'Gewinne einen Taktdrill.', got: () => cosmStat('takt') >= 1 },
     { id: 'jacke-gold',  slot: 'jacket', name: 'Goldjacke',          col: ['#facc15', '#a16207', '#fef9c3'], desc: 'Nur für Wiedergeborene.', ach: 'Werde einmal wiedergeboren.', got: () => save.rebirths >= 1 },
+    { id: 'hut-odfisch', slot: 'hat',    name: 'Odfisch-Hut',        col: ['#a9bccd', '#6f86a0', '#e2ecf5'], desc: 'Silbergrau wie der Odfisch. Fih.', ach: 'Besiege den Odfisch.', got: () => (save.bossWins || 0) >= 1 },
+    { id: 'jacke-sturm', slot: 'jacket', name: 'Sturmjacke',         col: ['#475569', '#1e293b', '#facc15'], desc: 'Gewittergrau mit Blitzkante. Hält dicht.', ach: 'Fange 10 Fische bei Gewitter.', got: () => cosmStat('sturm') >= 10 },
+    { id: 'pose-monster', slot: 'bob',   name: 'Monster-Pose',       col: '#f43f5e', desc: 'Für Angler, die Großes vorhaben.', ach: 'Fange einen Monster-Fisch.', got: () => (save.monsters || 0) >= 1 },
     { id: 'pose-gold',   slot: 'bob',    name: 'Goldene Pose',       col: '#facc15', desc: 'Glänzt, wenn ein Fisch anbeißt.', ach: 'Erreiche Level 10.', got: () => save.lvl >= 10 || save.rebirths > 0 },
     { id: 'pose-regen',  slot: 'bob',    name: 'Regenbogen-Pose',    col: null, desc: 'Wechselt ständig die Farbe.', ach: 'Entdecke 20 verschiedene Fische.', got: () => FISH.filter(f => save.dex[f.id]).length >= 20 },
   ];
@@ -1011,6 +1314,7 @@
   }
   function bealinBob() { return Math.sin(t * 1.6) * 1; }
   function drawBealin(dark) {
+    if (onSea()) return; // out at sea we are on his boat
     const k = '#1b1f2e', x = BEALIN.x, y = SURFACE - 1 + bealinBob();
     const hull = mix([150, 62, 40], [70, 35, 30], dark), hullD = mix([110, 42, 28], [50, 25, 22], dark), rim = mix([222, 200, 160], [100, 92, 80], dark);
     // the old man sits in the middle of the boat
@@ -1109,6 +1413,16 @@
     const wa = w0.map((c, i) => c.map((v, j) => lerp(v, w0[1][j], dark)))[0];
     const wb = w1.map((c, i) => c.map((v, j) => lerp(v, w1[1][j], dark)))[0];
     bands(bg, HORIZON, H, Array.from({ length: 10 }, (_, i) => mix(wa, wb, Math.pow(i / 9, .8))));
+    if (onSea()) { // open sea: no land in sight, just long swells and a ship far away
+      const sw = mix([40, 120, 170], [10, 30, 60], dark), swL = mix([150, 210, 235], [40, 70, 110], dark);
+      for (let i = 0; i < 14; i++) {
+        const y = HORIZON + 3 + i * i * .55, x0 = (i * 53) % 90 - 20;
+        for (let x = x0; x < W; x += 70 + (i % 3) * 20) { bg.fillStyle = sw; bg.fillRect(x, snap(y), 22 + i * 2, .5); bg.fillStyle = swL; bg.fillRect(x + 4, snap(y) - .5, 10 + i, .5); }
+      }
+      const ship = mix([60, 72, 92], [20, 26, 40], dark);
+      bg.fillStyle = ship; bg.fillRect(250, HORIZON - 2, 16, 2); bg.fillRect(254, HORIZON - 4, 7, 2); bg.fillRect(258, HORIZON - 6.5, 1.5, 2.5);
+      return;
+    }
     // island: rolling hill, pines, rocks, lighthouse
     const hill = mix([74, 122, 84], [16, 28, 40], dark), hillD = mix([52, 92, 66], [12, 20, 32], dark), hillL = mix([120, 170, 96], [22, 36, 48], dark);
     for (let x = 246; x <= 356; x += .5) {
@@ -1150,7 +1464,8 @@
   ];
   function cloud(c, dark) {
     const night = dark > .5;
-    const body = night ? '#4b5d80' : '#ffffff', under = night ? '#34425e' : '#bfdcf2', halo = night ? '#64748b' : '#e0f2fe';
+    const grey = wx.id === 'regen' || wx.id === 'gewitter';
+    const body = night ? (grey ? '#3b4660' : '#4b5d80') : grey ? '#a3adbd' : '#ffffff', under = night ? '#34425e' : grey ? '#7b879a' : '#bfdcf2', halo = night ? '#64748b' : grey ? '#94a3b8' : '#e0f2fe';
     const eye = night ? '#e2e8f0' : '#1e293b';
     const P = CLOUD_FISH.map(([fx, oy, r]) => [c.x + c.w * fx, c.y + oy, r * (c.w / 40) + .5]);
     const a = ctx.globalAlpha; ctx.globalAlpha = a * .35;
@@ -1164,15 +1479,170 @@
     if (!night) px(P[4][0] - P[4][2] * .6, P[4][1] - P[4][2] * .55, P[4][2] * .55, .5, '#ffffff');
   }
 
+  // ------------------------------------------------------------------ weather on screen
+  const drops = Array.from({ length: 130 }, () => ({ x: Math.random() * (W + 40), y: Math.random() * H, v: 170 + Math.random() * 90 }));
+  const fogBanks = Array.from({ length: 8 }, (_, i) => ({ x: Math.random() * W, y: HORIZON - 14 + i * 11, w: 70 + Math.random() * 90, v: 2 + Math.random() * 4 }));
+  let flash = 0, bolt = null, nextBolt = 3;
+  function updateWeather(dt) {
+    const rainy = wx.id === 'regen' || wx.id === 'gewitter';
+    if (rainy) {
+      for (const d of drops) {
+        d.y += d.v * dt; d.x -= d.v * .22 * dt;
+        if (d.y > H + 6) { d.y = -6 - Math.random() * 30; d.x = Math.random() * (W + 40); }
+      }
+      if (Math.random() < dt * (wx.id === 'gewitter' ? 9 : 5)) ripples.push({ x: DOCK_END + Math.random() * (W - DOCK_END), r: .5, life: .5, max: .5 });
+    }
+    for (const f of fogBanks) { f.x += f.v * dt; if (f.x > W + 20) f.x = -f.w - 20; }
+    flash = Math.max(0, flash - dt * 2.2);
+    if (wx.id === 'gewitter' && !document.hidden) {
+      nextBolt -= dt;
+      if (nextBolt <= 0) {
+        nextBolt = 5 + Math.random() * 9; flash = 1;
+        let x = 30 + Math.random() * (W - 60), y = 0; bolt = [[x, y]];
+        while (y < HORIZON - 3) { y = Math.min(HORIZON - 2, y + 4 + Math.random() * 7); x += (Math.random() - .5) * 12; bolt.push([x, y]); }
+        setTimeout(() => { noise(1.6, .3, 160); tone(52, 1.3, 'sine', .12, -16); }, 250 + Math.random() * 900);
+      }
+    }
+  }
+  function drawWeatherSky(dark) {
+    const cover = { regen: .35, gewitter: .55, nebel: .2 }[wx.id] || 0;
+    if (cover) { ctx.globalAlpha = cover; px(0, 0, W, HORIZON + 1, dark > .5 ? '#0b1020' : '#64748b'); ctx.globalAlpha = 1; }
+    if (wx.id === 'bogen' && dark < .85) { // rainbow over the water
+      ctx.lineWidth = 2;
+      ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#8b5cf6'].forEach((c, i) => {
+        ctx.globalAlpha = .38 * (1 - dark); ctx.strokeStyle = c;
+        ctx.beginPath(); ctx.arc(W * .62, HORIZON + 26, 92 - i * 2, Math.PI, 2 * Math.PI); ctx.stroke();
+      });
+      ctx.globalAlpha = 1;
+    }
+    if (bolt && flash > .35) {
+      ctx.strokeStyle = '#f8fafc'; ctx.lineWidth = 1; ctx.globalAlpha = Math.min(1, flash * 1.4);
+      ctx.beginPath(); bolt.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  }
+  function drawWeatherFront(dark) {
+    if (wx.id === 'regen' || wx.id === 'gewitter') {
+      ctx.strokeStyle = dark > .5 ? 'rgba(148,163,184,.45)' : 'rgba(226,240,255,.6)'; ctx.lineWidth = .5;
+      ctx.beginPath();
+      const n = wx.id === 'gewitter' ? drops.length : 75;
+      for (let i = 0; i < n; i++) { const d = drops[i]; ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + 1.6, d.y - 6); }
+      ctx.stroke();
+    }
+    if (wx.id === 'nebel') {
+      const c = dark > .5 ? '#64748b' : '#e2e8f0';
+      ctx.globalAlpha = .2; px(0, 0, W, H, c);
+      ctx.fillStyle = c;
+      for (const f of fogBanks) { ctx.globalAlpha = .2; ctx.beginPath(); ctx.ellipse(f.x + f.w / 2, f.y, f.w / 2, 5, 0, 0, 7); ctx.fill(); }
+      ctx.globalAlpha = 1;
+    }
+    if (flash > 0) { ctx.globalAlpha = flash * .4; px(0, 0, W, H, '#f8fafc'); ctx.globalAlpha = 1; }
+  }
+
+  // ------------------------------------------------------------------ the open sea: Bealin's boat
+  function drawBoat(dark) {
+    const k = '#1b1f2e', bowX = DOCK_END + 14, bottom = SURFACE + 7;
+    const hull = mix([38, 72, 124], [16, 26, 46], dark), hullL = mix([84, 124, 176], [28, 42, 66], dark), hullD = mix([24, 46, 84], [10, 16, 30], dark);
+    const red = mix([190, 40, 40], [72, 22, 28], dark), white = mix([226, 232, 240], [84, 92, 112], dark);
+    const wood = mix([168, 112, 64], [74, 54, 42], dark), woodL = mix([196, 140, 86], [92, 68, 52], dark), woodD = mix([118, 74, 42], [52, 38, 30], dark);
+    // mast with a furled sail and a pennant
+    const mx = 72;
+    px(mx - .5, DOCK_Y - 72, 2.5, 72, k); px(mx, DOCK_Y - 71.5, 1.5, 71.5, woodD); px(mx, DOCK_Y - 71.5, .5, 71.5, woodL);
+    px(mx - 20, DOCK_Y - 50, 42, 1.5, k); px(mx - 19.5, DOCK_Y - 49.5, 41, .5, woodL);
+    px(mx - 19, DOCK_Y - 53, 40, 3, k); px(mx - 18.5, DOCK_Y - 52.5, 39, 2, white);
+    for (let i = 0; i < 7; i++) px(mx + 2 + i, DOCK_Y - 72 + i * .15 + Math.sin(t * 6 - i * .8) * .6, 1, 2 - i * .2, '#ef4444');
+    // cabin
+    px(38.5, DOCK_Y - 16.5, 27, 16.5, k); px(39, DOCK_Y - 16, 26, 16, white); px(39, DOCK_Y - 16, 26, .5, '#ffffff');
+    px(37, DOCK_Y - 19, 30, 3, k); px(37.5, DOCK_Y - 18.5, 29, 2, red);
+    for (const wxp of [42, 55]) { px(wxp - .5, DOCK_Y - 12.5, 6, 5, k); px(wxp, DOCK_Y - 12, 5, 4, dark > .3 ? '#fde68a' : '#93c5fd'); px(wxp, DOCK_Y - 12, 2, 1, 'rgba(255,255,255,.6)'); }
+    // hull: the bow slants back toward the waterline
+    for (let y = DOCK_Y + 2; y < bottom; y += .5) {
+      const right = bowX - (y - DOCK_Y) / (bottom - DOCK_Y) * 16;
+      px(-1, y, right + 1, .5, y < SURFACE - 2 ? hull : hullD);
+      px(right - .5, y, 1, .5, k);
+    }
+    px(-1, DOCK_Y + 2, bowX, .5, hullL);
+    px(-1, SURFACE - 2, bowX - 9, 1.5, red);
+    for (let x = 12; x < DOCK_END - 2; x += 22) { px(x - .5, DOCK_Y + 3, 3.5, 3, k); px(x, DOCK_Y + 3.5, 2.5, 2, dark > .3 ? '#fde68a' : '#bae6fd'); }
+    // deck and railing
+    px(-1, DOCK_Y - .5, bowX + .5, 3, k); px(-1, DOCK_Y, bowX, 2, wood); px(-1, DOCK_Y, bowX, .5, woodL);
+    for (let x = 3; x < bowX; x += 8) px(x, DOCK_Y, .5, 2, woodD);
+    for (let x = 2; x < bowX - 3; x += 12) px(x, DOCK_Y - 6, .75, 6, woodD);
+    px(0, DOCK_Y - 6.5, bowX - 2, .75, woodL);
+    // foam where the bow meets the water
+    ctx.globalAlpha = .7;
+    for (let i = 0; i < 6; i++) px(bowX - 13 + i * 2 + Math.sin(t * 3 + i) * 1.5, SURFACE - .5 + (i % 2) * .5, 2, .5, '#f8fafc');
+    ctx.globalAlpha = 1;
+    // bow lantern
+    const lx = bowX - 6;
+    px(lx - .5, DOCK_Y - 12, 2, 12, k); px(lx, DOCK_Y - 11.5, 1, 11.5, woodD);
+    px(lx - 2, DOCK_Y - 17, 5, 5.5, k); px(lx - 1.5, DOCK_Y - 16.5, 4, 4.5, dark > .3 ? '#fde68a' : '#9fb4c8');
+    if (dark > .3) {
+      const glow = ctx.createRadialGradient(lx + .5, DOCK_Y - 14, 1, lx + .5, DOCK_Y - 14, 36);
+      glow.addColorStop(0, `rgba(253, 230, 138, ${.32 * dark})`); glow.addColorStop(1, 'rgba(253, 230, 138, 0)');
+      ctx.fillStyle = glow; ctx.fillRect(lx - 36, DOCK_Y - 50, 72, 72);
+    }
+  }
+  function drawWheel(dark) { // the steering wheel on deck: back to the dock
+    const k = '#1b1f2e', cx = 12, cy = DOCK_Y - 15, wood = mix([150, 98, 56], [66, 48, 38], dark);
+    px(cx - .5, cy, 2, 15, k); px(cx, cy, 1, 15, wood);
+    ctx.strokeStyle = k; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx + .5, cy, 4.5, 0, 7); ctx.stroke();
+    ctx.strokeStyle = wood; ctx.lineWidth = .75; ctx.beginPath(); ctx.arc(cx + .5, cy, 4.5, 0, 7); ctx.stroke();
+    const a0 = Math.sin(t * .8) * .3;
+    for (let i = 0; i < 4; i++) {
+      const a = a0 + i * Math.PI / 4;
+      ctx.beginPath(); ctx.moveTo(cx + .5 - Math.cos(a) * 6, cy - Math.sin(a) * 6); ctx.lineTo(cx + .5 + Math.cos(a) * 6, cy + Math.sin(a) * 6); ctx.stroke();
+    }
+    px(cx - .5, cy - 1, 2, 2, k);
+  }
+  function drawBuoy(dark) { // red-white buoy near Bealin: the way out to the open sea
+    const k = '#1b1f2e', bx = 290, by = SURFACE - 6 + Math.sin(t * 2) * .8;
+    const red = mix([220, 50, 50], [90, 30, 40], dark), white = mix([240, 240, 240], [110, 116, 140], dark);
+    px(bx - 3.5, by - .5, 7, 7.5, k); px(bx - 3, by, 6, 2.5, red); px(bx - 3, by + 2.5, 6, 2, white); px(bx - 3, by + 4.5, 6, 2.5, red);
+    px(bx - .5, by - 9, 1, 9, k);
+    const locked = save.rebirths < SEA_REB;
+    for (let i = 0; i < 5; i++) px(bx + .5 + i, by - 9 + i * .1 + Math.sin(t * 5 - i) * .4, 1, 3.5 - i * .5, locked ? '#64748b' : '#facc15');
+    if (dark > .3 && !locked && Math.sin(t * 3) > 0) px(bx - 1, by - 11, 2, 2, '#fde68a');
+  }
+  function travel(to) {
+    if (state !== 'idle') return;
+    if (to === 'see' && save.rebirths < SEA_REB) { toast(tr('🔒 Die Hohe See gibt es ab der 3. Wiedergeburt. Bealin wartet so lange.')); return; }
+    save.map = to; save.seaSeen = save.seaSeen || to === 'see'; persist();
+    bgKey = ''; player.x = 90; player.dir = 1; boss.invite = null; $('btn-boss').hidden = true;
+    const st = $('stage'); st.classList.remove('travel'); void st.offsetWidth; st.classList.add('travel');
+    sfx.whoosh(); setTimeout(() => sfx.splash(), 300);
+    toast(to === 'see' ? tr('⛵ Leinen los! Willkommen auf Hoher See – hier beißen andere Fische.') : tr('⚓ Zurück am Steg.'));
+    updateMapUi();
+    if (save.lobby) lobbySync();
+  }
+
+  // the Odfisch rises out of the water during the boss fight
+  function drawBoss(dark) {
+    if (boss.rise <= 0 || !bossImg.complete || !bossImg.naturalWidth) return;
+    const w = bossImg.naturalWidth / 2, h = bossImg.naturalHeight / 2, ph = boss.on ? bossPhase() : 1;
+    boss.x = W - 78 + Math.sin(t * .6) * 8 + (reel.thrash && boss.on ? Math.sin(t * 40) * 1.5 : 0) + (boss.stun > 0 ? 14 : 0);
+    const top = SURFACE - h * .8 * boss.rise + (1 - boss.rise) * 10 + Math.sin(t * 1.4) * 1.5;
+    if (ph === 3) { ctx.globalAlpha = .14 + .08 * Math.sin(t * 6); disc(boss.x, top + h * .5, w * .4, '#ef4444'); ctx.globalAlpha = 1; }
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, SURFACE + 1); ctx.clip();
+    ctx.drawImage(bossImg, snap(boss.x - w / 2), snap(top), w, h); ctx.restore();
+    ctx.save(); ctx.beginPath(); ctx.rect(0, SURFACE + 1, W, H); ctx.clip(); ctx.globalAlpha = .3;
+    ctx.drawImage(bossImg, snap(boss.x - w / 2), snap(top), w, h); ctx.restore();
+    // foam ring where he breaks the surface
+    ctx.globalAlpha = .8;
+    for (let i = 0; i < 9; i++) px(boss.x - w * .45 + i * w * .11 + Math.sin(t * 4 + i) * 1.2, SURFACE - .5, 3, .5, '#f8fafc');
+    ctx.globalAlpha = 1;
+    if (boss.on) bob.x = boss.x - w * .36; // the line hangs at the cat's mouth
+  }
+
   function draw() {
     // legendary catches shake the screen for a moment
-    const quake = fanfare && fanfare.r === 'legendary' && fanfare.t < .7 ? (1 - fanfare.t / .7) * 3 : 0;
+    const quake = Math.max(fanfare && fanfare.r === 'legendary' && fanfare.t < .7 ? (1 - fanfare.t / .7) * 3 : 0, reduceMotion ? 0 : boss.quake * 2.5);
     ctx.setTransform(2, 0, 0, 2, Math.round((Math.random() - .5) * quake) * 2, Math.round((Math.random() - .5) * quake) * 2);
     const [top, bot, dark] = skyColors();
     // letterbox continues the scene (sky above, deep water below)
     const deep = mix([8, 40, 80], [4, 10, 28], dark);
     if (deep !== lastBg) { lastBg = deep; $('stage').style.background = `linear-gradient(${top} 0 50%, ${deep} 50% 100%)`; }
-    const key = top + bot;
+    const key = top + bot + save.map;
     // at dawn and dusk the colours change every frame; repainting sky and sea 4x a second is plenty
     if (key !== bgKey && (t - bgAt > .25 || t < bgAt || !bgKey)) { bgKey = key; bgAt = t; renderBg(top, bot, dark); }
 
@@ -1203,6 +1673,7 @@
       disc(mx + 2, my - 2, 1.5, '#cbd5e1'); disc(mx - 2.5, my + 1.5, 1, '#cbd5e1'); disc(mx + 1, my + 3, .8, '#cbd5e1');
     }
 
+    drawWeatherSky(dark);
     // clouds
     ctx.globalAlpha = .9 - dark * .5;
     for (const c of clouds) cloud(c, dark);
@@ -1220,7 +1691,7 @@
 
     ctx.restore();
     // lighthouse beam
-    if (dark > .3) {
+    if (dark > .3 && !onSea()) {
       const sw = Math.sin(t * 1.2);
       ctx.globalAlpha = dark * .18; ctx.fillStyle = '#fde68a';
       ctx.beginPath(); ctx.moveTo(318, HORIZON - 22); ctx.lineTo(318 + sw * 60, HORIZON - 28); ctx.lineTo(318 + sw * 60, HORIZON - 16); ctx.fill();
@@ -1266,9 +1737,9 @@
     ctx.globalAlpha = 1;
 
     drawBealin(dark);
-    drawDock(dark);
-    drawNpc();
-    drawKiosk(dark);
+    drawBoss(dark);
+    if (onSea()) drawBoat(dark);
+    else { drawDock(dark); drawNpc(); drawKiosk(dark); }
     drawProps(dark);
     drawLobbyAnglers();
     drawPlayer(dark);
@@ -1277,6 +1748,7 @@
     // particles
     for (const p of particles) { ctx.globalAlpha = Math.min(1, p.life * 2); px(p.x, p.y, 1, 1, p.c); px(p.x + .5, p.y - .5, .5, .5, '#ffffff'); }
     ctx.globalAlpha = 1;
+    drawWeatherFront(dark);
     drawFx();
     drawPropLabel();
 
@@ -1454,20 +1926,23 @@
   const PROPS = [
     { id: 'casino', label: tr('Fischautomat'),  x: 2.5, y: DOCK_Y - 20, w: 12.5, h: 20, draw: drawSlotMachine, open: () => toggleModal('casino') },
     { id: 'patch',  label: tr('Steg-Zeitung (Patch Notes)'), x: 103.5, y: DOCK_Y - 5.5, w: 8, h: 5.5, draw: drawNewspaper, open: () => toggleModal('patch'), ready: () => save.patchSeen !== PATCH_NOTES[0].id && save.total > 0 },
-    { id: 'dex',    label: tr('Fischdex & Shinydex'), x: 28.5, y: DOCK_Y - 8.5, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
+    { id: 'dex',    map: 'all', label: tr('Fischdex & Shinydex'), x: 28.5, y: DOCK_Y - 8.5, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
     { id: 'lb',     label: tr('Bestenliste'),   x: KIOSK.x + KIOSK.w / 2 - 5, y: DOCK_Y - 48, w: 10, h: 10.5, draw: drawTrophy, open: () => toggleModal('lb') },
     { id: 'prog',   label: tr('Aufträge & Fortschritt'), x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
     { id: 'shop',   label: tr('Laden'),         x: KIOSK.x - 3, y: DOCK_Y - 37.5, w: KIOSK.w + 6, h: 37.5, open: () => toggleModal('shop') },
     { id: 'bealin',  label: tr("Käpt'n Bealin"), x: BEALIN.x - 1, y: SURFACE - 16, w: BEALIN.w + 2, h: 18, open: () => talkBealin() },
-    { id: 'me',     label: tr('Kleiderschrank'), get x() { return player.x - 5; }, y: DOCK_Y - 26, w: 10, h: 18, open: () => toggleModal('wardrobe') },
+    { id: 'me',     map: 'all', label: tr('Kleiderschrank'), get x() { return player.x - 5; }, y: DOCK_Y - 26, w: 10, h: 18, open: () => toggleModal('wardrobe') },
+    { id: 'buoy',   get label() { return save.rebirths >= SEA_REB ? tr('⛵ Auf die Hohe See') : tr('⛵ Hohe See (🔒 3× Wiedergeburt)'); }, x: 285, y: SURFACE - 16, w: 12, h: 18, draw: drawBuoy, open: () => travel('see'), ready: () => save.rebirths >= SEA_REB && !save.seaSeen },
+    { id: 'wheel',  map: 'see', label: tr('⚓ Zurück zum Steg'), x: 5, y: DOCK_Y - 22, w: 15, h: 22, draw: drawWheel, open: () => travel('steg') },
     { id: 'npc',    label: 'Spezifischfischer', x: NPC.x - 1, y: DOCK_Y - NPC.h - 2, w: NPC.w + 2, h: NPC.h + 2, open: () => talkNpc() },
   ];
   let hoverProp = null;
-  function propAt(wx, wy) { return PROPS.find(p => wx > p.x - 1.5 && wx < p.x + p.w + 1.5 && wy > p.y - 1.5 && wy < p.y + p.h + 1.5) || null; }
+  const propOn = p => (p.map || 'steg') === 'all' || (p.map || 'steg') === save.map;
+  function propAt(wx, wy) { return PROPS.find(p => propOn(p) && wx > p.x - 1.5 && wx < p.x + p.w + 1.5 && wy > p.y - 1.5 && wy < p.y + p.h + 1.5) || null; }
   function drawProps(dark) {
-    for (const p of PROPS) if (p.draw) p.draw(dark);
+    for (const p of PROPS) if (p.draw && propOn(p)) p.draw(dark);
     const k = '#1b1f2e';
-    for (const p of PROPS) if (p.ready && p.ready()) {
+    for (const p of PROPS) if (propOn(p) && p.ready && p.ready()) {
       const bx = snap(p.x + p.w / 2), by = snap(p.y - 10 + Math.sin(t * 5));
       px(bx - 2.5, by - .5, 5, 8.5, k); px(bx - 2, by, 4, 7.5, '#fbbf24'); px(bx - .5, by + 1, 1, 3.5, k); px(bx - .5, by + 5.5, 1, 1, k);
     }
@@ -1568,7 +2043,7 @@
     px(x + (d > 0 ? 1.5 : -3.5), y - 9.5, 2, 1.5, '#c2410c');
     px(hx - .5, hy - .5, 1.5, 1.5, '#f2c9a0');
     const r = rod();
-    const col = { stock: '#7c4a1e', bambus: '#a3a34a', carbon: '#1f2937', gold: '#f59e0b' }[r.id] || '#7c4a1e';
+    const col = { stock: '#7c4a1e', bambus: '#a3a34a', carbon: '#1f2937', gold: '#f59e0b', tiefsee: '#0e3a4a' }[r.id] || '#7c4a1e';
     ctx.strokeStyle = col; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(hx + .25, hy + .25); ctx.lineTo((hx + tip.x) / 2, (hy + tip.y) / 2); ctx.stroke();
     ctx.lineWidth = .5;
@@ -1584,7 +2059,7 @@
     if (!LOBBY.code) return;
     setFont('5px Poppins, sans-serif'); ctx.textBaseline = 'bottom'; ctx.textAlign = 'center';
     for (const p of LOBBY.players) {
-      if (p.k === LOBBY.me) continue;
+      if (p.k === LOBBY.me || (p.m || 'steg') !== save.map) continue;
       p.dx = p.dx === undefined ? p.x : p.dx + (p.x - p.dx) * .1;
       const x = snap(p.dx), y = DOCK_Y, d = p.d > 0 ? 1 : -1;
       const img = playerFrames({ tier: p.hat, hat: p.ch, jacket: p.cj, skin: p.sk, hair: p.hr })[d > 0 ? 0 : 1][0];
@@ -1611,10 +2086,10 @@
   }
 
   function drawLine() {
-    if (!['fly', 'wait', 'bite', 'reel'].includes(state)) return;
+    if (!['fly', 'wait', 'bite', 'reel', 'boss', 'summon'].includes(state) || (state === 'boss' && boss.stun > 0)) return;
     const tip = rodTip();
-    const by = state === 'fly' ? bob.y : SURFACE + bob.dunk * .4;
-    const tight = state === 'reel' ? reel.tension : 0;
+    const by = state === 'fly' ? bob.y : state === 'boss' ? SURFACE - 8 : SURFACE + bob.dunk * .4;
+    const tight = state === 'reel' || state === 'boss' ? reel.tension : 0;
     const sag = state === 'fly' ? 0 : (1 - tight) * 18;
     ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = .5;
     ctx.beginPath(); ctx.moveTo(tip.x, tip.y);
@@ -1623,6 +2098,7 @@
     // bobber: red cap, white belly, antenna, outline
     const bx = snap(bob.x) - 2, byy = snap(by) - 3;
     const cap = bobColor(save.cosm.bob);
+    if (state === 'boss') return;
     if (state === 'reel' || state === 'bite') { px(bx + .5, byy + 1.5, 3, 2, '#1b1f2e'); px(bx + 1, byy + 2, 2, 1.5, cap); return; }
     px(bx - .5, byy - .5, 5, 5, '#1b1f2e');
     px(bx, byy, 4, 2, cap); px(bx, byy, 1, 1, 'rgba(255,255,255,.45)');
@@ -1654,7 +2130,7 @@
     hint(`🪝 ${bait().name}`, 1.2);
   }
   function updateGear() {
-    $('gear').textContent = `🎣 ${rod().name}`;
+    $('gear').textContent = `${onSea() ? '⛵' : '🎣'} ${rod().name}`;
     $('baitbar').replaceChildren(...ownedBaits().map((b, i) => {
       const n = save.baits[b.id], on = b.id === save.bait;
       const btn = document.createElement('button');
@@ -1675,8 +2151,23 @@
   function updateClock() {
     const h = Math.floor(time * 24), m = Math.floor((time * 24 % 1) * 60 / 10) * 10;
     const s = `${isNight() ? '🌙' : '☀️'} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-    if (s !== lastClock) { $('clock').textContent = s; lastClock = s; }
+    if (s !== lastClock) { $('clock').textContent = s; lastClock = s; updateWeatherPill(); }
   }
+  function weatherText() {
+    const left = Math.max(0, Math.ceil((1 - (Date.now() / 1000 / WEATHER_LEN + weatherShift) % 1) * WEATHER_LEN));
+    const next = weatherAt(weatherSlot() + 1);
+    return tr('{i} {n}: {d}', { i: wx.icon, n: wx.name, d: wx.desc }) + ' · '
+      + (next.id === wx.id ? tr('bleibt noch mindestens {m}:{s}', { m: Math.floor(left / 60), s: String(left % 60).padStart(2, '0') })
+        : tr('in {m}:{s} kommt {i} {n}', { m: Math.floor(left / 60), s: String(left % 60).padStart(2, '0'), i: next.icon, n: next.name }));
+  }
+  function updateWeatherPill() {
+    const el = $('weather');
+    el.firstChild.textContent = wx.icon + ' ';
+    $('weather-name').textContent = wx.name;
+    el.title = weatherText();
+  }
+  $('weather').addEventListener('click', () => toast(weatherText()));
+  function updateMapUi() { updateGear(); updateWeatherPill(); }
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
@@ -1697,7 +2188,7 @@
   }
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
-    if (['charge', 'fly', 'bite', 'reel', 'rhythm'].includes(state)) return;
+    if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'boss', 'summon'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
     if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe })[id](); $(id).hidden = false; }
@@ -1872,7 +2363,7 @@
   }
 
   let lastCatchVal = 0;
-  function showCatch(f, size, val, first, mut, newMut, gain, shiny, newShiny) {
+  function showCatch(f, size, val, first, mut, newMut, gain, shiny, newShiny, cls = 1) {
     lastCatchVal = val;
     $('catch-double').hidden = false; $('catch-double').disabled = false;
     $('catch-double').textContent = tr('🎲 Doppelt oder nichts ({n})', { n: val });
@@ -1917,7 +2408,9 @@
       p.style.background = ['#fbbf24', '#fde68a', '#c084fc', '#38bdf8', '#4ade80', '#f472b6'][i % 6];
       conf.append(p);
     }
-    $('catch-size').textContent = size + ' cm' + (save.dex[f.id].best === size && !first ? ' 🏆' : '');
+    const sc = SIZE_CLASSES[cls];
+    $('catch-size').textContent = size + ' cm' + (sc.icon && f.r !== 'junk' ? ` · ${sc.icon} ${sc.name}` : '') + (save.dex[f.id].best === size && !first ? ' 🏆' : '');
+    $('catch-size').style.color = cls >= 3 && f.r !== 'junk' ? sc.c : '';
     $('catch-value').textContent = tr('+{n} Taler', { n: val });
     $('catch-new').hidden = !first;
     $('catch').hidden = false;
@@ -1967,7 +2460,8 @@
       const name = document.createElement('b'); name.textContent = e ? f.name : '???';
       const r = document.createElement('small'); r.className = 'r-' + f.r; r.textContent = RARITY[f.r].label;
       const info = document.createElement('small');
-      info.textContent = e ? tr('{n}× · Rekord {b} cm', { n: e.n, b: e.best }) : hintFor(f);
+      info.textContent = e ? tr('{n}× · Rekord {b} cm', { n: e.n, b: e.best }) + (e.cls >= 2 ? ' ' + SIZE_CLASSES[e.cls].icon : '') : hintFor(f);
+      if (e && e.cls >= 2) info.title = tr('Beste Größenklasse: {c}', { c: SIZE_CLASSES[e.cls].name });
       c.append(img, name, r, info);
       if (e && f.page) {
         const a = document.createElement('a'); a.className = 'page'; a.href = f.page; a.textContent = tr('Seite ansehen ↗');
@@ -2000,6 +2494,10 @@
       scales: { common: 0, uncommon: 1, rare: 2, wii: 3, epic: 3, legendary: 5, junk: 1 }[r],
       perk: r === 'legendary' ? 'luck10' : undefined, perkText: r === 'legendary' ? 'dauerhaft +10 % Glück' : undefined,
     })),
+    { id: 'mon1', name: 'Erstes Monster',      need: () => [FISH.some(f => (save.dex[f.id] || {}).cls === 4) ? 1 : 0, 1], coins: 1000, scales: 3 },
+    { id: 'wall', name: 'Alle Wetterfische',   need: () => [FISH.filter(f => f.weather && f.map !== 'see' && save.dex[f.id]).length, FISH.filter(f => f.weather && f.map !== 'see').length], coins: 2000, scales: 4 },
+    { id: 'seeall', name: 'Alle Fische der Hohen See', need: () => [FISH.filter(f => f.map === 'see' && !f.boss && save.dex[f.id]).length, FISH.filter(f => f.map === 'see' && !f.boss).length], coins: 5000, scales: 8 },
+    { id: 'odboss', name: 'Odfisch besiegt',   need: () => [save.bossWins || 0, 1], coins: 3000, scales: 5 },
     { id: 'm1',   name: 'Erste Mutation',      need: () => [mutsFound().length, 1], coins: 100 },
     { id: 'm4',   name: '4 Mutationen',        need: () => [mutsFound().length, 4], coins: 600, scales: 2 },
     { id: 's1',   name: 'Erster Shiny',        need: () => [shinysFound(), 1],  coins: 300,  scales: 1 },
@@ -2044,6 +2542,10 @@
 
   function hintFor(f) {
     if (f.hint) return f.hint;
+    if (f.boss) return tr('Besiege ihn nachts auf Hoher See (Odköder)');
+    if (f.map === 'see' && f.weather) return tr('Hohe See, nur bei Gewitter');
+    if (f.weather) return tr(WEATHER_HINT[f.weather]);
+    if (f.map === 'see') return f.night ? tr('Hohe See, lieber nachts') : tr('Nur auf Hoher See');
     if (f.dayOff) return tr('Nur nachts, weit draußen');
     if (f.far) return tr('Weit draußen');
     if (f.night) return tr('Lieber nachts');
@@ -2081,6 +2583,7 @@
     gold: i => i % 3 === 0 ? '#fde68a' : '#f59e0b',
     regen: i => ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#a855f7'][i % 6],
     stern: i => i % 4 === 0 ? '#e0e7ff' : '#312e81',
+    tiefsee: i => i % 5 === 0 ? '#5eead4' : '#0e3a4a',
   };
   const ICONS = {};
   for (const r of RODS) ICONS[r.id] = iconCanvas(p => {
@@ -2098,6 +2601,9 @@
     glitzer: [['.......k........', '.......k........', '......kSk.......', '.....kSsSk......', '....kSsWsSk.....', '....kSsssSk.....', '....kSsWsSk.....', '.....kSsSk......', '......kSk.......', '.......k........', '......kkk.......'], { k: '#1b1f2e', S: '#cbd5e1', s: '#e2e8f0', W: '#fde68a' }],
     mond: [['.....kkkk.......', '...kkMMMMk......', '..kMMMmmkk......', '..kMMmk.........', '.kMMmk..........', '.kMMmk..........', '.kMMmk..........', '..kMMmk.........', '..kMMMmmkk......', '...kkMMMMk......', '.....kkkk.......'], { k: '#1b1f2e', M: '#fde68a', m: '#fbbf24' }],
   };
+  // the Odköder: a black-and-white lure with a glaring eye and a big hook
+  BAIT_ART.odkoeder = [['................', '....kkkkkk......', '..kkWWWWwwkk....', '.kWWkkWWwwwwk...', 'kWWkRkWwwwwwkk.k', 'kWWWkkWwwwwwwkkk', '.kWWWWwwwwwwkk.k', '..kkwwwwwwkk....', '....kkkkkk......', '......k.........', '......k..k......', '.......kk.......'],
+    { k: '#0b0f19', W: '#f8fafc', w: '#94a3b8', R: '#ef4444' }];
   for (const b of BAITS) ICONS[b.id] = iconCanvas(p => {
     const [rows, pal] = BAIT_ART[b.id] || BAIT_ART.wurm;
     rows.forEach((row, y) => [...row].forEach((ch, x) => { if (pal[ch]) p(x + 1, y + 3, pal[ch]); }));
@@ -2415,6 +2921,8 @@
     { id: 'schnur', icon: '🧵', name: 'Starke Schnur',  desc: l => tr('{n} % weniger Spannung', { n: l * 6 }) },
     { id: 'wissen', icon: '📚', name: 'Anglerwissen',   desc: l => tr('+{n} % Erfahrung', { n: l * 15 }) },
     { id: 'erbe',   icon: '💰', name: 'Erbstück',       desc: l => tr('Start mit {n} Talern nach der Wiedergeburt', { n: l * 150 }) },
+    { id: 'mass',   icon: '📏', name: 'Maßband',        desc: l => tr('+{n} % Chance auf Kapital- und Monster-Fänge', { n: l * 15 }) },
+    { id: 'wetter', icon: '🌦️', name: 'Wetterfrosch',   desc: l => tr('Wetterboni +{n} % stärker', { n: l * 10 }) },
   ];
   trAll(PERKS, ['name']);
   const PERK_MAX = 5;
@@ -2633,6 +3141,8 @@
     dex:    { label: tr('📖 Fischdex'),       fmt: s => tr('{a} Fische · {b} Mut.', { a: Math.floor(s / 100), b: s % 100 }) },
     rekord: { label: tr('📏 Rekordfang'),     fmt: s => s + ' cm' },
     klein:  { label: tr('🔬 Kleinster Fisch'), fmt: s => s ? s + ' cm' : '–' },
+    monster: { label: tr('👑 Monster-Fänge'), fmt: s => s + '×' },
+    boss:   { label: tr('🐟 Odfisch-Siege'),  fmt: s => s + '×' },
   };
   const LB = { boards: null, tab: 'taler', ranks: null, err: '', busy: false };
   if (!save.totalEarned) save.totalEarned = Math.max(save.lifeCoins || 0, save.coins || 0);
@@ -2643,6 +3153,8 @@
       dex: discovered() * 100 + mutsFound().length,
       rekord: Math.max(0, ...Object.values(save.dex).map(e => e.best || 0)),
       klein: Math.min(...Object.values(save.dex).map(e => e.small || Infinity), Infinity) | 0, // 0 = noch keiner
+      monster: save.monsters || 0,
+      boss: save.bossWins || 0,
     };
   }
   const hex = n => [...crypto.getRandomValues(new Uint8Array(n))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -2732,14 +3244,17 @@
     return j;
   }
   function lobbyMe() {
-    return { x: player.x, d: player.dir, s: ['wait', 'bite'].includes(state) ? 'w' : ['reel', 'rhythm'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0 };
+    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'boss'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0 };
   }
   async function lobbySync() {
     if (!save.lobby || LOBBY.busy || document.hidden) return;
     LOBBY.busy = true;
     const ev = LOBBY.pending.shift(), msg = LOBBY.outbox.shift();
+    const bossId = boss.on && !boss.solo ? boss.id : '', dmg = bossId ? Math.min(400, Math.round(boss.pend)) : 0; // the server takes at most 400 per sync
+    if (dmg) boss.pend -= dmg;
     try {
-      const j = await lobbyFetch({ action: 'sync', code: save.lobby.code, id: save.lobby.id, me: lobbyMe(), ev, msg });
+      const j = await lobbyFetch({ action: 'sync', code: save.lobby.code, id: save.lobby.id, me: lobbyMe(), ev, msg, dmg, boss: bossId });
+      bossFromServer(j.boss || null);
       receiveChat(j.chat || [], j.me);
       LOBBY.code = save.lobby.code; LOBBY.me = j.me; LOBBY.err = '';
       const old = new Map(LOBBY.players.map(p => [p.k, p]));
@@ -2752,6 +3267,7 @@
       if (j.feed.length) LOBBY.seenFeed = Math.max(LOBBY.seenFeed || 1, j.feed[0].t);
       LOBBY.feed = j.feed;
     } catch (e) {
+      if (dmg && boss.on && boss.id === bossId) boss.pend += dmg;
       if (ev && e.status !== 404 && e.status !== 410) LOBBY.pending.unshift(ev);
       if (msg && e.status !== 404 && e.status !== 410) LOBBY.outbox.unshift(msg);
       if (e.status === 404 || e.status === 410) { toast(tr('👥 Lobby beendet: {e}', { e: e.message })); lobbyReset(); }
@@ -2769,6 +3285,8 @@
   }
   function lobbyReset() {
     clearInterval(LOBBY.timer);
+    if (boss.on && !boss.solo) bossEnd(tr('👥 Lobby verlassen – der Kampf ist für dich vorbei.'));
+    boss.invite = null; $('btn-boss').hidden = true;
     delete save.lobby; persist();
     Object.assign(LOBBY, { code: null, me: null, players: [], feed: [], chat: [], outbox: [], seenChat: 0, chatReady: false, pending: [], seenFeed: 0 });
     $('chatlog').replaceChildren(); $('chatbar').hidden = true;
@@ -2863,7 +3381,8 @@
     $('lobby-players').replaceChildren(...ps.map((p, i) => {
       const li = document.createElement('li'); if (p.k === LOBBY.me) li.className = 'me';
       const pos = document.createElement('span'); pos.textContent = ['🥇', '🥈', '🥉'][i] || i + 1;
-      const n = document.createElement('b'); n.textContent = p.name;
+      const n = document.createElement('b'); n.textContent = (p.m === 'see' ? '⛵ ' : '') + p.name;
+      if (p.m === 'see') n.title = tr('Auf Hoher See');
       const sc = document.createElement('span'); sc.className = 'sc'; sc.textContent = tr('{n} Taler', { n: (p.sc || 0).toLocaleString(I18N.locale) });
       li.append(pos, n, sc);
       if (p.big) { const b = document.createElement('span'); b.className = 'big'; b.textContent = tr('Größter: {f} ({cm} cm)', { f: p.big.f, cm: p.big.cm }); li.append(b); }
@@ -2996,5 +3515,11 @@
   window.__fischen = { save, gainXp, rebirth, MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); },
     rhythm: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; reel.maxT = 0; startRhythm(); },
-    get notes() { return rhythm.notes; } };
+    get notes() { return rhythm.notes; },
+    // tests: weather, maps, size classes, boss fight
+    setWeather: id => { weatherForce = id || null; wx = currentWeather(); updateWeatherPill(); },
+    weatherAt, travel, boss, rollSize, SIZE_CLASSES,
+    landCls: (id, cls) => { const f = FISH.find(x => x.id === id); hooked = { f, ...sizeIn(f, cls), str: STRENGTH[f.r] }; bob.x = 260; land_catch(); },
+    bossSolo: () => { save.lobby ? summonBoss() : enterBoss({ id: 'solo-test', max: BOSS_HP, hp: BOSS_HP, ends: Date.now() + BOSS_TIME, n: 1 }, true); },
+    bossHit, pick: () => pickFish(), get wx() { return wx.id; } };
 })();

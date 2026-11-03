@@ -24,6 +24,7 @@
         <span class="pill" title="Fischtaler"><img src="img/fish-icon.png" alt="" class="coin"> <b id="coins">0</b></span>
         <button class="pill lvl" id="lvl" title="Level">⭐ <b id="lvl-num">1</b><span class="xpbar"><i id="lvl-bar"></i></span><span id="lvl-reb"></span></button>
         <span class="pill" id="clock" title="Tageszeit">☀️ Tag</span>
+        <button class="pill" id="weather" title="Wetter">☀️ <span class="lbl" id="weather-name">Sonnig</span></button>
         <span class="pill saved" id="saved" title="Spielstand wird in deinem Browser gespeichert">💾 <span class="lbl">Gespeichert</span></span>
       </div>
       <div class="hud-right">
@@ -40,6 +41,12 @@
     </div>
 
     <div id="gear" class="pill"></div>
+    <button class="pill" id="btn-boss" type="button" hidden>⚔️ Mitmachen</button>
+    <div id="boss-hud" hidden>
+      <div class="boss-top"><b>🐟 ODFISCH</b><span id="boss-phase"></span><span id="boss-time"></span></div>
+      <div class="boss-bar"><i id="boss-hp"></i><em class="t1"></em><em class="t2"></em><span id="boss-hp-num"></span></div>
+      <div class="boss-sub"><span id="boss-info"></span><button type="button" class="boss-quit" id="boss-quit">Aufgeben</button></div>
+    </div>
     <div id="chatlog" aria-live="polite"></div>
     <form id="chatbar" hidden><input type="text" id="chatbar-msg" maxlength="100" autocomplete="off" placeholder="Nachricht an die Lobby … (Enter)" aria-label="Chat-Nachricht"></form>
     <div id="baitbar" role="toolbar" aria-label="Köder wählen (Tasten 1–9)"></div>
