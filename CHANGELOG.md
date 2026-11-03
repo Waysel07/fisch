@@ -2,6 +2,17 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 03.11.2026 · `2026-11-03-11`
+
+- 🐉 Gyarados now bites after just 14.5 Karpador instead of 25.
+- 🌋 New world: the Ember Cave! After your 1st prestige Glimm, an old mole in a miner’s helmet on the glowing rock in front of the dock, takes you down to a lake of lava.
+- 🐟 Twelve brand-new fish that only live there – from the Ember Goby to the legendary Lava Dragon. And whoever catches ten Magma Carp wakes the Phoenix Fish.
+- 🎣 Normal rods melt in the lava: Herr Zylinderwels now sells lava rods (basalt, obsidian, magma and dragon bone rod). Plus the ember bait, a new Fishdex goal and the lava coat.
+
+## 03.11.2026 · `2026-11-03-10`
+
+- ✦ Prestige is now available from the 7th rebirth. Every rebirth above that still gives 2 more pearls.
+
 ## 03.11.2026 · `2026-11-03-9`
 
 - ✦ New: prestige from the 10th rebirth. It resets everything, including rebirths, rank, Schuppen and talents – in return every prestige gives a permanent +50 % coins and +25 % XP.

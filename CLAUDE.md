@@ -57,7 +57,8 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
     - `px(x, y, w, h, Farbe)` zeichnet auf das halbe Pixel gerundet (`snap`);
     - `bake()` erzeugt Sprites aus Zeichen-Rastern;
     - `iconCanvas()` erzeugt 16×16-Icons für den Laden (`ICONS[id]`).
-  - Requisiten am Steg und auf See stehen in `PROPS` (Feld `map`, Filter `propOn`).
+  - Requisiten am Steg, auf See und in der Glutgrotte stehen in `PROPS` (Feld `map`: `steg`, `see`, `lava` oder `all`; Filter `propOn`).
+  - Maps: `steg`, `see` (ab 3× Wiedergeburt, `seaOpen()`) und `lava` (Glutgrotte ab 1× Prestige, `lavaOpen()`, `inLava()`). In der Grotte gibt es kein Wetter (`CAVE_WX`), und nur Ruten mit `lava: true` funktionieren dort (`save.lavaRod`).
 - **Fang-Ablauf:**
   - `pickFish()` wählt nach Gewichten, Glück, Wurfweite, Nacht, Wetter und Map.
   - `hook()` würfelt die Größe (`rollSize`/`sizeIn`).
