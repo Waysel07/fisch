@@ -92,11 +92,12 @@
   const PATCH_NOTES = [
     { id: '2026-11-03-2', date: '03.11.2026', items: [
       '🎵 Taktdrill: Legendäre Fische tanzen manchmal an der Leine. Tippe die Kreise im Takt an (oder Leertaste, Z, X), wenn der Ring sie erreicht – mit genug Genauigkeit gehört der Fisch dir.',
-      '📰 Patch Notes: Nach jedem Update siehst du hier, was neu ist. Mit 📰 oder N jederzeit wieder.',
+      '📰 Die Steg-Zeitung: Nach jedem Update liegt hinten am Steg eine neue Ausgabe mit allem, was neu ist (auch mit 📰 oder N).',
+      '📖 Erstfang-Animation: Ein neuer Fisch erscheint erst als Schatten, dann in Farbe – mit Stempel „Neu im Fischdex!“.',
     ] },
     { id: '2026-11-03-1', date: '03.11.2026', items: [
       '🔬 Neue Bestenliste: kleinster Fisch.',
-      '😜 Schummelfisch: täuscht einen legendären Fang vor.',
+      '😜 Neuer Fake-Fang: täuscht einen legendären Fang vor.',
       '🍤 Neuer Fisch: Fischstäbchen.',
       '📦 Mysteryboxen geben jetzt feste EP (15 / 40 / 100).',
       '🆕 Neue Versionen laden automatisch, sobald nichts an der Angel hängt.',
@@ -1333,6 +1334,15 @@
     px(x0 + .5, y - 8, 2.5, 1.75, page); px(x0 + 4, y - 8, 2.5, 1.75, page);
     px(x0 + 1, y - 7.5, 1.5, .5, '#94a3b8'); px(x0 + 4.5, y - 7.5, 1.5, .5, '#38bdf8');
   }
+  // the "Steg-Zeitung": a bundle of newspapers on the dock that holds the patch notes
+  function drawNewspaper(dark) {
+    const k = '#1b1f2e', x0 = 104, y = DOCK_Y;
+    const paper = mix([241, 245, 249], [140, 150, 170], dark), paperD = mix([203, 213, 225], [100, 110, 130], dark), ink = mix([71, 85, 105], [50, 60, 80], dark);
+    px(x0 - .5, y - 5.5, 8, 5.5, k);
+    px(x0, y - 2.5, 7, 2.5, paperD); px(x0, y - 5, 7, 2.5, paper);
+    px(x0 + .5, y - 4.5, 3, .75, k); px(x0 + 4, y - 4.5, 2.5, .5, ink); px(x0 + 4, y - 3.5, 2.5, .5, ink); px(x0 + .5, y - 3.25, 3, .5, ink);
+    px(x0 + 3.25, y - 5.5, .5, 5.5, mix([180, 83, 9], [100, 60, 20], dark)); // string
+  }
   function drawTrophy(dark) {
     const k = '#1b1f2e', cx = KIOSK.x + KIOSK.w / 2, yb = DOCK_Y - 37.5;
     const gold = mix([251, 191, 36], [160, 120, 40], dark), goldL = mix([253, 230, 138], [190, 160, 90], dark), goldD = mix([217, 119, 6], [120, 80, 20], dark);
@@ -1358,6 +1368,7 @@
   }
   const PROPS = [
     { id: 'casino', label: tr('Fischautomat'),  x: 2.5, y: DOCK_Y - 20, w: 12.5, h: 20, draw: drawSlotMachine, open: () => toggleModal('casino') },
+    { id: 'patch',  label: tr('Steg-Zeitung (Patch Notes)'), x: 103.5, y: DOCK_Y - 5.5, w: 8, h: 5.5, draw: drawNewspaper, open: () => toggleModal('patch'), ready: () => save.patchSeen !== PATCH_NOTES[0].id && save.total > 0 },
     { id: 'dex',    label: tr('Fischdex & Shinydex'), x: 28.5, y: DOCK_Y - 8.5, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
     { id: 'lb',     label: tr('Bestenliste'),   x: KIOSK.x + KIOSK.w / 2 - 5, y: DOCK_Y - 48, w: 10, h: 10.5, draw: drawTrophy, open: () => toggleModal('lb') },
     { id: 'prog',   label: tr('Aufträge & Fortschritt'), x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
@@ -1553,6 +1564,10 @@
   function closeModals() {
     for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch']) $(id).hidden = true;
   }
+  function unreadPatches() { // how many entries are new since the last read (at least the newest 3 when nothing is new)
+    const i = PATCH_NOTES.findIndex(p => p.id === save.patchSeen);
+    return i === 0 ? 3 : i < 0 ? 2 : Math.min(i, 4);
+  }
   function renderPatch(n) {
     $('patch-list').replaceChildren(...PATCH_NOTES.slice(0, Math.max(1, n)).map(p => {
       const box = document.createElement('section'); box.className = 'patch-entry';
@@ -1567,7 +1582,7 @@
     if (['charge', 'fly', 'bite', 'reel', 'rhythm'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => renderPatch(3) })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); } })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -1586,16 +1601,24 @@
   });
   $('start').addEventListener('click', () => {
     audio(); $('title').hidden = true;
-    // after an update: returning players see what's new (once per update)
-    const latest = PATCH_NOTES[0].id;
-    if (save.patchSeen !== latest) {
-      const fresh = PATCH_NOTES.findIndex(p => p.id === save.patchSeen);
-      if (save.seen && save.total > 0) { renderPatch(fresh < 0 ? 2 : Math.min(fresh, 3)); $('patch').hidden = false; }
-      save.patchSeen = latest;
+    // after an update: returning players get pointed at the new issue of the Steg-Zeitung
+    if (save.patchSeen !== PATCH_NOTES[0].id) {
+      if (save.seen && save.total > 0) setTimeout(() => toast(tr('📰 Neue Steg-Zeitung! Was sich geändert hat, liegt hinten am Steg (oder N).')), 900);
+      else save.patchSeen = PATCH_NOTES[0].id; // new players start with nothing to catch up on
     }
     save.seen = true; persist();
   });
-  $('catch-ok').addEventListener('click', () => { if ($('catch-ok').disabled) return; $('catch').hidden = true; state = 'idle'; hint(''); });
+  let lastFirst = null;
+  $('catch-ok').addEventListener('click', () => {
+    if ($('catch-ok').disabled) return;
+    $('catch').hidden = true; state = 'idle'; hint('');
+    if (lastFirst) { // the new fish "flies" into the Fischdex book on the dock
+      const bx = 32.5, by = DOCK_Y - 8;
+      for (let i = 0; i < 24; i++) glints.push({ x: bx + (Math.random() - .5) * 8, y: by - Math.random() * 4, vx: (Math.random() - .5) * 30, vy: -20 - Math.random() * 30, life: .7 + Math.random() * .6, c: ['#fde047', '#ffffff', '#38bdf8'][i % 3] });
+      floaters.push({ x: bx, y: by - 6, text: tr('📖 +1'), c: '#fde047', life: 2 });
+      lastFirst = null;
+    }
+  });
 
   // ------------------------------------------------------------------ gambling
   // Double or nothing on a fresh catch: a coin flip, once per catch.
@@ -1757,6 +1780,11 @@
     void sheet.offsetWidth; // restart the CSS animations
     if (FANFARE[f.r]) sheet.classList.add('fx-' + f.r);
     sheet.classList.toggle('is-shiny', !!shiny);
+    // first catch of this fish: silhouette → flash → colour, a burst ring and a "new in the Fischdex" stamp
+    sheet.classList.toggle('is-first', !!first);
+    $('catch-first').hidden = !first;
+    lastFirst = first ? f : null;
+    if (first) [523, 659, 784, 1047, 1319].forEach((n, i) => setTimeout(() => tone(n, .14, 'square', .045), 650 + i * 70));
     const conf = $('catch-confetti');
     conf.replaceChildren();
     const nConf = { rare: 0, wii: 14, epic: 18, legendary: 36 }[f.r] || 0;
