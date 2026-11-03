@@ -1994,6 +1994,39 @@
     if (document.hidden) stale = true;
     else { toast(tr('Spiel in einem anderen Tab gespeichert – lade den neuen Spielstand …')); setTimeout(() => location.reload(), 1500); }
   });
+  // new update on the server: every open game reloads to the new version. Checks the ETags of the
+  // game files (cheap HEAD requests) every 2 minutes and whenever the tab comes back. A visible
+  // game waits for a calm moment (nothing on the line, no slot spin, no box opening) first.
+  const VERSION_FILES = ['fischen.html', 'js/fischen.js', 'js/fischen-i18n.js', 'css/fischen.css'];
+  let builtVersion = null, newVersion = false;
+  async function serverVersion() {
+    try {
+      const tags = await Promise.all(VERSION_FILES.map(async u => {
+        const r = await fetch(u, { method: 'HEAD', cache: 'no-store' });
+        return r.ok ? (r.headers.get('etag') || r.headers.get('last-modified') || '') : '';
+      }));
+      return tags.every(Boolean) ? tags.join('|') : null;
+    } catch { return null; } // offline: try again later
+  }
+  function calm() { return document.hidden || (state === 'idle' && !spinning && $('box').hidden); }
+  function updateNow() {
+    if (leaving) return;
+    persist(); leaving = true;
+    if (document.hidden) location.reload();
+    else { toast(tr('🆕 Neue Version! Lade neu …')); setTimeout(() => location.reload(), 1500); }
+  }
+  async function checkVersion() {
+    if (leaving) return;
+    if (newVersion) { if (calm()) updateNow(); return; }
+    const v = await serverVersion();
+    if (!v) return;
+    if (builtVersion === null) builtVersion = v;
+    else if (v !== builtVersion) { newVersion = true; if (calm()) updateNow(); }
+  }
+  checkVersion();
+  setInterval(checkVersion, 120000);
+  setInterval(() => { if (newVersion && calm()) updateNow(); }, 2000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) checkVersion(); });
   $('btn-reset').addEventListener('click', async () => {
     if (!confirm(tr('Spielstand wirklich löschen? Fischdex, Taler und Ausrüstung sind dann weg.') + (save.lb ? tr(' Dein Bestenlisten-Eintrag wird ebenfalls gelöscht.') : ''))) return;
     if (save.lb) { try { await fetch('/api/leaderboard', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: save.lb.id, token: save.lb.token }) }); } catch { /* offline: entry stays, can be removed on request */ } }
