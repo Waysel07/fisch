@@ -58,7 +58,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
     - `bake()` erzeugt Sprites aus Zeichen-Rastern;
     - `iconCanvas()` erzeugt 16×16-Icons für den Laden (`ICONS[id]`).
   - Requisiten am Steg, auf See und in der Glutgrotte stehen in `PROPS` (Feld `map`: `steg`, `see`, `lava` oder `all`; Filter `propOn`).
-  - Maps: `steg`, `see` (ab 3× Wiedergeburt, `seaOpen()`) und `lava` (Glutgrotte ab 1× Prestige, `lavaOpen()`, `inLava()`). In der Grotte gibt es kein Wetter (`CAVE_WX`), und nur Ruten mit `lava: true` funktionieren dort (`save.lavaRod`). Fortschritt dort: Glutsteine (`save.glut`), Tiefen (`CAVE_DEPTHS`, `caveDepth()`, Feld `depth` an Fischen und Ruten), Glimms Werkstatt (`GLUT_UPS`, `glutUp()`) und Glimms Aufträge (`save.glimmQ`); der Taler-Bonus läuft über `caveMult()`.
+  - Maps: `steg`, `see` (ab 3× Wiedergeburt, `seaOpen()`) und `lava` (Glutgrotte ab 1× Prestige, `lavaOpen()`, `inLava()`). In der Grotte gibt es kein Wetter (`CAVE_WX`), und nur Ruten mit `lava: true` funktionieren dort (`save.lavaRod`). Fortschritt dort: Glutsteine (`save.glut`), Tiefen (`CAVE_DEPTHS`, `caveDepth()`, Feld `depth` an Fischen und Ruten), Glimms Werkstatt (`GLUT_UPS`, `glutUp()`) und Glimms Aufträge (`save.glimmQ`); der Taler-Bonus läuft über `caveMult()`. Der Lava-Laden (`lavaWares()`, Shop-Tab `lava`) verkauft alles mit Feld `glut` nur gegen Glutsteine; Glutsteine werden nie in Taler getauscht.
 - **Fang-Ablauf:**
   - `pickFish()` wählt nach Gewichten, Glück, Wurfweite, Nacht, Wetter und Map.
   - `hook()` würfelt die Größe (`rollSize`/`sizeIn`).
@@ -76,7 +76,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   - `lobbySync()` fragt den Server alle 3 s ab, im Bossfight alle 1,5 s.
   - `lobbyMe()` ist alles, was andere von dir sehen.
   - Boss: `summonBoss`, `bossHit`, `bossFromServer`, `bossWin`. Im Solo-Kampf läuft alles im Client, in der Lobby liegen die HP auf dem Server.
-- **Test-Hooks** liegen in `window.__fischen`. Beispiele:
+- **Test-Hooks** liegen in `window.__fischen`, aber nur auf localhost (oder mit `?debug`, dann wird der Spielstand als `tampered` markiert). Spielstände tragen eine Prüfsumme `sig` (`signSave`); wer eine Migration oder ein Feld ändert, muss nichts tun, solange er über `persist()` speichert. Beispiele:
   - `save` direkt ändern;
   - fangen: `landCls(id, klasse)`, `pick()`;
   - Welt: `setTime(0–1)`, `setWeather(id)`, `travel('see')`;

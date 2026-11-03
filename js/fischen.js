@@ -107,11 +107,11 @@
     { id: 'tiefsee', name: 'Tiefseerute',     price: 15000, reb: 4, cast: 1.0, reel: 3.0, tens: .34,  luck: 2.5, desc: 'Für die ganz tiefen Wasser. Hält fast alles aus.' },
     { id: 'krake',  name: 'Krakenrute',       price: 40000, reb: 6, cast: 1.0, reel: 3.4, tens: .3,   luck: 3.0, desc: 'Acht Arme Kraft in einer Rute. Nichts reißt.' },
     // Lavaruten: normal rods melt in the Glutgrotte, there only these work (and they only work there)
-    { id: 'basalt',   name: 'Basaltrute',         price: 400,   pres: 1, lava: true, cast: .8,  reel: 1.5, tens: .7,  luck: 1.1, desc: 'Aus erkalteter Lava. Die erste Rute, die in der Glutgrotte nicht schmilzt.' },
-    { id: 'obsidian', name: 'Obsidianrute',       price: 4000,  pres: 1, depth: 2, lava: true, cast: .95, reel: 2.2, tens: .5,  luck: 1.6, desc: 'Schwarzes Vulkanglas, hart wie Stahl. Nur für die Glutgrotte.' },
-    { id: 'magma',    name: 'Magmarute',          price: 15000, pres: 1, depth: 3, lava: true, cast: 1.0, reel: 2.9, tens: .38, luck: 2.2, desc: 'In ihr fließt noch Magma. Wird nie kalt. Nur für die Glutgrotte.' },
-    { id: 'drachenknochen', name: 'Drachenknochenrute', price: 50000, pres: 1, depth: 4, lava: true, cast: 1.0, reel: 3.6, tens: .28, luck: 3.0, desc: 'Aus dem Knochen eines Lavadrachen. Hält jede Glut aus. Nur für die Glutgrotte.' },
-    { id: 'phoenixrute', name: 'Phönixfederrute', price: 250000, pres: 1, depth: 5, lava: true, cast: 1.0, reel: 4.2, tens: .24, luck: 3.6, desc: 'Aus einer Feder des Phönixfischs. Brennt, ohne zu verbrennen. Nur für die Glutgrotte.' },
+    { id: 'basalt',   name: 'Basaltrute',         price: 400,   pres: 1, lava: true, glut: 10, cast: .8,  reel: 1.5, tens: .7,  luck: 1.1, desc: 'Aus erkalteter Lava. Die erste Rute, die in der Glutgrotte nicht schmilzt.' },
+    { id: 'obsidian', name: 'Obsidianrute',       price: 4000,  pres: 1, depth: 2, lava: true, glut: 80, cast: .95, reel: 2.2, tens: .5,  luck: 1.6, desc: 'Schwarzes Vulkanglas, hart wie Stahl. Nur für die Glutgrotte.' },
+    { id: 'magma',    name: 'Magmarute',          price: 15000, pres: 1, depth: 3, lava: true, glut: 250, cast: 1.0, reel: 2.9, tens: .38, luck: 2.2, desc: 'In ihr fließt noch Magma. Wird nie kalt. Nur für die Glutgrotte.' },
+    { id: 'drachenknochen', name: 'Drachenknochenrute', price: 50000, pres: 1, depth: 4, lava: true, glut: 700, cast: 1.0, reel: 3.6, tens: .28, luck: 3.0, desc: 'Aus dem Knochen eines Lavadrachen. Hält jede Glut aus. Nur für die Glutgrotte.' },
+    { id: 'phoenixrute', name: 'Phönixfederrute', price: 250000, pres: 1, depth: 5, lava: true, glut: 1800, cast: 1.0, reel: 4.2, tens: .24, luck: 3.6, desc: 'Aus einer Feder des Phönixfischs. Brennt, ohne zu verbrennen. Nur für die Glutgrotte.' },
   ];
   const BAITS = [
     { id: 'wurm',   name: 'Wurm',          price: 0,  pack: 0, luck: 1,   speed: 1,   desc: 'Unbegrenzt. Wurmig.' },
@@ -120,7 +120,7 @@
     { id: 'wiik',   name: 'Wii-Köder',     price: 30, pack: 5, lvl: 3, luck: 1.5, speed: 1.4, wii: 2, img: 'img/wii-bait.png', desc: '5 Stück. Zeigt auf die Wii-Fische. Die beißen doppelt so oft.' },
     { id: 'mond',   name: 'Mondköder',     price: 90, pack: 5, reb: 2, luck: 4.2, speed: 2,  desc: '5 Stück. Leuchtet. Legenden können nicht widerstehen.' },
     { id: 'abyss',  name: 'Abgrundköder',  price: 200, pack: 5, reb: 5, luck: 6, speed: 2.4, desc: '5 Stück. Leuchtet aus der Tiefe. Selbst Legenden werden neugierig.' },
-    { id: 'glutkoeder', name: 'Glutköder', price: 300, pack: 5, pres: 1, luck: 3, speed: 1.8, lava: true, desc: '5 Stück. Glüht wie Kohle. Wirkt nur in der Glutgrotte, dort aber richtig.' },
+    { id: 'glutkoeder', name: 'Glutköder', price: 300, glut: 15, pack: 5, pres: 1, luck: 3, speed: 1.8, lava: true, desc: '5 Stück. Glüht wie Kohle. Wirkt nur in der Glutgrotte, dort aber richtig.' },
     { id: 'odkoeder', name: 'Odköder',     price: 1500, pack: 1, reb: 3, luck: 1, speed: 1, boss: true, desc: '1 Stück. Nachts auf Hoher See ausgeworfen, ruft er den Odfisch.' },
   ];
   // Mysteryboxen: bought at the kiosk or found on the hook now and then. Opening one rolls a prize.
@@ -146,6 +146,20 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-03-16', date: '03.11.2026', items: [
+      '⏩ Neue Einstellungen: Die Fangkarte kann sich nach 2,5 Sekunden von selbst schließen (nicht bei neuen Fischen, Legendären und Shinys), und leere Köder lassen sich automatisch nachkaufen.',
+    ] },
+    { id: '2026-11-03-15', date: '03.11.2026', items: [
+      '⚙️ Neue Einstellungen (Zahnrad oben oder Taste E): Ton, Lautstärke, weniger Bildschirmwackeln und kurze Zahlen (1,2 Mio.).',
+      '📜 „Alle abholen“: Fertige Aufträge – auch Glimms – holst du jetzt mit einem Klick ab.',
+      '🛡️ Fairer Spielen: Von Hand veränderte Spielstände werden erkannt und können nicht mehr in die Bestenliste.',
+      '🎟️ Codes: In den Einstellungen gibt es jetzt ein Feld zum Einlösen von Codes – der erste schaltet die Beta-Kosmetik frei (Beta-Kappe, Beta-Jacke, Beta-Pose).',
+    ] },
+    { id: '2026-11-03-14', date: '03.11.2026', items: [
+      '🌋 Neuer Lava-Laden im Kiosk: Hier zahlst du nur mit Glutsteinen 🔥, nicht mit Talern. Lavaruten und Glutköder gibt es jetzt nur noch dort.',
+      '🦈 Im Lava-Laden verkauft jetzt Glutflosse, ein tanzender Hai vor Flammen.',
+      '🎩 Neue Lava-Kosmetik für Glutsteine: Glut-Pose, Aschejacke, Magmahelm und die funkelnde Obsidiankrone.',
+    ] },
     { id: '2026-11-03-13', date: '03.11.2026', items: [
       '🔥 Neue Währung: Glutsteine! Jeder Fang in der Glutgrotte bringt welche – je seltener der Fisch, desto mehr (Legendäre 40, Kapital und Monster doppelt, Shinys dreifach).',
       '⛏️ Die Glutgrotte hat jetzt 5 Tiefen: Glutkammer, Aschehalle, Magmaschlund, Drachenhort und Phönixnest. Mit Glutsteinen gräbt Glimm tiefer – jede Tiefe bringt neue Fische, eine neue Lavarute und +20 % Taler. Ganz unten wartet die Phönixfederrute.',
@@ -229,17 +243,41 @@
 
   // ------------------------------------------------------------------ save
   const SAVE_KEY = 'fischen-save-v1';
+  // Anti-cheat (no real protection is possible in the browser, this only makes it harder):
+  // every save carries a checksum (sig). A save edited by hand no longer matches and is marked
+  // as tampered: it keeps working, but can't join or update the leaderboard any more.
+  const SIG_KEY = 'fischen-sig'; // remembers that this device already writes signed saves
+  function cyrb53(str, seed = 0x5f15c) {
+    let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0; i < str.length; i++) { const ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+  }
+  const signSave = d => cyrb53('fisch.ing|' + JSON.stringify(d) + '|steg');
+  let sigBroken = false; // set while loading when the checksum does not match
+  // the test hooks (window.__fischen) only exist when the game runs locally; with ?debug elsewhere
+  // they work too, but the save is then marked as tampered
+  const DEV_HOST = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+  const DEBUG = DEV_HOST || new URLSearchParams(location.search).has('debug');
   const save = Object.assign({
     coins: 0, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity },
     dex: {}, total: 0, sound: true, seen: false,
     boxes: {}, dexClaimed: [], lvl: 1, xp: 0, daily: { d: '', n: 0 }, bestStreak: 0, rebirths: 0, scales: 0, perks: {}, prestige: 0, pearls: 0, pperks: {}, quests: [], questsDone: 0, lifeCoins: 0, totalEarned: 0,
   }, load());
   save.baits.wurm = Infinity;
+  if (sigBroken || (DEBUG && !DEV_HOST)) save.tampered = true;
+  if (sigBroken) setTimeout(() => toast(tr('⚠️ Dieser Spielstand wurde von Hand verändert. Du kannst weiterspielen, aber nicht mehr in die Bestenliste.')), 2500);
   save.prestige = save.prestige | 0; save.pearls = save.pearls | 0;
   if (!Array.isArray(save.glimmQ)) save.glimmQ = []; save.glimmDone = save.glimmDone | 0;
   if (!save.pperks || typeof save.pperks !== 'object') save.pperks = {};
   function load() {
-    try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch { return {}; }
+    try {
+      const d = JSON.parse(localStorage.getItem(SAVE_KEY)) || {};
+      const sig = d.sig; delete d.sig;
+      if (sig ? sig !== signSave(d) : (Object.keys(d).length && localStorage.getItem(SIG_KEY))) sigBroken = true;
+      return d;
+    } catch { return {}; }
   }
   let saveOk = true;
   let leaving = false; // set when the save is replaced or wiped, so nothing writes it back on unload
@@ -251,7 +289,9 @@
       const json = JSON.stringify(d);
       if (json === lastJson && saveOk) return;
       save.saved = Date.now(); d.saved = save.saved;
+      d.sig = signSave(d);
       localStorage.setItem(SAVE_KEY, JSON.stringify(d));
+      localStorage.setItem(SIG_KEY, '1');
       lastJson = json;
       if (!saveOk) { saveOk = true; }
       flashSaved();
@@ -262,7 +302,7 @@
   }
   function saveData() {
     const s = { ...save, baits: { ...save.baits } };
-    delete s.baits.wurm;
+    delete s.baits.wurm; delete s.sig;
     return s;
   }
   // Rutenschmiede: every forge level adds a little reel, luck, calm and cast to that rod
@@ -293,9 +333,10 @@
   const HORIZON = 92, SURFACE = 103, DOCK_Y = 98, DOCK_END = 116;
 
   // ------------------------------------------------------------------ audio
-  let ac = null;
+  let ac = null, master = null;
+  const vol = () => Math.max(0, Math.min(1, save.vol === undefined ? 1 : +save.vol || 0));
   function audio() {
-    if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch { return null; } }
+    if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value = vol(); master.connect(ac.destination); } catch { return null; } }
     if (ac.state === 'suspended') ac.resume();
     return ac;
   }
@@ -307,7 +348,7 @@
     if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq + slide), a.currentTime + dur);
     g.gain.setValueAtTime(vol, a.currentTime);
     g.gain.exponentialRampToValueAtTime(.001, a.currentTime + dur);
-    o.connect(g).connect(a.destination); o.start(); o.stop(a.currentTime + dur);
+    o.connect(g).connect(master); o.start(); o.stop(a.currentTime + dur);
   }
   function noise(dur, vol = .25, freq = 900) {
     if (!save.sound) return;
@@ -316,7 +357,7 @@
     for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
     const s = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
     s.buffer = buf; f.type = 'lowpass'; f.frequency.value = freq; g.gain.value = vol;
-    s.connect(f).connect(g).connect(a.destination); s.start();
+    s.connect(f).connect(g).connect(master); s.start();
   }
   const sfx = {
     splash: () => noise(.35, .3, 1100),
@@ -336,12 +377,12 @@
         voice = new Audio('sounds/spezifischfischer.mp3'); voice.preload = 'auto';
         voice.addEventListener('timeupdate', () => { if (voiceEnd !== null && voice.currentTime >= voiceEnd) voice.pause(); });
       }
-      voiceEnd = to; voice.currentTime = from; voice.play().catch(() => {});
+      voiceEnd = to; voice.volume = vol(); voice.currentTime = from; voice.play().catch(() => {});
     } catch { /* ignore */ }
   }
   function playFile(src) {
     if (!save.sound) return;
-    try { const a = new Audio(src); a.volume = .8; a.play().catch(() => {}); } catch { /* ignore */ }
+    try { const a = new Audio(src); a.volume = .8 * vol(); a.play().catch(() => {}); } catch { /* ignore */ }
   }
 
   // ------------------------------------------------------------------ sprites
@@ -555,7 +596,16 @@
     // bait gets used up on a hook attempt
     if (save.bait !== 'wurm' && !bait().boss) {
       save.baits[save.bait] = (save.baits[save.bait] || 1) - 1;
-      if (save.baits[save.bait] <= 0) { delete save.baits[save.bait]; save.bait = 'wurm'; toast(tr('Köder aufgebraucht – zurück zum Wurm.')); }
+      if (save.baits[save.bait] <= 0) {
+        const b = bait(); delete save.baits[save.bait];
+        // QoL: buy the same bait again (Taler, or Glutsteine for lava bait) when it runs out
+        const cost = b.lava ? b.glut : b.price, have = b.lava ? save.glut : save.coins;
+        if (save.autoBait && b.pack && cost && !lockText(b) && have >= cost) {
+          if (b.lava) save.glut -= cost; else spend(cost);
+          save.baits[b.id] = b.pack; updateCoins();
+          toast(tr('🔁 {b} nachgekauft: +{n} für {c}', { b: b.name, n: b.pack, c: b.lava ? cost + ' 🔥' : tr('{n} Taler', { n: cost }) }));
+        } else { save.bait = 'wurm'; toast(save.autoBait ? tr('Köder aufgebraucht und zu wenig zum Nachkaufen – zurück zum Wurm.') : tr('Köder aufgebraucht – zurück zum Wurm.')); }
+      }
       persist(); updateGear();
     }
     hooked = { f, ...rollSize(f), str: STRENGTH[f.r] };
@@ -963,7 +1013,8 @@
   }
 
   // ------------------------------------------------------------------ rare catch fanfare
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const motionPref = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let reduceMotion = motionPref || !!save.calm; // "Weniger Bewegung" in the settings
   const FANFARE = {
     rare:      { label: tr('SELTEN!'),   c: '#38bdf8', hi: '#e0f2fe', dur: 1.0, notes: [523, 659, 784] },
     wii:       { label: tr('WII!'),      c: '#5ccdf6', hi: '#ffffff', dur: 1.2, notes: [659, 784, 988, 1319] },
@@ -1089,6 +1140,7 @@
     if (k === 'n') { toggleModal('patch'); return; }
     if (k === 'o') { toggleModal('lobby'); return; }
     if (k === 'k') { toggleModal('wardrobe'); return; }
+    if (k === 'e') { toggleModal('settings'); return; }
     if ((k === 'enter' || k === 't') && save.lobby && !anyModal() && state !== 'rhythm') { e.preventDefault(); openChatbar(); return; }
     if (!$('casino').hidden && (k === ' ' || k === 'enter')) { e.preventDefault(); $('spin').click(); return; }
     if (k === 'm') { $('btn-sound').click(); return; }
@@ -1335,6 +1387,15 @@
     { id: 'hut-perle',   slot: 'hat',    name: 'Perlenkrone',        col: ['#f5f3ff', '#a78bfa', '#ffffff'], sparkle: true, desc: 'Für alle, die ganz von vorn angefangen haben.', ach: 'Mach einmal Prestige.', got: () => save.prestige >= 1 },
     { id: 'pose-perle',  slot: 'bob',    name: 'Perlen-Pose',        col: '#ede9fe', desc: 'Schimmert wie Perlmutt.', ach: 'Mach 2× Prestige.', got: () => save.prestige >= 2 },
     { id: 'jacke-prestige', slot: 'jacket', name: 'Prestige-Mantel', col: ['#1e1b4b', '#0f0a2e', '#fbbf24'], desc: 'Nachtblau mit Goldsaum. Schon dreimal alles verloren und trotzdem hier.', ach: 'Mach 3× Prestige.', got: () => save.prestige >= 3 },
+    // codes (settings): FISCH-BETA-TEST-RWRD unlocks the beta set
+    { id: 'hut-beta',    slot: 'hat',    name: 'Beta-Kappe',         col: ['#22d3ee', '#0e7490', '#f0abfc'], sparkle: true, desc: 'Für alle, die von Anfang an dabei waren.', ach: 'Löse den Beta-Code in den Einstellungen ein.', got: () => (save.codes || []).includes('beta') },
+    { id: 'jacke-beta',  slot: 'jacket', name: 'Beta-Jacke',         col: ['#7c3aed', '#3b0764', '#22d3ee'], desc: 'Lila mit Türkis. Steht „BETA“ drauf, man sieht es nur nicht.', ach: 'Löse den Beta-Code in den Einstellungen ein.', got: () => (save.codes || []).includes('beta') },
+    { id: 'pose-beta',   slot: 'bob',    name: 'Beta-Pose',          col: '#22d3ee', desc: 'Leuchtet türkis wie ein Testbildschirm.', ach: 'Löse den Beta-Code in den Einstellungen ein.', got: () => (save.codes || []).includes('beta') },
+    // Lava-Laden: only for Glutsteine
+    { id: 'hut-magma',   slot: 'hat',    name: 'Magmahelm',          glut: 200, col: ['#ea580c', '#7c2d12', '#fde047'], desc: 'Ein Grubenhelm wie der von Glimm, nur heißer.' },
+    { id: 'jacke-asche', slot: 'jacket', name: 'Aschejacke',         glut: 150, col: ['#57534e', '#292524', '#f97316'], desc: 'Grau wie Asche, mit glühenden Nähten.' },
+    { id: 'pose-glut',   slot: 'bob',    name: 'Glut-Pose',          glut: 80,  col: '#f97316', desc: 'Glüht auf der Lava wie ein Stück Kohle.' },
+    { id: 'hut-obsidian', slot: 'hat',   name: 'Obsidiankrone',      glut: 1500, col: ['#1e1b4b', '#0f0a1e', '#a78bfa'], sparkle: true, desc: 'Aus schwarzem Vulkanglas geschliffen. Funkelt lila.' },
     { id: 'jacke-lava',  slot: 'jacket', name: 'Lavamantel',         col: ['#b91c1c', '#450a0a', '#fb923c'], desc: 'Hält warm. Viel zu warm.', ach: 'Grabe bis Tiefe 5 der Glutgrotte.', got: () => (save.caveDepth | 0) >= 5 },
     { id: 'pose-monster', slot: 'bob',   name: 'Monster-Pose',       col: '#f43f5e', desc: 'Für Angler, die Großes vorhaben.', ach: 'Fange einen Monster-Fisch.', got: () => (save.monsters || 0) >= 1 },
     { id: 'pose-gold',   slot: 'bob',    name: 'Goldene Pose',       col: '#facc15', desc: 'Glänzt, wenn ein Fisch anbeißt.', ach: 'Erreiche Level 10.', got: () => save.lvl >= 10 || save.rebirths > 0 },
@@ -2409,9 +2470,35 @@
     const d = document.createElement('div'); d.textContent = msg;
     $('toast').appendChild(d); setTimeout(() => d.remove(), 3300);
   }
+  // "Kurze Zahlen": 1234567 -> 1,2 Mio. in the top bar
+  function shortN(n) {
+    const a = Math.abs(n), f = (v, u) => v.toLocaleString(I18N.locale, { maximumFractionDigits: v < 10 ? 1 : 0 }) + u;
+    return a >= 1e9 ? f(n / 1e9, tr(' Mrd.')) : a >= 1e6 ? f(n / 1e6, tr(' Mio.')) : a >= 1e4 ? f(n / 1e3, tr(' Tsd.')) : String(n);
+  }
+  // codes: only checksums live here, so the codes can't simply be read in the source
+  const CODES = { mq6pzev5x0: { id: 'beta', what: () => tr('Beta-Kappe, Beta-Jacke und Beta-Pose') } };
+  function redeemCode() {
+    const raw = $('set-code').value, norm = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const c = norm && CODES[cyrb53('code|' + norm)], msg = $('set-code-msg');
+    if (!Array.isArray(save.codes)) save.codes = [];
+    if (!c) { msg.textContent = tr('Diesen Code gibt es nicht.'); return; }
+    if (save.codes.includes(c.id)) { msg.textContent = tr('Diesen Code hast du schon eingelöst.'); return; }
+    save.codes.push(c.id); $('set-code').value = '';
+    msg.textContent = tr('🎁 Eingelöst: {w}! Anziehen im Kleiderschrank (K).', { w: c.what() });
+    [523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .14, 'triangle', .08), i * 90));
+    checkCosm(true); persist();
+  }
+  function renderSettings() {
+    $('set-code-msg').textContent = '';
+    $('set-sound').checked = !!save.sound; $('set-vol').value = Math.round(vol() * 100); $('set-vol').disabled = !save.sound;
+    $('set-vol-val').textContent = Math.round(vol() * 100) + ' %';
+    $('set-calm').checked = reduceMotion; $('set-calm').disabled = motionPref; $('set-short').checked = !!save.short;
+    $('set-tamper').hidden = !save.tampered;
+    $('set-autoclose').checked = !!save.autoClose; $('set-autobait').checked = !!save.autoBait;
+  }
   function updateCoins() {
-    $('coins').textContent = save.coins; $('shop-coins').textContent = save.coins; $('casino-coins').textContent = save.coins;
-    $('glut-pill').hidden = !lavaOpen(); $('glut').textContent = save.glut | 0; $('glut-pill').title = tr('Glutsteine: aus Fängen in der Glutgrotte, zum Graben und für Glimms Werkstatt');
+    $('coins').textContent = save.short ? shortN(save.coins) : save.coins; $('shop-coins').textContent = save.coins; $('casino-coins').textContent = save.coins;
+    $('glut-pill').hidden = !lavaOpen(); $('glut').textContent = save.glut | 0; $('shop-glut').textContent = save.glut | 0; $('glut-pill').title = tr('Glutsteine: aus Fängen in der Glutgrotte, zum Graben und für Glimms Werkstatt');
   }
   // bait hotbar: every bait you own as a slot; click or press 1-9 to switch (only while idle)
   const ownedBaits = () => BAITS.filter(b => !b.pack || (save.baits[b.id] || 0) > 0);
@@ -2464,7 +2551,7 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings']) $(id).hidden = true;
   }
   function unreadPatches() { // how many entries are new since the last read (at least the newest 3 when nothing is new)
     const i = PATCH_NOTES.findIndex(p => p.id === save.patchSeen);
@@ -2484,7 +2571,7 @@
     if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'boss', 'summon'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -2501,7 +2588,21 @@
   $('btn-sound').addEventListener('click', () => {
     save.sound = !save.sound; persist();
     $('btn-sound').textContent = save.sound ? '🔊' : '🔇';
+    if (!$('settings').hidden) renderSettings();
   });
+  $('btn-settings').addEventListener('click', () => toggleModal('settings'));
+  $('set-sound').addEventListener('change', () => { if ($('set-sound').checked !== !!save.sound) $('btn-sound').click(); });
+  $('set-vol').addEventListener('input', () => {
+    save.vol = Math.max(0, Math.min(100, +$('set-vol').value)) / 100; if (master) master.gain.value = vol();
+    $('set-vol-val').textContent = Math.round(vol() * 100) + ' %';
+  });
+  $('set-vol').addEventListener('change', () => { persist(); tone(660, .12, 'triangle', .1); });
+  $('set-calm').addEventListener('change', () => { save.calm = $('set-calm').checked; reduceMotion = motionPref || save.calm; persist(); });
+  $('set-code-btn').addEventListener('click', redeemCode);
+  $('set-autoclose').addEventListener('change', () => { save.autoClose = $('set-autoclose').checked; persist(); });
+  $('set-autobait').addEventListener('change', () => { save.autoBait = $('set-autobait').checked; persist(); });
+  $('set-code').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); redeemCode(); } });
+  $('set-short').addEventListener('change', () => { save.short = $('set-short').checked; persist(); updateCoins(); });
   $('start').addEventListener('click', () => {
     audio(); $('title').hidden = true;
     // after an update: returning players get pointed at the new issue of the Steg-Zeitung
@@ -2728,7 +2829,14 @@
     $('catch-new').hidden = !first;
     $('catch').hidden = false;
     $('catch-ok').focus();
+    // QoL: the card closes by itself after a moment, except for new fish, legendaries, shinies and new mutations
+    clearTimeout(autoCloseT);
+    if (save.autoClose && !first && f.r !== 'legendary' && !shiny && !newMut && !newShiny) autoCloseT = setTimeout(() => {
+      if (!$('catch').hidden && !$('catch-ok').disabled) $('catch-ok').click();
+    }, 2500);
   }
+  let autoCloseT = 0;
+  $('catch').addEventListener('pointerdown', () => clearTimeout(autoCloseT)); // touching the card keeps it open
 
   let dexTab = 'fish';
   const SHINY_REWARDS = ['s1', 's5', 'sall'];
@@ -3051,6 +3159,7 @@
         if (owned) grid.append(tile(ICONS[c.id], c.name, worn === c.id ? tr('Angezogen') : tr('Anziehen'), worn === c.id ? 'on' : '',
           () => { save.cosm[slot] = worn === c.id ? null : c.id; persist(); renderWardrobe(); sfx.tick(); }));
         else if (c.price) grid.append(tile(ICONS[c.id], c.name, tr('🛒 Laden · {n} Taler', { n: c.price }), 'locked', () => { closeModals(); shopTab = 'cosm'; toggleModal('shop'); }));
+        else if (c.glut) grid.append(tile(ICONS[c.id], c.name, tr('🌋 Lava-Laden · {n} 🔥', { n: c.glut }), 'locked', () => { closeModals(); shopTab = 'lava'; toggleModal('shop'); }));
         else grid.append(tile(ICONS[c.id], c.name, '🔒 ' + c.ach, 'locked', () => toast('🔒 ' + c.ach), c.ach));
       }
       sec.append(h, grid); return sec;
@@ -3186,13 +3295,86 @@
     }, 1100);
   }
   $('box-ok').addEventListener('click', () => { if (!$('box-ok').disabled) $('box').hidden = true; });
+  // Lava-Laden: everything here costs Glutsteine 🔥, never Taler (and Glutsteine never turn into Taler)
+  function lavaWares() {
+    const poor = n => keeper(tr('Dafür fehlen dir noch {n} 🔥. Fang mehr in der Glutgrotte!', { n: n - save.glut }));
+    const rods = RODS.filter(r => r.lava).map(r0 => {
+      const owned = save.rods.includes(r0.id), active = save.lavaRod === r0.id, lock = !owned && lockText(r0), r = owned ? forged(r0) : r0;
+      const w = ware({
+        id: r.id, name: '🌋 ' + r.name, desc: r.desc,
+        stats: [statBar(tr('Wurf'), r.cast, 1), statBar(tr('Kurbel'), r.reel, 4.2), statBar(tr('Glück'), r.luck, 3.6), statBar(tr('Ruhe'), 1.1 - r.tens, .8)],
+        state: active ? 'active' : lock ? 'locked' : owned ? 'owned' : '',
+        btnText: active ? tr('In der Hand') : owned ? tr('Nehmen') : lock || `${r0.glut} 🔥`,
+        disabled: active || (!owned && (!!lock || save.glut < r0.glut)),
+        onClick: () => {
+          if (active) return keeper(pick(KEEPER.equip));
+          if (lock) return keeper(KEEPER.locked(lock));
+          if (!owned && save.glut < r0.glut) return poor(r0.glut);
+          if (!owned) { save.glut -= r0.glut; save.rods.push(r0.id); sfx.coin(); keeper(tr('Hält jede Glut aus. Viel Erfolg da unten!')); }
+          else keeper(pick(KEEPER.equip));
+          save.lavaRod = r0.id; persist(); updateCoins(); updateGear(); renderShop(false);
+        },
+      });
+      if (active) w.append(forgeButton(r0));
+      return w;
+    });
+    const baits = BAITS.filter(b => b.lava).map(b => {
+      const n = save.baits[b.id] || 0, active = save.bait === b.id, lock = lockText(b);
+      return ware({
+        id: b.id, name: b.name, desc: b.desc,
+        stats: [statBar(tr('Glück'), b.luck, 4.2), statBar(tr('Tempo'), b.speed, 2)],
+        state: active ? 'active' : lock ? 'locked' : '',
+        owned: n ? tr('{n} im Beutel', { n }) : '',
+        btnText: lock || tr('+{a} für {b} 🔥', { a: b.pack, b: b.glut }),
+        disabled: !!lock || save.glut < b.glut,
+        onClick: () => {
+          if (lock) return keeper(KEEPER.locked(lock));
+          if (save.glut < b.glut) return poor(b.glut);
+          save.glut -= b.glut; save.baits[b.id] = n + b.pack; save.bait = b.id; sfx.coin();
+          keeper(pick(KEEPER.bait)); persist(); updateCoins(); updateGear(); renderShop(false);
+        },
+      });
+    });
+    const cosm = COSMETICS.filter(c => c.glut).map(c => {
+      const owned = save.cosm.owned.includes(c.id), worn = save.cosm[c.slot] === c.id;
+      return ware({
+        id: c.id, name: c.name, desc: c.desc, stats: [],
+        state: worn ? 'active' : owned ? 'owned' : '',
+        owned: SLOT_NAMES[c.slot],
+        btnText: worn ? tr('Ablegen') : owned ? tr('Anziehen') : `${c.glut} 🔥`,
+        disabled: !owned && save.glut < c.glut,
+        onClick: () => {
+          if (worn) save.cosm[c.slot] = null;
+          else if (owned) save.cosm[c.slot] = c.id;
+          else {
+            if (save.glut < c.glut) return poor(c.glut);
+            save.glut -= c.glut; save.cosm.owned.push(c.id); save.cosm[c.slot] = c.id; sfx.coin();
+            keeper(tr('Steht dir. Und schmilzt nicht.'));
+          }
+          persist(); updateCoins(); renderShop(false);
+        },
+      });
+    });
+    return [...rods, ...baits, ...cosm];
+  }
   function renderShop(greet) {
     updateCoins();
-    if (greet !== false) keeper(pick(KEEPER.hello));
+    $('shop-tab-lava').hidden = !lavaOpen();
+    if (shopTab === 'lava' && !lavaOpen()) shopTab = 'rods';
+    if (greet !== false && inLava()) shopTab = 'lava'; // down in the cave the kiosk opens with the lava wares
+    $('shop-glut-p').hidden = shopTab !== 'lava'; $('shop-coins-p').hidden = shopTab === 'lava';
+    { // the Lava-Laden has its own dealer: Glutflosse, a shark dancing in the flames
+      const lava = shopTab === 'lava', ph = $('keeper-photo');
+      ph.src = lava ? 'img/lava-haendler.jpg' : 'img/tophat-fish-fish.gif';
+      ph.alt = lava ? tr('Glutflosse, ein tanzender Hai vor Flammen') : tr('Herr Zylinderwels, ein Wels mit Zylinder');
+      $('shop-title').textContent = lava ? tr('Glutflosses Lava-Laden') : tr('Zylinderwels & Söhne');
+      $('keeper-name').textContent = lava ? tr('Glutflosse, Lava-Händler') : tr('Herr Zylinderwels, Inhaber');
+    }
+    if (greet !== false) keeper(shopTab === 'lava' ? tr('Hey! Glutsteine? Die nehme ich gern. Taler bitte oben lassen.') : pick(KEEPER.hello));
     document.querySelectorAll('[data-shop-tab]').forEach(t => {
       const on = t.dataset.shopTab === shopTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
-    const wares = shopTab === 'snacks' ? SNACKS.map(snackWare) : shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'cosm' ? COSMETICS.filter(c => c.price).map(cosmWare) : shopTab === 'rods' ? RODS.map(r0 => {
+    const wares = shopTab === 'snacks' ? SNACKS.map(snackWare) : shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'cosm' ? COSMETICS.filter(c => c.price).map(cosmWare) : shopTab === 'lava' ? lavaWares() : shopTab === 'rods' ? RODS.filter(r => !r.lava).map(r0 => {
       const owned = save.rods.includes(r0.id), active = r0.lava ? save.lavaRod === r0.id : save.rod === r0.id, lock = !owned && lockText(r0), r = owned ? forged(r0) : r0;
       const w = ware({
         id: r.id, name: (r.lava ? '🌋 ' : '') + r.name, desc: r.desc,
@@ -3212,7 +3394,7 @@
       });
       if (active) w.append(forgeButton(r0));
       return w;
-    }) : BAITS.map(b => {
+    }) : BAITS.filter(b => !b.lava).map(b => {
       const n = save.baits[b.id] || 0, active = save.bait === b.id, lock = b.pack && lockText(b);
       return ware({
         id: b.id, name: b.name, desc: b.desc,
@@ -3232,7 +3414,7 @@
     });
     $('shop-wares').replaceChildren(...wares);
   }
-  document.querySelectorAll('[data-shop-tab]').forEach(t => t.addEventListener('click', () => { shopTab = t.dataset.shopTab; renderShop(false); }));
+  document.querySelectorAll('[data-shop-tab]').forEach(t => t.addEventListener('click', () => { shopTab = t.dataset.shopTab; renderShop(false); if (shopTab === 'lava') keeper(tr('Hey! Glutsteine? Die nehme ich gern. Taler bitte oben lassen.')); }));
 
 
   function flashSaved() {
@@ -3564,6 +3746,18 @@
     sfx.coin(); toast(tr('📜 +{c} Taler · +{x} EP', { c: q.coins, x: q.xp }));
     gainXp(q.xp); fillQuests(); persist(); updateCoins(); renderProg();
   }
+  // QoL: claim every finished quest (normal and Glimm's) with one click
+  function claimAll() {
+    let n = 0, guard = 20;
+    while (guard-- > 0) {
+      const i = save.quests.findIndex(q => q.p >= q.n);
+      if (i >= 0) { claimQuest(i); n++; continue; }
+      const j = lavaOpen() ? save.glimmQ.findIndex(q => q.p >= q.n) : -1;
+      if (j >= 0) { claimGlimm(j); n++; continue; }
+      break;
+    }
+    if (n > 1) setTimeout(() => toast(tr('📜 {n} Aufträge auf einmal abgeholt!', { n })), 300);
+  }
   function rerollQuest(i) {
     const cost = 10 + save.lvl * 2;
     if (save.coins < cost) return;
@@ -3645,6 +3839,9 @@
       d.append(txt, btn);
       return d;
     };
+    const doneN = save.quests.filter(q => q.p >= q.n).length + (lavaOpen() ? save.glimmQ.filter(q => q.p >= q.n).length : 0);
+    $('claim-all').hidden = doneN < 2;
+    $('claim-all').textContent = tr('📜 Alle abholen ({n})', { n: doneN });
     $('prog-quests').replaceChildren(...save.quests.map((q, i) => questRow(q, questText(q), 10 + save.lvl * 2, () => claimQuest(i), () => rerollQuest(i))));
     $('glimm-sec').hidden = !lavaOpen();
     if (lavaOpen()) {
@@ -3722,6 +3919,7 @@
   }
   $('btn-rebirth').addEventListener('click', rebirth);
   $('btn-prestige').addEventListener('click', prestige);
+  $('claim-all').addEventListener('click', claimAll);
   $('btn-dig').addEventListener('click', digDeeper);
 
   // older saves: turn past catches into a starting level, quietly
@@ -3770,8 +3968,10 @@
     if (!r.ok) throw Object.assign(new Error(j.error || tr('Bestenliste gerade nicht erreichbar.')), { status: r.status });
     return j;
   }
+  const TAMPER_MSG = () => tr('Dieser Spielstand wurde von Hand verändert und kann nicht in die Bestenliste.');
   async function lbSubmit(force) {
     if (!save.lb || LB.busy) return;
+    if (save.tampered) { LB.err = TAMPER_MSG(); return; }
     const sc = lbScores(), key = JSON.stringify(sc), since = Date.now() - (save.lbT || 0);
     if (key === save.lbKey || since < 55000 || (!force && since < 120000)) return;
     LB.busy = true; save.lbT = Date.now();
@@ -3821,6 +4021,7 @@
     const err = $('lb-err');
     if (!/^[\p{L}\p{N} ._\-!?]{1,16}$/u.test(name)) { err.textContent = tr('Name: 1–16 Zeichen (Buchstaben, Zahlen, Leerzeichen, . _ - ! ?).'); return; }
     if (!$('lb-consent').checked) { err.textContent = tr('Bitte bestätige die Einwilligung.'); return; }
+    if (save.tampered) { err.textContent = TAMPER_MSG(); return; }
     err.textContent = ''; $('lb-join-btn').disabled = true;
     save.lb = { id: hex(20), token: hex(32), name }; save.lbKey = ''; save.lbT = 0;
     await lbSubmit(true);
@@ -4097,7 +4298,8 @@
       const j = await cloudCall({ action: 'get', key });
       const d = j.data;
       if (!confirm(tr('Spielstand vom {d} laden ({n} Fänge, Level {l})?\nDer aktuelle Spielstand auf diesem Gerät wird ersetzt.', { d: new Date(j.t).toLocaleString(I18N.locale), n: d.total || 0, l: d.lvl || 1 }))) return;
-      d.cloudKey = key; d.cloudT = j.t; d.cloudSum = '';
+      d.cloudKey = key; d.cloudT = j.t; d.cloudSum = ''; delete d.sig;
+      d.sig = signSave(d);
       leaving = true;
       localStorage.setItem(SAVE_KEY, JSON.stringify(d));
       location.reload();
@@ -4120,7 +4322,7 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  window.__fischen = { save, gainXp, rebirth, prestige, dig: () => digDeeper(), buyGlutUp: id => buyGlutUp(id), claimGlimm: i => claimGlimm(i), caveMult: () => caveMult(), glimm: () => talkGlimm(), MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
+  if (DEBUG) window.__fischen = { save, gainXp, rebirth, prestige, dig: () => digDeeper(), buyGlutUp: id => buyGlutUp(id), claimGlimm: i => claimGlimm(i), caveMult: () => caveMult(), glimm: () => talkGlimm(), MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); },
     rhythm: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; reel.maxT = 0; startRhythm(); },
     get notes() { return rhythm.notes; },

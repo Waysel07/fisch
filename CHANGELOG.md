@@ -2,6 +2,23 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 03.11.2026 · `2026-11-03-16`
+
+- ⏩ New settings: the catch card can close by itself after 2.5 seconds (not for new fish, legendaries and shinies), and empty bait can be rebought automatically.
+
+## 03.11.2026 · `2026-11-03-15`
+
+- ⚙️ New settings (gear at the top or key E): sound, volume, less screen shake and short numbers (1.2 M).
+- 📜 “Collect all”: finished jobs – Glimm’s too – are now collected with one click.
+- 🛡️ Fairer play: saves edited by hand are detected and can no longer join the leaderboard.
+- 🎟️ Codes: the settings now have a field to redeem codes – the first one unlocks the beta cosmetics (Beta Cap, Beta Jacket, Beta Bobber).
+
+## 03.11.2026 · `2026-11-03-14`
+
+- 🌋 New lava store in the kiosk: here you only pay with ember stones 🔥, not coins. Lava rods and ember bait are now sold only there.
+- 🦈 The lava store is now run by Glutflosse, a shark dancing in front of flames.
+- 🎩 New lava cosmetics for ember stones: Ember Bobber, Ash Jacket, Magma Helmet and the sparkling Obsidian Crown.
+
 ## 03.11.2026 · `2026-11-03-13`
 
 - 🔥 New currency: Glutsteine (ember stones)! Every catch in the Ember Cave drops some – the rarer the fish, the more (legendaries 40, trophy and monster double, shinies triple).
