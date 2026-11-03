@@ -5,6 +5,9 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 ## 03.11.2026 · `2026-11-03-8`
 
 - ⛵ Old friends on the high seas: Fish, Poisson, Fish 2, Oil Fish, Grouper, Blobfish and the Absolute Odfisch (at night) now bite out on the open sea too.
+- 🚢 New fish on the high seas: the Ship – the Fish, turned 180 degrees.
+- 🌦️ More weather, more often: the weather now changes every in-game day (every 5 minutes) and the sun shines less often.
+- 💨 New weather: wind (your bait drifts further out), ❄️ snow (+25 % coins, slower bites), 🔥 heatwave (less tension) and 🌠 shooting stars (more legendaries and shinies).
 
 ## 03.11.2026 · `2026-11-03-7`
 

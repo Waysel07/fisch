@@ -27,6 +27,7 @@
     { id: 'spezi3',  name: 'Kleiner Spezifisch', img: 'img/spezifisch3.png',     r: 'common', clip: [0, .93],    min: 10, max: 22,  val: 6,  say: 'Klein, aber spezifisch.', desc: 'Ein ganz kleiner, aber sehr spezifischer Fisch.' },
     { id: 'platsch', name: 'Karpador',    img: 'img/fish.gif',   r: 'common',    min: 20, max: 50,  val: 3,  pixel: true, page: 'seiten/Karpador.html', say: 'Platsch. Platsch. Platsch.', desc: 'Kann eigentlich nichts außer zappeln. Macht das aber mit voller Hingabe.' },
     { id: 'stink',   name: 'Stinkfisch',        img: 'img/stinkfisch.png',       r: 'common',    min: 10, max: 25,  val: 5,  pixel: true, page: 'seiten/stinkfisch.html', say: 'Riech lieber nicht so genau hin.', desc: 'Grün, fleckig und riecht drei Stege weit.' },
+    { id: 'schiff',  name: 'Schiff',            img: 'img/schiff.gif',           r: 'uncommon',  min: 40, max: 80,  val: 16, photo: true, page: 'seiten/schiff.html', map: 'see', say: 'Ahoi. Ich bin jetzt ein Schiff.', desc: 'Der Fisch, nur einmal um 180 Grad gedreht. Fährt seitdem auf Hoher See.' },
     { id: 'fisch2',  name: 'Fisch 2',           img: 'img/fish2-spin.gif',       r: 'uncommon',  min: 45, max: 90,  val: 14, photo: true, say: 'Diesmal mit mehr Budget.', desc: 'Die Fortsetzung. Länger als das Original.', sea: true },
     { id: 'spezi2',  name: 'Spezifische Spezifische', img: 'img/spezifisch2.png', r: 'uncommon', clip: [3.17, 4.9],  min: 22, max: 40,  val: 15, say: 'Spezifisch. Spezifisch.', desc: 'Spezifische Spezifische. Gut gekühlt.' },
     { id: 'fisch3',  name: 'Fisch 3',           img: 'img/fish3.gif',            r: 'uncommon',  min: 15, max: 30,  val: 16, photo: true, say: 'WAS?! Wer bist du denn?', desc: 'Hat dich gesehen. Ist sichtlich schockiert.' },
@@ -127,6 +128,9 @@
   const PATCH_NOTES = [
     { id: '2026-11-03-8', date: '03.11.2026', items: [
       '⛵ Alte Bekannte auf Hoher See: Fisch, Poisson, Fisch 2, Ölfisch, Zackenbarsch, Blobfisch und der Absolute Odfisch (nachts) beißen jetzt auch draußen auf dem Meer.',
+      '🌦️ Mehr Wetter, öfter: Das Wetter wechselt jetzt jeden Spieltag (alle 5 Minuten) und die Sonne scheint seltener.',
+      '🚢 Neuer Fisch auf Hoher See: das Schiff – der Fisch, einmal um 180 Grad gedreht.',
+      '💨 Neues Wetter: Wind (Köder fliegt weiter raus), ❄️ Schnee (+25 % Taler, langsamere Bisse), 🔥 Hitzewelle (weniger Spannung) und 🌠 Sternschnuppen (mehr Legendäre und Shinys).',
     ] },
     { id: '2026-11-03-7', date: '03.11.2026', items: [
       '🏅 Fisch-Meisterschaft: Fang denselben Fisch oft genug für Bronze, Silber und Gold. Jede Medaille gibt EP und Schuppen, jeder Gold-Fisch dauerhaft +1 % Taler.',
@@ -318,13 +322,17 @@
   // Weather works like the clock: every WEATHER_LEN seconds a new weather, picked by a hash of the
   // slot number, so every player and every lobby has the same weather without asking a server.
   // A rainbow can only follow rain.
-  const WEATHER_LEN = 600;
+  const WEATHER_LEN = 300; // one in-game day per weather
   const WEATHER = [
-    { id: 'sonne',    icon: '☀️', name: 'Sonnig',     w: 40, desc: 'Ganz normales Angelwetter.' },
-    { id: 'regen',    icon: '🌧️', name: 'Regen',      w: 28, desc: 'Bisse kommen schneller.', bite: .8 },
-    { id: 'nebel',    icon: '🌫️', name: 'Nebel',      w: 20, desc: 'Seltene und epische Fische trauen sich raus.', rare: 1.4 },
-    { id: 'gewitter', icon: '⛈️', name: 'Gewitter',   w: 12, desc: 'Legendäre beißen öfter – aber die Schnur steht unter Spannung.', legend: 1.6, tens: 1.15 },
+    { id: 'sonne',    icon: '☀️', name: 'Sonnig',     w: 22, desc: 'Ganz normales Angelwetter.' },
+    { id: 'regen',    icon: '🌧️', name: 'Regen',      w: 20, desc: 'Bisse kommen schneller.', bite: .8 },
+    { id: 'nebel',    icon: '🌫️', name: 'Nebel',      w: 14, desc: 'Seltene und epische Fische trauen sich raus.', rare: 1.4 },
+    { id: 'gewitter', icon: '⛈️', name: 'Gewitter',   w: 10, desc: 'Legendäre beißen öfter – aber die Schnur steht unter Spannung.', legend: 1.6, tens: 1.15 },
     { id: 'bogen',    icon: '🌈', name: 'Regenbogen', w: 0,  desc: 'Doppelte Chance auf Shinys und Mutationen.', shiny: 2 },
+    { id: 'wind',     icon: '💨', name: 'Wind',       w: 12, desc: 'Der Wind trägt den Köder weiter raus – Fische von weit draußen beißen schon bei kurzen Würfen.', far: .2 },
+    { id: 'schnee',   icon: '❄️', name: 'Schnee',     w: 8,  desc: 'Bisse kommen langsamer, aber die Fänge sind frisch gekühlt: +25 % Taler.', slow: 1.2, val: 1.25 },
+    { id: 'hitze',    icon: '🔥', name: 'Hitzewelle', w: 8,  desc: 'Die Fische sind träge: weniger Spannung beim Drill, aber langsamere Bisse.', tens: .8, slow: 1.15 },
+    { id: 'sterne',   icon: '🌠', name: 'Sternschnuppen', w: 6, desc: 'Sternschnuppen-Nacht: mehr Legendäre und mehr Shinys.', legend: 1.3, shiny: 1.5 },
   ];
   trAll(WEATHER, ['name', 'desc']);
   const WEATHER_HINT = { regen: 'Nur bei Regen', nebel: 'Nur bei Nebel', gewitter: 'Nur bei Gewitter', bogen: 'Nur beim Regenbogen' };
@@ -340,7 +348,7 @@
   }
   function weatherAt(slot) {
     const w = baseWeather(slot);
-    if (w.id !== 'regen' && baseWeather(slot - 1).id === 'regen' && slotHash(slot, 0xb06e) < .45) return WEATHER[4];
+    if (w.id !== 'regen' && baseWeather(slot - 1).id === 'regen' && slotHash(slot, 0xb06e) < .45) return WEATHER.find(x => x.id === 'bogen');
     return w;
   }
   const weatherSlot = () => Math.floor(Date.now() / 1000 / WEATHER_LEN + weatherShift);
@@ -408,7 +416,7 @@
   function land() {
     state = 'wait'; bob.y = SURFACE; bob.dunk = 0;
     splash(bob.x, SURFACE, 10, '#bfe9ff'); ripple(bob.x); sfx.splash();
-    waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss')) * (wx.bite ? 1 / wBoost(1 / wx.bite) : 1) * (Date.now() < energyUntil ? .6 : 1) * (buffOn('kaffee') ? .7 : 1);
+    waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss')) * (wx.bite ? 1 / wBoost(1 / wx.bite) : 1) * (wx.slow || 1) * (Date.now() < energyUntil ? .6 : 1) * (buffOn('kaffee') ? .7 : 1);
     if (bait().boss && !bossReady()) hint(tr('Der Odköder wirkt nur nachts auf Hoher See.'), 2.4);
     else if (bait().boss) { waitT = 2.5; nibbles = 0; hint(tr('Das Wasser wird unruhig …'), 2.4); return; }
     nibbles = Math.floor(Math.random() * 3); nibbleT = waitT - 1.2;
@@ -424,7 +432,7 @@
 
   function pickFish() {
     // out on the open sea every cast counts as far out
-    const d = onSea() ? Math.max(.7, castDistance()) : castDistance(), night = isNight(), b = bait(), r = rod(), map = save.map;
+    const d = Math.min(1, (onSea() ? Math.max(.7, castDistance()) : castDistance()) + (wx.far ? wx.far * (1 + .1 * perk('wetter')) : 0)), night = isNight(), b = bait(), r = rod(), map = save.map;
     const luck = b.luck * r.luck * (1 + .08 * perk('glueck')) * (dexPerk('luck10') ? 1.1 : 1);
     const fullHour = (time * 24) % 1 < 1 / 6; // the clock shows xx:00
     const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night) && !(f.fullHour && !fullHour)
@@ -507,7 +515,7 @@
     }
     const cls = hooked.cls === undefined ? 1 : hooked.cls, sc = SIZE_CLASSES[cls];
     const base = Math.max(0, Math.min(1, (hooked.size - f.min) / (f.max - f.min || 1)));
-    const val = Math.max(1, Math.round(f.val * (.85 + .3 * base) * sc.val * coinMult() * nightMult() * (buffOn('broetchen') ? 1.25 : 1) * (mut ? mut.val : 1) * (shiny ? SHINY_VAL : 1)));
+    const val = Math.max(1, Math.round(f.val * (.85 + .3 * base) * sc.val * coinMult() * nightMult() * (buffOn('broetchen') ? 1.25 : 1) * wBoost(wx.val) * (mut ? mut.val : 1) * (shiny ? SHINY_VAL : 1)));
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
     e.n++; e.best = Math.max(e.best, size); if (f.r !== 'junk') e.small = Math.min(e.small || Infinity, size); save.dex[f.id] = e;
@@ -1032,7 +1040,7 @@
       if (f.x < 30 || f.x > W + 10) f.vx *= -1;
       if (Math.random() < dt * .08) f.vx *= -1;
     }
-    for (const c of clouds) { c.x += c.v * dt; if (c.x > W + 40) c.x = -c.w - 10; }
+    for (const c of clouds) { c.x += c.v * dt * (wx.id === 'wind' ? 5 : 1); if (c.x > W + 40) c.x = -c.w - 10; }
 
     switch (state) {
       case 'charge':
@@ -1524,7 +1532,7 @@
   ];
   function cloud(c, dark) {
     const night = dark > .5;
-    const grey = wx.id === 'regen' || wx.id === 'gewitter';
+    const grey = wx.id === 'regen' || wx.id === 'gewitter' || wx.id === 'schnee';
     const body = night ? (grey ? '#3b4660' : '#4b5d80') : grey ? '#a3adbd' : '#ffffff', under = night ? '#34425e' : grey ? '#7b879a' : '#bfdcf2', halo = night ? '#64748b' : grey ? '#94a3b8' : '#e0f2fe';
     const eye = night ? '#e2e8f0' : '#1e293b';
     const P = CLOUD_FISH.map(([fx, oy, r]) => [c.x + c.w * fx, c.y + oy, r * (c.w / 40) + .5]);
@@ -1542,8 +1550,17 @@
   // ------------------------------------------------------------------ weather on screen
   const drops = Array.from({ length: 130 }, () => ({ x: Math.random() * (W + 40), y: Math.random() * H, v: 170 + Math.random() * 90 }));
   const fogBanks = Array.from({ length: 8 }, (_, i) => ({ x: Math.random() * W, y: HORIZON - 14 + i * 11, w: 70 + Math.random() * 90, v: 2 + Math.random() * 4 }));
+  const flakes = Array.from({ length: 90 }, () => ({ x: Math.random() * W, y: Math.random() * H, v: 10 + Math.random() * 14, s: Math.random() * 7 }));
+  const meteors = []; let nextMeteor = 1;
   let flash = 0, bolt = null, nextBolt = 3;
   function updateWeather(dt) {
+    if (wx.id === 'wind') for (const d of drops) { d.x += d.v * 1.6 * dt; if (d.x > W + 20) { d.x = -20 - Math.random() * 40; d.y = Math.random() * H; } }
+    if (wx.id === 'schnee') for (const f of flakes) { f.y += f.v * dt; f.x += Math.sin(t * 1.3 + f.s) * 6 * dt - 3 * dt; if (f.y > H + 2) { f.y = -2; f.x = Math.random() * W; } if (f.x < -2) f.x = W + 2; }
+    for (let i = meteors.length - 1; i >= 0; i--) { const m = meteors[i]; m.x += m.vx * dt; m.y += m.vy * dt; m.life -= dt; if (m.life <= 0) meteors.splice(i, 1); }
+    if (wx.id === 'sterne' && isNight() && !document.hidden) {
+      nextMeteor -= dt;
+      if (nextMeteor <= 0) { nextMeteor = .8 + Math.random() * 2.4; meteors.push({ x: 20 + Math.random() * (W - 40), y: 4 + Math.random() * 30, vx: -90 - Math.random() * 60, vy: 35 + Math.random() * 25, life: .55 }); }
+    }
     const rainy = wx.id === 'regen' || wx.id === 'gewitter';
     if (rainy) {
       for (const d of drops) {
@@ -1565,8 +1582,13 @@
     }
   }
   function drawWeatherSky(dark) {
-    const cover = { regen: .35, gewitter: .55, nebel: .2 }[wx.id] || 0;
+    const cover = { regen: .35, gewitter: .55, nebel: .2, schnee: .25 }[wx.id] || 0;
     if (cover) { ctx.globalAlpha = cover; px(0, 0, W, HORIZON + 1, dark > .5 ? '#0b1020' : '#64748b'); ctx.globalAlpha = 1; }
+    if (wx.id === 'hitze') { ctx.globalAlpha = .32 * (1 - dark); px(0, 0, W, HORIZON + 1, '#f97316'); ctx.globalAlpha = 1; }
+    for (const m of meteors) { // shooting stars: a bright head with a fading tail
+      for (let i = 0; i < 7; i++) { ctx.globalAlpha = Math.min(1, m.life * 3) * (1 - i / 7); px(m.x - m.vx * i * .012, m.y - m.vy * i * .012, 1, 1, i ? '#c7d2fe' : '#ffffff'); }
+      ctx.globalAlpha = 1;
+    }
     if (wx.id === 'bogen' && dark < .85) { // rainbow over the water
       ctx.lineWidth = 2;
       ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#8b5cf6'].forEach((c, i) => {
@@ -1589,6 +1611,14 @@
       for (let i = 0; i < n; i++) { const d = drops[i]; ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + 1.6, d.y - 6); }
       ctx.stroke();
     }
+    if (wx.id === 'wind') {
+      ctx.strokeStyle = dark > .5 ? 'rgba(148,163,184,.45)' : 'rgba(255,255,255,.7)'; ctx.lineWidth = .5;
+      ctx.beginPath();
+      for (let i = 0; i < 40; i++) { const d = drops[i]; ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + 14, d.y + Math.sin(t * 3 + i) * .8); }
+      ctx.stroke();
+    }
+    if (wx.id === 'schnee') for (const f of flakes) px(f.x, f.y, 1.5, 1.5, dark > .5 ? '#cbd5e1' : '#ffffff');
+    if (wx.id === 'hitze' && dark < .7) { ctx.globalAlpha = .1; px(0, 0, W, H, '#fb923c'); ctx.globalAlpha = 1; }
     if (wx.id === 'nebel') {
       const c = dark > .5 ? '#64748b' : '#e2e8f0';
       ctx.globalAlpha = .2; px(0, 0, W, H, c);
