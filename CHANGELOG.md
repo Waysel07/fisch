@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 03.11.2026 · `2026-11-03-10`
+
+- ✦ Prestige is now available from the 7th rebirth. Every rebirth above that still gives 2 more pearls.
+
 ## 03.11.2026 · `2026-11-03-9`
 
 - ✦ New: prestige from the 10th rebirth. It resets everything, including rebirths, rank, Schuppen and talents – in return every prestige gives a permanent +50 % coins and +25 % XP.

@@ -675,6 +675,7 @@
     "🦪 Perlen-Talente": "🦪 Pearl talents",
     "Perlen": "pearls",
     "Perlen gibt es beim Prestige. Perlen-Talente bleiben für immer, auch nach dem nächsten Prestige.": "You get pearls from prestige. Pearl talents stay forever, even after the next prestige.",
+    "✦ Prestige gibt es jetzt schon ab der 7. Wiedergeburt. Jede Wiedergeburt darüber bringt weiterhin 2 Perlen mehr.": "✦ Prestige is now available from the 7th rebirth. Every rebirth above that still gives 2 more pearls.",
     "✦ Neu: Prestige ab der 10. Wiedergeburt. Es setzt alles zurück, auch Wiedergeburten, Rang, Schuppen und Talente – dafür gibt es pro Prestige dauerhaft +50 % Taler und +25 % EP.": "✦ New: prestige from the 10th rebirth. It resets everything, including rebirths, rank, Schuppen and talents – in return every prestige gives a permanent +50 % coins and +25 % XP.",
     "🦪 Perlen-Talente: Für Perlen aus dem Prestige gibt es Perlenhaken, Perlenglück, Schuppensegen, Frühreif und die Seekarte (Hohe See ohne Wiedergeburt). Sie bleiben für immer.": "🦪 Pearl talents: spend pearls from prestige on Pearl Hook, Pearl Luck, Scale Blessing, Early Bloomer and the Sea Chart (high seas without rebirths). They stay forever.",
     "👑 Neue Kosmetik fürs Prestige: Perlenkrone (1×), Perlen-Pose (2×) und Prestige-Mantel (3×). Dazu eine Bestenliste „Prestige“ und ✦ vor dem Rang.": "👑 New cosmetics for prestige: Pearl Crown (1×), Pearl Bobber (2×) and Prestige Coat (3×). Plus a \"Prestige\" leaderboard and ✦ in front of your rank.",

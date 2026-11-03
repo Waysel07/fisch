@@ -126,6 +126,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-03-10', date: '03.11.2026', items: [
+      '✦ Prestige gibt es jetzt schon ab der 7. Wiedergeburt. Jede Wiedergeburt darüber bringt weiterhin 2 Perlen mehr.',
+    ] },
     { id: '2026-11-03-9', date: '03.11.2026', items: [
       '✦ Neu: Prestige ab der 10. Wiedergeburt. Es setzt alles zurück, auch Wiedergeburten, Rang, Schuppen und Talente – dafür gibt es pro Prestige dauerhaft +50 % Taler und +25 % EP.',
       '🦪 Perlen-Talente: Für Perlen aus dem Prestige gibt es Perlenhaken, Perlenglück, Schuppensegen, Frühreif und die Seekarte (Hohe See ohne Wiedergeburt). Sie bleiben für immer.',
@@ -3125,9 +3128,9 @@
   ];
   trAll(PERKS, ['name']);
   const perkMax = () => save.rebirths >= 5 ? 10 : 5; // from the 5th rebirth talents go up to level 10
-  // Prestige: from the 10th rebirth start over completely. Rebirths, rank, Schuppen, talents and
+  // Prestige: from the 7th rebirth start over completely. Rebirths, rank, Schuppen, talents and
   // the forge go too; in return Perlen for prestige talents and a bonus that never resets.
-  const PRESTIGE_REB = 10;
+  const PRESTIGE_REB = 7;
   const PPERKS = [
     { id: 'ptaler',    icon: '🦪', name: 'Perlenhaken',   max: 10, desc: l => tr('+{n} % Taler', { n: l * 15 }) },
     { id: 'pglueck',   icon: '🌟', name: 'Perlenglück',   max: 10, desc: l => tr('+{n} % Glück für seltene Fische', { n: l * 10 }) },
