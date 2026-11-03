@@ -147,7 +147,7 @@
   const PATCH_NOTES = [
     { id: '2026-11-03-11', date: '03.11.2026', items: [
       '🐉 Gyarados beißt jetzt schon nach 14,5 Karpador statt nach 25.',
-      '🌋 Neue Welt: die Glutgrotte! Nach dem 1. Prestige führt der glühende Felsspalt im Wasser vor dem Steg hinab zu einem See aus Lava.',
+      '🌋 Neue Welt: die Glutgrotte! Nach dem 1. Prestige bringt dich Glimm, ein alter Maulwurf mit Grubenhelm auf dem glühenden Felsen vor dem Steg, hinab zu einem See aus Lava.',
       '🐟 Zwölf ganz neue Fische, die es nur dort gibt – von der Glutgrundel bis zum legendären Lavadrachen. Und wer zehn Magmakarpfen fängt, weckt den Phönixfisch.',
       '🎣 Normale Ruten schmelzen in der Lava: Herr Zylinderwels verkauft jetzt Lavaruten (Basalt-, Obsidian-, Magma- und Drachenknochenrute). Dazu der Glutköder, ein neues Fischdex-Ziel und der Lavamantel.',
     ] },
@@ -1154,6 +1154,7 @@
 
     if (npcTalk > 0) npcTalk -= dt;
     if (bealinTalk > 0) bealinTalk -= dt;
+    if (glimmTalk > 0) glimmTalk -= dt;
     if (welsTalk > 0) welsTalk -= dt;
     updateFx(dt);
     hintTick(dt);
@@ -1750,6 +1751,36 @@
     const glow = open ? (Math.sin(t * 3) > 0 ? '#fdba74' : '#f97316') : '#57534e';
     for (const [x, y] of [[8, 11], [8.5, 10], [9, 9], [8.5, 8], [9, 7], [9.5, 6], [9, 5], [9.5, 4], [10, 3], [9.5, 2]]) px(x0 + x, by - y, 1, 1, glow);
     if (open) { px(x0 + 9, by - 7, .5, .5, '#fef08a'); if (Math.sin(t * 2.3) > .6) px(x0 + 9 + Math.sin(t * 5), by - 13 - (t * 6) % 6, .5, .5, '#fdba74'); }
+    drawGlimm(x0 + 3.5, by - 12, dark);
+  }
+  // Glimm: an old mole with a miner's helmet who lives on the glowing rock and knows the way down
+  const GLIMM = bake(['..kkkkk..', '.kHHHHHk.', 'kLHHHHHHk', '.kkkkkkk.', '.kBBBBBk.', 'kPkBBkBBk', 'kBBBBBBBk', '.kBbbbBk.', 'kCkBBBkCk', '.kk...kk.'],
+    { k: '#1b1f2e', H: '#facc15', L: '#fef9c3', B: '#6b4f3a', b: '#a78b6d', P: '#f9a8d4', C: '#fbcfe8' });
+  let glimmTalk = 0, glimmLine = '', glimmGo = 0;
+  const GLIMM_SAY = {
+    locked: ['Da unten ist es heißer als im Kiosk-Kaffee. Komm nach deinem ersten Prestige wieder.', 'Ohne Prestige lass ich keinen runter. Die Lava ist nichts für Anfänger.', 'Ich bin Glimm. Ich grabe. Und ich warte, bis du Prestige hast.'],
+    down: ['Halt dich fest – ab in die Glutgrotte!', 'Kopf einziehen, da unten hängen Tropfsteine!', 'Runter geht’s. Nimm eine Lavarute mit, sonst schmilzt dir alles.'],
+    up: ['Genug geschwitzt? Ich bring dich hoch.', 'Zurück ans Licht! Blinzeln nicht vergessen.'],
+  };
+  function talkGlimm() {
+    if (glimmGo) return;
+    const where = inLava() ? 'up' : lavaOpen() ? 'down' : 'locked';
+    glimmLine = tr(pick(GLIMM_SAY[where])); glimmTalk = 3;
+    tone(160, .08, 'square', .07, 40); setTimeout(() => tone(240, .1, 'square', .07, -30), 90);
+    if (where !== 'locked' && state === 'idle') glimmGo = setTimeout(() => { glimmGo = 0; glimmTalk = 0; travel(where === 'up' ? 'steg' : 'lava'); }, 1300);
+  }
+  function drawGlimm(x, footY, dark) {
+    const bob = glimmTalk > 0 ? Math.abs(Math.sin(t * 9)) * .5 : 0;
+    ctx.drawImage(GLIMM, snap(x), snap(footY - 10 - bob), 9, 10);
+    if (Math.sin(t * 2.2) > .3) { ctx.globalAlpha = .35; px(x - 2, footY - 8.5 - bob, 2, 1, '#fef9c3'); ctx.globalAlpha = 1; } // helmet lamp beam
+    if (glimmTalk > 0) {
+      setFont('6px Poppins, sans-serif');
+      const bw = Math.ceil(ctx.measureText(glimmLine).width) + 4, bx = snap(Math.max(1, Math.min(W - bw - 1, x + 4 - bw / 2))), byy = snap(footY - 21);
+      ctx.globalAlpha = Math.min(1, glimmTalk * 3);
+      px(bx - .5, byy - .5, bw + 1, 9, '#0f172a'); px(bx, byy, bw, 8, '#fffbeb'); px(snap(x + 4), byy + 8, 2, 1.5, '#0f172a');
+      ctx.fillStyle = '#0f172a'; ctx.textBaseline = 'top'; ctx.fillText(glimmLine, bx + 2, byy + 1);
+      ctx.textBaseline = 'alphabetic'; ctx.globalAlpha = 1;
+    }
   }
   function drawLadder(dark) { // the ladder up out of the cave, back to the dock
     const k = '#1b1f2e', wood = mix([150, 98, 56], [80, 56, 40], dark * .4), woodD = mix([110, 70, 40], [60, 40, 30], dark * .4);
@@ -2133,7 +2164,8 @@
     { id: 'bealin',  label: tr("Käpt'n Bealin"), x: BEALIN.x - 1, y: SURFACE - 16, w: BEALIN.w + 2, h: 18, open: () => talkBealin() },
     { id: 'me',     map: 'all', label: tr('Kleiderschrank'), get x() { return player.x - 5; }, y: DOCK_Y - 26, w: 10, h: 18, open: () => toggleModal('wardrobe') },
     { id: 'buoy',   get label() { return seaOpen() ? tr('⛵ Auf die Hohe See') : tr('⛵ Hohe See (🔒 3× Wiedergeburt)'); }, x: 285, y: SURFACE - 16, w: 12, h: 18, draw: drawBuoy, open: () => travel('see'), ready: () => seaOpen() && !save.seaSeen },
-    { id: 'rift',   get label() { return lavaOpen() ? tr('🌋 In die Glutgrotte') : tr('🌋 Glutgrotte (🔒 1× Prestige)'); }, x: 196, y: SURFACE - 13, w: 18, h: 14, draw: drawRift, open: () => travel('lava'), ready: () => lavaOpen() && !save.lavaSeen },
+    { id: 'rift',   get label() { return lavaOpen() ? tr('⛏️ Glimm · In die Glutgrotte') : tr('⛏️ Glimm · Glutgrotte (🔒 1× Prestige)'); }, x: 196, y: SURFACE - 24, w: 18, h: 25, draw: drawRift, open: () => talkGlimm(), ready: () => lavaOpen() && !save.lavaSeen },
+    { id: 'glimm',  map: 'lava', label: tr('⛏️ Glimm · Zurück zum Steg'), x: 19, y: DOCK_Y - 11, w: 10, h: 11, draw: () => drawGlimm(20, DOCK_Y, 1), open: () => talkGlimm() },
     { id: 'ladder', map: 'lava', label: tr('🪜 Zurück zum Steg'), x: 4, y: DOCK_Y - 28, w: 12, h: 28, draw: drawLadder, open: () => travel('steg') },
     { id: 'wheel',  map: 'see', label: tr('⚓ Zurück zum Steg'), x: 5, y: DOCK_Y - 22, w: 15, h: 22, draw: drawWheel, open: () => travel('steg') },
     { id: 'npc',    label: 'Spezifischfischer', x: NPC.x - 1, y: DOCK_Y - NPC.h - 2, w: NPC.w + 2, h: NPC.h + 2, open: () => talkNpc() },
@@ -3927,7 +3959,7 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  window.__fischen = { save, gainXp, rebirth, prestige, MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
+  window.__fischen = { save, gainXp, rebirth, prestige, glimm: () => talkGlimm(), MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); },
     rhythm: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; reel.maxT = 0; startRhythm(); },
     get notes() { return rhythm.notes; },

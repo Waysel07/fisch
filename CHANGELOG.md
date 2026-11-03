@@ -5,7 +5,7 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 ## 03.11.2026 · `2026-11-03-11`
 
 - 🐉 Gyarados now bites after just 14.5 Karpador instead of 25.
-- 🌋 New world: the Ember Cave! After your 1st prestige the glowing crack in the rock in front of the dock leads down to a lake of lava.
+- 🌋 New world: the Ember Cave! After your 1st prestige Glimm, an old mole in a miner’s helmet on the glowing rock in front of the dock, takes you down to a lake of lava.
 - 🐟 Twelve brand-new fish that only live there – from the Ember Goby to the legendary Lava Dragon. And whoever catches ten Magma Carp wakes the Phoenix Fish.
 - 🎣 Normal rods melt in the lava: Herr Zylinderwels now sells lava rods (basalt, obsidian, magma and dragon bone rod). Plus the ember bait, a new Fishdex goal and the lava coat.
 
