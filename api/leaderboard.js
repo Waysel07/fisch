@@ -26,6 +26,7 @@ const BOARDS = {
   monster: { max: 1e6, step: (dt) => 20 + dt / 20 },        // Fänge der Größenklasse „Monster“
   boss:   { max: 1e5,  step: (dt) => 2 + dt / 60 },         // besiegte Odfische
   spent:  { max: 1e10, step: (dt) => 200000 + dt * 20000 }, // im Laden ausgegebene Taler
+  prestige: { max: 1000, step: (dt) => 1 + dt / 3600 },     // Prestige (jedes braucht 10 Wiedergeburten)
 };
 const TOP = 10;
 const ID_RE = /^[a-f0-9]{16,40}$/;
@@ -103,7 +104,7 @@ module.exports = async function handler(req, res) {
     const token = String(body.token || '');
     if (!/^[a-f0-9]{32,64}$/.test(token)) return send(res, 400, { error: 'Ungültiges Token.' });
     const name = cleanName(body.name);
-    if (!name) return send(res, 400, { error: 'Bitte einen anderen Namen wählen (2–16 Zeichen, keine Beleidigungen).' });
+    if (!name) return send(res, 400, { error: 'Bitte einen anderen Namen wählen (1–16 Zeichen, keine Beleidigungen).' });
 
     // Rate-Limit: pro Spieler 1 Eintrag / 50 s, pro IP 30 / Minute. Die IP wird nur gehasht
     // und nur für 60 Sekunden als Zähler gehalten.

@@ -710,6 +710,10 @@ h3 { font-size: 1.15rem; text-shadow: 2px 2px 0 var(--ink); }
 .reward.ready { box-shadow: 0 0 0 3px var(--ink), inset 0 0 0 3px var(--gold); }
 .lb-list li.mine { outline: 0; box-shadow: 0 0 0 3px var(--ink), inset 0 0 0 3px var(--gold); }
 .rebirth { box-shadow: 0 0 0 3px var(--ink), inset 0 0 0 3px #7e22ce; }
+.rebirth.prestige { border-color: #b45309; box-shadow: 0 0 0 3px var(--ink), inset 0 0 0 3px #b45309; }
+.rebirth.prestige .btn { background: var(--gold); box-shadow: 0 4px 0 #b45309; }
+.rebirth.prestige .btn:hover { background: #fde68a; box-shadow: 0 6px 0 #b45309; }
+.rebirth.prestige .btn:disabled { background: #334155; color: #64748b; box-shadow: 0 4px 0 #1e293b; }
 .ware-icon { border-radius: 0; background: #0a1024; box-shadow: 0 0 0 2px var(--ink); }
 
 /* bars inside panels */
