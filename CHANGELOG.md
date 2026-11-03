@@ -5,6 +5,7 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 ## 03.11.2026 · `2026-11-03-14`
 
 - 🌋 New lava store in the kiosk: here you only pay with ember stones 🔥, not coins. Lava rods and ember bait are now sold only there.
+- 🦈 The lava store is now run by Glutflosse, a shark dancing in front of flames.
 - 🎩 New lava cosmetics for ember stones: Ember Bobber, Ash Jacket, Magma Helmet and the sparkling Obsidian Crown.
 
 ## 03.11.2026 · `2026-11-03-13`

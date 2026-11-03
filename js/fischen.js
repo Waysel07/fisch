@@ -148,6 +148,7 @@
   const PATCH_NOTES = [
     { id: '2026-11-03-14', date: '03.11.2026', items: [
       '🌋 Neuer Lava-Laden im Kiosk: Hier zahlst du nur mit Glutsteinen 🔥, nicht mit Talern. Lavaruten und Glutköder gibt es jetzt nur noch dort.',
+      '🦈 Im Lava-Laden verkauft jetzt Glutflosse, ein tanzender Hai vor Flammen.',
       '🎩 Neue Lava-Kosmetik für Glutsteine: Glut-Pose, Aschejacke, Magmahelm und die funkelnde Obsidiankrone.',
     ] },
     { id: '2026-11-03-13', date: '03.11.2026', items: [
@@ -3264,7 +3265,14 @@
     if (shopTab === 'lava' && !lavaOpen()) shopTab = 'rods';
     if (greet !== false && inLava()) shopTab = 'lava'; // down in the cave the kiosk opens with the lava wares
     $('shop-glut-p').hidden = shopTab !== 'lava'; $('shop-coins-p').hidden = shopTab === 'lava';
-    if (greet !== false) keeper(shopTab === 'lava' ? tr('Glutsteine? Die nehme ich gern. Taler bitte oben lassen.') : pick(KEEPER.hello));
+    { // the Lava-Laden has its own dealer: Glutflosse, a shark dancing in the flames
+      const lava = shopTab === 'lava', ph = $('keeper-photo');
+      ph.src = lava ? 'img/lava-haendler.jpg' : 'img/tophat-fish-fish.gif';
+      ph.alt = lava ? tr('Glutflosse, ein tanzender Hai vor Flammen') : tr('Herr Zylinderwels, ein Wels mit Zylinder');
+      $('shop-title').textContent = lava ? tr('Glutflosses Lava-Laden') : tr('Zylinderwels & Söhne');
+      $('keeper-name').textContent = lava ? tr('Glutflosse, Lava-Händler') : tr('Herr Zylinderwels, Inhaber');
+    }
+    if (greet !== false) keeper(shopTab === 'lava' ? tr('Hey! Glutsteine? Die nehme ich gern. Taler bitte oben lassen.') : pick(KEEPER.hello));
     document.querySelectorAll('[data-shop-tab]').forEach(t => {
       const on = t.dataset.shopTab === shopTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
@@ -3308,7 +3316,7 @@
     });
     $('shop-wares').replaceChildren(...wares);
   }
-  document.querySelectorAll('[data-shop-tab]').forEach(t => t.addEventListener('click', () => { shopTab = t.dataset.shopTab; renderShop(false); if (shopTab === 'lava') keeper(tr('Glutsteine? Die nehme ich gern. Taler bitte oben lassen.')); }));
+  document.querySelectorAll('[data-shop-tab]').forEach(t => t.addEventListener('click', () => { shopTab = t.dataset.shopTab; renderShop(false); if (shopTab === 'lava') keeper(tr('Hey! Glutsteine? Die nehme ich gern. Taler bitte oben lassen.')); }));
 
 
   function flashSaved() {
