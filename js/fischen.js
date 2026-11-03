@@ -57,7 +57,7 @@
     { id: 'odfisch', name: 'Absolute Odfisch',  img: 'img/odfish.jpg',           r: 'legendary', min: 170, max: 190, val: 500, photo: true, say: 'Absolut.', desc: 'Absolute Legende. Nur nachts, nur weit draußen.', far: .6, night: 4, dayOff: true, sea: true },
     { id: 'katze',   name: 'Katzenfisch',       img: 'img/katzenfisch.png',  r: 'legendary', min: 40, max: 70,  val: 450, photo: true, page: 'seiten/katzenfisch.html', say: 'Miau. Ich meine: Blubb.', desc: 'Halb Katze, halb Fisch, ganz flauschig. Kommt lieber nachts.', far: .4, night: 2.5 },
     { id: 'uhrzeit', name: 'UhrZeitFisch',      img: 'img/uhrzeitfisch.gif', r: 'legendary', min: 160, max: 190, val: 480, photo: true, page: 'seiten/uhrzeitfisch.html', say: 'Ich bin pünktlich. Seit 66 Millionen Jahren.', desc: 'Ein Fisch aus der Urzeit, sehr cool. Beißt nur zur vollen Stunde.', fullHour: true, hint: 'Beißt nur zur vollen Stunde' },
-    { id: 'drache',  name: 'Gyarados',    img: 'img/gyarados-water.gif', r: 'legendary', min: 150, max: 240, val: 520, pixel: true, page: 'seiten/drachenkarpfen.html', say: 'Ich bin den Wasserfall hochgesprungen. Jetzt bin ich sauer.', desc: 'Ein Karpfen, der es durchs Drachentor geschafft hat. Jade, Gold und schlechte Laune.', needs: { platsch: 25 }, bigSplash: true, hint: 'Erst wenn du 25 Karpador gefangen hast' },
+    { id: 'drache',  name: 'Gyarados',    img: 'img/gyarados-water.gif', r: 'legendary', min: 150, max: 240, val: 520, pixel: true, page: 'seiten/drachenkarpfen.html', say: 'Ich bin den Wasserfall hochgesprungen. Jetzt bin ich sauer.', desc: 'Ein Karpfen, der es durchs Drachentor geschafft hat. Jade, Gold und schlechte Laune.', needs: { platsch: 14.5 }, bigSplash: true, hint: 'Erst wenn du 14,5 Karpador gefangen hast' },
     // weather fish: only bite while their weather is on (weather: id from WEATHER)
     { id: 'pfuetze',  name: 'Pfützenspringer',   img: 'img/pfuetzenspringer.png', r: 'uncommon', min: 12, max: 24, val: 20, pixel: true, page: 'seiten/pfuetzenspringer.html', weather: 'regen', say: 'Endlich Regen! Ich hüpf mal ein bisschen rum.', desc: 'Kommt nur raus, wenn es regnet. Springt von Tropfen zu Tropfen.' },
     { id: 'nebelgeist', name: 'Nebelgeist',      img: 'img/nebelgeist.png',       r: 'rare',     min: 30, max: 55, val: 55, pixel: true, page: 'seiten/nebelgeist.html', weather: 'nebel', say: 'Huuuh … ach, nur ein Angler.', desc: 'Halb durchsichtig. Taucht nur im Nebel auf.' },
@@ -75,6 +75,19 @@
     { id: 'kalmar',   name: 'Riesenkalmar',      img: 'img/riesenkalmar.png',     r: 'legendary', min: 250, max: 450, val: 600, pixel: true, page: 'seiten/riesenkalmar.html', map: 'see', night: 2, say: 'Acht Arme, zwei Tentakel, null Geduld.', desc: 'Kommt aus der Tiefe. Nur auf Hoher See, am liebsten nachts.' },
     { id: 'sturmhai', name: 'Sturmhai',          img: 'img/sturmhai.png',         r: 'legendary', min: 220, max: 320, val: 650, pixel: true, page: 'seiten/sturmhai.html', map: 'see', weather: 'gewitter', say: 'Ich reite den Blitz.', desc: 'Jagt nur bei Gewitter auf Hoher See.' },
     { id: 'flaschenpost', name: 'Flaschenpost',  img: 'img/flaschenpost.png',     r: 'junk',     min: 20, max: 30, val: 2,  pixel: true, page: 'seiten/flaschenpost.html', map: 'see', post: true, say: 'Hilfe, ich stecke in einer Flasche! … Nein, Spaß.', desc: 'Manchmal stecken ein paar Taler drin.' },
+    // Glutgrotte (map: 'lava'): the lava cave under the dock, opens after the 1st prestige. Only its own fish bite there.
+    { id: 'schlacke',  name: 'Schlackebrocken',  img: 'img/lava-schlacke.png',  r: 'junk',  min: 15, max: 30, val: 3, pixel: true, page: 'seiten/schlackebrocken.html', map: 'lava', post: 'slag', say: 'Ich glühe noch ein bisschen nach.', desc: 'Ein Klumpen erkalteter Lava. Manchmal stecken geschmolzene Taler drin.' },
+    { id: 'glutgrundel', name: 'Glutgrundel',    img: 'img/lava-glutgrundel.png', r: 'common', min: 10, max: 20, val: 14, pixel: true, page: 'seiten/glutgrundel.html', map: 'lava', say: 'Heiß hier, oder? Ich find’s gemütlich.', desc: 'Klein, rund und glühend wie ein Stück Kohle.' },
+    { id: 'aschebarsch', name: 'Aschebarsch',    img: 'img/lava-aschebarsch.png', r: 'common', min: 20, max: 40, val: 16, pixel: true, page: 'seiten/aschebarsch.html', map: 'lava', say: 'Nicht pusten, sonst staube ich.', desc: 'Aschgrau mit dunklen Streifen und Flossen wie Flammen.' },
+    { id: 'bimsfisch', name: 'Bimssteinfisch',   img: 'img/lava-bimsfisch.png', r: 'uncommon', min: 25, max: 45, val: 30, pixel: true, page: 'seiten/bimssteinfisch.html', map: 'lava', say: 'Ich bin leichter, als ich aussehe.', desc: 'Voller kleiner Löcher und so leicht, dass er oben auf der Lava treibt.' },
+    { id: 'funkenforelle', name: 'Funkenforelle', img: 'img/lava-funkenforelle.png', r: 'uncommon', min: 30, max: 55, val: 32, pixel: true, page: 'seiten/funkenforelle.html', map: 'lava', say: 'Pssst … knister.', desc: 'Sprüht beim Springen Funken. Nicht in der Nähe von Heu angeln.' },
+    { id: 'obsidianhecht', name: 'Obsidianhecht', img: 'img/lava-obsidianhecht.png', r: 'rare', min: 60, max: 120, val: 95, pixel: true, page: 'seiten/obsidianhecht.html', map: 'lava', say: 'Scharf. In jeder Hinsicht.', desc: 'Lang, schwarz und glatt wie Vulkanglas. Schimmert lila.' },
+    { id: 'schwefelkugel', name: 'Schwefel-Kugelfisch', img: 'img/lava-schwefelkugel.png', r: 'rare', min: 20, max: 40, val: 100, pixel: true, page: 'seiten/schwefel-kugelfisch.html', map: 'lava', say: 'Riechst du das? Das bin ich.', desc: 'Bläht sich auf, wenn er sich ärgert. Riecht nach faulen Eiern.' },
+    { id: 'magmakarpfen', name: 'Magmakarpfen',  img: 'img/lava-magmakarpfen.png', r: 'epic', min: 70, max: 130, val: 240, pixel: true, page: 'seiten/magmakarpfen.html', map: 'lava', say: 'Unter meiner Kruste brodelt es.', desc: 'Ein schwerer Karpfen aus Basalt, durch dessen Risse das Magma leuchtet.' },
+    { id: 'salamanderfisch', name: 'Salamanderfisch', img: 'img/lava-salamanderfisch.png', r: 'epic', min: 40, max: 70, val: 250, pixel: true, page: 'seiten/salamanderfisch.html', map: 'lava', night: 2, say: 'Ich hab Beine. Ich benutze sie nur nicht.', desc: 'Schwarz mit orangen Flecken und vier kleinen Beinen. Kommt lieber nachts.' },
+    { id: 'kristallwels', name: 'Kristallwels',  img: 'img/lava-kristallwels.png', r: 'epic', min: 80, max: 160, val: 260, pixel: true, page: 'seiten/kristallwels.html', map: 'lava', far: .5, say: 'Mir wachsen Steine aus dem Rücken. Normal.', desc: 'Auf seinem Rücken wachsen leuchtende Kristalle. Lebt weit draußen im Glutsee.' },
+    { id: 'lavadrache', name: 'Lavadrache',      img: 'img/lava-lavadrache.png', r: 'legendary', min: 300, max: 500, val: 850, pixel: true, page: 'seiten/lavadrache.html', map: 'lava', bigSplash: true, say: 'Ich bin kein Fisch. Ich bin ein Vulkan mit Schwanz.', desc: 'Schlängelt sich durch die Glut. Seine Mähne brennt seit tausend Jahren.' },
+    { id: 'phoenixfisch', name: 'Phönixfisch',   img: 'img/lava-phoenixfisch.png', r: 'legendary', min: 60, max: 110, val: 1000, pixel: true, page: 'seiten/phoenixfisch.html', map: 'lava', needs: { magmakarpfen: 10 }, bigSplash: true, hint: 'Zeigt sich erst, wenn du 10 Magmakarpfen gefangen hast', say: 'Ich war schon Asche. Zweimal.', desc: 'Steigt aus der Glut auf, wenn genug Magmakarpfen gefangen wurden. Brennt und wird nie kleiner.' },
     // the boss of the open sea: never bites normally, only lands after winning the boss fight
     { id: 'odboss',   name: 'Odfisch',           img: 'img/odfisch-boss.png',     r: 'legendary', min: 260, max: 320, val: 900, pixel: true, page: 'seiten/odfisch.html', map: 'see', boss: true, say: 'Fih.', desc: 'Halb Fisch, halb Katze, ganz Boss. Der Herrscher der Hohen See lässt sich nur im Bossfight bezwingen – am besten zusammen mit der Lobby.' },
     { id: 'schummel', name: 'Ditto',    img: 'img/ditto-dance.gif', r: 'junk', min: 6, max: 14, val: 1, pixel: true, page: 'seiten/schummelfisch.html', fake: true, say: 'Das ist kein Fisch.', desc: '+1 Coin' },
@@ -93,6 +106,11 @@
     { id: 'stern',  name: 'Sternenrute',      price: 6000, reb: 3, cast: 1.0, reel: 2.6,  tens: .4,   luck: 2.1, desc: 'Aus einer Sternschnuppe geschnitzt.' },
     { id: 'tiefsee', name: 'Tiefseerute',     price: 15000, reb: 4, cast: 1.0, reel: 3.0, tens: .34,  luck: 2.5, desc: 'Für die ganz tiefen Wasser. Hält fast alles aus.' },
     { id: 'krake',  name: 'Krakenrute',       price: 40000, reb: 6, cast: 1.0, reel: 3.4, tens: .3,   luck: 3.0, desc: 'Acht Arme Kraft in einer Rute. Nichts reißt.' },
+    // Lavaruten: normal rods melt in the Glutgrotte, there only these work (and they only work there)
+    { id: 'basalt',   name: 'Basaltrute',         price: 400,   pres: 1, lava: true, cast: .8,  reel: 1.5, tens: .7,  luck: 1.1, desc: 'Aus erkalteter Lava. Die erste Rute, die in der Glutgrotte nicht schmilzt.' },
+    { id: 'obsidian', name: 'Obsidianrute',       price: 4000,  pres: 1, lava: true, cast: .95, reel: 2.2, tens: .5,  luck: 1.6, desc: 'Schwarzes Vulkanglas, hart wie Stahl. Nur für die Glutgrotte.' },
+    { id: 'magma',    name: 'Magmarute',          price: 15000, pres: 1, lava: true, cast: 1.0, reel: 2.9, tens: .38, luck: 2.2, desc: 'In ihr fließt noch Magma. Wird nie kalt. Nur für die Glutgrotte.' },
+    { id: 'drachenknochen', name: 'Drachenknochenrute', price: 50000, pres: 2, lava: true, cast: 1.0, reel: 3.6, tens: .28, luck: 3.0, desc: 'Aus dem Knochen eines Lavadrachen. Hält jede Glut aus. Nur für die Glutgrotte.' },
   ];
   const BAITS = [
     { id: 'wurm',   name: 'Wurm',          price: 0,  pack: 0, luck: 1,   speed: 1,   desc: 'Unbegrenzt. Wurmig.' },
@@ -101,6 +119,7 @@
     { id: 'wiik',   name: 'Wii-Köder',     price: 30, pack: 5, lvl: 3, luck: 1.5, speed: 1.4, wii: 2, img: 'img/wii-bait.png', desc: '5 Stück. Zeigt auf die Wii-Fische. Die beißen doppelt so oft.' },
     { id: 'mond',   name: 'Mondköder',     price: 90, pack: 5, reb: 2, luck: 4.2, speed: 2,  desc: '5 Stück. Leuchtet. Legenden können nicht widerstehen.' },
     { id: 'abyss',  name: 'Abgrundköder',  price: 200, pack: 5, reb: 5, luck: 6, speed: 2.4, desc: '5 Stück. Leuchtet aus der Tiefe. Selbst Legenden werden neugierig.' },
+    { id: 'glutkoeder', name: 'Glutköder', price: 300, pack: 5, pres: 1, luck: 3, speed: 1.8, lava: true, desc: '5 Stück. Glüht wie Kohle. Wirkt nur in der Glutgrotte, dort aber richtig.' },
     { id: 'odkoeder', name: 'Odköder',     price: 1500, pack: 1, reb: 3, luck: 1, speed: 1, boss: true, desc: '1 Stück. Nachts auf Hoher See ausgeworfen, ruft er den Odfisch.' },
   ];
   // Mysteryboxen: bought at the kiosk or found on the hook now and then. Opening one rolls a prize.
@@ -126,6 +145,12 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-03-11', date: '03.11.2026', items: [
+      '🐉 Gyarados beißt jetzt schon nach 14,5 Karpador statt nach 25.',
+      '🌋 Neue Welt: die Glutgrotte! Nach dem 1. Prestige führt der glühende Felsspalt im Wasser vor dem Steg hinab zu einem See aus Lava.',
+      '🐟 Zwölf ganz neue Fische, die es nur dort gibt – von der Glutgrundel bis zum legendären Lavadrachen. Und wer zehn Magmakarpfen fängt, weckt den Phönixfisch.',
+      '🎣 Normale Ruten schmelzen in der Lava: Herr Zylinderwels verkauft jetzt Lavaruten (Basalt-, Obsidian-, Magma- und Drachenknochenrute). Dazu der Glutköder, ein neues Fischdex-Ziel und der Lavamantel.',
+    ] },
     { id: '2026-11-03-10', date: '03.11.2026', items: [
       '✦ Prestige gibt es jetzt schon ab der 7. Wiedergeburt. Jede Wiedergeburt darüber bringt weiterhin 2 Perlen mehr.',
     ] },
@@ -236,7 +261,12 @@
       cast: Math.min(1, r.cast * (1 + .01 * k)), reel: r.reel * (1 + .03 * k), luck: r.luck * (1 + .03 * k), tens: r.tens * (1 - .02 * k) });
     return forgedCache.get(r.id + k);
   }
-  const rod = () => forged(RODS.find(r => r.id === save.rod) || RODS[0]);
+  // in the Glutgrotte you hold your Lavarute (save.lavaRod), everywhere else your normal rod
+  const NO_LAVA_ROD = { ...RODS[0], id: 'nolava', name: tr('Keine Lavarute'), lava: true };
+  const lavaRodOk = () => !!save.lavaRod && save.rods.includes(save.lavaRod);
+  const rod = () => inLava()
+    ? (lavaRodOk() ? forged(RODS.find(r => r.id === save.lavaRod)) : NO_LAVA_ROD)
+    : forged(RODS.find(r => r.id === save.rod && !r.lava) || RODS[0]);
   const bait = () => BAITS.find(b => b.id === save.bait) || BAITS[0];
 
   // ------------------------------------------------------------------ dom
@@ -363,7 +393,9 @@
     return w;
   }
   const weatherSlot = () => Math.floor(Date.now() / 1000 / WEATHER_LEN + weatherShift);
-  function currentWeather() { return (weatherForce && WEATHER.find(w => w.id === weatherForce)) || weatherAt(weatherSlot()); }
+  // under the earth there is no weather: the cave has its own still "weather" without any bonus
+  const CAVE_WX = { id: 'glut', icon: '🌋', name: tr('Glutgrotte'), desc: tr('Unter der Erde gibt es kein Wetter, nur Hitze.') };
+  function currentWeather() { if (inLava()) return CAVE_WX; return (weatherForce && WEATHER.find(w => w.id === weatherForce)) || weatherAt(weatherSlot()); }
   let wx = currentWeather();
   // the Wetterfrosch talent makes every weather bonus stronger
   const wBoost = x => (x ? 1 + (x - 1) * (1 + .1 * perk('wetter')) : 1);
@@ -372,7 +404,11 @@
   const SEA_REB = 3;
   // the Seekarte prestige talent opens the sea without rebirths
   const seaOpen = () => save.rebirths >= SEA_REB || ((save.pperks || {}).pkarte | 0) > 0;
-  if (save.map !== 'see' || !seaOpen()) save.map = 'steg';
+  // the Glutgrotte (lava cave) opens after the 1st prestige
+  const LAVA_PRES = 1;
+  const lavaOpen = () => (save.prestige | 0) >= LAVA_PRES;
+  function inLava() { return save.map === 'lava'; }
+  if (!((save.map === 'see' && seaOpen()) || (save.map === 'lava' && lavaOpen()))) save.map = 'steg';
   const onSea = () => save.map === 'see';
 
   const player = { x: 90, dir: 1, walk: 0 };
@@ -412,6 +448,7 @@
   function castDistance() { return Math.max(0, Math.min(1, (bob.landX - DOCK_END) / (W - DOCK_END - 10))); }
 
   function startCharge() {
+    if (inLava() && !lavaRodOk()) { hint(tr('🔥 Deine Rute würde in der Lava schmelzen! Im Laden gibt es Lavaruten.'), 2.5); return; }
     player.dir = 1;
     state = 'charge'; power = 0; powerDir = 1; hint('');
   }
@@ -446,7 +483,7 @@
   function pickFish() {
     // out on the open sea every cast counts as far out
     const d = Math.min(1, (onSea() ? Math.max(.7, castDistance()) : castDistance()) + (wx.far ? wx.far * (1 + .1 * perk('wetter')) : 0)), night = isNight(), b = bait(), r = rod(), map = save.map;
-    const luck = b.luck * r.luck * (1 + .08 * perk('glueck')) * (1 + .1 * pperk('pglueck')) * (dexPerk('luck10') ? 1.1 : 1);
+    const luck = (b.lava && map !== 'lava' ? 1 : b.luck) * r.luck * (1 + .08 * perk('glueck')) * (1 + .1 * pperk('pglueck')) * (dexPerk('luck10') ? 1.1 : 1);
     const fullHour = (time * 24) % 1 < 1 / 6; // the clock shows xx:00
     const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night) && !(f.fullHour && !fullHour)
       && !(f.needs && Object.entries(f.needs).some(([id, n]) => ((save.dex[id] || {}).n || 0) < n))
@@ -545,10 +582,10 @@
       energyUntil = Date.now() + 60000;
       setTimeout(() => toast(tr('⚡ Energy! 60 Sekunden lang schnellere Bisse.')), 1800);
     }
-    if (f.post && Math.random() < .35) { // a message in a bottle sometimes holds a few Taler
-      const extra = Math.round((40 + Math.random() * 260) * coinMult());
+    if (f.post && Math.random() < .35) { // a message in a bottle (or a lump of slag) sometimes holds a few Taler
+      const extra = Math.round((f.post === 'slag' ? 120 + Math.random() * 480 : 40 + Math.random() * 260) * coinMult());
       save.coins += extra; save.lifeCoins += extra; save.totalEarned += extra;
-      setTimeout(() => toast(tr('📜 In der Flasche steckten {n} Taler!', { n: extra })), 1800);
+      setTimeout(() => toast(f.post === 'slag' ? tr('🔥 Im Schlackebrocken waren {n} Taler eingeschmolzen!', { n: extra }) : tr('📜 In der Flasche steckten {n} Taler!', { n: extra })), 1800);
     }
     bealinEvent({ type: 'catch', f, size, mut, clean: reel.maxT < .7, night: darkness() > .5 });
     if (f.r !== 'junk') { // now and then a mystery box hangs on the line too
@@ -1027,7 +1064,7 @@
     time = worldTime();
     const w = currentWeather();
     if (w !== wx) {
-      if ($('title').hidden) toast(tr('{i} Wetterumschwung: {n} – {d}', { i: w.icon, n: w.name, d: w.desc }));
+      if ($('title').hidden && w !== CAVE_WX && wx !== CAVE_WX) toast(tr('{i} Wetterumschwung: {n} – {d}', { i: w.icon, n: w.name, d: w.desc }));
       wx = w; updateWeatherPill();
     }
     updateWeather(dt);
@@ -1172,7 +1209,8 @@
 
   // ------------------------------------------------------------------ effects
   function splash(x, y, n, color) {
-    for (let i = 0; i < n; i++) particles.push({ x, y, vx: (Math.random() - .5) * 60, vy: -40 - Math.random() * 60, life: 1, c: color });
+    const lava = inLava(); // lava splashes glow
+    for (let i = 0; i < n; i++) particles.push({ x, y, vx: (Math.random() - .5) * 60, vy: -40 - Math.random() * 60, life: 1, c: lava ? (i % 2 ? '#fb923c' : '#fde047') : color });
   }
   function ripple(x, life = 1.2) { ripples.push({ x, r: 2, life, max: life }); }
 
@@ -1251,6 +1289,7 @@
     { id: 'hut-perle',   slot: 'hat',    name: 'Perlenkrone',        col: ['#f5f3ff', '#a78bfa', '#ffffff'], sparkle: true, desc: 'Für alle, die ganz von vorn angefangen haben.', ach: 'Mach einmal Prestige.', got: () => save.prestige >= 1 },
     { id: 'pose-perle',  slot: 'bob',    name: 'Perlen-Pose',        col: '#ede9fe', desc: 'Schimmert wie Perlmutt.', ach: 'Mach 2× Prestige.', got: () => save.prestige >= 2 },
     { id: 'jacke-prestige', slot: 'jacket', name: 'Prestige-Mantel', col: ['#1e1b4b', '#0f0a2e', '#fbbf24'], desc: 'Nachtblau mit Goldsaum. Schon dreimal alles verloren und trotzdem hier.', ach: 'Mach 3× Prestige.', got: () => save.prestige >= 3 },
+    { id: 'jacke-lava',  slot: 'jacket', name: 'Lavamantel',         col: ['#b91c1c', '#450a0a', '#fb923c'], desc: 'Hält warm. Viel zu warm.', ach: 'Fange alle Fische der Glutgrotte.', got: () => FISH.filter(f => f.map === 'lava').every(f => save.dex[f.id]) },
     { id: 'pose-monster', slot: 'bob',   name: 'Monster-Pose',       col: '#f43f5e', desc: 'Für Angler, die Großes vorhaben.', ach: 'Fange einen Monster-Fisch.', got: () => (save.monsters || 0) >= 1 },
     { id: 'pose-gold',   slot: 'bob',    name: 'Goldene Pose',       col: '#facc15', desc: 'Glänzt, wenn ein Fisch anbeißt.', ach: 'Erreiche Level 10.', got: () => save.lvl >= 10 || save.rebirths > 0 },
     { id: 'pose-regen',  slot: 'bob',    name: 'Regenbogen-Pose',    col: null, desc: 'Wechselt ständig die Farbe.', ach: 'Entdecke 20 verschiedene Fische.', got: () => FISH.filter(f => save.dex[f.id]).length >= 20 },
@@ -1398,7 +1437,7 @@
   }
   function bealinBob() { return Math.sin(t * 1.6) * 1; }
   function drawBealin(dark) {
-    if (onSea()) return; // out at sea we are on his boat
+    if (onSea() || inLava()) return; // out at sea we are on his boat, and he never goes underground
     const k = '#1b1f2e', x = BEALIN.x, y = SURFACE - 1 + bealinBob();
     const hull = mix([150, 62, 40], [70, 35, 30], dark), hullD = mix([110, 42, 28], [50, 25, 22], dark), rim = mix([222, 200, 160], [100, 92, 80], dark);
     // the old man sits in the middle of the boat
@@ -1491,6 +1530,7 @@
     return bg.createPattern(ditherTile, 'repeat');
   }
   function renderBg(top, bot, dark) {
+    if (inLava()) { renderCave(dark); return; }
     const skyTop = top.match(/\d+/g).map(Number), skyBot = bot.match(/\d+/g).map(Number);
     bands(bg, 0, HORIZON, Array.from({ length: 9 }, (_, i) => mix(skyTop, skyBot, i / 8)));
     const w0 = [[70, 165, 210], [16, 44, 86]], w1 = [[8, 40, 80], [4, 10, 28]];
@@ -1701,6 +1741,51 @@
     }
     px(cx - .5, cy - 1, 2, 2, k);
   }
+  function drawRift(dark) { // a rock in the water with a glowing crack: the way down into the Glutgrotte
+    const k = '#1b1f2e', x0 = 196, by = SURFACE + 1, open = lavaOpen();
+    const rock = mix([88, 80, 76], [40, 36, 40], dark), rockL = mix([128, 118, 110], [60, 56, 60], dark), rockD = mix([60, 54, 52], [26, 24, 28], dark);
+    ctx.fillStyle = k; ctx.beginPath(); ctx.moveTo(x0 - .5, by); ctx.lineTo(x0 + 3, by - 9); ctx.lineTo(x0 + 8, by - 13.5); ctx.lineTo(x0 + 13, by - 11); ctx.lineTo(x0 + 18.5, by); ctx.fill();
+    ctx.fillStyle = rock; ctx.beginPath(); ctx.moveTo(x0 + .5, by); ctx.lineTo(x0 + 3.5, by - 8.5); ctx.lineTo(x0 + 8, by - 12.5); ctx.lineTo(x0 + 12.5, by - 10.5); ctx.lineTo(x0 + 17.5, by); ctx.fill();
+    px(x0 + 4, by - 8, 3, .5, rockL); px(x0 + 7.5, by - 12, 2, .5, rockL); px(x0 + 12, by - 4, 4, 3.5, rockD);
+    const glow = open ? (Math.sin(t * 3) > 0 ? '#fdba74' : '#f97316') : '#57534e';
+    for (const [x, y] of [[8, 11], [8.5, 10], [9, 9], [8.5, 8], [9, 7], [9.5, 6], [9, 5], [9.5, 4], [10, 3], [9.5, 2]]) px(x0 + x, by - y, 1, 1, glow);
+    if (open) { px(x0 + 9, by - 7, .5, .5, '#fef08a'); if (Math.sin(t * 2.3) > .6) px(x0 + 9 + Math.sin(t * 5), by - 13 - (t * 6) % 6, .5, .5, '#fdba74'); }
+  }
+  function drawLadder(dark) { // the ladder up out of the cave, back to the dock
+    const k = '#1b1f2e', wood = mix([150, 98, 56], [80, 56, 40], dark * .4), woodD = mix([110, 70, 40], [60, 40, 30], dark * .4);
+    px(4.5, DOCK_Y - 28, 2, 28, k); px(12.5, DOCK_Y - 28, 2, 28, k); px(5, DOCK_Y - 28, 1, 28, wood); px(13, DOCK_Y - 28, 1, 28, wood);
+    for (let y = DOCK_Y - 26; y < DOCK_Y; y += 4) { px(5, y - .5, 9, 1.5, k); px(5.5, y, 8, .5, woodD); }
+  }
+  // the Glutgrotte: a rock ceiling with stalactites instead of sky, basalt columns and a lake of lava
+  function renderCave(dark) {
+    const d = dark * .35;
+    bands(bg, 0, HORIZON, Array.from({ length: 9 }, (_, i) => mix([22, 16, 20], [86, 40, 26], Math.pow(i / 8, 1.6) * (1 - d))));
+    const st = mix([40, 30, 30], [24, 18, 20], d), stL = mix([74, 54, 46], [40, 30, 30], d);
+    for (let i = 0; i < 26; i++) {
+      const x = (i * 61) % W + (i % 3) * 2, len = 8 + (i * 37) % 26, w = 3 + (i * 13) % 5;
+      for (let y = 0; y < len; y += .5) { const hw = snap(w * (1 - y / len)); bg.fillStyle = st; bg.fillRect(snap(x - hw), y, hw * 2 + .5, .5); bg.fillStyle = stL; bg.fillRect(snap(x - hw), y, .5, .5); }
+    }
+    const col = mix([46, 30, 30], [28, 20, 22], d), colL = mix([96, 52, 38], [54, 32, 28], d);
+    for (let x = 120; x < W; x += 9) {
+      const h = 6 + ((x * 7) % 17);
+      bg.fillStyle = col; bg.fillRect(x, HORIZON - h, 8, h + 1); bg.fillStyle = colL; bg.fillRect(x, HORIZON - h, 8, .5); bg.fillRect(x + 7, HORIZON - h, .5, h);
+    }
+    bands(bg, HORIZON, H, Array.from({ length: 10 }, (_, i) => mix([253, 186, 74], [124, 22, 12], Math.pow(i / 9, .7))));
+    const crust = mix([70, 30, 22], [50, 22, 18], d);
+    for (let i = 0; i < 22; i++) {
+      const y = HORIZON + 4 + (i * i * .7) % (H - HORIZON - 6), x = (i * 89) % W;
+      bg.fillStyle = crust; bg.fillRect(x, snap(y), 10 + (i % 4) * 5, 1 + (i % 2) * .5);
+    }
+  }
+  function drawLedge(dark) { // a basalt ledge to stand on, instead of the dock
+    const k = '#1b1f2e', rock = '#3f3533', rockL = '#6b5b53', rockD = '#2a2220', glow = '#f97316';
+    px(0, DOCK_Y - .5, DOCK_END + .5, H - DOCK_Y + .5, k);
+    px(0, DOCK_Y, DOCK_END, H - DOCK_Y, rock);
+    px(0, DOCK_Y, DOCK_END, 1, rockL);
+    for (let x = 4; x < DOCK_END - 4; x += 11) { px(x, DOCK_Y + 3 + (x % 3), 6, .5, rockD); px(x + 3, DOCK_Y + 7, 5, .5, rockD); }
+    for (let x = 0; x < DOCK_END; x += 7) px(x + 2, SURFACE + 3, 4, H - SURFACE, rockD);
+    ctx.globalAlpha = .55 + .25 * Math.sin(t * 2); px(DOCK_END - .5, SURFACE - 1, 1, H - SURFACE + 1, glow); px(0, H - 3, DOCK_END, 3, '#c2410c'); ctx.globalAlpha = 1;
+  }
   function drawBuoy(dark) { // red-white buoy near Bealin: the way out to the open sea
     const k = '#1b1f2e', bx = 290, by = SURFACE - 6 + Math.sin(t * 2) * .8;
     const red = mix([220, 50, 50], [90, 30, 40], dark), white = mix([240, 240, 240], [110, 116, 140], dark);
@@ -1713,11 +1798,14 @@
   function travel(to) {
     if (state !== 'idle') return;
     if (to === 'see' && !seaOpen()) { toast(tr('🔒 Die Hohe See gibt es ab der 3. Wiedergeburt. Bealin wartet so lange.')); return; }
-    save.map = to; save.seaSeen = save.seaSeen || to === 'see'; persist();
+    if (to === 'lava' && !lavaOpen()) { toast(tr('🔒 Die Glutgrotte öffnet sich erst nach dem 1. Prestige. Der Spalt ist noch zu heiß.')); return; }
+    save.map = to; save.seaSeen = save.seaSeen || to === 'see'; save.lavaSeen = save.lavaSeen || to === 'lava'; persist();
+    wx = currentWeather();
     bgKey = ''; player.x = 90; player.dir = 1; boss.invite = null; $('btn-boss').hidden = true;
     const st = $('stage'); st.classList.remove('travel'); void st.offsetWidth; st.classList.add('travel');
     sfx.whoosh(); setTimeout(() => sfx.splash(), 300);
-    toast(to === 'see' ? tr('⛵ Leinen los! Willkommen auf Hoher See – hier beißen andere Fische.') : tr('⚓ Zurück am Steg.'));
+    toast(to === 'see' ? tr('⛵ Leinen los! Willkommen auf Hoher See – hier beißen andere Fische.')
+      : to === 'lava' ? tr('🌋 Willkommen in der Glutgrotte! Hier beißen ganz neue Fische – und die Lava ist heiß.') : tr('⚓ Zurück am Steg.'));
     updateMapUi();
     if (save.lobby) lobbySync();
   }
@@ -1747,7 +1835,8 @@
     const [top, bot, dark] = skyColors();
     // letterbox continues the scene (sky above, deep water below)
     const deep = mix([8, 40, 80], [4, 10, 28], dark);
-    if (deep !== lastBg) { lastBg = deep; $('stage').style.background = `linear-gradient(${top} 0 50%, ${deep} 50% 100%)`; }
+    const cave = inLava(), bgTop = cave ? '#161014' : top, bgDeep = cave ? '#7c1d0c' : deep;
+    if (bgTop + bgDeep !== lastBg) { lastBg = bgTop + bgDeep; $('stage').style.background = `linear-gradient(${bgTop} 0 50%, ${bgDeep} 50% 100%)`; }
     const key = top + bot + save.map;
     // at dawn and dusk the colours change every frame; repainting sky and sea 4x a second is plenty
     if (key !== bgKey && (t - bgAt > .25 || t < bgAt || !bgKey)) { bgKey = key; bgAt = t; renderBg(top, bot, dark); }
@@ -1757,7 +1846,7 @@
     ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, HORIZON + .5); ctx.clip();
 
     // stars (some bigger ones sparkle as little crosses)
-    if (dark > .2) stars.forEach(([x, y, s], i) => {
+    if (dark > .2 && !cave) stars.forEach(([x, y, s], i) => {
       const tw = .4 + .6 * Math.abs(Math.sin(t * (1 + s) + s * 9));
       ctx.globalAlpha = dark * tw;
       px(x, y, .5, .5, '#fff');
@@ -1768,25 +1857,25 @@
     // sun & moon on an arc
     const sunA = (time - .25) * Math.PI * 2;
     const sx = W / 2 - Math.cos(sunA) * 170, sy = HORIZON - Math.sin(sunA) * 80;
-    if (sy < HORIZON + 10) {
+    if (sy < HORIZON + 10 && !cave) {
       ctx.globalAlpha = .25; disc(sx, sy, 13, '#fef3c7'); ctx.globalAlpha = 1;
       disc(sx, sy, 9, '#fbbf24'); disc(sx - .5, sy - .5, 8, '#fde68a'); disc(sx - 3, sy - 3, 2.5, '#fffbeb');
     }
     const mx = W / 2 + Math.cos(sunA) * 170, my = HORIZON + Math.sin(sunA) * 80;
-    if (my < HORIZON + 10) {
+    if (my < HORIZON + 10 && !cave) {
       ctx.globalAlpha = .15; disc(mx, my, 11, '#e0e7ff'); ctx.globalAlpha = 1;
       disc(mx, my, 7, '#cbd5e1'); disc(mx - .5, my - .5, 6.5, '#e2e8f0');
       disc(mx + 2, my - 2, 1.5, '#cbd5e1'); disc(mx - 2.5, my + 1.5, 1, '#cbd5e1'); disc(mx + 1, my + 3, .8, '#cbd5e1');
     }
 
-    drawWeatherSky(dark);
+    if (!cave) drawWeatherSky(dark);
     // clouds
     ctx.globalAlpha = .9 - dark * .5;
-    for (const c of clouds) cloud(c, dark);
+    if (!cave) for (const c of clouds) cloud(c, dark);
     ctx.globalAlpha = 1;
 
     // birds by day
-    if (dark < .5) for (let i = 0; i < 3; i++) {
+    if (dark < .5 && !cave) for (let i = 0; i < 3; i++) {
       const bx = ((t * (8 + i * 2) + i * 140) % (W + 60)) - 30, by = 30 + i * 9 + Math.sin(t + i) * 3;
       const f = Math.sin(t * 8 + i) > 0;
       ctx.fillStyle = '#334155';
@@ -1797,7 +1886,7 @@
 
     ctx.restore();
     // lighthouse beam
-    if (dark > .3 && !onSea()) {
+    if (dark > .3 && !onSea() && !cave) {
       const sw = Math.sin(t * 1.2);
       ctx.globalAlpha = dark * .18; ctx.fillStyle = '#fde68a';
       ctx.beginPath(); ctx.moveTo(318, HORIZON - 22); ctx.lineTo(318 + sw * 60, HORIZON - 28); ctx.lineTo(318 + sw * 60, HORIZON - 16); ctx.fill();
@@ -1809,17 +1898,21 @@
       const y = HORIZON + 2 + ((i * 37) % (H - HORIZON - 4));
       const x = ((i * 71 + t * (6 + (i % 4) * 3)) % (W + 30)) - 15;
       ctx.globalAlpha = .18 + (y - HORIZON) / (H - HORIZON) * -.1 + .12;
-      px(x, y, 4 + (i % 4) * 3, .5, dark > .5 ? '#3b5b8a' : '#d4f1ff');
-      px(x + 2, y + .5, 2 + (i % 3) * 2, .5, dark > .5 ? '#22385e' : '#7cc4ea');
+      px(x, y, 4 + (i % 4) * 3, .5, cave ? '#fde68a' : dark > .5 ? '#3b5b8a' : '#d4f1ff');
+      px(x + 2, y + .5, 2 + (i % 3) * 2, .5, cave ? '#fb923c' : dark > .5 ? '#22385e' : '#7cc4ea');
     }
     ctx.globalAlpha = 1;
-    if (dark < .6) for (let i = 0; i < 18; i++) {
+    if (cave) for (let i = 0; i < 12; i++) { // lava bubbles pop now and then
+      const ph = (t * .7 + i * .37) % 1, bx = (i * 113) % W, by = HORIZON + 4 + (i * 41) % 60;
+      if (ph < .2) { px(bx - .5, by - ph * 6, 1.5 + ph * 4, 1 + ph * 3, '#fef08a'); px(bx, by - ph * 6 - .5, .5, .5, '#ffffff'); }
+    }
+    if (dark < .6 && !cave) for (let i = 0; i < 18; i++) {
       if (Math.sin(t * 3 + i * 7.3) < .85) continue;
       px((i * 97) % W, HORIZON + 3 + (i * 29) % 40, .5, .5, '#ffffff');
     }
     // sun/moon reflection
     const rx = sy < HORIZON ? sx : mx;
-    if (sy < HORIZON || my < HORIZON) {
+    if ((sy < HORIZON || my < HORIZON) && !cave) {
       ctx.globalAlpha = .3;
       for (let i = 0; i < 10; i++) px(rx - 6 + i * .3 + Math.sin(t * 2 + i) * 2, HORIZON + 2 + i * 2.5, 12 - i * .9, .5, '#fff7cc');
       ctx.globalAlpha = 1;
@@ -1835,7 +1928,7 @@
     ctx.globalAlpha = 1;
 
     // ripples
-    ctx.strokeStyle = '#e0f7ff'; ctx.lineWidth = .5;
+    ctx.strokeStyle = cave ? '#fef08a' : '#e0f7ff'; ctx.lineWidth = .5;
     for (const r of ripples) {
       ctx.globalAlpha = (r.life / r.max) * .7;
       ctx.beginPath(); ctx.ellipse(r.x, SURFACE + 1, r.r, r.r * .3, 0, 0, 7); ctx.stroke();
@@ -1845,6 +1938,7 @@
     drawBealin(dark);
     drawBoss(dark);
     if (onSea()) drawBoat(dark);
+    else if (cave) { drawLedge(dark); if (Math.random() < .25) particles.push({ x: Math.random() * W, y: SURFACE + Math.random() * 30, vx: (Math.random() - .5) * 6, vy: -12 - Math.random() * 14, life: .9, c: Math.random() < .5 ? '#fb923c' : '#fde047' }); }
     else { drawDock(dark); drawNpc(); drawKiosk(dark); }
     drawProps(dark);
     drawLobbyAnglers();
@@ -2039,6 +2133,8 @@
     { id: 'bealin',  label: tr("Käpt'n Bealin"), x: BEALIN.x - 1, y: SURFACE - 16, w: BEALIN.w + 2, h: 18, open: () => talkBealin() },
     { id: 'me',     map: 'all', label: tr('Kleiderschrank'), get x() { return player.x - 5; }, y: DOCK_Y - 26, w: 10, h: 18, open: () => toggleModal('wardrobe') },
     { id: 'buoy',   get label() { return seaOpen() ? tr('⛵ Auf die Hohe See') : tr('⛵ Hohe See (🔒 3× Wiedergeburt)'); }, x: 285, y: SURFACE - 16, w: 12, h: 18, draw: drawBuoy, open: () => travel('see'), ready: () => seaOpen() && !save.seaSeen },
+    { id: 'rift',   get label() { return lavaOpen() ? tr('🌋 In die Glutgrotte') : tr('🌋 Glutgrotte (🔒 1× Prestige)'); }, x: 196, y: SURFACE - 13, w: 18, h: 14, draw: drawRift, open: () => travel('lava'), ready: () => lavaOpen() && !save.lavaSeen },
+    { id: 'ladder', map: 'lava', label: tr('🪜 Zurück zum Steg'), x: 4, y: DOCK_Y - 28, w: 12, h: 28, draw: drawLadder, open: () => travel('steg') },
     { id: 'wheel',  map: 'see', label: tr('⚓ Zurück zum Steg'), x: 5, y: DOCK_Y - 22, w: 15, h: 22, draw: drawWheel, open: () => travel('steg') },
     { id: 'npc',    label: 'Spezifischfischer', x: NPC.x - 1, y: DOCK_Y - NPC.h - 2, w: NPC.w + 2, h: NPC.h + 2, open: () => talkNpc() },
   ];
@@ -2241,7 +2337,7 @@
     hint(`🪝 ${bait().name}`, 1.2);
   }
   function updateGear() {
-    $('gear').textContent = `${onSea() ? '⛵' : '🎣'} ${rod().name}`;
+    $('gear').textContent = `${onSea() ? '⛵' : inLava() ? '🌋' : '🎣'} ${rod().name}`;
     $('baitbar').replaceChildren(...ownedBaits().map((b, i) => {
       const n = save.baits[b.id], on = b.id === save.bait;
       const btn = document.createElement('button');
@@ -2265,6 +2361,7 @@
     if (s !== lastClock) { $('clock').textContent = s; lastClock = s; updateWeatherPill(); }
   }
   function weatherText() {
+    if (wx === CAVE_WX) return tr('{i} {n}: {d}', { i: wx.icon, n: wx.name, d: wx.desc });
     const left = Math.max(0, Math.ceil((1 - (Date.now() / 1000 / WEATHER_LEN + weatherShift) % 1) * WEATHER_LEN));
     const next = weatherAt(weatherSlot() + 1);
     return tr('{i} {n}: {d}', { i: wx.icon, n: wx.name, d: wx.desc }) + ' · '
@@ -2635,6 +2732,7 @@
     })),
     { id: 'mon1', name: 'Erstes Monster',      need: () => [FISH.some(f => (save.dex[f.id] || {}).cls === 4) ? 1 : 0, 1], coins: 1000, scales: 3 },
     { id: 'wall', name: 'Alle Wetterfische',   need: () => [FISH.filter(f => f.weather && f.map !== 'see' && save.dex[f.id]).length, FISH.filter(f => f.weather && f.map !== 'see').length], coins: 2000, scales: 4 },
+    { id: 'lavaall', name: 'Alle Fische der Glutgrotte', need: () => [FISH.filter(f => f.map === 'lava' && save.dex[f.id]).length, FISH.filter(f => f.map === 'lava').length], coins: 15000, scales: 15 },
     { id: 'seeall', name: 'Alle Fische der Hohen See', need: () => [FISH.filter(f => f.map === 'see' && !f.boss && save.dex[f.id]).length, FISH.filter(f => f.map === 'see' && !f.boss).length], coins: 5000, scales: 8 },
     { id: 'odboss', name: 'Odfisch besiegt',   need: () => [save.bossWins || 0, 1], coins: 3000, scales: 5 },
     { id: 'ma10', name: '10× Bronze-Meister',  need: () => [masteryCount(1), 10], coins: 1500, scales: 3 },
@@ -2688,6 +2786,7 @@
     if (f.map === 'see' && f.weather) return tr('Hohe See, nur bei Gewitter');
     if (f.weather) return tr(WEATHER_HINT[f.weather]);
     if (f.map === 'see') return f.night ? tr('Hohe See, lieber nachts') : tr('Nur auf Hoher See');
+    if (f.map === 'lava') return f.night ? tr('Glutgrotte, lieber nachts') : f.far ? tr('Glutgrotte, weit draußen') : tr('Nur in der Glutgrotte');
     if (f.dayOff) return tr('Nur nachts, weit draußen');
     if (f.far) return tr('Weit draußen');
     if (f.night) return tr('Lieber nachts');
@@ -2727,6 +2826,10 @@
     stern: i => i % 4 === 0 ? '#e0e7ff' : '#312e81',
     tiefsee: i => i % 5 === 0 ? '#5eead4' : '#0e3a4a',
     krake: i => i % 3 === 0 ? '#f472b6' : '#7e1d4f',
+    basalt: i => i % 4 === 0 ? '#f97316' : '#44403c',
+    obsidian: i => i % 5 === 0 ? '#a78bfa' : '#1e1b4b',
+    magma: i => i % 2 === 0 ? '#fb923c' : '#7f1d1d',
+    drachenknochen: i => i % 4 === 0 ? '#ef4444' : '#f5f0e1',
   };
   const ICONS = {};
   for (const r of RODS) ICONS[r.id] = iconCanvas(p => {
@@ -2747,6 +2850,8 @@
   // the Odköder: a black-and-white lure with a glaring eye and a big hook
   BAIT_ART.abyss = [['......kk........', '.....kAAk.......', '....kAaaAk......', '...kAaWWaAk.....', '...kAaWWaAk.....', '....kAaaAk......', '.....kAAk.......', '......kk........', '......k.........', '......k..k......', '.......kk.......'],
     { k: '#0b0f19', A: '#0e7490', a: '#22d3ee', W: '#ecfeff' }];
+  BAIT_ART.glutkoeder = [['......kk........', '.....kOOk.......', '....kOyyOk......', '...kOyWWyOk.....', '...kRyWWyRk.....', '....kRyyRk......', '.....kRRk.......', '......kk........', '......k.........', '......k..k......', '.......kk.......'],
+    { k: '#1b1f2e', O: '#f97316', y: '#facc15', W: '#fef9c3', R: '#b91c1c' }];
   BAIT_ART.odkoeder = [['................', '....kkkkkk......', '..kkWWWWwwkk....', '.kWWkkWWwwwwk...', 'kWWkRkWwwwwwkk.k', 'kWWWkkWwwwwwwkkk', '.kWWWWwwwwwwkk.k', '..kkwwwwwwkk....', '....kkkkkk......', '......k.........', '......k..k......', '.......kk.......'],
     { k: '#0b0f19', W: '#f8fafc', w: '#94a3b8', R: '#ef4444' }];
   for (const b of BAITS) ICONS[b.id] = iconCanvas(p => {
@@ -3001,10 +3106,10 @@
       const on = t.dataset.shopTab === shopTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
     const wares = shopTab === 'snacks' ? SNACKS.map(snackWare) : shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'cosm' ? COSMETICS.filter(c => c.price).map(cosmWare) : shopTab === 'rods' ? RODS.map(r0 => {
-      const owned = save.rods.includes(r0.id), active = save.rod === r0.id, lock = !owned && lockText(r0), r = owned ? forged(r0) : r0;
+      const owned = save.rods.includes(r0.id), active = r0.lava ? save.lavaRod === r0.id : save.rod === r0.id, lock = !owned && lockText(r0), r = owned ? forged(r0) : r0;
       const w = ware({
-        id: r.id, name: r.name, desc: r.desc,
-        stats: [statBar(tr('Wurf'), r.cast, 1), statBar(tr('Kurbel'), r.reel, 3.4), statBar(tr('Glück'), r.luck, 3), statBar(tr('Ruhe'), 1.1 - r.tens, .8)],
+        id: r.id, name: (r.lava ? '🌋 ' : '') + r.name, desc: r.desc,
+        stats: [statBar(tr('Wurf'), r.cast, 1), statBar(tr('Kurbel'), r.reel, 3.6), statBar(tr('Glück'), r.luck, 3), statBar(tr('Ruhe'), 1.1 - r.tens, .8)],
         state: active ? 'active' : lock ? 'locked' : owned ? 'owned' : '',
         btnText: active ? tr('In der Hand') : owned ? tr('Nehmen') : lock || tr('{n} Taler', { n: r.price }),
         disabled: active || (!owned && (!!lock || save.coins < r.price)),
@@ -3014,7 +3119,8 @@
           if (!owned && save.coins < r.price) return keeper(KEEPER.poor(r.price - save.coins));
           if (!owned) { spend(r.price); save.rods.push(r.id); sfx.coin(); keeper(pick(KEEPER.buy)); }
           else keeper(pick(KEEPER.equip));
-          save.rod = r.id; persist(); updateGear(); renderShop(false);
+          if (r0.lava) save.lavaRod = r0.id; else save.rod = r0.id;
+          persist(); updateGear(); renderShop(false);
         },
       });
       if (active) w.append(forgeButton(r0));
@@ -3180,6 +3286,7 @@
   function perk(id) { return save.perks[id] || 0; }
   function coinMult() { return (1 + .2 * save.rebirths) * (1 + .5 * save.prestige) * (1 + .15 * pperk('ptaler')) * (1 + .1 * perk('taler')) * (dexPerk('taler10') ? 1.1 : 1) * (1 + goldBonus() / 100); }
   function lockText(item) {
+    if (item.pres && save.prestige < item.pres) return tr('🔒 {n}× Prestige', { n: item.pres });
     if (item.reb && save.rebirths < item.reb && !(item.boss && pperk('pkarte'))) return tr('🔒 {n}× Wiedergeburt', { n: item.reb });
     if (item.lvl && save.lvl < item.lvl) return tr('🔒 Level {n}', { n: item.lvl });
     return '';
@@ -3306,7 +3413,7 @@
     if (!confirm(tr('Wiedergeburt?\n\nDu bekommst {n} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level und Aufträge werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.', { n: gain }))) return;
     const oldRank = rankOf(save.rebirths);
     save.rebirths++; save.scales += gain;
-    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], lavaRod: '', bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     const newRank = rankOf(save.rebirths), ms = MILESTONES.find(m => m.r === save.rebirths);
     if (newRank !== oldRank) setTimeout(() => toast(tr('🎖️ Neuer Rang: {r}!', { r: newRank.name })), 2400);
     if (ms) setTimeout(() => toast(tr('🔓 Neu freigeschaltet: {t}', { t: ms.t })), 4400);
@@ -3330,7 +3437,7 @@
     if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen und dauerhaft +50 % Taler und +25 % EP.\nZurückgesetzt wird alles wie bei der Wiedergeburt und dazu Wiedergeburten, Rang, Schuppen, Talente und geschmiedete Ruten.\nFischdex, Medaillen, Rekorde, Kosmetik und Perlen-Talente bleiben.', { n: gain }))) return;
     checkCosm(true); // keep the rebirth cosmetics earned so far
     save.prestige++; save.pearls += gain;
-    Object.assign(save, { rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: ['stock'], lavaRod: '', bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     if (save.map === 'see' && !seaOpen()) { save.map = 'steg'; bgKey = ''; boss.invite = null; $('btn-boss').hidden = true; updateMapUi(); }
     fillQuests(); persist(); updateCoins(); updateGear(); updateLevel(); renderProg();
     const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
@@ -3687,8 +3794,9 @@
     $('lobby-players').replaceChildren(...ps.map((p, i) => {
       const li = document.createElement('li'); if (p.k === LOBBY.me) li.className = 'me';
       const pos = document.createElement('span'); pos.textContent = ['🥇', '🥈', '🥉'][i] || i + 1;
-      const n = document.createElement('b'); n.textContent = (p.m === 'see' ? '⛵ ' : '') + p.name;
+      const n = document.createElement('b'); n.textContent = (p.m === 'see' ? '⛵ ' : p.m === 'lava' ? '🌋 ' : '') + p.name;
       if (p.m === 'see') n.title = tr('Auf Hoher See');
+      if (p.m === 'lava') n.title = tr('In der Glutgrotte');
       if (p.rk !== undefined) { const rk = document.createElement('small'); rk.className = 'rank'; rk.textContent = ' ' + presMark(p.pr | 0) + rankOf(p.rk).name; n.append(rk); }
       const sc = document.createElement('span'); sc.className = 'sc'; sc.textContent = tr('{n} Taler', { n: (p.sc || 0).toLocaleString(I18N.locale) });
       li.append(pos, n, sc);
