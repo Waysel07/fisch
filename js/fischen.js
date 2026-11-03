@@ -107,10 +107,29 @@
     { id: 'boxgold',   name: 'Goldkiste',   price: 1500, tier: 2, lvl: 8, desc: 'Glänzt so sehr, dass die Fische neidisch werden.', col: ['#facc15', '#b45309', '#f472b6'] },
   ];
   trAll(BOXES, ['name', 'desc']);
+  // Kiosk-Snacks: timed buffs bought with coins, saved as save.buffs = {id: endsAt}
+  const SNACKS = [
+    { id: 'kaffee',    name: 'Kaffee',         icon: '☕', price: 400,  desc: 'Bisse kommen 30 % schneller.' },
+    { id: 'broetchen', name: 'Fischbrötchen',  icon: '🥪', price: 1200, desc: '+25 % Taler pro Fang.' },
+    { id: 'keks',      name: 'Kleeblatt-Keks', icon: '🍀', price: 3000, desc: 'Seltene, epische und legendäre Fische beißen 30 % öfter.' },
+    { id: 'limo',      name: 'Glitzerlimo',    icon: '✨', price: 8000, desc: 'Doppelte Shiny- und Mutationschance.' },
+  ];
+  trAll(SNACKS, ['name', 'desc']);
+  const SNACK_MS = 600000, SNACK_MAX = 1800000; // 10 minutes per snack, stacked up to 30
+  function buffOn(id) { return !!(save.buffs && save.buffs[id] > Date.now()); }
+  // every coin spent in the shop goes through here, so the "spent" leaderboard can count it
+  function spend(n) { save.coins -= n; save.spent = (save.spent || 0) + n; }
 
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-03-6', date: '03.11.2026', items: [
+      '🎰 Fischautomat: Höherer Einsatz – bis 2 000 Taler, mit jeder Wiedergeburt mehr (bis 50 000). Neue Knöpfe ½ und ×2.',
+      '💰 Jackpot-Topf: 2 % jedes Einsatzes landen im Topf. Drei Odfische gewinnen ihn obendrauf.',
+      '🥪 Kiosk-Snacks im Laden: Kaffee, Fischbrötchen, Kleeblatt-Keks und Glitzerlimo wirken je 10 Minuten.',
+      '💎 Luxus-Kosmetik: Kristallpose, Kapitänsjacke, Diamanthut und Kronen-Hut.',
+      '💸 Neue Bestenliste: Wer hat am meisten Taler ausgegeben?',
+    ] },
     { id: '2026-11-03-5', date: '03.11.2026', items: [
       '📏 Größenklassen: Jeder Fang ist Mini, Normal, Groß, Kapital oder Monster. Kapital und Monster wachsen übers Maximum hinaus und sind bis zu 4× so viel wert.',
       '🌦️ Wetter: Sonne, Regen, Nebel, Gewitter und manchmal ein Regenbogen – für alle gleich. Jedes Wetter hat seinen Bonus (oben an der Wetter-Pille).',
@@ -366,7 +385,7 @@
   function land() {
     state = 'wait'; bob.y = SURFACE; bob.dunk = 0;
     splash(bob.x, SURFACE, 10, '#bfe9ff'); ripple(bob.x); sfx.splash();
-    waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss')) * (wx.bite ? 1 / wBoost(1 / wx.bite) : 1) * (Date.now() < energyUntil ? .6 : 1);
+    waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss')) * (wx.bite ? 1 / wBoost(1 / wx.bite) : 1) * (Date.now() < energyUntil ? .6 : 1) * (buffOn('kaffee') ? .7 : 1);
     if (bait().boss && !bossReady()) hint(tr('Der Odköder wirkt nur nachts auf Hoher See.'), 2.4);
     else if (bait().boss) { waitT = 2.5; nibbles = 0; hint(tr('Das Wasser wird unruhig …'), 2.4); return; }
     nibbles = Math.floor(Math.random() * 3); nibbleT = waitT - 1.2;
@@ -400,6 +419,7 @@
       if (f.night) w *= night ? f.night : .5;
       if (wx.rare && ['rare', 'wii', 'epic'].includes(f.r)) w *= wBoost(wx.rare);
       if (wx.legend && f.r === 'legendary') w *= wBoost(wx.legend);
+      if (buffOn('keks') && ['rare', 'wii', 'epic', 'legendary'].includes(f.r)) w *= 1.3;
       if (f.weather) w *= 2; // the weather fish are the point of the weather: easier to find while it lasts
       return w;
     });
@@ -464,7 +484,7 @@
     }
     const cls = hooked.cls === undefined ? 1 : hooked.cls, sc = SIZE_CLASSES[cls];
     const base = Math.max(0, Math.min(1, (hooked.size - f.min) / (f.max - f.min || 1)));
-    const val = Math.max(1, Math.round(f.val * (.85 + .3 * base) * sc.val * coinMult() * (mut ? mut.val : 1) * (shiny ? SHINY_VAL : 1)));
+    const val = Math.max(1, Math.round(f.val * (.85 + .3 * base) * sc.val * coinMult() * (buffOn('broetchen') ? 1.25 : 1) * (mut ? mut.val : 1) * (shiny ? SHINY_VAL : 1)));
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
     e.n++; e.best = Math.max(e.best, size); if (f.r !== 'junk') e.small = Math.min(e.small || Infinity, size); save.dex[f.id] = e;
@@ -796,12 +816,12 @@
   // each fish gets its own shiny colour (green, teal, cyan, blue, purple or pink), never gold
   const SHINY_HUES = [90, 140, 180, 220, 260, 300];
   function shinyHue(id) { return SHINY_HUES[[...id].reduce((a, c) => a + c.charCodeAt(0), 0) % SHINY_HUES.length]; }
-  function shinyChance() { return Math.min(.05, SHINY_BASE * Math.sqrt(bait().luck * rod().luck) * (dexPerk('shiny2') ? 2 : 1) * wBoost(wx.shiny)); }
+  function shinyChance() { return Math.min(.05, SHINY_BASE * Math.sqrt(bait().luck * rod().luck) * (dexPerk('shiny2') ? 2 : 1) * (buffOn('limo') ? 2 : 1) * wBoost(wx.shiny)); }
   function rollShiny() {
     if (window.__fischen && window.__fischen.forceShiny) return true;
     return Math.random() < shinyChance();
   }
-  function mutLuck() { return Math.sqrt(bait().luck * rod().luck) * (1 + .08 * perk('glueck')) * (dexPerk('mutchance') ? 1.25 : 1) * wBoost(wx.shiny); }
+  function mutLuck() { return Math.sqrt(bait().luck * rod().luck) * (1 + .08 * perk('glueck')) * (dexPerk('mutchance') ? 1.25 : 1) * (buffOn('limo') ? 2 : 1) * wBoost(wx.shiny); }
   function rollMutation(f) {
     if (f.r === 'junk') return null;
     const forced = window.__fischen && window.__fischen.forceMut;
@@ -1166,6 +1186,11 @@
     { id: 'pose-blau',   slot: 'bob',    name: 'Blaue Pose',         price: 150,  col: '#3b82f6', desc: 'Schwimmt genauso gut, nur blauer.' },
     { id: 'pose-gruen',  slot: 'bob',    name: 'Grüne Pose',         price: 150,  col: '#22c55e', desc: 'Für Angler mit Gartenliebe.' },
     { id: 'pose-pink',   slot: 'bob',    name: 'Pinke Pose',         price: 250,  col: '#f472b6', desc: 'Unübersehbar.' },
+    // luxury: for anglers who have more coins than ideas
+    { id: 'pose-kristall', slot: 'bob',  name: 'Kristallpose',       price: 10000, col: '#a5f3fc', desc: 'Klar wie Eis. Die Fische sehen sich darin.' },
+    { id: 'jacke-kapitaen', slot: 'jacket', name: 'Kapitänsjacke',   price: 20000, col: ['#1e3a8a', '#172554', '#facc15'], desc: 'Dunkelblau mit Goldknöpfen. Für Leute mit eigenem Boot.' },
+    { id: 'hut-diamant', slot: 'hat',    name: 'Diamanthut',         price: 40000, col: ['#a5f3fc', '#0891b2', '#ecfeff'], sparkle: true, desc: 'Funkelt. Ständig. Auch nachts.' },
+    { id: 'hut-krone',   slot: 'hat',    name: 'Kronen-Hut',         price: 100000, col: ['#fde047', '#a16207', '#ffffff'], sparkle: true, desc: 'Für Angler, die wirklich alles haben.' },
     // unlocked by achievements
     { id: 'hut-gold',    slot: 'hat',    name: 'Goldener Hut',       col: ['#facc15', '#b45309', '#fef08a'], desc: 'Für alle, die einen legendären Fisch gelandet haben.', ach: 'Fange einen legendären Fisch.', got: () => FISH.some(f => f.r === 'legendary' && save.dex[f.id]) },
     { id: 'hut-glitzer', slot: 'hat',    name: 'Glitzerhut',         col: ['#f0abfc', '#a21caf', '#fdf4ff'], desc: 'Funkelt fast so schön wie ein Shiny.', ach: 'Fange einen Shiny.', got: () => Object.values(save.dex).some(e => e.shiny) },
@@ -2045,6 +2070,11 @@
     const frame = player.walk ? [0, 1, 0, 2][Math.floor(player.walk / 1.6) % 4] : 0;
     const img = playerFrames()[d > 0 ? 0 : 1][frame];
     ctx.drawImage(img, x - 5.5, y - img.height / 2, img.width / 2, img.height / 2);
+    const hatC = COSM[save.cosm.hat];
+    if (hatC && hatC.sparkle) { // luxury hats glint now and then
+      const ph = (t * 1.3) % 1, sx = x - 3 + ((Math.floor(t * 1.3) * 7) % 7), sy = y - img.height / 2 + 1;
+      if (ph < .35) { const a = 1 - Math.abs(ph - .175) / .175; ctx.globalAlpha = a; px(sx, sy - 1, .5, 2.5, '#ffffff'); px(sx - 1, sy, 2.5, .5, '#ffffff'); ctx.globalAlpha = 1; }
+    }
     // arm + hand holding the rod
     const tip = rodTip();
     const hx = x + d * 3.5, hy = y - 8.5;
@@ -2271,21 +2301,27 @@
     { id: 'odfisch', img: 'img/odfish.jpg',           w: 3,  pay: 150 },
     { id: 'ratte',   img: 'img/rat.gif',              w: 6,  pay: 0 },
   ];
-  const PAIR = 1.5, MIN_BET = 50, MAX_BET = 1000, STEP = 50;
+  // the highest stake grows with the rebirths; 2 % of every stake goes into the jackpot pot,
+  // three Odfische win it on top of the ×150
+  const PAIR = 1.5, MIN_BET = 50, BET_CAPS = [2000, 5000, 10000, 25000, 50000], POT_CUT = .02, POT_SEED = 1000;
+  const betCap = () => BET_CAPS[Math.min(BET_CAPS.length - 1, save.rebirths | 0)];
+  const betStep = v => v < 1000 ? 50 : v < 10000 ? 500 : 2500;
+  const fmtN = n => Math.round(n).toLocaleString(I18N.locale);
+  const pot = () => Math.max(POT_SEED, Math.round(save.jackpot || 0));
   let bet = 100, spinning = false;
-  const maxBet = () => Math.min(MAX_BET, Math.max(MIN_BET, Math.floor(save.coins / STEP) * STEP));
+  const maxBet = () => Math.min(betCap(), Math.max(MIN_BET, Math.floor(save.coins / 50) * 50));
   function setBet(v) {
     v = Math.round(+v);
-    bet = Number.isFinite(v) ? Math.min(MAX_BET, Math.max(MIN_BET, v)) : MIN_BET;
+    bet = Number.isFinite(v) ? Math.min(betCap(), Math.max(MIN_BET, v)) : MIN_BET;
     renderCasino();
   }
-  $('bet-down').addEventListener('click', () => setBet(Math.ceil(bet / STEP) * STEP - STEP));
-  $('bet-up').addEventListener('click', () => setBet(Math.floor(bet / STEP) * STEP + STEP));
-  $('bet-input').addEventListener('input', e => { const v = Math.round(+e.target.value); if (v >= MIN_BET && v <= MAX_BET) { bet = v; renderCasino(); } });
+  $('bet-down').addEventListener('click', () => { const st = betStep(bet - 1); setBet(Math.ceil(bet / st) * st - st); });
+  $('bet-up').addEventListener('click', () => { const st = betStep(bet); setBet(Math.floor(bet / st) * st + st); });
+  $('bet-input').addEventListener('input', e => { const v = Math.round(+e.target.value); if (v >= MIN_BET && v <= betCap()) { bet = v; renderCasino(); } });
   $('bet-input').addEventListener('change', e => setBet(e.target.value));
   $('bet-input').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); setBet(e.target.value); e.target.blur(); } });
-  $('bets').querySelectorAll('[data-bet]').forEach(btn => btn.addEventListener('click', () =>
-    setBet(btn.dataset.bet === 'max' ? maxBet() : btn.dataset.bet)));
+  const quickBet = k => k === 'max' ? maxBet() : k === 'half' ? Math.max(MIN_BET, Math.round(bet / 100) * 50) : k === 'double' ? Math.min(betCap(), bet * 2) : +k;
+  $('bets').querySelectorAll('[data-bet]').forEach(btn => btn.addEventListener('click', () => setBet(quickBet(btn.dataset.bet))));
   const symW = SYMBOLS.reduce((a, s) => a + s.w, 0);
   function rollSymbol() {
     let r = Math.random() * symW;
@@ -2306,18 +2342,24 @@
     return { mult: 0, hits: [] };
   }
   function renderCasino() {
+    if (bet > betCap()) bet = betCap();
     $('casino-coins').textContent = save.coins;
+    $('jackpot-val').textContent = fmtN(pot());
     $('bet-input').disabled = spinning;
+    $('bet-input').max = betCap();
     if (document.activeElement !== $('bet-input')) $('bet-input').value = bet;
     $('bet-down').disabled = spinning || bet <= MIN_BET;
-    $('bet-up').disabled = spinning || bet >= MAX_BET;
+    $('bet-up').disabled = spinning || bet >= betCap();
     $('bets').querySelectorAll('[data-bet]').forEach(btn => {
-      const v = btn.dataset.bet === 'max' ? maxBet() : +btn.dataset.bet;
-      btn.disabled = spinning || (btn.dataset.bet === 'max' && save.coins < MIN_BET);
-      btn.classList.toggle('on', v === bet);
+      const k = btn.dataset.bet, v = quickBet(k);
+      btn.hidden = /^\d+$/.test(k) && v > betCap();
+      btn.disabled = spinning || (k === 'max' && save.coins < MIN_BET) || (k === 'half' && bet <= MIN_BET) || (k === 'double' && bet >= betCap());
+      btn.classList.toggle('on', /^\d+$/.test(k) || k === 'max' ? v === bet : false);
     });
+    const nextCap = BET_CAPS[(save.rebirths | 0) + 1];
+    $('bet-cap').textContent = nextCap ? tr('Höchsteinsatz {a} · ab der {n}. Wiedergeburt {b}', { a: fmtN(betCap()), n: (save.rebirths | 0) + 1, b: fmtN(nextCap) }) : tr('Höchsteinsatz {a}', { a: fmtN(betCap()) });
     $('spin').disabled = spinning || save.coins < bet;
-    $('spin').textContent = save.coins < bet && !spinning ? tr('Zu wenig Taler – geh fischen!') : tr('Drehen ({n} Taler)', { n: bet });
+    $('spin').textContent = save.coins < bet && !spinning ? tr('Zu wenig Taler – geh fischen!') : tr('Drehen ({n} Taler)', { n: fmtN(bet) });
     if (!$('paytable').childElementCount) {
       const rows = SYMBOLS.filter(s => s.pay).sort((a, b) => b.pay - a.pay).flatMap(s => {
         const icons = document.createElement('span');
@@ -2325,6 +2367,9 @@
         const v = document.createElement('b'); v.textContent = `× ${s.pay}`;
         return [icons, v];
       });
+      const ji = document.createElement('span'); ji.textContent = tr('3× Odfisch');
+      const jv = document.createElement('b'); jv.textContent = tr('+ Jackpot-Topf');
+      rows.push(ji, jv);
       const pi = document.createElement('span'); pi.textContent = tr('Zwei gleiche');
       const pv = document.createElement('b'); pv.textContent = `× ${PAIR}`;
       const ri = document.createElement('span'); ri.textContent = tr('🐀 Ratten');
@@ -2337,8 +2382,9 @@
     if (spinning || save.coins < bet) return;
     spinning = true;
     const stake = bet;
-    save.coins -= stake; persist(); updateCoins();
-    const result = [rollSymbol(), rollSymbol(), rollSymbol()];
+    save.coins -= stake; save.jackpot = pot() + stake * POT_CUT; persist(); updateCoins();
+    const forced = window.__fischen && window.__fischen.forceSlot;
+    const result = forced ? forced.map(id => SYMBOLS.find(sy => sy.id === id)) : [rollSymbol(), rollSymbol(), rollSymbol()];
     const slots = [...$('reels').querySelectorAll('.slot')];
     slots.forEach(s => s.classList.remove('hit'));
     $('slot-result').className = 'result'; $('slot-result').textContent = '…';
@@ -2356,15 +2402,18 @@
   });
   function finishSpin(result, stake, slots) {
     const { mult, hits, rat } = slotPayout(result);
-    const win = Math.round(stake * mult);
+    const jack = mult && result[0].id === 'odfisch' && hits.length === 3 ? Math.round(pot()) : 0;
+    const win = Math.round(stake * mult) + jack;
+    if (jack) save.jackpot = POT_SEED;
     save.coins += win;
     save.gamble = (save.gamble || 0) + win - stake;
     bealinEvent({ type: 'slot', won: win > stake });
     persist(); updateCoins();
     hits.forEach(i => slots[i].classList.add('hit'));
     const r = $('slot-result');
-    if (mult >= 40) { r.className = 'result big'; r.textContent = tr('JACKPOT! +{n} Taler', { n: win }); playFile(result[0].id === 'odfisch' ? 'sounds/fish.mp3' : 'sounds/jetzt-kommt-travis.mp3'); sfx.coin(); setTimeout(sfx.coin, 200); setTimeout(sfx.coin, 400); }
-    else if (win > 0) { r.className = 'result win'; r.textContent = tr('Gewonnen! +{n} Taler', { n: win }); sfx.coin(); }
+    if (jack) { r.className = 'result big'; r.textContent = tr('ODFISCH-JACKPOT! +{n} Taler (Topf: {p})', { n: fmtN(win), p: fmtN(jack) }); playFile('sounds/fish.mp3'); [0, 150, 300, 450, 600, 750].forEach(d => setTimeout(sfx.coin, d)); }
+    else if (mult >= 40) { r.className = 'result big'; r.textContent = tr('JACKPOT! +{n} Taler', { n: fmtN(win) }); playFile(result[0].id === 'odfisch' ? 'sounds/fish.mp3' : 'sounds/jetzt-kommt-travis.mp3'); sfx.coin(); setTimeout(sfx.coin, 200); setTimeout(sfx.coin, 400); }
+    else if (win > 0) { r.className = 'result win'; r.textContent = tr('Gewonnen! +{n} Taler', { n: fmtN(win) }); sfx.coin(); }
     else { r.className = 'result lose'; r.textContent = rat ? tr('Die Ratten haben deinen Einsatz gefressen.') : tr('Nichts. Nochmal?'); tone(200, .3, 'triangle', .06, -80); }
     spinning = false;
     renderCasino();
@@ -2636,6 +2685,11 @@
     f.style.width = Math.min(100, v / max * 100) + '%'; bar.append(f);
     d.append(l, bar); return d;
   }
+  for (const sn of SNACKS) { // the emoji, drawn small so it looks like the rest of the pixel icons
+    const c = document.createElement('canvas'); c.width = c.height = 16;
+    const x = c.getContext('2d'); x.font = '13px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(sn.icon, 8, 9);
+    ICONS[sn.id] = c.toDataURL();
+  }
   for (const c of COSMETICS) ICONS[c.id] = iconCanvas(p => {
     const k = '#1b1f2e';
     if (c.slot === 'hat') {
@@ -2669,7 +2723,7 @@
         else if (owned) { save.cosm[c.slot] = c.id; keeper(tr('Schick, schick!')); }
         else {
           if (save.coins < c.price) return keeper(KEEPER.poor(c.price - save.coins));
-          save.coins -= c.price; save.cosm.owned.push(c.id); save.cosm[c.slot] = c.id; sfx.coin();
+          spend(c.price); save.cosm.owned.push(c.id); save.cosm[c.slot] = c.id; sfx.coin();
           keeper(tr('Ausgezeichnete Wahl. Die Fische werden staunen.'));
         }
         persist(); updateCoins(); renderShop(false);
@@ -2739,6 +2793,37 @@
     c.append(btn);
     return c;
   }
+  function snackWare(sn) {
+    const left = save.buffs && save.buffs[sn.id] > Date.now() ? save.buffs[sn.id] - Date.now() : 0, full = left > SNACK_MAX - SNACK_MS;
+    return ware({
+      id: sn.id, name: sn.name, desc: sn.desc + ' ' + tr('Wirkt 10 Minuten.'), stats: [],
+      state: left ? 'active' : '',
+      owned: left ? tr('noch {n} min', { n: Math.ceil(left / 60000) }) : '',
+      btnText: full ? tr('Satt') : tr('{n} Taler', { n: sn.price.toLocaleString(I18N.locale) }),
+      disabled: full || save.coins < sn.price,
+      onClick: () => {
+        if (full) return keeper(tr('Noch mehr? Erst mal verdauen.'));
+        if (save.coins < sn.price) return keeper(KEEPER.poor(sn.price - save.coins));
+        spend(sn.price); sfx.coin();
+        if (!save.buffs || typeof save.buffs !== 'object') save.buffs = {};
+        save.buffs[sn.id] = Math.max(Date.now(), save.buffs[sn.id] || 0) + SNACK_MS;
+        keeper(tr('Frisch vom Kiosk. Guten Appetit!'));
+        persist(); updateCoins(); updateBuffPill(); renderShop(false);
+      },
+    });
+  }
+  // active snacks as a pill in the HUD, with the minutes left
+  function updateBuffPill() {
+    const el = $('buffs'), now = Date.now(), on = SNACKS.filter(sn => buffOn(sn.id));
+    if (save.buffs) for (const k of Object.keys(save.buffs)) if (!(save.buffs[k] > now)) delete save.buffs[k];
+    el.hidden = !on.length;
+    if (!on.length) return;
+    const txt = on.map(sn => sn.icon + ' ' + Math.ceil((save.buffs[sn.id] - now) / 60000) + "'").join(' ');
+    if (el.textContent !== txt) el.textContent = txt;
+  }
+  $('buffs').addEventListener('click', () => toast(SNACKS.filter(sn => buffOn(sn.id)).map(sn =>
+    tr('{i} {n}: noch {m} min', { i: sn.icon, n: sn.name, m: Math.ceil((save.buffs[sn.id] - Date.now()) / 60000) })).join(' · ') || tr('Keine Snacks aktiv.')));
+  setInterval(updateBuffPill, 1000);
   function boxWare(b) {
     const n = save.boxes[b.id] || 0, lock = lockText(b);
     return ware({
@@ -2751,7 +2836,7 @@
         if (!n) {
           if (lock) return keeper(KEEPER.locked(lock));
           if (save.coins < b.price) return keeper(KEEPER.poor(b.price - save.coins));
-          save.coins -= b.price; sfx.coin(); keeper(tr('Was drin ist, weiß nicht mal ich.'));
+          spend(b.price); sfx.coin(); keeper(tr('Was drin ist, weiß nicht mal ich.'));
         } else save.boxes[b.id] = n - 1;
         openBox(b);
       },
@@ -2799,7 +2884,7 @@
       if (n || (!lockText(b) && save.coins >= b.price)) {
         $('box-again').hidden = false;
         $('box-again').textContent = n ? tr('Nächste öffnen ({n})', { n }) : tr('Noch eine ({n} Taler)', { n: b.price });
-        $('box-again').onclick = () => { if (save.boxes[b.id]) save.boxes[b.id]--; else if (save.coins >= b.price) save.coins -= b.price; else return; openBox(b); };
+        $('box-again').onclick = () => { if (save.boxes[b.id]) save.boxes[b.id]--; else if (save.coins >= b.price) spend(b.price); else return; openBox(b); };
       }
     }, 1100);
   }
@@ -2810,7 +2895,7 @@
     document.querySelectorAll('[data-shop-tab]').forEach(t => {
       const on = t.dataset.shopTab === shopTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
-    const wares = shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'cosm' ? COSMETICS.filter(c => c.price).map(cosmWare) : shopTab === 'rods' ? RODS.map(r => {
+    const wares = shopTab === 'snacks' ? SNACKS.map(snackWare) : shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'cosm' ? COSMETICS.filter(c => c.price).map(cosmWare) : shopTab === 'rods' ? RODS.map(r => {
       const owned = save.rods.includes(r.id), active = save.rod === r.id, lock = !owned && lockText(r);
       return ware({
         id: r.id, name: r.name, desc: r.desc,
@@ -2822,7 +2907,7 @@
           if (active) return keeper(pick(KEEPER.equip));
           if (lock) return keeper(KEEPER.locked(lock));
           if (!owned && save.coins < r.price) return keeper(KEEPER.poor(r.price - save.coins));
-          if (!owned) { save.coins -= r.price; save.rods.push(r.id); sfx.coin(); keeper(pick(KEEPER.buy)); }
+          if (!owned) { spend(r.price); save.rods.push(r.id); sfx.coin(); keeper(pick(KEEPER.buy)); }
           else keeper(pick(KEEPER.equip));
           save.rod = r.id; persist(); updateGear(); renderShop(false);
         },
@@ -2840,7 +2925,7 @@
           if (!b.pack) { save.bait = 'wurm'; keeper(tr('Der gute alte Wurm. Klassisch.')); persist(); updateGear(); return renderShop(false); }
           if (lock) return keeper(KEEPER.locked(lock));
           if (save.coins < b.price) return keeper(KEEPER.poor(b.price - save.coins));
-          save.coins -= b.price; save.baits[b.id] = n + b.pack; save.bait = b.id; sfx.coin();
+          spend(b.price); save.baits[b.id] = n + b.pack; save.bait = b.id; sfx.coin();
           keeper(pick(KEEPER.bait)); persist(); updateCoins(); updateGear(); renderShop(false);
         },
       });
@@ -3054,7 +3139,7 @@
   function rerollQuest(i) {
     const cost = 10 + save.lvl * 2;
     if (save.coins < cost) return;
-    save.coins -= cost; save.quests.splice(i, 1); save.quests.splice(i, 0, makeQuest()); persist(); updateCoins(); renderProg();
+    spend(cost); save.quests.splice(i, 1); save.quests.splice(i, 0, makeQuest()); persist(); updateCoins(); renderProg();
   }
 
   // ---- rebirth
@@ -3151,6 +3236,7 @@
     klein:  { label: tr('🔬 Kleinster Fisch'), fmt: s => s ? s + ' cm' : '–' },
     monster: { label: tr('👑 Monster-Fänge'), fmt: s => s + '×' },
     boss:   { label: tr('🐟 Odfisch-Siege'),  fmt: s => s + '×' },
+    spent:  { label: tr('💸 Ausgegeben'),     fmt: s => tr('{n} Taler', { n: s.toLocaleString(I18N.locale) }) },
   };
   const LB = { boards: null, tab: 'taler', ranks: null, err: '', busy: false };
   if (!save.totalEarned) save.totalEarned = Math.max(save.lifeCoins || 0, save.coins || 0);
@@ -3163,6 +3249,7 @@
       klein: Math.min(...Object.values(save.dex).map(e => e.small || Infinity), Infinity) | 0, // 0 = noch keiner
       monster: save.monsters || 0,
       boss: save.bossWins || 0,
+      spent: Math.floor(save.spent || 0),
     };
   }
   const hex = n => [...crypto.getRandomValues(new Uint8Array(n))].map(b => b.toString(16).padStart(2, '0')).join('');

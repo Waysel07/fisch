@@ -25,6 +25,7 @@
         <button class="pill lvl" id="lvl" title="Level">⭐ <b id="lvl-num">1</b><span class="xpbar"><i id="lvl-bar"></i></span><span id="lvl-reb"></span></button>
         <span class="pill" id="clock" title="Tageszeit">☀️ Tag</span>
         <button class="pill" id="weather" title="Wetter">☀️ <span class="lbl" id="weather-name">Sonnig</span></button>
+        <button class="pill" id="buffs" title="Aktive Snacks" hidden></button>
         <span class="pill saved" id="saved" title="Spielstand wird in deinem Browser gespeichert">💾 <span class="lbl">Gespeichert</span></span>
       </div>
       <div class="hud-right">
@@ -123,6 +124,7 @@
           <div class="tabs" role="tablist">
             <button class="tab on" data-shop-tab="rods" role="tab" aria-selected="true">🎣 Ruten</button>
             <button class="tab" data-shop-tab="baits" role="tab" aria-selected="false">🪱 Köder</button>
+            <button class="tab" data-shop-tab="snacks" role="tab" aria-selected="false">🥪 Snacks</button>
             <button class="tab" data-shop-tab="boxes" role="tab" aria-selected="false">📦 Mysteryboxen</button>
             <button class="tab" data-shop-tab="cosm" role="tab" aria-selected="false">🎩 Kosmetik</button>
           </div>
@@ -212,6 +214,7 @@
         <button class="close" data-close aria-label="Schließen">✕</button>
         <h2 id="casino-title">Fischautomat</h2>
         <p class="sub">Du hast <b id="casino-coins">0</b> Fischtaler.</p>
+        <p class="jackpot" id="jackpot"><span>Jackpot-Topf</span> <b id="jackpot-val">1000</b></p>
         <div class="reels" id="reels">
           <div class="slot"><img src="img/odfish.jpg" alt=""></div>
           <div class="slot"><img src="img/lippenfisch-spin.gif" alt=""></div>
@@ -220,18 +223,19 @@
         <p class="result" id="slot-result">Dreh am Fisch!</p>
         <div class="bets" id="bets">
           <div class="bet-pick">
-            <button type="button" id="bet-down" aria-label="50 Taler weniger">−</button>
+            <button type="button" id="bet-down" aria-label="Weniger Einsatz">−</button>
             <label class="sr-only" for="bet-input">Einsatz in Talern</label>
-            <input id="bet-input" type="number" inputmode="numeric" min="50" max="1000" step="50" value="100">
-            <button type="button" id="bet-up" aria-label="50 Taler mehr">+</button>
+            <input id="bet-input" type="number" inputmode="numeric" min="50" max="2000" step="50" value="100">
+            <button type="button" id="bet-up" aria-label="Mehr Einsatz">+</button>
           </div>
           <div class="bet-quick">
-            <button type="button" data-bet="50">50</button>
-            <button type="button" data-bet="100">100</button>
-            <button type="button" data-bet="500">500</button>
+            <button type="button" data-bet="half">½</button>
+            <button type="button" data-bet="double">×2</button>
             <button type="button" data-bet="1000">1000</button>
+            <button type="button" data-bet="10000">10 000</button>
             <button type="button" data-bet="max">Max</button>
           </div>
+          <p class="bet-cap" id="bet-cap"></p>
         </div>
         <button class="btn spin" id="spin">Drehen</button>
         <details class="pay">

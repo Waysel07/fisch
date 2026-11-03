@@ -25,6 +25,7 @@ const BOARDS = {
   klein:  { max: 400,  step: () => 400, asc: true },        // kleinster Fang in cm (0 = noch keiner), kleiner ist besser
   monster: { max: 1e6, step: (dt) => 20 + dt / 20 },        // Fänge der Größenklasse „Monster“
   boss:   { max: 1e5,  step: (dt) => 2 + dt / 60 },         // besiegte Odfische
+  spent:  { max: 1e10, step: (dt) => 200000 + dt * 20000 }, // im Laden ausgegebene Taler
 };
 const TOP = 10;
 const ID_RE = /^[a-f0-9]{16,40}$/;
