@@ -63,6 +63,8 @@
     { id: 'blitzwels', name: 'Blitzwels',        img: 'img/blitzwels.png',        r: 'epic',     min: 70, max: 130, val: 150, pixel: true, page: 'seiten/blitzwels.html', weather: 'gewitter', say: 'Bzzzt. Lieber nicht anfassen.', desc: 'Lädt sich bei Gewitter auf. Die Barteln knistern.' },
     { id: 'bogenforelle', name: 'Regenbogenforelle', img: 'img/regenbogenforelle.png', r: 'epic', min: 35, max: 70, val: 170, pixel: true, page: 'seiten/regenbogenforelle.html', weather: 'bogen', say: 'Ich bin nur kurz da. Wie der Regenbogen.', desc: 'Schimmert in allen Farben – aber nur, solange der Regenbogen am Himmel steht.' },
     { id: 'kaufland', name: 'Kaufland-Fisch',    img: 'img/kaufland-fisch.png',   r: 'rare',     min: 25, max: 35, val: 49, pixel: true, page: 'seiten/kaufland-fisch.html', say: 'Heute im Angebot.', desc: 'Eingeschweißt, gekühlt, reduziert. Wie er ins Wasser kam, weiß keiner.' },
+    { id: 'energy',   name: 'Monster-Energy-Fisch', img: 'img/energy-fisch.png',  r: 'rare',     min: 15, max: 17, val: 40, pixel: true, page: 'seiten/energy-fisch.html', map: 'see', energy: true, say: 'Null Zucker, volle Power!', desc: 'Eine Dose mit Flossen aus der Tiefsee. Wer sie fängt, hat eine Minute lang schnellere Bisse.' },
+    { id: 'gangnam',  name: 'Gangnam-Fisch',     img: 'img/gangnam-fish.gif',     r: 'epic',     min: 30, max: 55, val: 175, photo: true, page: 'seiten/gangnam-fisch.html', map: 'see', night: 1.5, say: 'Ich tanze, also bin ich.', desc: 'Tanzt ganz unten in der Tiefsee. Niemand weiß, zu welcher Musik.' },
     // Hohe See (map: 'see'): only bite out on the open sea, unlocked with the 3rd rebirth
     { id: 'hering',   name: 'Hering',            img: 'img/hering.png',           r: 'common',   min: 20, max: 35, val: 9,  pixel: true, page: 'seiten/hering.html', map: 'see', say: 'Wir sind viele. Sehr viele.', desc: 'Silbrig und schnell. Kommt selten allein.' },
     { id: 'makrele',  name: 'Makrele',           img: 'img/makrele.png',          r: 'common',   min: 25, max: 45, val: 11, pixel: true, page: 'seiten/makrele.html', map: 'see', say: 'Streifen sind zeitlos.', desc: 'Gestreift wie ein Matrose.' },
@@ -115,6 +117,7 @@
       '🐟 Neue Wetterfische: Pfützenspringer, Nebelgeist, Blitzwels und Regenbogenforelle. Dazu im Angebot: der Kaufland-Fisch.',
       '⛵ Neue Map – Hohe See: Ab der 3. Wiedergeburt fährt Bealin dich raus (Boje am Steg). Mit eigenen Fischen, vom Hering bis zum Riesenkalmar.',
       '⚔️ Bossfight: Nachts auf Hoher See ruft der Odköder den Odfisch. Drei Phasen, drei Minuten – in einer Lobby kämpft ihr zusammen gegen einen Lebensbalken.',
+      '🕺 Neue Tiefseefische auf Hoher See: der Gangnam-Fisch und der Monster-Energy-Fisch (nach dem Fang eine Minute lang schnellere Bisse).',
       '🏆 Mehr Endgame: Tiefseerute, Talente Maßband und Wetterfrosch, neue Hutfarben bis zur 10. Wiedergeburt, neue Fischdex-Ziele, Kosmetik und Bestenlisten (Monster-Fänge, Odfisch-Siege).',
     ] },
     { id: '2026-11-03-4', date: '03.11.2026', items: [
@@ -363,7 +366,7 @@
   function land() {
     state = 'wait'; bob.y = SURFACE; bob.dunk = 0;
     splash(bob.x, SURFACE, 10, '#bfe9ff'); ripple(bob.x); sfx.splash();
-    waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss')) * (wx.bite ? 1 / wBoost(1 / wx.bite) : 1);
+    waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss')) * (wx.bite ? 1 / wBoost(1 / wx.bite) : 1) * (Date.now() < energyUntil ? .6 : 1);
     if (bait().boss && !bossReady()) hint(tr('Der Odköder wirkt nur nachts auf Hoher See.'), 2.4);
     else if (bait().boss) { waitT = 2.5; nibbles = 0; hint(tr('Das Wasser wird unruhig …'), 2.4); return; }
     nibbles = Math.floor(Math.random() * 3); nibbleT = waitT - 1.2;
@@ -448,6 +451,7 @@
     return sizeIn(f, cls);
   }
 
+  let energyUntil = 0; // set by the energy can fish
   function land_catch() {
     const { f } = hooked;
     const mut = rollMutation(f);
@@ -472,6 +476,10 @@
     save.coins += val; save.total++; save.lifeCoins += val; save.totalEarned += val;
     const gain = progressCatch(f, size, val, first, mut, newMut, reel.maxT < .7, shiny, newShiny);
     if (cls >= 3 && f.r !== 'junk') { gain.xp += gainXp(cls === 4 ? 120 : 30); }
+    if (f.energy) { // the energy can: faster bites for a minute
+      energyUntil = Date.now() + 60000;
+      setTimeout(() => toast(tr('⚡ Energy! 60 Sekunden lang schnellere Bisse.')), 1800);
+    }
     if (f.post && Math.random() < .35) { // a message in a bottle sometimes holds a few Taler
       const extra = Math.round((40 + Math.random() * 260) * coinMult());
       save.coins += extra; save.lifeCoins += extra; save.totalEarned += extra;
