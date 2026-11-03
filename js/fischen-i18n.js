@@ -632,6 +632,8 @@
     "⚔️ Mitmachen": "⚔️ Join",
     "Aufgeben": "Give up",
     "Wetter": "Weather",
+    "⛵ Alte Bekannte auf Hoher See: Fisch, Poisson, Fisch 2, Ölfisch, Zackenbarsch, Blobfisch und der Absolute Odfisch (nachts) beißen jetzt auch draußen auf dem Meer.": "⛵ Old friends on the high seas: Fish, Poisson, Fish 2, Oil Fish, Grouper, Blobfish and the Absolute Odfisch (at night) now bite out on the open sea too.",
+    "Beißt auch auf Hoher See": "Also bites on the high seas",
     "🏅 Fisch-Meisterschaft: Fang denselben Fisch oft genug für Bronze, Silber und Gold. Jede Medaille gibt EP und Schuppen, jeder Gold-Fisch dauerhaft +1 % Taler.": "🏅 Fish mastery: catch the same fish often enough for bronze, silver and gold. Every medal gives XP and Schuppen, every gold fish a permanent +1 % coins.",
     "⚒️ Rutenschmiede: Die Rute in der Hand lässt sich im Laden bis +10 schmieden.": "⚒️ Rod forge: the rod in your hand can be forged up to +10 in the shop.",
     "🐚 Talente gehen ab der 5. Wiedergeburt bis Stufe 10. Neu: Nachtangler und Bossjäger.": "🐚 From the 5th rebirth talents go up to level 10. New: Night Angler and Boss Hunter.",
