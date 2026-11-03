@@ -76,7 +76,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   - `lobbySync()` fragt den Server alle 3 s ab, im Bossfight alle 1,5 s.
   - `lobbyMe()` ist alles, was andere von dir sehen.
   - Boss: `summonBoss`, `bossHit`, `bossFromServer`, `bossWin`. Im Solo-Kampf läuft alles im Client, in der Lobby liegen die HP auf dem Server.
-- **Test-Hooks** liegen in `window.__fischen`. Beispiele:
+- **Test-Hooks** liegen in `window.__fischen`, aber nur auf localhost (oder mit `?debug`, dann wird der Spielstand als `tampered` markiert). Spielstände tragen eine Prüfsumme `sig` (`signSave`); wer eine Migration oder ein Feld ändert, muss nichts tun, solange er über `persist()` speichert. Beispiele:
   - `save` direkt ändern;
   - fangen: `landCls(id, klasse)`, `pick()`;
   - Welt: `setTime(0–1)`, `setWeather(id)`, `travel('see')`;

@@ -146,6 +146,12 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-03-15', date: '03.11.2026', items: [
+      '⚙️ Neue Einstellungen (Zahnrad oben oder Taste E): Ton, Lautstärke, weniger Bildschirmwackeln und kurze Zahlen (1,2 Mio.).',
+      '📜 „Alle abholen“: Fertige Aufträge – auch Glimms – holst du jetzt mit einem Klick ab.',
+      '🛡️ Fairer Spielen: Von Hand veränderte Spielstände werden erkannt und können nicht mehr in die Bestenliste.',
+      '🎟️ Codes: In den Einstellungen gibt es jetzt ein Feld zum Einlösen von Codes – der erste schaltet die Beta-Kosmetik frei (Beta-Kappe, Beta-Jacke, Beta-Pose).',
+    ] },
     { id: '2026-11-03-14', date: '03.11.2026', items: [
       '🌋 Neuer Lava-Laden im Kiosk: Hier zahlst du nur mit Glutsteinen 🔥, nicht mit Talern. Lavaruten und Glutköder gibt es jetzt nur noch dort.',
       '🦈 Im Lava-Laden verkauft jetzt Glutflosse, ein tanzender Hai vor Flammen.',
@@ -234,17 +240,41 @@
 
   // ------------------------------------------------------------------ save
   const SAVE_KEY = 'fischen-save-v1';
+  // Anti-cheat (no real protection is possible in the browser, this only makes it harder):
+  // every save carries a checksum (sig). A save edited by hand no longer matches and is marked
+  // as tampered: it keeps working, but can't join or update the leaderboard any more.
+  const SIG_KEY = 'fischen-sig'; // remembers that this device already writes signed saves
+  function cyrb53(str, seed = 0x5f15c) {
+    let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0; i < str.length; i++) { const ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+  }
+  const signSave = d => cyrb53('fisch.ing|' + JSON.stringify(d) + '|steg');
+  let sigBroken = false; // set while loading when the checksum does not match
+  // the test hooks (window.__fischen) only exist when the game runs locally; with ?debug elsewhere
+  // they work too, but the save is then marked as tampered
+  const DEV_HOST = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+  const DEBUG = DEV_HOST || new URLSearchParams(location.search).has('debug');
   const save = Object.assign({
     coins: 0, rod: 'stock', rods: ['stock'], bait: 'wurm', baits: { wurm: Infinity },
     dex: {}, total: 0, sound: true, seen: false,
     boxes: {}, dexClaimed: [], lvl: 1, xp: 0, daily: { d: '', n: 0 }, bestStreak: 0, rebirths: 0, scales: 0, perks: {}, prestige: 0, pearls: 0, pperks: {}, quests: [], questsDone: 0, lifeCoins: 0, totalEarned: 0,
   }, load());
   save.baits.wurm = Infinity;
+  if (sigBroken || (DEBUG && !DEV_HOST)) save.tampered = true;
+  if (sigBroken) setTimeout(() => toast(tr('⚠️ Dieser Spielstand wurde von Hand verändert. Du kannst weiterspielen, aber nicht mehr in die Bestenliste.')), 2500);
   save.prestige = save.prestige | 0; save.pearls = save.pearls | 0;
   if (!Array.isArray(save.glimmQ)) save.glimmQ = []; save.glimmDone = save.glimmDone | 0;
   if (!save.pperks || typeof save.pperks !== 'object') save.pperks = {};
   function load() {
-    try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch { return {}; }
+    try {
+      const d = JSON.parse(localStorage.getItem(SAVE_KEY)) || {};
+      const sig = d.sig; delete d.sig;
+      if (sig ? sig !== signSave(d) : (Object.keys(d).length && localStorage.getItem(SIG_KEY))) sigBroken = true;
+      return d;
+    } catch { return {}; }
   }
   let saveOk = true;
   let leaving = false; // set when the save is replaced or wiped, so nothing writes it back on unload
@@ -256,7 +286,9 @@
       const json = JSON.stringify(d);
       if (json === lastJson && saveOk) return;
       save.saved = Date.now(); d.saved = save.saved;
+      d.sig = signSave(d);
       localStorage.setItem(SAVE_KEY, JSON.stringify(d));
+      localStorage.setItem(SIG_KEY, '1');
       lastJson = json;
       if (!saveOk) { saveOk = true; }
       flashSaved();
@@ -267,7 +299,7 @@
   }
   function saveData() {
     const s = { ...save, baits: { ...save.baits } };
-    delete s.baits.wurm;
+    delete s.baits.wurm; delete s.sig;
     return s;
   }
   // Rutenschmiede: every forge level adds a little reel, luck, calm and cast to that rod
@@ -298,9 +330,10 @@
   const HORIZON = 92, SURFACE = 103, DOCK_Y = 98, DOCK_END = 116;
 
   // ------------------------------------------------------------------ audio
-  let ac = null;
+  let ac = null, master = null;
+  const vol = () => Math.max(0, Math.min(1, save.vol === undefined ? 1 : +save.vol || 0));
   function audio() {
-    if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch { return null; } }
+    if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value = vol(); master.connect(ac.destination); } catch { return null; } }
     if (ac.state === 'suspended') ac.resume();
     return ac;
   }
@@ -312,7 +345,7 @@
     if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq + slide), a.currentTime + dur);
     g.gain.setValueAtTime(vol, a.currentTime);
     g.gain.exponentialRampToValueAtTime(.001, a.currentTime + dur);
-    o.connect(g).connect(a.destination); o.start(); o.stop(a.currentTime + dur);
+    o.connect(g).connect(master); o.start(); o.stop(a.currentTime + dur);
   }
   function noise(dur, vol = .25, freq = 900) {
     if (!save.sound) return;
@@ -321,7 +354,7 @@
     for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
     const s = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
     s.buffer = buf; f.type = 'lowpass'; f.frequency.value = freq; g.gain.value = vol;
-    s.connect(f).connect(g).connect(a.destination); s.start();
+    s.connect(f).connect(g).connect(master); s.start();
   }
   const sfx = {
     splash: () => noise(.35, .3, 1100),
@@ -341,12 +374,12 @@
         voice = new Audio('sounds/spezifischfischer.mp3'); voice.preload = 'auto';
         voice.addEventListener('timeupdate', () => { if (voiceEnd !== null && voice.currentTime >= voiceEnd) voice.pause(); });
       }
-      voiceEnd = to; voice.currentTime = from; voice.play().catch(() => {});
+      voiceEnd = to; voice.volume = vol(); voice.currentTime = from; voice.play().catch(() => {});
     } catch { /* ignore */ }
   }
   function playFile(src) {
     if (!save.sound) return;
-    try { const a = new Audio(src); a.volume = .8; a.play().catch(() => {}); } catch { /* ignore */ }
+    try { const a = new Audio(src); a.volume = .8 * vol(); a.play().catch(() => {}); } catch { /* ignore */ }
   }
 
   // ------------------------------------------------------------------ sprites
@@ -968,7 +1001,8 @@
   }
 
   // ------------------------------------------------------------------ rare catch fanfare
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const motionPref = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let reduceMotion = motionPref || !!save.calm; // "Weniger Bewegung" in the settings
   const FANFARE = {
     rare:      { label: tr('SELTEN!'),   c: '#38bdf8', hi: '#e0f2fe', dur: 1.0, notes: [523, 659, 784] },
     wii:       { label: tr('WII!'),      c: '#5ccdf6', hi: '#ffffff', dur: 1.2, notes: [659, 784, 988, 1319] },
@@ -1094,6 +1128,7 @@
     if (k === 'n') { toggleModal('patch'); return; }
     if (k === 'o') { toggleModal('lobby'); return; }
     if (k === 'k') { toggleModal('wardrobe'); return; }
+    if (k === 'e') { toggleModal('settings'); return; }
     if ((k === 'enter' || k === 't') && save.lobby && !anyModal() && state !== 'rhythm') { e.preventDefault(); openChatbar(); return; }
     if (!$('casino').hidden && (k === ' ' || k === 'enter')) { e.preventDefault(); $('spin').click(); return; }
     if (k === 'm') { $('btn-sound').click(); return; }
@@ -1340,6 +1375,10 @@
     { id: 'hut-perle',   slot: 'hat',    name: 'Perlenkrone',        col: ['#f5f3ff', '#a78bfa', '#ffffff'], sparkle: true, desc: 'Für alle, die ganz von vorn angefangen haben.', ach: 'Mach einmal Prestige.', got: () => save.prestige >= 1 },
     { id: 'pose-perle',  slot: 'bob',    name: 'Perlen-Pose',        col: '#ede9fe', desc: 'Schimmert wie Perlmutt.', ach: 'Mach 2× Prestige.', got: () => save.prestige >= 2 },
     { id: 'jacke-prestige', slot: 'jacket', name: 'Prestige-Mantel', col: ['#1e1b4b', '#0f0a2e', '#fbbf24'], desc: 'Nachtblau mit Goldsaum. Schon dreimal alles verloren und trotzdem hier.', ach: 'Mach 3× Prestige.', got: () => save.prestige >= 3 },
+    // codes (settings): FISCH-BETA-TEST-RWRD unlocks the beta set
+    { id: 'hut-beta',    slot: 'hat',    name: 'Beta-Kappe',         col: ['#22d3ee', '#0e7490', '#f0abfc'], sparkle: true, desc: 'Für alle, die von Anfang an dabei waren.', ach: 'Löse den Beta-Code in den Einstellungen ein.', got: () => (save.codes || []).includes('beta') },
+    { id: 'jacke-beta',  slot: 'jacket', name: 'Beta-Jacke',         col: ['#7c3aed', '#3b0764', '#22d3ee'], desc: 'Lila mit Türkis. Steht „BETA“ drauf, man sieht es nur nicht.', ach: 'Löse den Beta-Code in den Einstellungen ein.', got: () => (save.codes || []).includes('beta') },
+    { id: 'pose-beta',   slot: 'bob',    name: 'Beta-Pose',          col: '#22d3ee', desc: 'Leuchtet türkis wie ein Testbildschirm.', ach: 'Löse den Beta-Code in den Einstellungen ein.', got: () => (save.codes || []).includes('beta') },
     // Lava-Laden: only for Glutsteine
     { id: 'hut-magma',   slot: 'hat',    name: 'Magmahelm',          glut: 200, col: ['#ea580c', '#7c2d12', '#fde047'], desc: 'Ein Grubenhelm wie der von Glimm, nur heißer.' },
     { id: 'jacke-asche', slot: 'jacket', name: 'Aschejacke',         glut: 150, col: ['#57534e', '#292524', '#f97316'], desc: 'Grau wie Asche, mit glühenden Nähten.' },
@@ -2419,8 +2458,33 @@
     const d = document.createElement('div'); d.textContent = msg;
     $('toast').appendChild(d); setTimeout(() => d.remove(), 3300);
   }
+  // "Kurze Zahlen": 1234567 -> 1,2 Mio. in the top bar
+  function shortN(n) {
+    const a = Math.abs(n), f = (v, u) => v.toLocaleString(I18N.locale, { maximumFractionDigits: v < 10 ? 1 : 0 }) + u;
+    return a >= 1e9 ? f(n / 1e9, tr(' Mrd.')) : a >= 1e6 ? f(n / 1e6, tr(' Mio.')) : a >= 1e4 ? f(n / 1e3, tr(' Tsd.')) : String(n);
+  }
+  // codes: only checksums live here, so the codes can't simply be read in the source
+  const CODES = { mq6pzev5x0: { id: 'beta', what: () => tr('Beta-Kappe, Beta-Jacke und Beta-Pose') } };
+  function redeemCode() {
+    const raw = $('set-code').value, norm = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const c = norm && CODES[cyrb53('code|' + norm)], msg = $('set-code-msg');
+    if (!Array.isArray(save.codes)) save.codes = [];
+    if (!c) { msg.textContent = tr('Diesen Code gibt es nicht.'); return; }
+    if (save.codes.includes(c.id)) { msg.textContent = tr('Diesen Code hast du schon eingelöst.'); return; }
+    save.codes.push(c.id); $('set-code').value = '';
+    msg.textContent = tr('🎁 Eingelöst: {w}! Anziehen im Kleiderschrank (K).', { w: c.what() });
+    [523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .14, 'triangle', .08), i * 90));
+    checkCosm(true); persist();
+  }
+  function renderSettings() {
+    $('set-code-msg').textContent = '';
+    $('set-sound').checked = !!save.sound; $('set-vol').value = Math.round(vol() * 100); $('set-vol').disabled = !save.sound;
+    $('set-vol-val').textContent = Math.round(vol() * 100) + ' %';
+    $('set-calm').checked = reduceMotion; $('set-calm').disabled = motionPref; $('set-short').checked = !!save.short;
+    $('set-tamper').hidden = !save.tampered;
+  }
   function updateCoins() {
-    $('coins').textContent = save.coins; $('shop-coins').textContent = save.coins; $('casino-coins').textContent = save.coins;
+    $('coins').textContent = save.short ? shortN(save.coins) : save.coins; $('shop-coins').textContent = save.coins; $('casino-coins').textContent = save.coins;
     $('glut-pill').hidden = !lavaOpen(); $('glut').textContent = save.glut | 0; $('shop-glut').textContent = save.glut | 0; $('glut-pill').title = tr('Glutsteine: aus Fängen in der Glutgrotte, zum Graben und für Glimms Werkstatt');
   }
   // bait hotbar: every bait you own as a slot; click or press 1-9 to switch (only while idle)
@@ -2474,7 +2538,7 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings']) $(id).hidden = true;
   }
   function unreadPatches() { // how many entries are new since the last read (at least the newest 3 when nothing is new)
     const i = PATCH_NOTES.findIndex(p => p.id === save.patchSeen);
@@ -2494,7 +2558,7 @@
     if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'boss', 'summon'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -2511,7 +2575,19 @@
   $('btn-sound').addEventListener('click', () => {
     save.sound = !save.sound; persist();
     $('btn-sound').textContent = save.sound ? '🔊' : '🔇';
+    if (!$('settings').hidden) renderSettings();
   });
+  $('btn-settings').addEventListener('click', () => toggleModal('settings'));
+  $('set-sound').addEventListener('change', () => { if ($('set-sound').checked !== !!save.sound) $('btn-sound').click(); });
+  $('set-vol').addEventListener('input', () => {
+    save.vol = Math.max(0, Math.min(100, +$('set-vol').value)) / 100; if (master) master.gain.value = vol();
+    $('set-vol-val').textContent = Math.round(vol() * 100) + ' %';
+  });
+  $('set-vol').addEventListener('change', () => { persist(); tone(660, .12, 'triangle', .1); });
+  $('set-calm').addEventListener('change', () => { save.calm = $('set-calm').checked; reduceMotion = motionPref || save.calm; persist(); });
+  $('set-code-btn').addEventListener('click', redeemCode);
+  $('set-code').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); redeemCode(); } });
+  $('set-short').addEventListener('change', () => { save.short = $('set-short').checked; persist(); updateCoins(); });
   $('start').addEventListener('click', () => {
     audio(); $('title').hidden = true;
     // after an update: returning players get pointed at the new issue of the Steg-Zeitung
@@ -3648,6 +3724,18 @@
     sfx.coin(); toast(tr('📜 +{c} Taler · +{x} EP', { c: q.coins, x: q.xp }));
     gainXp(q.xp); fillQuests(); persist(); updateCoins(); renderProg();
   }
+  // QoL: claim every finished quest (normal and Glimm's) with one click
+  function claimAll() {
+    let n = 0, guard = 20;
+    while (guard-- > 0) {
+      const i = save.quests.findIndex(q => q.p >= q.n);
+      if (i >= 0) { claimQuest(i); n++; continue; }
+      const j = lavaOpen() ? save.glimmQ.findIndex(q => q.p >= q.n) : -1;
+      if (j >= 0) { claimGlimm(j); n++; continue; }
+      break;
+    }
+    if (n > 1) setTimeout(() => toast(tr('📜 {n} Aufträge auf einmal abgeholt!', { n })), 300);
+  }
   function rerollQuest(i) {
     const cost = 10 + save.lvl * 2;
     if (save.coins < cost) return;
@@ -3729,6 +3817,9 @@
       d.append(txt, btn);
       return d;
     };
+    const doneN = save.quests.filter(q => q.p >= q.n).length + (lavaOpen() ? save.glimmQ.filter(q => q.p >= q.n).length : 0);
+    $('claim-all').hidden = doneN < 2;
+    $('claim-all').textContent = tr('📜 Alle abholen ({n})', { n: doneN });
     $('prog-quests').replaceChildren(...save.quests.map((q, i) => questRow(q, questText(q), 10 + save.lvl * 2, () => claimQuest(i), () => rerollQuest(i))));
     $('glimm-sec').hidden = !lavaOpen();
     if (lavaOpen()) {
@@ -3806,6 +3897,7 @@
   }
   $('btn-rebirth').addEventListener('click', rebirth);
   $('btn-prestige').addEventListener('click', prestige);
+  $('claim-all').addEventListener('click', claimAll);
   $('btn-dig').addEventListener('click', digDeeper);
 
   // older saves: turn past catches into a starting level, quietly
@@ -3854,8 +3946,10 @@
     if (!r.ok) throw Object.assign(new Error(j.error || tr('Bestenliste gerade nicht erreichbar.')), { status: r.status });
     return j;
   }
+  const TAMPER_MSG = () => tr('Dieser Spielstand wurde von Hand verändert und kann nicht in die Bestenliste.');
   async function lbSubmit(force) {
     if (!save.lb || LB.busy) return;
+    if (save.tampered) { LB.err = TAMPER_MSG(); return; }
     const sc = lbScores(), key = JSON.stringify(sc), since = Date.now() - (save.lbT || 0);
     if (key === save.lbKey || since < 55000 || (!force && since < 120000)) return;
     LB.busy = true; save.lbT = Date.now();
@@ -3905,6 +3999,7 @@
     const err = $('lb-err');
     if (!/^[\p{L}\p{N} ._\-!?]{1,16}$/u.test(name)) { err.textContent = tr('Name: 1–16 Zeichen (Buchstaben, Zahlen, Leerzeichen, . _ - ! ?).'); return; }
     if (!$('lb-consent').checked) { err.textContent = tr('Bitte bestätige die Einwilligung.'); return; }
+    if (save.tampered) { err.textContent = TAMPER_MSG(); return; }
     err.textContent = ''; $('lb-join-btn').disabled = true;
     save.lb = { id: hex(20), token: hex(32), name }; save.lbKey = ''; save.lbT = 0;
     await lbSubmit(true);
@@ -4181,7 +4276,8 @@
       const j = await cloudCall({ action: 'get', key });
       const d = j.data;
       if (!confirm(tr('Spielstand vom {d} laden ({n} Fänge, Level {l})?\nDer aktuelle Spielstand auf diesem Gerät wird ersetzt.', { d: new Date(j.t).toLocaleString(I18N.locale), n: d.total || 0, l: d.lvl || 1 }))) return;
-      d.cloudKey = key; d.cloudT = j.t; d.cloudSum = '';
+      d.cloudKey = key; d.cloudT = j.t; d.cloudSum = ''; delete d.sig;
+      d.sig = signSave(d);
       leaving = true;
       localStorage.setItem(SAVE_KEY, JSON.stringify(d));
       location.reload();
@@ -4204,7 +4300,7 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  window.__fischen = { save, gainXp, rebirth, prestige, dig: () => digDeeper(), buyGlutUp: id => buyGlutUp(id), claimGlimm: i => claimGlimm(i), caveMult: () => caveMult(), glimm: () => talkGlimm(), MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
+  if (DEBUG) window.__fischen = { save, gainXp, rebirth, prestige, dig: () => digDeeper(), buyGlutUp: id => buyGlutUp(id), claimGlimm: i => claimGlimm(i), caveMult: () => caveMult(), glimm: () => talkGlimm(), MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); },
     rhythm: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; reel.maxT = 0; startRhythm(); },
     get notes() { return rhythm.notes; },
