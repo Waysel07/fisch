@@ -108,9 +108,10 @@
     { id: 'krake',  name: 'Krakenrute',       price: 40000, reb: 6, cast: 1.0, reel: 3.4, tens: .3,   luck: 3.0, desc: 'Acht Arme Kraft in einer Rute. Nichts reißt.' },
     // Lavaruten: normal rods melt in the Glutgrotte, there only these work (and they only work there)
     { id: 'basalt',   name: 'Basaltrute',         price: 400,   pres: 1, lava: true, cast: .8,  reel: 1.5, tens: .7,  luck: 1.1, desc: 'Aus erkalteter Lava. Die erste Rute, die in der Glutgrotte nicht schmilzt.' },
-    { id: 'obsidian', name: 'Obsidianrute',       price: 4000,  pres: 1, lava: true, cast: .95, reel: 2.2, tens: .5,  luck: 1.6, desc: 'Schwarzes Vulkanglas, hart wie Stahl. Nur für die Glutgrotte.' },
-    { id: 'magma',    name: 'Magmarute',          price: 15000, pres: 1, lava: true, cast: 1.0, reel: 2.9, tens: .38, luck: 2.2, desc: 'In ihr fließt noch Magma. Wird nie kalt. Nur für die Glutgrotte.' },
-    { id: 'drachenknochen', name: 'Drachenknochenrute', price: 50000, pres: 2, lava: true, cast: 1.0, reel: 3.6, tens: .28, luck: 3.0, desc: 'Aus dem Knochen eines Lavadrachen. Hält jede Glut aus. Nur für die Glutgrotte.' },
+    { id: 'obsidian', name: 'Obsidianrute',       price: 4000,  pres: 1, depth: 2, lava: true, cast: .95, reel: 2.2, tens: .5,  luck: 1.6, desc: 'Schwarzes Vulkanglas, hart wie Stahl. Nur für die Glutgrotte.' },
+    { id: 'magma',    name: 'Magmarute',          price: 15000, pres: 1, depth: 3, lava: true, cast: 1.0, reel: 2.9, tens: .38, luck: 2.2, desc: 'In ihr fließt noch Magma. Wird nie kalt. Nur für die Glutgrotte.' },
+    { id: 'drachenknochen', name: 'Drachenknochenrute', price: 50000, pres: 1, depth: 4, lava: true, cast: 1.0, reel: 3.6, tens: .28, luck: 3.0, desc: 'Aus dem Knochen eines Lavadrachen. Hält jede Glut aus. Nur für die Glutgrotte.' },
+    { id: 'phoenixrute', name: 'Phönixfederrute', price: 250000, pres: 1, depth: 5, lava: true, cast: 1.0, reel: 4.2, tens: .24, luck: 3.6, desc: 'Aus einer Feder des Phönixfischs. Brennt, ohne zu verbrennen. Nur für die Glutgrotte.' },
   ];
   const BAITS = [
     { id: 'wurm',   name: 'Wurm',          price: 0,  pack: 0, luck: 1,   speed: 1,   desc: 'Unbegrenzt. Wurmig.' },
@@ -145,6 +146,11 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-03-13', date: '03.11.2026', items: [
+      '🔥 Neue Währung: Glutsteine! Jeder Fang in der Glutgrotte bringt welche – je seltener der Fisch, desto mehr (Legendäre 40, Kapital und Monster doppelt, Shinys dreifach).',
+      '⛏️ Die Glutgrotte hat jetzt 5 Tiefen: Glutkammer, Aschehalle, Magmaschlund, Drachenhort und Phönixnest. Mit Glutsteinen gräbt Glimm tiefer – jede Tiefe bringt neue Fische, eine neue Lavarute und +20 % Taler. Ganz unten wartet die Phönixfederrute.',
+      '🔧 Glimms Werkstatt: Für Glutsteine gibt es dauerhafte Grotten-Upgrades – Glutnetz (mehr Taler), Hitzeschild (weniger Spannung), Funkenlicht (mehr Glück) und Glutkristall (mehr Glutsteine).',
+    ] },
     { id: '2026-11-03-12', date: '03.11.2026', items: [
       '💰 Die Glutgrotte bringt jetzt richtig Geld: Alle Grotten-Fische sind dreimal so viel wert, und unten gibt es dazu +50 % Hitzebonus auf jeden Fang.',
       '⛏️ Glimms Aufträge: Glimm hat in der Grotte immer drei eigene Aufträge mit großen Belohnungen. Für epische Fänge gibt es sogar eine Perle.',
@@ -216,7 +222,10 @@
       '🆕 Neue Versionen laden automatisch, sobald nichts an der Angel hängt.',
     ] },
   ];
-  trAll(Object.values(RARITY), ['label']); trAll(FISH, ['name', 'say', 'desc', 'hint']); trAll(RODS, ['name', 'desc']); trAll(BAITS, ['name', 'desc']);
+  trAll(Object.values(RARITY), ['label']); trAll(FISH, ['name', 'say', 'desc', 'hint']);
+  // Glutgrotte: how deep you must have dug for each cave fish (see CAVE_DEPTHS)
+  const LAVA_DEPTH = { schlacke: 1, glutgrundel: 1, aschebarsch: 1, bimsfisch: 1, funkenforelle: 1, obsidianhecht: 2, schwefelkugel: 2, magmakarpfen: 3, salamanderfisch: 3, kristallwels: 3, lavadrache: 4, phoenixfisch: 5 };
+  for (const f of FISH) if (LAVA_DEPTH[f.id]) f.depth = LAVA_DEPTH[f.id]; trAll(RODS, ['name', 'desc']); trAll(BAITS, ['name', 'desc']);
 
   // ------------------------------------------------------------------ save
   const SAVE_KEY = 'fischen-save-v1';
@@ -400,7 +409,7 @@
   }
   const weatherSlot = () => Math.floor(Date.now() / 1000 / WEATHER_LEN + weatherShift);
   // under the earth there is no weather: the cave has its own still "weather" without any bonus
-  const CAVE_WX = { id: 'glut', icon: '🌋', name: tr('Glutgrotte'), desc: tr('Unter der Erde gibt es kein Wetter, nur Hitze.') };
+  const CAVE_WX = { id: 'glut', icon: '🌋', get name() { return tr('Tiefe {n} · {t}', { n: caveDepth(), t: CAVE_DEPTHS[caveDepth() - 1].name }); }, desc: tr('Unter der Erde gibt es kein Wetter, nur Hitze.') };
   function currentWeather() { if (inLava()) return CAVE_WX; return (weatherForce && WEATHER.find(w => w.id === weatherForce)) || weatherAt(weatherSlot()); }
   let wx = currentWeather();
   // the Wetterfrosch talent makes every weather bonus stronger
@@ -414,6 +423,32 @@
   const LAVA_PRES = 1;
   const lavaOpen = () => (save.prestige | 0) >= LAVA_PRES;
   function inLava() { return save.map === 'lava'; }
+  // Glutsteine 🔥: the currency of the cave. Every cave catch drops some; they dig deeper and buy Glimm's upgrades.
+  const CAVE_DEPTHS = [
+    { n: 1, name: 'Glutkammer', cost: 0 }, { n: 2, name: 'Aschehalle', cost: 60 }, { n: 3, name: 'Magmaschlund', cost: 250 },
+    { n: 4, name: 'Drachenhort', cost: 800 }, { n: 5, name: 'Phönixnest', cost: 2000 },
+  ];
+  trAll(CAVE_DEPTHS, ['name']);
+  function caveDepth() { return Math.max(1, Math.min(CAVE_DEPTHS.length, save.caveDepth | 0)); }
+  const GLUT_DROP = { junk: .5, common: 1, uncommon: 2, rare: 5, wii: 5, epic: 12, legendary: 40 };
+  const GLUT_UPS = [
+    { id: 'netz',     icon: '🔥', name: 'Glutnetz',     max: 10, desc: l => tr('+{n} % Taler in der Glutgrotte', { n: l * 10 }) },
+    { id: 'schild',   icon: '🛡️', name: 'Hitzeschild',  max: 5,  desc: l => tr('{n} % weniger Spannung in der Glutgrotte', { n: l * 5 }) },
+    { id: 'licht',    icon: '✨', name: 'Funkenlicht',  max: 10, desc: l => tr('+{n} % Glück in der Glutgrotte', { n: l * 8 }) },
+    { id: 'kristall', icon: '💎', name: 'Glutkristall', max: 10, desc: l => tr('+{n} % Glutsteine pro Fang', { n: l * 10 }) },
+  ];
+  trAll(GLUT_UPS, ['name']);
+  save.glut = save.glut | 0;
+  if (!save.glutUps || typeof save.glutUps !== 'object') save.glutUps = {};
+  function glutUp(id) { return (save.glutUps[id] | 0); }
+  const glutUpCost = l => (l + 1) * 20;
+  // older saves that were already down there: Glutsteine for the cave fish caught so far, and the depth those fish live at (up to 3)
+  if (save.caveDepth === undefined) {
+    let g = 0, d = 1;
+    for (const f of FISH) { const e = save.dex[f.id]; if (!f.depth || !e || !e.n) continue; g += e.n * GLUT_DROP[f.r]; d = Math.max(d, Math.min(3, f.depth)); }
+    save.caveDepth = d; g = Math.min(300, Math.round(g)); save.glut += g;
+    if (g) setTimeout(() => toast(tr('🔥 Neu: Glutsteine! Für deine Grotten-Fänge bisher gibt es {n} 🔥 – und du startest auf Tiefe {d}.', { n: g, d })), 3500);
+  }
   if (!((save.map === 'see' && seaOpen()) || (save.map === 'lava' && lavaOpen()))) save.map = 'steg';
   const onSea = () => save.map === 'see';
 
@@ -489,11 +524,11 @@
   function pickFish() {
     // out on the open sea every cast counts as far out
     const d = Math.min(1, (onSea() ? Math.max(.7, castDistance()) : castDistance()) + (wx.far ? wx.far * (1 + .1 * perk('wetter')) : 0)), night = isNight(), b = bait(), r = rod(), map = save.map;
-    const luck = (b.lava && map !== 'lava' ? 1 : b.luck) * r.luck * (1 + .08 * perk('glueck')) * (1 + .1 * pperk('pglueck')) * (dexPerk('luck10') ? 1.1 : 1);
+    const luck = (b.lava && map !== 'lava' ? 1 : b.luck) * (map === 'lava' ? 1 + .08 * glutUp('licht') : 1) * r.luck * (1 + .08 * perk('glueck')) * (1 + .1 * pperk('pglueck')) * (dexPerk('luck10') ? 1.1 : 1);
     const fullHour = (time * 24) % 1 < 1 / 6; // the clock shows xx:00
     const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night) && !(f.fullHour && !fullHour)
       && !(f.needs && Object.entries(f.needs).some(([id, n]) => ((save.dex[id] || {}).n || 0) < n))
-      && ((f.map || 'steg') === map || (f.sea && map === 'see')) && !f.boss && !(f.weather && f.weather !== wx.id));
+      && ((f.map || 'steg') === map || (f.sea && map === 'see')) && !(f.depth && f.depth > caveDepth()) && !f.boss && !(f.weather && f.weather !== wx.id));
     const weights = pool.map(f => {
       let w = RARITY[f.r].w;
       const n = pool.filter(g => g.r === f.r).length; w /= n;
@@ -583,6 +618,10 @@
     if (shiny) { e.shiny = (e.shiny || 0) + 1; newShiny = e.shiny === 1; }
     save.coins += val; save.total++; save.lifeCoins += val; save.totalEarned += val;
     const gain = progressCatch(f, size, val, first, mut, newMut, reel.maxT < .7, shiny, newShiny);
+    if (inLava()) { // Glutsteine
+      const g = Math.round((f.r === 'junk' ? (Math.random() < .5 ? 1 : 0) : GLUT_DROP[f.r] || 1) * (cls >= 3 ? 2 : 1) * (shiny ? 3 : 1) * (1 + .1 * glutUp('kristall')));
+      if (g) { save.glut += g; gain.tags.push(`+${g} 🔥`); }
+    }
     if (cls >= 3 && f.r !== 'junk') { gain.xp += gainXp(cls === 4 ? 120 : 30); }
     if (f.energy) { // the energy can: faster bites for a minute
       energyUntil = Date.now() + 60000;
@@ -804,7 +843,7 @@
     }
     const pull = (ph === 3 ? 2.1 : 1.5) * (reel.thrash ? 1.6 : .4);
     if (holding) {
-      reel.tension += (.3 + pull * .55) * r.tens * (1 - .06 * perk('schnur')) * (wx.tens || 1) * dt;
+      reel.tension += (.3 + pull * .55) * r.tens * (1 - .06 * perk('schnur')) * (wx.tens || 1) * (inLava() ? 1 - .05 * glutUp('schild') : 1) * dt;
       bossHit((reel.thrash ? 3 : 12 + 8 * r.reel) * dt);
       if (Math.random() < dt * 14) sfx.tick();
     } else reel.tension -= (.8 - pull * .15) * dt;
@@ -1188,7 +1227,7 @@
     }
     const pull = h.str * (reel.thrash ? 2.6 : .55);
     if (holding) {
-      reel.tension += (0.38 + pull * .75) * r.tens * (1 - .06 * perk('schnur')) * (wx.tens || 1) * dt;
+      reel.tension += (0.38 + pull * .75) * r.tens * (1 - .06 * perk('schnur')) * (wx.tens || 1) * (inLava() ? 1 - .05 * glutUp('schild') : 1) * dt;
       const gain = reel.thrash ? .05 : .2;
       reel.progress += gain * r.reel / (.6 + h.str) * dt;
       if (Math.random() < dt * 14) sfx.tick();
@@ -1296,7 +1335,7 @@
     { id: 'hut-perle',   slot: 'hat',    name: 'Perlenkrone',        col: ['#f5f3ff', '#a78bfa', '#ffffff'], sparkle: true, desc: 'Für alle, die ganz von vorn angefangen haben.', ach: 'Mach einmal Prestige.', got: () => save.prestige >= 1 },
     { id: 'pose-perle',  slot: 'bob',    name: 'Perlen-Pose',        col: '#ede9fe', desc: 'Schimmert wie Perlmutt.', ach: 'Mach 2× Prestige.', got: () => save.prestige >= 2 },
     { id: 'jacke-prestige', slot: 'jacket', name: 'Prestige-Mantel', col: ['#1e1b4b', '#0f0a2e', '#fbbf24'], desc: 'Nachtblau mit Goldsaum. Schon dreimal alles verloren und trotzdem hier.', ach: 'Mach 3× Prestige.', got: () => save.prestige >= 3 },
-    { id: 'jacke-lava',  slot: 'jacket', name: 'Lavamantel',         col: ['#b91c1c', '#450a0a', '#fb923c'], desc: 'Hält warm. Viel zu warm.', ach: 'Fange alle Fische der Glutgrotte.', got: () => FISH.filter(f => f.map === 'lava').every(f => save.dex[f.id]) },
+    { id: 'jacke-lava',  slot: 'jacket', name: 'Lavamantel',         col: ['#b91c1c', '#450a0a', '#fb923c'], desc: 'Hält warm. Viel zu warm.', ach: 'Grabe bis Tiefe 5 der Glutgrotte.', got: () => (save.caveDepth | 0) >= 5 },
     { id: 'pose-monster', slot: 'bob',   name: 'Monster-Pose',       col: '#f43f5e', desc: 'Für Angler, die Großes vorhaben.', ach: 'Fange einen Monster-Fisch.', got: () => (save.monsters || 0) >= 1 },
     { id: 'pose-gold',   slot: 'bob',    name: 'Goldene Pose',       col: '#facc15', desc: 'Glänzt, wenn ein Fisch anbeißt.', ach: 'Erreiche Level 10.', got: () => save.lvl >= 10 || save.rebirths > 0 },
     { id: 'pose-regen',  slot: 'bob',    name: 'Regenbogen-Pose',    col: null, desc: 'Wechselt ständig die Farbe.', ach: 'Entdecke 20 verschiedene Fische.', got: () => FISH.filter(f => save.dex[f.id]).length >= 20 },
@@ -1773,7 +1812,7 @@
     const where = inLava() ? 'up' : lavaOpen() ? 'down' : 'locked';
     glimmLine = tr(pick(GLIMM_SAY[where])); glimmTalk = 3;
     tone(160, .08, 'square', .07, 40); setTimeout(() => tone(240, .1, 'square', .07, -30), 90);
-    if (where === 'up') { setTimeout(() => { if (state === 'idle' && $('prog').hidden) { toggleModal('prog'); const h = $('glimm-head'); if (h) h.scrollIntoView({ block: 'start' }); } }, 500); return; }
+    if (where === 'up') { setTimeout(() => { if (state === 'idle' && $('prog').hidden) { toggleModal('prog'); const h = $('glimm-sec'); if (h) h.scrollIntoView({ block: 'start' }); } }, 500); return; }
     if (where !== 'locked' && state === 'idle') glimmGo = setTimeout(() => { glimmGo = 0; glimmTalk = 0; travel('lava'); }, 1300);
   }
   function drawGlimm(x, footY, dark) {
@@ -1796,8 +1835,8 @@
   }
   // the Glutgrotte: a rock ceiling with stalactites instead of sky, basalt columns and a lake of lava
   function renderCave(dark) {
-    const d = dark * .35;
-    bands(bg, 0, HORIZON, Array.from({ length: 9 }, (_, i) => mix([22, 16, 20], [86, 40, 26], Math.pow(i / 8, 1.6) * (1 - d))));
+    const d = dark * .35, k = (caveDepth() - 1) / (CAVE_DEPTHS.length - 1); // deeper = redder and hotter
+    bands(bg, 0, HORIZON, Array.from({ length: 9 }, (_, i) => mix([22 - k * 8, 16 - k * 8, 20 - k * 8], [86 + k * 70, 40 - k * 10, 26 - k * 10], Math.pow(i / 8, 1.6) * (1 - d))));
     const st = mix([40, 30, 30], [24, 18, 20], d), stL = mix([74, 54, 46], [40, 30, 30], d);
     for (let i = 0; i < 26; i++) {
       const x = (i * 61) % W + (i % 3) * 2, len = 8 + (i * 37) % 26, w = 3 + (i * 13) % 5;
@@ -1808,7 +1847,11 @@
       const h = 6 + ((x * 7) % 17);
       bg.fillStyle = col; bg.fillRect(x, HORIZON - h, 8, h + 1); bg.fillStyle = colL; bg.fillRect(x, HORIZON - h, 8, .5); bg.fillRect(x + 7, HORIZON - h, .5, h);
     }
-    bands(bg, HORIZON, H, Array.from({ length: 10 }, (_, i) => mix([253, 186, 74], [124, 22, 12], Math.pow(i / 9, .7))));
+    if (k >= .5) for (let i = 0; i < 18; i++) { // glowing crystals in the ceiling from depth 3
+      const x = (i * 47 + 13) % W, y = 4 + (i * 23) % 30, c = i % 2 ? '#a5f3fc' : '#f0abfc';
+      bg.fillStyle = c; bg.fillRect(x, y, 1, 1.5); bg.fillStyle = '#ffffff'; bg.fillRect(x, y, .5, .5);
+    }
+    bands(bg, HORIZON, H, Array.from({ length: 10 }, (_, i) => mix([253, 186 + k * 50, 74 + k * 90], [124 + k * 60, 22 + k * 10, 12], Math.pow(i / 9, .7))));
     const crust = mix([70, 30, 22], [50, 22, 18], d);
     for (let i = 0; i < 22; i++) {
       const y = HORIZON + 4 + (i * i * .7) % (H - HORIZON - 6), x = (i * 89) % W;
@@ -1875,7 +1918,7 @@
     const deep = mix([8, 40, 80], [4, 10, 28], dark);
     const cave = inLava(), bgTop = cave ? '#161014' : top, bgDeep = cave ? '#7c1d0c' : deep;
     if (bgTop + bgDeep !== lastBg) { lastBg = bgTop + bgDeep; $('stage').style.background = `linear-gradient(${bgTop} 0 50%, ${bgDeep} 50% 100%)`; }
-    const key = top + bot + save.map;
+    const key = top + bot + save.map + (inLava() ? caveDepth() : '');
     // at dawn and dusk the colours change every frame; repainting sky and sea 4x a second is plenty
     if (key !== bgKey && (t - bgAt > .25 || t < bgAt || !bgKey)) { bgKey = key; bgAt = t; renderBg(top, bot, dark); }
 
@@ -2172,7 +2215,7 @@
     { id: 'me',     map: 'all', label: tr('Kleiderschrank'), get x() { return player.x - 5; }, y: DOCK_Y - 26, w: 10, h: 18, open: () => toggleModal('wardrobe') },
     { id: 'buoy',   get label() { return seaOpen() ? tr('⛵ Auf die Hohe See') : tr('⛵ Hohe See (🔒 3× Wiedergeburt)'); }, x: 285, y: SURFACE - 16, w: 12, h: 18, draw: drawBuoy, open: () => travel('see'), ready: () => seaOpen() && !save.seaSeen },
     { id: 'rift',   get label() { return lavaOpen() ? tr('⛏️ Glimm · In die Glutgrotte') : tr('⛏️ Glimm · Glutgrotte (🔒 1× Prestige)'); }, x: 196, y: SURFACE - 24, w: 18, h: 25, draw: drawRift, open: () => talkGlimm(), ready: () => lavaOpen() && !save.lavaSeen },
-    { id: 'glimm',  map: 'lava', label: tr('⛏️ Glimm · Aufträge'), x: 19, y: DOCK_Y - 11, w: 10, h: 11, draw: () => drawGlimm(20, DOCK_Y, 1), open: () => talkGlimm(), ready: () => save.glimmQ.some(q => q.p >= q.n) },
+    { id: 'glimm',  map: 'lava', label: tr('⛏️ Glimm · Aufträge'), x: 19, y: DOCK_Y - 11, w: 10, h: 11, draw: () => drawGlimm(20, DOCK_Y, 1), open: () => talkGlimm(), ready: () => save.glimmQ.some(q => q.p >= q.n) || canDig() },
     { id: 'ladder', map: 'lava', label: tr('🪜 Zurück zum Steg'), x: 4, y: DOCK_Y - 28, w: 12, h: 28, draw: drawLadder, open: () => travel('steg') },
     { id: 'wheel',  map: 'see', label: tr('⚓ Zurück zum Steg'), x: 5, y: DOCK_Y - 22, w: 15, h: 22, draw: drawWheel, open: () => travel('steg') },
     { id: 'npc',    label: 'Spezifischfischer', x: NPC.x - 1, y: DOCK_Y - NPC.h - 2, w: NPC.w + 2, h: NPC.h + 2, open: () => talkNpc() },
@@ -2366,7 +2409,10 @@
     const d = document.createElement('div'); d.textContent = msg;
     $('toast').appendChild(d); setTimeout(() => d.remove(), 3300);
   }
-  function updateCoins() { $('coins').textContent = save.coins; $('shop-coins').textContent = save.coins; $('casino-coins').textContent = save.coins; }
+  function updateCoins() {
+    $('coins').textContent = save.coins; $('shop-coins').textContent = save.coins; $('casino-coins').textContent = save.coins;
+    $('glut-pill').hidden = !lavaOpen(); $('glut').textContent = save.glut | 0; $('glut-pill').title = tr('Glutsteine: aus Fängen in der Glutgrotte, zum Graben und für Glimms Werkstatt');
+  }
   // bait hotbar: every bait you own as a slot; click or press 1-9 to switch (only while idle)
   const ownedBaits = () => BAITS.filter(b => !b.pack || (save.baits[b.id] || 0) > 0);
   function selectBait(id) {
@@ -2825,6 +2871,7 @@
     if (f.map === 'see' && f.weather) return tr('Hohe See, nur bei Gewitter');
     if (f.weather) return tr(WEATHER_HINT[f.weather]);
     if (f.map === 'see') return f.night ? tr('Hohe See, lieber nachts') : tr('Nur auf Hoher See');
+    if (f.depth && f.depth > caveDepth()) return tr('Glutgrotte, ab Tiefe {n}', { n: f.depth });
     if (f.map === 'lava') return f.night ? tr('Glutgrotte, lieber nachts') : f.far ? tr('Glutgrotte, weit draußen') : tr('Nur in der Glutgrotte');
     if (f.dayOff) return tr('Nur nachts, weit draußen');
     if (f.far) return tr('Weit draußen');
@@ -2869,6 +2916,7 @@
     obsidian: i => i % 5 === 0 ? '#a78bfa' : '#1e1b4b',
     magma: i => i % 2 === 0 ? '#fb923c' : '#7f1d1d',
     drachenknochen: i => i % 4 === 0 ? '#ef4444' : '#f5f0e1',
+    phoenixrute: i => ['#fde047', '#f97316', '#dc2626'][i % 3],
   };
   const ICONS = {};
   for (const r of RODS) ICONS[r.id] = iconCanvas(p => {
@@ -3326,6 +3374,7 @@
   function coinMult() { return (1 + .2 * save.rebirths) * (1 + .5 * save.prestige) * (1 + .15 * pperk('ptaler')) * (1 + .1 * perk('taler')) * (dexPerk('taler10') ? 1.1 : 1) * (1 + goldBonus() / 100); }
   function lockText(item) {
     if (item.pres && save.prestige < item.pres) return tr('🔒 {n}× Prestige', { n: item.pres });
+    if (item.depth && caveDepth() < item.depth) return tr('🔒 Tiefe {n}', { n: item.depth });
     if (item.reb && save.rebirths < item.reb && !(item.boss && pperk('pkarte'))) return tr('🔒 {n}× Wiedergeburt', { n: item.reb });
     if (item.lvl && save.lvl < item.lvl) return tr('🔒 Level {n}', { n: item.lvl });
     return '';
@@ -3354,7 +3403,7 @@
     $('lvl-bar').style.width = Math.min(100, save.xp / xpNeed(save.lvl) * 100) + '%';
     $('lvl').title = tr('Level {l} · {x}/{n} EP', { l: save.lvl, x: save.xp, n: xpNeed(save.lvl) }) + (save.rebirths ? tr(' · {n}× wiedergeboren', { n: save.rebirths }) : '') + (save.prestige ? tr(' · {n}× Prestige', { n: save.prestige }) : '') + ' · ' + presMark(save.prestige) + rankOf(save.rebirths).name;
     $('lvl-reb').textContent = (save.prestige ? '✦' + save.prestige : '') + (save.rebirths ? '🌀' + save.rebirths : '');
-    $('btn-prog').classList.toggle('ready', save.lvl >= rebirthLvl() || save.rebirths >= PRESTIGE_REB || save.quests.some(q => q.p >= q.n) || (lavaOpen() && save.glimmQ.some(q => q.p >= q.n)));
+    $('btn-prog').classList.toggle('ready', save.lvl >= rebirthLvl() || save.rebirths >= PRESTIGE_REB || save.quests.some(q => q.p >= q.n) || (lavaOpen() && (save.glimmQ.some(q => q.p >= q.n) || canDig())));
   }
 
   // ---- quests
@@ -3393,27 +3442,47 @@
   // Glimm's trust (+5 % Taler in the cave per level, up to 10). They survive rebirth and prestige.
   const GLIMM_TRUST_MAX = 10;
   function glimmTrust() { return Math.min(GLIMM_TRUST_MAX, Math.floor((save.glimmDone | 0) / 3)); }
-  function caveMult() { return inLava() ? 1.5 * (1 + .05 * glimmTrust()) : 1; }
+  // Taler bonus in the cave: +50 % heat bonus, +20 % per depth, Glimm's trust and the Glutnetz upgrade
+  function caveBonus() { return 1.5 * (1 + .2 * (caveDepth() - 1)) * (1 + .05 * glimmTrust()) * (1 + .1 * glutUp('netz')); }
+  function caveMult() { return inLava() ? caveBonus() : 1; }
+  function canDig() { const nx = CAVE_DEPTHS[caveDepth()]; return !!nx && save.glut >= nx.cost; }
+  function digDeeper() {
+    const nx = CAVE_DEPTHS[caveDepth()];
+    if (!nx || save.glut < nx.cost) return;
+    save.glut -= nx.cost; save.caveDepth = nx.n; bgKey = '';
+    const fish = FISH.filter(f => f.depth === nx.n).map(f => f.name), rods = RODS.filter(r => r.depth === nx.n).map(r => r.name);
+    const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
+    [196, 247, 294, 392, 494, 587, 784].forEach((n, i) => setTimeout(() => tone(n, .22, 'square', .06), i * 100));
+    toast(tr('⛏️ Tiefe {n} erreicht: {t}! Neu: {f}', { n: nx.n, t: nx.name, f: [...fish, ...rods].join(', ') }));
+    glimmLine = tr('Tiefer, immer tiefer! Hier unten wird es richtig heiß.'); glimmTalk = 3;
+    checkCosm(); fillQuests(); persist(); updateCoins(); updateWeatherPill(); renderProg();
+  }
+  function buyGlutUp(id) {
+    const u = GLUT_UPS.find(x => x.id === id), l = glutUp(id), c = glutUpCost(l);
+    if (!u || l >= u.max || save.glut < c) return;
+    save.glut -= c; save.glutUps[id] = l + 1; sfx.coin(); persist(); updateCoins(); renderProg();
+  }
   function makeGlimmQuest() {
     const used = save.glimmQ.map(q => q.kind);
     const kinds = ['lcount', 'lfish', 'lrar', 'lcoins'].filter(k => !used.includes(k));
     const kind = kinds[Math.floor(Math.random() * kinds.length)];
     const q = { kind, p: 0 };
     if (kind === 'lcount') q.n = 8 + Math.floor(Math.random() * 8);
-    if (kind === 'lfish') { const pool = FISH.filter(f => f.map === 'lava' && ['common', 'uncommon', 'rare'].includes(f.r) && !f.needs && !f.far); const f = pool[Math.floor(Math.random() * pool.length)]; q.id = f.id; q.n = f.r === 'rare' ? 2 : f.r === 'uncommon' ? 3 + Math.floor(Math.random() * 2) : 4 + Math.floor(Math.random() * 2); }
-    if (kind === 'lrar') q.n = 1 + (Math.random() < .4 ? 1 : 0);
+    if (kind === 'lfish') { const pool = FISH.filter(f => f.map === 'lava' && ['common', 'uncommon', 'rare'].includes(f.r) && !f.needs && !f.far && f.depth <= caveDepth()); const f = pool[Math.floor(Math.random() * pool.length)]; q.id = f.id; q.n = f.r === 'rare' ? 2 : f.r === 'uncommon' ? 3 + Math.floor(Math.random() * 2) : 4 + Math.floor(Math.random() * 2); }
+    if (kind === 'lrar') { q.r = caveDepth() >= 3 ? 'epic' : 'rare'; q.n = q.r === 'epic' ? 1 + (Math.random() < .4 ? 1 : 0) : 2 + Math.floor(Math.random() * 2); }
     if (kind === 'lcoins') q.n = Math.round(6000 * coinMult() / 100) * 100;
-    const tier = { lcount: 1, lfish: 1.3, lrar: 2 * q.n, lcoins: 1.2 }[kind];
-    q.coins = Math.round(2500 * tier * coinMult() / 50) * 50;
+    const tier = { lcount: 1, lfish: 1.3, lrar: q.r === 'epic' ? 2 * q.n : .8 * q.n, lcoins: 1.2 }[kind], deep = 1 + .5 * (caveDepth() - 1);
+    q.coins = Math.round(2500 * tier * deep * coinMult() / 50) * 50;
     q.xp = Math.round(300 * tier);
-    if (kind === 'lrar') q.pearls = 1;
+    q.glut = Math.round(15 * tier * (1 + .25 * (caveDepth() - 1)));
+    if (kind === 'lrar' && q.r === 'epic') q.pearls = 1;
     return q;
   }
   function glimmQuestText(q) {
     switch (q.kind) {
       case 'lcount': return tr('Fange {n} Fische in der Glutgrotte', { n: q.n });
       case 'lfish': return tr('Fange {n}× {f}', { n: q.n, f: FISH.find(f => f.id === q.id).name });
-      case 'lrar': return tr('Fange {n}× episch oder besser in der Glutgrotte', { n: q.n });
+      case 'lrar': return tr('Fange {n}× {r} oder besser in der Glutgrotte', { n: q.n, r: RARITY[q.r || 'epic'].label });
       case 'lcoins': return tr('Verdiene {n} Taler in der Glutgrotte', { n: q.n.toLocaleString(I18N.locale) });
     }
   }
@@ -3423,7 +3492,8 @@
     save.glimmQ.splice(i, 1); save.glimmDone = (save.glimmDone | 0) + 1;
     save.coins += q.coins; save.lifeCoins += q.coins; save.totalEarned += q.coins;
     if (q.pearls) save.pearls += q.pearls;
-    sfx.coin(); toast(tr('⛏️ Glimm zahlt: +{c} Taler · +{x} EP', { c: q.coins.toLocaleString(I18N.locale), x: q.xp }) + (q.pearls ? tr(' · +{n} 🦪', { n: q.pearls }) : ''));
+    if (q.glut) save.glut += q.glut;
+    sfx.coin(); toast(tr('⛏️ Glimm zahlt: +{c} Taler · +{x} EP', { c: q.coins.toLocaleString(I18N.locale), x: q.xp }) + (q.glut ? ` · +${q.glut} 🔥` : '') + (q.pearls ? tr(' · +{n} 🦪', { n: q.pearls }) : ''));
     gainXp(q.xp);
     if (glimmTrust() > before) {
       setTimeout(() => toast(tr('🤝 Glimm vertraut dir mehr: Stufe {n}/{m} · +{p} % Taler in der Glutgrotte', { n: glimmTrust(), m: GLIMM_TRUST_MAX, p: glimmTrust() * 5 })), 1400);
@@ -3480,7 +3550,7 @@
       if (q.p >= q.n) continue;
       if (q.kind === 'lcount' && f.r !== 'junk') q.p++;
       if (q.kind === 'lfish' && f.id === q.id) q.p++;
-      if (q.kind === 'lrar' && RARITY_ORDER.indexOf(f.r) >= RARITY_ORDER.indexOf('epic')) q.p++;
+      if (q.kind === 'lrar' && RARITY_ORDER.indexOf(f.r) >= RARITY_ORDER.indexOf(q.r || 'epic')) q.p++;
       if (q.kind === 'lcoins') q.p = Math.min(q.n, q.p + val);
       if (q.p >= q.n) toast(tr('⛏️ Glimm: Auftrag erledigt – {q}. Bei Glimm abholen!', { q: glimmQuestText(q) }));
     }
@@ -3565,7 +3635,7 @@
       const b = document.createElement('b'); b.textContent = text;
       const bar = document.createElement('div'); bar.className = 'qbar';
       const fill = document.createElement('i'); fill.style.width = Math.min(100, q.p / q.n * 100) + '%'; bar.append(fill);
-      const s = document.createElement('small'); s.textContent = tr('{a} / {b} · Belohnung {c} Taler, {x} EP', { a: Math.min(q.p, q.n).toLocaleString(I18N.locale), b: q.n.toLocaleString(I18N.locale), c: q.coins.toLocaleString(I18N.locale), x: q.xp }) + (q.pearls ? tr(', {n} Perle', { n: q.pearls }) : '');
+      const s = document.createElement('small'); s.textContent = tr('{a} / {b} · Belohnung {c} Taler, {x} EP', { a: Math.min(q.p, q.n).toLocaleString(I18N.locale), b: q.n.toLocaleString(I18N.locale), c: q.coins.toLocaleString(I18N.locale), x: q.xp }) + (q.glut ? `, ${q.glut} 🔥` : '') + (q.pearls ? tr(', {n} Perle', { n: q.pearls }) : '');
       txt.append(b, bar, s);
       const btn = document.createElement('button'); btn.className = 'btn' + (done ? '' : ' ghost');
       btn.textContent = done ? tr('Abholen') : `🔄 ${cost}`;
@@ -3582,6 +3652,26 @@
       const tl = glimmTrust();
       $('glimm-trust').textContent = tr('🤝 Vertrauen {n}/{m} · +{p} % Taler in der Glutgrotte (dazu immer +50 % Hitzebonus)', { n: tl, m: GLIMM_TRUST_MAX, p: tl * 5 })
         + (tl < GLIMM_TRUST_MAX ? tr(' · nächste Stufe in {n} Aufträgen', { n: 3 - (save.glimmDone % 3) }) : '');
+      const cd = caveDepth(), cur = CAVE_DEPTHS[cd - 1], nx = CAVE_DEPTHS[cd];
+      $('dig-info').textContent = tr('Tiefe {n}/{m}: {t} · +{p} % Taler in der Grotte · {g} 🔥', { n: cd, m: CAVE_DEPTHS.length, t: cur.name, p: Math.round((caveBonus() - 1) * 100), g: save.glut });
+      $('dig-next').textContent = nx ? tr('Nächste Tiefe: {t} für {c} 🔥. Dort warten: {f}.', { t: nx.name, c: nx.cost, f: [...FISH.filter(f => f.depth === nx.n).map(f => f.name), ...RODS.filter(r => r.depth === nx.n).map(r => r.name)].join(', ') })
+        : tr('Du bist ganz unten angekommen. Tiefer geht es nicht.');
+      $('btn-dig').textContent = nx ? tr('Tiefer graben · {c} 🔥', { c: nx.cost }) : tr('Ganz unten');
+      $('btn-dig').disabled = !nx || save.glut < nx.cost;
+      $('glut-have').textContent = save.glut;
+      $('glut-ups').replaceChildren(...GLUT_UPS.map(u => {
+        const l = glutUp(u.id), max = l >= u.max, c = glutUpCost(l);
+        const d = document.createElement('div'); d.className = 'item perk';
+        const txt = document.createElement('div');
+        const b = document.createElement('b'); b.textContent = `${u.icon} ${u.name}`;
+        const pips = document.createElement('span'); pips.className = 'pips'; pips.textContent = '●'.repeat(l) + '○'.repeat(u.max - l); b.append(' ', pips);
+        const sm = document.createElement('small'); sm.textContent = l ? u.desc(l) + (max ? '' : ` → ${u.desc(l + 1)}`) : u.desc(1);
+        txt.append(b, sm);
+        const btn = document.createElement('button'); btn.className = 'btn';
+        btn.textContent = max ? 'Max' : `${c} 🔥`; btn.disabled = max || save.glut < c;
+        btn.addEventListener('click', () => buyGlutUp(u.id));
+        d.append(txt, btn); return d;
+      }));
       $('glimm-quests').replaceChildren(...save.glimmQ.map((q, i) => questRow(q, glimmQuestText(q), 500, () => claimGlimm(i), () => rerollGlimm(i))));
     }
     const req = rebirthLvl(), can = save.lvl >= req;
@@ -3632,6 +3722,7 @@
   }
   $('btn-rebirth').addEventListener('click', rebirth);
   $('btn-prestige').addEventListener('click', prestige);
+  $('btn-dig').addEventListener('click', digDeeper);
 
   // older saves: turn past catches into a starting level, quietly
   if (!load().lvl) {
@@ -4029,7 +4120,7 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  window.__fischen = { save, gainXp, rebirth, prestige, claimGlimm: i => claimGlimm(i), caveMult: () => caveMult(), glimm: () => talkGlimm(), MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
+  window.__fischen = { save, gainXp, rebirth, prestige, dig: () => digDeeper(), buyGlutUp: id => buyGlutUp(id), claimGlimm: i => claimGlimm(i), caveMult: () => caveMult(), glimm: () => talkGlimm(), MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); },
     rhythm: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; reel.maxT = 0; startRhythm(); },
     get notes() { return rhythm.notes; },
