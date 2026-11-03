@@ -56,6 +56,7 @@
     { id: 'katze',   name: 'Katzenfisch',       img: 'img/katzenfisch.png',  r: 'legendary', min: 40, max: 70,  val: 450, photo: true, page: 'seiten/katzenfisch.html', say: 'Miau. Ich meine: Blubb.', desc: 'Halb Katze, halb Fisch, ganz flauschig. Kommt lieber nachts.', far: .4, night: 2.5 },
     { id: 'uhrzeit', name: 'UhrZeitFisch',      img: 'img/uhrzeitfisch.gif', r: 'legendary', min: 160, max: 190, val: 480, photo: true, page: 'seiten/uhrzeitfisch.html', say: 'Ich bin pünktlich. Seit 66 Millionen Jahren.', desc: 'Ein Fisch aus der Urzeit, sehr cool. Beißt nur zur vollen Stunde.', fullHour: true, hint: 'Beißt nur zur vollen Stunde' },
     { id: 'drache',  name: 'Gyarados',    img: 'img/gyarados-water.gif', r: 'legendary', min: 150, max: 240, val: 520, pixel: true, page: 'seiten/drachenkarpfen.html', say: 'Ich bin den Wasserfall hochgesprungen. Jetzt bin ich sauer.', desc: 'Ein Karpfen, der es durchs Drachentor geschafft hat. Jade, Gold und schlechte Laune.', needs: { platsch: 25 }, bigSplash: true, hint: 'Erst wenn du 25 Karpador gefangen hast' },
+    { id: 'schummel', name: 'Schummelfisch',    img: 'img/schummelfisch.png', r: 'junk', min: 6, max: 14, val: 1, pixel: true, page: 'seiten/schummelfisch.html', fake: true, say: 'Ätsch! Reingelegt. Die Fanfare war geliehen.', desc: 'Trägt eine Scherzbrille mit Bart und tut so, als wäre er ein legendärer Fang. Ist er nicht.' },
     { id: 'ratte',   name: 'Ratte',             img: 'img/rat.gif',              r: 'junk',      min: 18, max: 28,  val: 1,  say: 'Lass mich, ich hab Termine.', desc: 'Nass und beleidigt. Läuft trotzdem weiter.' },
     { id: 'tisch',   name: 'Tisch',             img: 'img/tisch.gif',            r: 'junk',      min: 90, max: 140, val: 3,  photo: true, say: 'Ich bin ein Tisch.', desc: 'Ein Tisch. Kein Fisch. Aber fast.' },
     { id: 'flasche', name: 'Spezi-Flasche',     img: 'img/spezi-flasche.png',    r: 'junk',      min: 25, max: 33,  val: 4,  say: 'Pfand gibt’s keins.', desc: 'Leer. Gehört bestimmt dem Spezifischfischer.' },
@@ -351,19 +352,23 @@
       showCatch(f, size, val, first, mut, newMut, gain, shiny, newShiny);
       if (f.clip) playClip(f.clip); else if (f.sound) playFile(f.sound); else playFile('sounds/fish.mp3');
       sfx.coin();
+      if (f.fake) { // the "legendary" catch was a fish in a joke disguise: sad trombone
+        toast(tr('😜 REINGELEGT!'));
+        [392, 370, 349, 294].forEach((n, i) => setTimeout(() => tone(n, i === 3 ? .7 : .28, 'sawtooth', .05), 150 + i * 300));
+      }
     };
-    const fx = FANFARE[f.r] || (mut && { label: `${mut.name.toUpperCase()}!`, c: mut.c, hi: '#ffffff', dur: 1.1, notes: [659, 880, 1175] })
+    const fx = (f.fake && FANFARE.legendary) || FANFARE[f.r] || (mut && { label: `${mut.name.toUpperCase()}!`, c: mut.c, hi: '#ffffff', dur: 1.1, notes: [659, 880, 1175] })
       || (shiny && { label: tr('SHINY!'), c: '#fde047', hi: '#ffffff', dur: 1.2, notes: [1047, 1319, 1568, 2093] });
     if (shiny) {
       floaters.push({ x: bob.x, y: SURFACE - 34, text: newShiny ? tr('💫 Neuer Shiny!') : tr('💫 Shiny!'), c: '#fde047', life: 2.6 });
       for (let i = 0; i < 40; i++) glints.push({ x: bob.x + (Math.random() - .5) * 24, y: SURFACE - Math.random() * 10, vx: (Math.random() - .5) * 40, vy: -25 - Math.random() * 45, life: .8 + Math.random(), c: ['#fde047', '#ffffff', '#f9a8d4', '#a5f3fc'][i % 4] });
       [1568, 2093, 2637].forEach((n, i) => setTimeout(() => tone(n, .12, 'sine', .06), 600 + i * 90));
     }
-    floaters.push({ x: bob.x, y: SURFACE - 14, text: `${mut ? mut.icon + ' ' : ''}${fx ? '' : f.name + ' · '}${size} cm`, c: mut ? mut.c : fx ? fx.c : '#ffffff', life: 2.4 });
+    floaters.push({ x: bob.x, y: SURFACE - 14, text: `${mut ? mut.icon + ' ' : ''}${fx ? '' : f.name + ' · '}${f.fake ? 170 + Math.floor(Math.random() * 20) : size} cm`, c: mut ? mut.c : fx ? fx.c : '#ffffff', life: 2.4 });
     if (mut && FANFARE[f.r]) floaters.push({ x: bob.x, y: SURFACE - 24, text: `${mut.icon} ${mut.name}`, c: mut.c, life: 2.4 });
     floaters.push({ x: bob.x, y: SURFACE - 4, text: tr('+{n} EP', { n: gain.xp }) + (streak > 1 ? ` · 🔥${streak}` : ''), c: '#86efac', life: 2.4 });
     if (fx && !reduceMotion) {
-      fanfare = { ...fx, r: FANFARE[f.r] ? f.r : 'rare', x: bob.x, t: 0, done: reveal };
+      fanfare = { ...fx, r: f.fake ? 'legendary' : FANFARE[f.r] ? f.r : 'rare', x: bob.x, t: 0, done: reveal };
       fx.notes.forEach((n, i) => setTimeout(() => tone(n, .18, 'triangle', .09), i * 110));
       if (f.r === 'legendary') setTimeout(() => tone(1568, .6, 'sine', .07, 400), fx.notes.length * 110);
     } else reveal();
