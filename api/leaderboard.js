@@ -21,8 +21,10 @@ const BOARDS = {
   taler:  { max: 1e10, step: (dt) => 200000 + dt * 20000 }, // insgesamt verdiente Taler
   wieder: { max: 1000, step: (dt) => 1 + dt / 240 },        // Wiedergeburten
   dex:    { max: 9999, step: () => 9999 },                  // Fische × 100 + Mutationen
-  rekord: { max: 400,  step: () => 400 },                   // größter Fang in cm
+  rekord: { max: 1200, step: () => 1200 },                  // größter Fang in cm (Monster-Klasse und Mutationen können weit übers Maximum gehen)
   klein:  { max: 400,  step: () => 400, asc: true },        // kleinster Fang in cm (0 = noch keiner), kleiner ist besser
+  monster: { max: 1e6, step: (dt) => 20 + dt / 20 },        // Fänge der Größenklasse „Monster“
+  boss:   { max: 1e5,  step: (dt) => 2 + dt / 60 },         // besiegte Odfische
 };
 const TOP = 10;
 const ID_RE = /^[a-f0-9]{16,40}$/;

@@ -933,3 +933,45 @@ body, button, input { font-variant-ligatures: none; font-feature-settings: "liga
 .wd-swatches { display: flex; flex-wrap: wrap; gap: .5rem; }
 .wd-swatch { width: 2.2rem; height: 2.2rem; padding: 0; background: var(--sw); border: 3px solid #1b1f2e; cursor: pointer; box-shadow: inset 0 -5px 0 rgba(0, 0, 0, .18); }
 .wd-swatch.on { outline: 3px solid #86efac; outline-offset: 2px; }
+
+/* ------------------------------------------------------------------ weather, travel, boss fight */
+#weather { cursor: pointer; }
+#stage.travel::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 20; background: #0b1020;
+  animation: travel 1.1s ease-in-out forwards;
+}
+@keyframes travel { from { opacity: 0; } 35%, 55% { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { #stage.travel::after { animation-duration: .01s; } }
+
+#btn-boss {
+  position: absolute; left: 50%; top: 4.2rem; translate: -50% 0; z-index: 6;
+  font-family: var(--px); font-size: 1.05rem; color: #fff7ed; background: #9f1239;
+  animation: boss-pulse 1s steps(2, end) infinite;
+}
+#btn-boss[hidden] { display: none; }
+button#btn-boss:hover { background: #be123c; }
+@keyframes boss-pulse { 50% { background: #e11d48; } }
+
+#boss-hud {
+  position: absolute; left: 50%; top: 3.6rem; translate: -50% 0; z-index: 6;
+  width: min(92vw, 30rem); padding: .55rem .8rem .5rem; pointer-events: none;
+  background: var(--panel); font-family: var(--ui); color: #e2e8f0;
+  box-shadow: 0 -4px 0 var(--ink), 0 4px 0 var(--ink), -4px 0 0 var(--ink), 4px 0 0 var(--ink),
+              inset 0 4px 0 #9f1239, inset 0 -4px 0 var(--panel-lo), 0 8px 0 rgba(0,0,0,.35);
+}
+#boss-hud[hidden] { display: none; }
+.boss-top { display: flex; align-items: baseline; gap: .7rem; font-size: .9rem; font-weight: 600; }
+.boss-top b { font-family: var(--px); font-size: 1.1rem; color: #fecdd3; letter-spacing: .04em; }
+#boss-phase { flex: 1; color: #fda4af; }
+#boss-time { font-variant-numeric: tabular-nums; }
+.boss-bar { position: relative; height: 18px; margin: .45rem 0 .35rem; background: var(--slot); box-shadow: 0 0 0 3px var(--ink), inset 0 3px 0 rgba(0,0,0,.4); }
+.boss-bar i { position: absolute; inset: 0 auto 0 0; width: 100%; transition: width .25s steps(4, end);
+  background: repeating-linear-gradient(90deg, #ef4444 0 8px, #dc2626 8px 10px); }
+.boss-bar em { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--ink); }
+.boss-bar .t1 { left: 33.3%; } .boss-bar .t2 { left: 66.6%; }
+#boss-hp-num { position: absolute; inset: 0; text-align: center; font: 700 .75rem/18px var(--ui); color: #fff; text-shadow: 1px 1px 0 var(--ink); }
+.boss-sub { display: flex; justify-content: space-between; align-items: center; gap: .5rem; font-size: .82rem; color: #cbd5e1; }
+.boss-quit { pointer-events: auto; font: 600 .78rem var(--ui); color: #cbd5e1; background: transparent; border: 2px solid #475569; padding: .1rem .5rem; cursor: pointer; }
+.boss-quit:hover { color: #fff; border-color: #94a3b8; }
+#reel.boss .reel-row:nth-child(2) { display: none; }
+@media (max-height: 480px) { #boss-hud { top: 3rem; padding: .35rem .6rem; } .boss-bar { height: 14px; margin: .3rem 0 .25rem; } #boss-hp-num { line-height: 14px; } }
