@@ -379,7 +379,7 @@
     'Ich träume von etwas Großem.': 'I dream of something big.',
     'Größer als mein Boot wär übertrieben … aber fast.': 'Bigger than my boat would be too much … but almost.',
     'Manchmal ist weniger mehr. Viel weniger.': 'Sometimes less is more. Much less.',
-    'Was Winziges würde mir das Herz wärmen.': 'Something teeny would warm my heart.',
+    'Was Winziges würde mir das Herz wärmen.': 'Something really tiny would make my day.',
     'Normal kann jeder.': 'Anyone can do normal.',
     'Irgendwas an dem Fisch sollte … anders sein.': 'Something about that fish should be … different.',
     'Der Mond weiß, was ich will.': 'The moon knows what I want.',
