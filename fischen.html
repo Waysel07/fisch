@@ -32,6 +32,7 @@
         <button class="pill sr-only" id="btn-prog" title="Fortschritt (P)">📈 <span class="lbl">Fortschritt</span></button>
         <button class="pill sr-only" id="btn-lb" title="Bestenliste (B)">🏆 <span class="lbl">Bestenliste</span></button>
         <button class="pill sr-only" id="btn-casino" title="Fischautomat (C)">🎰 <span class="lbl">Automat</span></button>
+        <button class="pill" id="btn-lobby" title="Multiplayer-Lobby (O)">👥 <span class="lbl" id="lobby-pill">Lobby</span></button>
         <button class="pill" id="btn-patch" title="Patch Notes (N)">📰</button>
         <button class="pill" id="btn-sound" title="Ton an/aus (M)">🔊</button>
       </div>
@@ -139,6 +140,32 @@
         <h2 id="patch-title">📰 Steg-Zeitung</h2>
         <div id="patch-list"></div>
         <div class="catch-actions"><button class="btn" data-close>Los geht’s!</button></div>
+      </div>
+    </div>
+
+    <!-- Multiplayer lobby -->
+    <div class="modal" id="lobby" hidden>
+      <div class="sheet lobby-sheet" role="dialog" aria-modal="true" aria-labelledby="lobby-title">
+        <button class="close" data-close aria-label="Schließen">✕</button>
+        <h2 id="lobby-title">👥 Multiplayer-Lobby</h2>
+        <div id="lobby-out">
+          <p class="sub">Angle zusammen mit Freunden: Ihr seht euch gegenseitig am Steg, eure Fänge und wer seit dem Beitreten die meisten Taler geangelt hat.</p>
+          <label class="lobby-field">Dein Name <input type="text" id="lobby-name" maxlength="16" autocomplete="off" placeholder="Spitzname"></label>
+          <button class="btn" id="lobby-create">Neue Lobby erstellen</button>
+          <div class="lobby-join">
+            <input type="text" id="lobby-code" maxlength="4" autocomplete="off" placeholder="CODE" aria-label="Lobby-Code" spellcheck="false">
+            <button class="btn ghost" id="lobby-join">Beitreten</button>
+          </div>
+          <p class="fine">Beim Beitreten werden dein Name, deine Position am Steg, deine Fänge und dein Lobby-Punktestand an den Server geschickt und für alle in der Lobby sichtbar. Nach 2 Stunden ohne Aktivität wird die Lobby gelöscht. <a href="datenschutz.html#lobby" target="_blank" rel="noopener">Datenschutz</a></p>
+        </div>
+        <div id="lobby-in" hidden>
+          <p class="lobby-code-row">Code: <b id="lobby-code-show"></b> <button class="linkbtn" id="lobby-copy">🔗 Link kopieren</button></p>
+          <ol class="lobby-players" id="lobby-players"></ol>
+          <h3>Fänge</h3>
+          <ul class="lobby-feed" id="lobby-feed"></ul>
+          <button class="btn ghost" id="lobby-leave">Lobby verlassen</button>
+        </div>
+        <p class="err" id="lobby-err" role="alert"></p>
       </div>
     </div>
 

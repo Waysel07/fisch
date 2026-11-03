@@ -9,6 +9,7 @@
 // Zugangsdaten kommen aus der Vercel-Upstash-Integration (KV_REST_API_* oder UPSTASH_REDIS_REST_*).
 'use strict';
 const crypto = require('crypto');
+const { cleanName } = require('./_names');
 
 const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -25,8 +26,6 @@ const BOARDS = {
 };
 const TOP = 10;
 const ID_RE = /^[a-f0-9]{16,40}$/;
-const NAME_RE = /^[\p{L}\p{N} ._\-!?]{2,16}$/u;
-const BLOCK = ['nazi', 'hitler', 'nigg', 'neger', 'fotze', 'hure', 'fick', 'fuck', 'cunt', 'faggot', 'schwuchtel', 'admin'];
 
 const sha = (s) => crypto.createHash('sha256').update(s).digest('hex');
 
@@ -56,14 +55,6 @@ async function readBody(req) {
   try { return JSON.parse(raw || '{}'); } catch { return {}; }
 }
 
-function cleanName(n) {
-  if (typeof n !== 'string') return null;
-  n = n.normalize('NFC').replace(/\s+/g, ' ').trim();
-  if (!NAME_RE.test(n)) return null;
-  const low = n.toLowerCase().replace(/[^a-zäöüß]/g, '');
-  if (BLOCK.some((b) => low.includes(b))) return null;
-  return n;
-}
 
 async function top() {
   const keys = Object.keys(BOARDS);
