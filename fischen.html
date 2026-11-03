@@ -32,6 +32,7 @@
         <button class="pill sr-only" id="btn-prog" title="Fortschritt (P)">📈 <span class="lbl">Fortschritt</span></button>
         <button class="pill sr-only" id="btn-lb" title="Bestenliste (B)">🏆 <span class="lbl">Bestenliste</span></button>
         <button class="pill sr-only" id="btn-casino" title="Fischautomat (C)">🎰 <span class="lbl">Automat</span></button>
+        <button class="pill" id="btn-chat" title="Chat (Enter)" hidden>💬</button>
         <button class="pill" id="btn-lobby" title="Multiplayer-Lobby (O)">👥 <span class="lbl" id="lobby-pill">Lobby</span></button>
         <button class="pill" id="btn-patch" title="Patch Notes (N)">📰</button>
         <button class="pill" id="btn-sound" title="Ton an/aus (M)">🔊</button>
@@ -39,6 +40,8 @@
     </div>
 
     <div id="gear" class="pill"></div>
+    <div id="chatlog" aria-live="polite"></div>
+    <form id="chatbar" hidden><input type="text" id="chatbar-msg" maxlength="100" autocomplete="off" placeholder="Nachricht an die Lobby … (Enter)" aria-label="Chat-Nachricht"></form>
     <div id="baitbar" role="toolbar" aria-label="Köder wählen (Tasten 1–9)"></div>
     <div id="hint"></div>
     <p id="rotate">📱↻ Quer halten für mehr Meer</p>
@@ -114,6 +117,7 @@
             <button class="tab on" data-shop-tab="rods" role="tab" aria-selected="true">🎣 Ruten</button>
             <button class="tab" data-shop-tab="baits" role="tab" aria-selected="false">🪱 Köder</button>
             <button class="tab" data-shop-tab="boxes" role="tab" aria-selected="false">📦 Mysteryboxen</button>
+            <button class="tab" data-shop-tab="cosm" role="tab" aria-selected="false">🎩 Kosmetik</button>
           </div>
           <span class="purse"><img src="img/fish-icon.png" alt="" class="coin"> <b id="shop-coins">0</b></span>
         </div>
@@ -143,6 +147,19 @@
       </div>
     </div>
 
+    <!-- Wardrobe: wear cosmetics from the shop and from achievements -->
+    <div class="modal" id="wardrobe" hidden>
+      <div class="sheet wardrobe-sheet" role="dialog" aria-modal="true" aria-labelledby="wardrobe-title">
+        <button class="close" data-close aria-label="Schließen">✕</button>
+        <h2 id="wardrobe-title">👕 Kleiderschrank</h2>
+        <div class="wardrobe-top">
+          <canvas id="wardrobe-preview" width="132" height="216" aria-hidden="true"></canvas>
+          <p class="sub">Trag, was du gekauft oder dir verdient hast. Gesperrte Teile bekommst du durch Erfolge – der Hinweis sagt, wie.</p>
+        </div>
+        <div id="wardrobe-list"></div>
+      </div>
+    </div>
+
     <!-- Multiplayer lobby -->
     <div class="modal" id="lobby" hidden>
       <div class="sheet lobby-sheet" role="dialog" aria-modal="true" aria-labelledby="lobby-title">
@@ -163,6 +180,12 @@
           <ol class="lobby-players" id="lobby-players"></ol>
           <h3>Fänge</h3>
           <ul class="lobby-feed" id="lobby-feed"></ul>
+          <h3>Chat</h3>
+          <ul class="lobby-chat" id="lobby-chat" aria-live="polite"></ul>
+          <form class="lobby-say" id="lobby-say">
+            <input type="text" id="lobby-msg" maxlength="100" autocomplete="off" placeholder="Nachricht …" aria-label="Chat-Nachricht">
+            <button class="btn" type="submit">Senden</button>
+          </form>
           <button class="btn ghost" id="lobby-leave">Lobby verlassen</button>
         </div>
         <p class="err" id="lobby-err" role="alert"></p>

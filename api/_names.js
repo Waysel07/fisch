@@ -11,4 +11,11 @@ function cleanName(n) {
   if (BLOCK.some((b) => low.includes(b))) return null;
   return n;
 }
-module.exports = { cleanName };
+// Chat: Steuerzeichen raus, Beleidigungen aus der Liste durch *** ersetzen
+function cleanChat(m) {
+  if (typeof m !== 'string') return '';
+  m = m.normalize('NFC').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 100);
+  for (const b of BLOCK) m = m.replace(new RegExp(b, 'gi'), '***');
+  return m;
+}
+module.exports = { cleanName, cleanChat };

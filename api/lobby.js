@@ -4,13 +4,13 @@
 //
 //   POST /api/lobby {action: 'create', id, name}               → { code }
 //   POST /api/lobby {action: 'join',   code, id, name}         → { ok }
-//   POST /api/lobby {action: 'sync',   code, id, me, ev?}      → { players, feed, me }
+//   POST /api/lobby {action: 'sync',   code, id, me, ev?, msg?} → { players, feed, chat, me }
 //   POST /api/lobby {action: 'leave',  code, id}               → { ok }
 //
 // `id` ist eine zufällige Geheim-ID des Spielers; nach außen geht nur ein Kürzel ihres Hashs.
 'use strict';
 const crypto = require('crypto');
-const { cleanName } = require('./_names');
+const { cleanName, cleanChat } = require('./_names');
 
 const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -20,6 +20,7 @@ const MAX_PLAYERS = 8;
 const ACTIVE_MS = 20000;         // wer sich 20 s nicht meldet, wird nicht mehr angezeigt
 const GONE_MS = 90000;           // … und nach 90 s aus der Lobby entfernt
 const FEED = 15;
+const CHAT = 30;
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const CODE_RE = /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}$/;
 const ID_RE = /^[a-f0-9]{32,64}$/;
@@ -57,6 +58,8 @@ async function readBody(req) {
 const num = (v, lo, hi) => { const n = Number(v); return Number.isFinite(n) ? Math.max(lo, Math.min(hi, n)) : lo; };
 const str = (v, max) => (typeof v === 'string' ? v.normalize('NFC').replace(/[\u0000-\u001f<>]/g, '').slice(0, max) : '');
 
+const cosm = (v) => (typeof v === 'string' && /^[a-z-]{1,16}$/.test(v) ? v : '');
+
 function cleanMe(me) {
   me = me && typeof me === 'object' ? me : {};
   return {
@@ -64,6 +67,7 @@ function cleanMe(me) {
     d: me.d < 0 ? -1 : 1,
     s: ['i', 'w', 'r'].includes(me.s) ? me.s : 'i', // idle, waiting for a bite, reeling
     hat: Math.round(num(me.hat, 0, 3)),
+    ch: cosm(me.ch), cj: cosm(me.cj), cb: cosm(me.cb),  // Kosmetik: Hut, Jacke, Pose (IDs aus dem Laden)
     sc: Math.round(num(me.sc, 0, 1e9)),               // Taler gefangen, seit man in der Lobby ist
     n: Math.round(num(me.n, 0, 1e6)),                 // Fänge in der Lobby
   };
@@ -144,15 +148,17 @@ module.exports = async function handler(req, res) {
           if (e.r !== 'junk' && (!p.big || e.cm > p.big.cm)) p.big = { f: e.f, cm: e.cm };
         }
       }
-      cmds.push(['HSET', P, k, JSON.stringify(p)], ['EXPIRE', P, TTL], ['EXPIRE', L, TTL], ['HGETALL', P], ['LRANGE', F, 0, FEED - 1]);
+      const C = L + ':chat', msg = cleanChat(body.msg);
+      if (msg) cmds.push(['LPUSH', C, JSON.stringify({ k, n: prev.name, m: msg, t: now })], ['LTRIM', C, 0, CHAT - 1], ['EXPIRE', C, TTL]);
+      cmds.push(['HSET', P, k, JSON.stringify(p)], ['EXPIRE', P, TTL], ['EXPIRE', L, TTL], ['HGETALL', P], ['LRANGE', F, 0, FEED - 1], ['LRANGE', C, 0, 19]);
       const out = await redis(cmds);
-      const hash = out[out.length - 2] || [], feedRaw = out[out.length - 1] || [];
+      const hash = out[out.length - 3] || [], feedRaw = out[out.length - 2] || [], chatRaw = out[out.length - 1] || [];
       // tidy up anglers who left without saying goodbye
       const gone = [];
       for (let i = 0; i < hash.length; i += 2) { try { if (now - JSON.parse(hash[i + 1]).t > GONE_MS) gone.push(hash[i]); } catch { gone.push(hash[i]); } }
       if (gone.length) await redis([['HDEL', P, ...gone]]);
-      const feed = feedRaw.map((x) => { try { return JSON.parse(x); } catch { return null; } }).filter(Boolean);
-      return send(res, 200, { players: players(hash, now).map(({ t, ...rest }) => rest), feed, me: k, now });
+      const parse = (l) => l.map((x) => { try { return JSON.parse(x); } catch { return null; } }).filter(Boolean);
+      return send(res, 200, { players: players(hash, now).map(({ t, ...rest }) => rest), feed: parse(feedRaw), chat: parse(chatRaw), me: k, now });
     }
 
     return send(res, 400, { error: 'Unbekannte Aktion.' });
