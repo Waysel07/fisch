@@ -89,11 +89,16 @@
   }
   let saveOk = true;
   let leaving = false; // set when the save is replaced or wiped, so nothing writes it back on unload
+  let lastJson = ''; // what was last written, without the time stamp, so unchanged saves are skipped
   function persist() {
     if (leaving) return;
     try {
-      save.saved = Date.now();
-      localStorage.setItem(SAVE_KEY, JSON.stringify(saveData()));
+      const d = saveData(); delete d.saved;
+      const json = JSON.stringify(d);
+      if (json === lastJson && saveOk) return;
+      save.saved = Date.now(); d.saved = save.saved;
+      localStorage.setItem(SAVE_KEY, JSON.stringify(d));
+      lastJson = json;
       if (!saveOk) { saveOk = true; }
       flashSaved();
     } catch {
@@ -1759,10 +1764,22 @@
     const el = document.getElementById('saved'); if (!el) return;
     el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
   }
-  // autosave: periodically and when the tab is hidden or closed
-  setInterval(persist, 30000);
-  document.addEventListener('visibilitychange', () => { if (document.hidden) persist(); });
+  // autosave: every few seconds if something changed, and when the tab is hidden or closed
+  { const d = saveData(); delete d.saved; lastJson = JSON.stringify(d); }
+  setInterval(persist, 5000);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) persist(); else if (stale) location.reload(); });
   window.addEventListener('pagehide', persist);
+  // ask the browser not to clear the save on its own (e.g. Safari after a week without visits)
+  try { navigator.storage && navigator.storage.persist && navigator.storage.persist().catch(() => {}); } catch { /* ignore */ }
+  // game open in a second tab: when that tab saves, this copy is out of date. Stop writing
+  // (it would overwrite the newer progress) and reload to pick up the newer save.
+  let stale = false;
+  window.addEventListener('storage', e => {
+    if (e.key !== SAVE_KEY || leaving) return;
+    leaving = true;
+    if (document.hidden) stale = true;
+    else { toast(tr('Spiel in einem anderen Tab gespeichert – lade den neuen Spielstand …')); setTimeout(() => location.reload(), 1500); }
+  });
   $('btn-reset').addEventListener('click', async () => {
     if (!confirm(tr('Spielstand wirklich löschen? Fischdex, Taler und Ausrüstung sind dann weg.') + (save.lb ? tr(' Dein Bestenlisten-Eintrag wird ebenfalls gelöscht.') : ''))) return;
     if (save.lb) { try { await fetch('/api/leaderboard', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: save.lb.id, token: save.lb.token }) }); } catch { /* offline: entry stays, can be removed on request */ } }
