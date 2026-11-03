@@ -33,6 +33,7 @@
     { id: 'schlamm', name: 'Schlammfisch',      img: 'img/schlammfisch.png',     r: 'uncommon',  min: 20, max: 45,  val: 15, pixel: true, page: 'seiten/schlammfisch.html', say: 'Ich hab mich extra schmutzig gemacht.', desc: 'Wohnt im Schlamm unter dem Steg. Tropft überall hin.' },
     { id: 'gespraech', name: 'Gesprächsfisch', img: 'img/gutes-gespraech.gif', r: 'uncommon', min: 20, max: 40, val: 17, photo: true, page: 'seiten/gespraechsfisch.html', say: 'Gutes Gespräch.', desc: 'Schwimmt ganz nah ran, schaut dich an und beendet das Gespräch.' },
     { id: 'kritzel', name: 'Kritzelfisch',      img: 'img/doodlebob.gif',     r: 'uncommon',  min: 15, max: 35,  val: 16, pixel: true, page: 'seiten/kritzelfisch.html', say: 'Nicht anschauen, ich bin nur eine Skizze!', desc: 'Mit Bleistift hingekritzelt und nie ganz fertig geworden. Zittert leicht.' },
+    { id: 'staebchen', name: 'Fischstäbchen',  img: 'img/fischstaebchen.png', r: 'uncommon', min: 7, max: 11, val: 15, pixel: true, page: 'seiten/fischstaebchen.html', say: 'Ich war mal ein Fisch. Jetzt bin ich knusprig.', desc: 'Paniert, goldbraun und noch warm. Niemand weiß, wie es ins Wasser gekommen ist.' },
     { id: 'beinfisch', name: 'Beinfisch',       img: 'img/beinfisch.gif',        r: 'uncommon',  min: 15, max: 30,  val: 18, photo: true, page: 'seiten/beinfisch.html', say: 'Ich wollte eigentlich nur kurz spazieren.', desc: 'Hat Beine. Läuft lieber am Ufer entlang als zu schwimmen.' },
     { id: 'spezi1',  name: 'Spezifischer Spezifisch', img: 'img/spezifisch1.png', r: 'rare', clip: [.93, 3.17],      min: 40, max: 70,  val: 38, say: 'Extra Spezi, extra spezifisch.', desc: 'Ein Prachtexemplar mit extra viel Spezi.' },
     { id: 'oel',     name: 'Ölfisch',           img: 'img/oelfisch.png',         r: 'rare',      min: 30, max: 60,  val: 45, pixel: true, page: 'seiten/oelfisch.html', say: 'Ich schillere. Das ist kein Kompliment.', desc: 'Schwarz und ölig, mit Regenbogenschimmer. Kommt nachts raus.', night: 1.8 },
@@ -56,6 +57,7 @@
     { id: 'katze',   name: 'Katzenfisch',       img: 'img/katzenfisch.png',  r: 'legendary', min: 40, max: 70,  val: 450, photo: true, page: 'seiten/katzenfisch.html', say: 'Miau. Ich meine: Blubb.', desc: 'Halb Katze, halb Fisch, ganz flauschig. Kommt lieber nachts.', far: .4, night: 2.5 },
     { id: 'uhrzeit', name: 'UhrZeitFisch',      img: 'img/uhrzeitfisch.gif', r: 'legendary', min: 160, max: 190, val: 480, photo: true, page: 'seiten/uhrzeitfisch.html', say: 'Ich bin pünktlich. Seit 66 Millionen Jahren.', desc: 'Ein Fisch aus der Urzeit, sehr cool. Beißt nur zur vollen Stunde.', fullHour: true, hint: 'Beißt nur zur vollen Stunde' },
     { id: 'drache',  name: 'Gyarados',    img: 'img/gyarados-water.gif', r: 'legendary', min: 150, max: 240, val: 520, pixel: true, page: 'seiten/drachenkarpfen.html', say: 'Ich bin den Wasserfall hochgesprungen. Jetzt bin ich sauer.', desc: 'Ein Karpfen, der es durchs Drachentor geschafft hat. Jade, Gold und schlechte Laune.', needs: { platsch: 25 }, bigSplash: true, hint: 'Erst wenn du 25 Karpador gefangen hast' },
+    { id: 'schummel', name: 'Schummelfisch',    img: 'img/schummelfisch.png', r: 'junk', min: 6, max: 14, val: 1, pixel: true, page: 'seiten/schummelfisch.html', fake: true, say: 'Ätsch! Reingelegt. Die Fanfare war geliehen.', desc: 'Trägt eine Scherzbrille mit Bart und tut so, als wäre er ein legendärer Fang. Ist er nicht.' },
     { id: 'ratte',   name: 'Ratte',             img: 'img/rat.gif',              r: 'junk',      min: 18, max: 28,  val: 1,  say: 'Lass mich, ich hab Termine.', desc: 'Nass und beleidigt. Läuft trotzdem weiter.' },
     { id: 'tisch',   name: 'Tisch',             img: 'img/tisch.gif',            r: 'junk',      min: 90, max: 140, val: 3,  photo: true, say: 'Ich bin ein Tisch.', desc: 'Ein Tisch. Kein Fisch. Aber fast.' },
     { id: 'flasche', name: 'Spezi-Flasche',     img: 'img/spezi-flasche.png',    r: 'junk',      min: 25, max: 33,  val: 4,  say: 'Pfand gibt’s keins.', desc: 'Leer. Gehört bestimmt dem Spezifischfischer.' },
@@ -329,7 +331,7 @@
     const val = Math.max(1, Math.round(f.val * (0.7 + .6 * base) * coinMult() * (mut ? mut.val : 1) * (shiny ? SHINY_VAL : 1)));
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
-    e.n++; e.best = Math.max(e.best, size); save.dex[f.id] = e;
+    e.n++; e.best = Math.max(e.best, size); if (f.r !== 'junk') e.small = Math.min(e.small || Infinity, size); save.dex[f.id] = e;
     let newMut = false;
     if (mut) { e.muts = e.muts || {}; newMut = !e.muts[mut.id]; e.muts[mut.id] = (e.muts[mut.id] || 0) + 1; }
     let newShiny = false;
@@ -351,19 +353,23 @@
       showCatch(f, size, val, first, mut, newMut, gain, shiny, newShiny);
       if (f.clip) playClip(f.clip); else if (f.sound) playFile(f.sound); else playFile('sounds/fish.mp3');
       sfx.coin();
+      if (f.fake) { // the "legendary" catch was a fish in a joke disguise: sad trombone
+        toast(tr('😜 REINGELEGT!'));
+        [392, 370, 349, 294].forEach((n, i) => setTimeout(() => tone(n, i === 3 ? .7 : .28, 'sawtooth', .05), 150 + i * 300));
+      }
     };
-    const fx = FANFARE[f.r] || (mut && { label: `${mut.name.toUpperCase()}!`, c: mut.c, hi: '#ffffff', dur: 1.1, notes: [659, 880, 1175] })
+    const fx = (f.fake && FANFARE.legendary) || FANFARE[f.r] || (mut && { label: `${mut.name.toUpperCase()}!`, c: mut.c, hi: '#ffffff', dur: 1.1, notes: [659, 880, 1175] })
       || (shiny && { label: tr('SHINY!'), c: '#fde047', hi: '#ffffff', dur: 1.2, notes: [1047, 1319, 1568, 2093] });
     if (shiny) {
       floaters.push({ x: bob.x, y: SURFACE - 34, text: newShiny ? tr('💫 Neuer Shiny!') : tr('💫 Shiny!'), c: '#fde047', life: 2.6 });
       for (let i = 0; i < 40; i++) glints.push({ x: bob.x + (Math.random() - .5) * 24, y: SURFACE - Math.random() * 10, vx: (Math.random() - .5) * 40, vy: -25 - Math.random() * 45, life: .8 + Math.random(), c: ['#fde047', '#ffffff', '#f9a8d4', '#a5f3fc'][i % 4] });
       [1568, 2093, 2637].forEach((n, i) => setTimeout(() => tone(n, .12, 'sine', .06), 600 + i * 90));
     }
-    floaters.push({ x: bob.x, y: SURFACE - 14, text: `${mut ? mut.icon + ' ' : ''}${fx ? '' : f.name + ' · '}${size} cm`, c: mut ? mut.c : fx ? fx.c : '#ffffff', life: 2.4 });
+    floaters.push({ x: bob.x, y: SURFACE - 14, text: `${mut ? mut.icon + ' ' : ''}${fx ? '' : f.name + ' · '}${f.fake ? 170 + Math.floor(Math.random() * 20) : size} cm`, c: mut ? mut.c : fx ? fx.c : '#ffffff', life: 2.4 });
     if (mut && FANFARE[f.r]) floaters.push({ x: bob.x, y: SURFACE - 24, text: `${mut.icon} ${mut.name}`, c: mut.c, life: 2.4 });
     floaters.push({ x: bob.x, y: SURFACE - 4, text: tr('+{n} EP', { n: gain.xp }) + (streak > 1 ? ` · 🔥${streak}` : ''), c: '#86efac', life: 2.4 });
     if (fx && !reduceMotion) {
-      fanfare = { ...fx, r: FANFARE[f.r] ? f.r : 'rare', x: bob.x, t: 0, done: reveal };
+      fanfare = { ...fx, r: f.fake ? 'legendary' : FANFARE[f.r] ? f.r : 'rare', x: bob.x, t: 0, done: reveal };
       fx.notes.forEach((n, i) => setTimeout(() => tone(n, .18, 'triangle', .09), i * 110));
       if (f.r === 'legendary') setTimeout(() => tone(1568, .6, 'sine', .07, 400), fx.notes.length * 110);
     } else reveal();
@@ -2272,6 +2278,7 @@
     wieder: { label: tr('🌀 Wiedergeburten'), fmt: s => s + '×' },
     dex:    { label: tr('📖 Fischdex'),       fmt: s => tr('{a} Fische · {b} Mut.', { a: Math.floor(s / 100), b: s % 100 }) },
     rekord: { label: tr('📏 Rekordfang'),     fmt: s => s + ' cm' },
+    klein:  { label: tr('🔬 Kleinster Fisch'), fmt: s => s ? s + ' cm' : '–' },
   };
   const LB = { boards: null, tab: 'taler', ranks: null, err: '', busy: false };
   if (!save.totalEarned) save.totalEarned = Math.max(save.lifeCoins || 0, save.coins || 0);
@@ -2281,6 +2288,7 @@
       wieder: save.rebirths,
       dex: discovered() * 100 + mutsFound().length,
       rekord: Math.max(0, ...Object.values(save.dex).map(e => e.best || 0)),
+      klein: Math.min(...Object.values(save.dex).map(e => e.small || Infinity), Infinity) | 0, // 0 = noch keiner
     };
   }
   const hex = n => [...crypto.getRandomValues(new Uint8Array(n))].map(b => b.toString(16).padStart(2, '0')).join('');

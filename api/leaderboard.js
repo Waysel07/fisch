@@ -1,6 +1,7 @@
 // Bestenliste für „Fischen!“ – Vercel Function + Upstash Redis (REST, ohne npm-Pakete).
 //
-//   GET    /api/leaderboard                     → Top 10 jeder Liste (30 s im CDN gecacht)
+//   GET    /api/leaderboard                     → Top 10 jeder Liste (30 s im CDN gecacht;
+//                                                  „klein“ aufsteigend, sonst absteigend)
 //   POST   /api/leaderboard {id, token, name, scores}  → eintragen/aktualisieren, liefert eigene Plätze
 //   DELETE /api/leaderboard {id, token}         → eigenen Eintrag löschen
 //   DELETE /api/leaderboard {id, admin}         → Eintrag als Admin löschen (ADMIN_TOKEN)
@@ -20,6 +21,7 @@ const BOARDS = {
   wieder: { max: 1000, step: (dt) => 1 + dt / 240 },        // Wiedergeburten
   dex:    { max: 9999, step: () => 9999 },                  // Fische × 100 + Mutationen
   rekord: { max: 400,  step: () => 400 },                   // größter Fang in cm
+  klein:  { max: 400,  step: () => 400, asc: true },        // kleinster Fang in cm (0 = noch keiner), kleiner ist besser
 };
 const TOP = 10;
 const ID_RE = /^[a-f0-9]{16,40}$/;
@@ -65,7 +67,7 @@ function cleanName(n) {
 
 async function top() {
   const keys = Object.keys(BOARDS);
-  const lists = await redis(keys.map((b) => ['ZREVRANGE', 'lb:' + b, 0, TOP - 1, 'WITHSCORES']));
+  const lists = await redis(keys.map((b) => [BOARDS[b].asc ? 'ZRANGE' : 'ZREVRANGE', 'lb:' + b, 0, TOP - 1, 'WITHSCORES']));
   const ids = [...new Set(lists.flatMap((l) => l.filter((_, i) => i % 2 === 0)))];
   const names = ids.length ? await redis([['HMGET', 'lb:names', ...ids]]) : [[]];
   const nameOf = Object.fromEntries(ids.map((id, i) => [id, names[0][i] || '???']));
@@ -127,9 +129,11 @@ module.exports = async function handler(req, res) {
     const dt = Math.max(0, (Date.now() - prev.t) / 1000);
     const scores = {};
     for (const [b, rule] of Object.entries(BOARDS)) {
-      const v = Math.floor(Number(body.scores && body.scores[b]));
+      // ältere Spielversionen schicken neue Listen noch nicht mit: dann 0 (= kein Eintrag dort)
+      const raw = body.scores && body.scores[b];
+      const v = raw === undefined ? 0 : Math.floor(Number(raw));
       if (!Number.isFinite(v) || v < 0 || v > rule.max) return send(res, 400, { error: 'Unplausibler Wert: ' + b });
-      if (v - (prev.s[b] || 0) > rule.step(dt)) return send(res, 400, { error: 'Unplausibler Sprung: ' + b });
+      if (!rule.asc && v - (prev.s[b] || 0) > rule.step(dt)) return send(res, 400, { error: 'Unplausibler Sprung: ' + b });
       scores[b] = v;
     }
 
@@ -137,8 +141,11 @@ module.exports = async function handler(req, res) {
     const out = await redis([
       ['HSET', 'lb:names', id, name],
       ['SET', 'lb:last:' + id, JSON.stringify({ t: Date.now(), s: scores })],
-      ...keys.map((b) => ['ZADD', 'lb:' + b, 'GT', scores[b], id]),
-      ...keys.map((b) => ['ZREVRANK', 'lb:' + b, id]),
+      // aufsteigende Listen (kleinster Fang): nur echte Werte eintragen und nur verbessern (LT)
+      ...keys.map((b) => BOARDS[b].asc
+        ? (scores[b] > 0 ? ['ZADD', 'lb:' + b, 'LT', scores[b], id] : ['ZSCORE', 'lb:' + b, id])
+        : ['ZADD', 'lb:' + b, 'GT', scores[b], id]),
+      ...keys.map((b) => [BOARDS[b].asc ? 'ZRANK' : 'ZREVRANK', 'lb:' + b, id]),
       ...keys.map((b) => ['ZCARD', 'lb:' + b]),
     ]);
     const n = keys.length, ranks = {};
