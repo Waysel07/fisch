@@ -2,6 +2,13 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 03.11.2026 · `2026-11-03-9`
+
+- ✦ New: prestige from the 10th rebirth. It resets everything, including rebirths, rank, Schuppen and talents – in return every prestige gives a permanent +50 % coins and +25 % XP.
+- 🦪 Pearl talents: spend pearls from prestige on Pearl Hook, Pearl Luck, Scale Blessing, Early Bloomer and the Sea Chart (high seas without rebirths). They stay forever.
+- 👑 New cosmetics for prestige: Pearl Crown (1×), Pearl Bobber (2×) and Prestige Coat (3×). Plus a "Prestige" leaderboard and ✦ in front of your rank.
+- ✏️ Names for the leaderboard and lobby can now be as short as one character.
+
 ## 03.11.2026 · `2026-11-03-8`
 
 - ⛵ Old friends on the high seas: Fish, Poisson, Fish 2, Oil Fish, Grouper, Blobfish and the Absolute Odfisch (at night) now bite out on the open sea too.

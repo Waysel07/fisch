@@ -1,6 +1,6 @@
 // Gemeinsame Namensprüfung für Bestenliste und Lobbys (Dateien mit _ sind bei Vercel keine Endpunkte).
 'use strict';
-const NAME_RE = /^[\p{L}\p{N} ._\-!?]{2,16}$/u;
+const NAME_RE = /^[\p{L}\p{N} ._\-!?]{1,16}$/u;
 const BLOCK = ['nazi', 'hitler', 'nigg', 'neger', 'fotze', 'hure', 'fick', 'fuck', 'cunt', 'faggot', 'schwuchtel', 'admin'];
 
 function cleanName(n) {

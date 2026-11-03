@@ -84,6 +84,7 @@ function cleanMe(me) {
     sc: Math.round(num(me.sc, 0, 1e9)),               // Taler gefangen, seit man in der Lobby ist
     n: Math.round(num(me.n, 0, 1e6)),                 // Fänge in der Lobby
     rk: Math.round(num(me.rk, 0, 99)),                // Wiedergeburten, für den Rang am Namensschild
+    pr: Math.round(num(me.pr, 0, 99)),                // Prestige, als ✦ vor dem Rang
   };
 }
 
@@ -121,7 +122,7 @@ module.exports = async function handler(req, res) {
 
     if (body.action === 'create') {
       const name = cleanName(body.name);
-      if (!name) return send(res, 400, { error: 'Bitte einen anderen Namen wählen (2–16 Zeichen, keine Beleidigungen).' });
+      if (!name) return send(res, 400, { error: 'Bitte einen anderen Namen wählen (1–16 Zeichen, keine Beleidigungen).' });
       const ip = String(req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '').split(',')[0].trim();
       const ipKey = 'lobby:ip:' + sha(ip + new Date().toISOString().slice(0, 10)).slice(0, 24);
       const [cnt] = await redis([['INCR', ipKey], ['EXPIRE', ipKey, 600]]);
@@ -148,7 +149,7 @@ module.exports = async function handler(req, res) {
 
     if (body.action === 'join') {
       const name = cleanName(body.name);
-      if (!name) return send(res, 400, { error: 'Bitte einen anderen Namen wählen (2–16 Zeichen, keine Beleidigungen).' });
+      if (!name) return send(res, 400, { error: 'Bitte einen anderen Namen wählen (1–16 Zeichen, keine Beleidigungen).' });
       const [meta, hash] = await redis([['GET', L], ['HGETALL', P]]);
       if (!meta) return send(res, 404, { error: 'Diese Lobby gibt es nicht (mehr).' });
       const act = players(hash || [], now).filter((p) => p.k !== k);
