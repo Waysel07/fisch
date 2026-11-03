@@ -90,6 +90,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-03-3', date: '03.11.2026', items: [
+      '👥 Multiplayer-Lobbys: Erstelle eine Lobby (👥 oder O) und schick Freunden den Code oder Link. Ihr seht euch am Steg, eure Fänge und wer seit dem Beitreten die meisten Taler geangelt hat – bis zu 8 Angler.',
+    ] },
     { id: '2026-11-03-2', date: '03.11.2026', items: [
       '🎵 Taktdrill: Legendäre Fische tanzen manchmal an der Leine. Tippe die Kreise im Takt an (oder Leertaste, Z, X), wenn der Ring sie erreicht – mit genug Genauigkeit gehört der Fisch dir.',
       '📰 Die Steg-Zeitung: Nach jedem Update liegt hinten am Steg eine neue Ausgabe mit allem, was neu ist (auch mit 📰 oder N).',
@@ -362,6 +365,7 @@
       if (found) { save.boxes[found.id] = (save.boxes[found.id] || 0) + 1; setTimeout(() => toast(tr('📦 Am Haken hing noch eine {b}! Öffnen im Laden.', { b: found.name })), 1600); }
     }
     setTimeout(() => lbSubmit(), 3000);
+    lobbyCatch(f, size, val, shiny);
     if (dexClaimable().length) { updateDexBadge(); if (first || newMut || newShiny) toast(tr('📖 Fischdex-Belohnung bereit!')); }
     persist(); updateCoins();
     splash(bob.x, SURFACE, 22, '#ffffff');
@@ -631,6 +635,7 @@
     if (k === 'p') { toggleModal('prog'); return; }
     if (k === 'b') { toggleModal('lb'); return; }
     if (k === 'n') { toggleModal('patch'); return; }
+    if (k === 'o') { toggleModal('lobby'); return; }
     if (!$('casino').hidden && (k === ' ' || k === 'enter')) { e.preventDefault(); $('spin').click(); return; }
     if (k === 'm') { $('btn-sound').click(); return; }
     if (anyModal()) return;
@@ -826,8 +831,8 @@
   // hat colour shows how often you have been reborn
   const HATS = [['#22c55e', '#15803d', '#86efac'], ['#38bdf8', '#0369a1', '#bae6fd'], ['#c084fc', '#7e22ce', '#f3e8ff'], ['#fbbf24', '#b45309', '#fef3c7']];
   const hatFrames = [];
-  function playerFrames() {
-    const tier = Math.min(HATS.length - 1, save.rebirths);
+  function playerFrames(t) {
+    const tier = Math.min(HATS.length - 1, t === undefined ? save.rebirths : t);
     if (!hatFrames[tier]) {
       const [h, H, l] = HATS[tier], pal = { ...PLAYER_PAL, h, H, l };
       hatFrames[tier] = [false, true].map(flip => PLAYER_LEGS.map(g => bake(PLAYER_BODY.concat(g), pal, flip)));
@@ -1186,6 +1191,7 @@
     drawNpc();
     drawKiosk(dark);
     drawProps(dark);
+    drawLobbyAnglers();
     drawPlayer(dark);
     drawLine();
 
@@ -1493,6 +1499,35 @@
     if (r.id === 'gold') px(tip.x - .25, tip.y - .25, 1, 1, '#fde68a');
   }
 
+  // other anglers in the same multiplayer lobby: drawn a bit see-through, with their name above
+  function drawLobbyAnglers() {
+    if (!LOBBY.code) return;
+    setFont('5px Poppins, sans-serif'); ctx.textBaseline = 'bottom'; ctx.textAlign = 'center';
+    for (const p of LOBBY.players) {
+      if (p.k === LOBBY.me) continue;
+      p.dx = p.dx === undefined ? p.x : p.dx + (p.x - p.dx) * .1;
+      const x = snap(p.dx), y = DOCK_Y, d = p.d > 0 ? 1 : -1;
+      const img = playerFrames(p.hat)[d > 0 ? 0 : 1][0];
+      ctx.globalAlpha = .8;
+      ctx.drawImage(img, x - 5.5, y - img.height / 2, img.width / 2, img.height / 2);
+      const hx = x + d * 3.5, hy = y - 8.5, tx = x + d * 15, ty = y - 21;
+      ctx.strokeStyle = '#7c4a1e'; ctx.lineWidth = .75;
+      ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(tx, ty); ctx.stroke();
+      if (p.s === 'w' || p.s === 'r') { // line in the water + bobber
+        const bx = x + d * (44 + (p.k.charCodeAt(0) % 5) * 6), by = SURFACE + (p.s === 'r' ? Math.sin(t * 30) : Math.sin(t * 2));
+        ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = .3;
+        ctx.beginPath(); ctx.moveTo(tx, ty); ctx.quadraticCurveTo((tx + bx) / 2, by - 4, bx, by); ctx.stroke();
+        px(bx - .75, by - 1.5, 1.5, 1.5, '#ef4444'); px(bx - .75, by - .25, 1.5, 1, '#f8fafc');
+      }
+      ctx.globalAlpha = 1;
+      const label = p.name;
+      const w = Math.ceil(ctx.measureText(label).width) + 4;
+      px(x - w / 2, y - 31, w, 7, 'rgba(15,23,42,.75)');
+      ctx.fillStyle = '#e2e8f0'; ctx.fillText(label, x, y - 24.5);
+    }
+    ctx.textAlign = 'left';
+  }
+
   function drawLine() {
     if (!['fly', 'wait', 'bite', 'reel'].includes(state)) return;
     const tip = rodTip();
@@ -1562,7 +1597,7 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby']) $(id).hidden = true;
   }
   function unreadPatches() { // how many entries are new since the last read (at least the newest 3 when nothing is new)
     const i = PATCH_NOTES.findIndex(p => p.id === save.patchSeen);
@@ -1582,7 +1617,7 @@
     if (['charge', 'fly', 'bite', 'reel', 'rhythm'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); } })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -1594,6 +1629,7 @@
   $('btn-prog').addEventListener('click', () => toggleModal('prog'));
   $('btn-lb').addEventListener('click', () => toggleModal('lb'));
   $('btn-patch').addEventListener('click', () => toggleModal('patch'));
+  $('btn-lobby').addEventListener('click', () => toggleModal('lobby'));
   $('lvl').addEventListener('click', () => toggleModal('prog'));
   $('btn-sound').addEventListener('click', () => {
     save.sound = !save.sound; persist();
@@ -1607,6 +1643,7 @@
       else save.patchSeen = PATCH_NOTES[0].id; // new players start with nothing to catch up on
     }
     save.seen = true; persist();
+    if (LOBBY.invite) { LOBBY.invite = false; toggleModal('lobby'); }
   });
   let lastFirst = null;
   $('catch-ok').addEventListener('click', () => {
@@ -2508,6 +2545,139 @@
     toast(tr('Aus der Bestenliste ausgetragen.')); openLb();
   });
 
+
+  // ------------------------------------------------------------------ multiplayer lobby
+  // Up to 8 anglers share a lobby (4-letter code): everyone sees the others on the dock, their
+  // catches and who has fished the most Taler since joining. No sockets: the game syncs with
+  // api/lobby.js every 3 seconds while the tab is visible.
+  const LOBBY_API = '/api/lobby', LOBBY_EVERY = 3000;
+  const LOBBY = { code: null, me: null, players: [], feed: [], err: '', busy: false, pending: [], seenFeed: 0, timer: 0 };
+  async function lobbyFetch(body) {
+    const r = await fetch(LOBBY_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    let j = {}; try { j = await r.json(); } catch { /* not json */ }
+    if (!r.ok) throw Object.assign(new Error(j.error ? tr(j.error) : tr('Lobby-Server gerade nicht erreichbar.')), { status: r.status });
+    return j;
+  }
+  function lobbyMe() {
+    return { x: player.x, d: player.dir, s: ['wait', 'bite'].includes(state) ? 'w' : ['reel', 'rhythm'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0 };
+  }
+  async function lobbySync() {
+    if (!save.lobby || LOBBY.busy || document.hidden) return;
+    LOBBY.busy = true;
+    const ev = LOBBY.pending.shift();
+    try {
+      const j = await lobbyFetch({ action: 'sync', code: save.lobby.code, id: save.lobby.id, me: lobbyMe(), ev });
+      LOBBY.code = save.lobby.code; LOBBY.me = j.me; LOBBY.err = '';
+      const old = new Map(LOBBY.players.map(p => [p.k, p]));
+      LOBBY.players = j.players.map(p => Object.assign(p, { dx: old.has(p.k) ? old.get(p.k).dx : undefined }));
+      // announce good catches of the others
+      for (const e of j.feed.slice().reverse()) {
+        if (e.t <= LOBBY.seenFeed) continue;
+        if (LOBBY.seenFeed && e.k !== j.me && ['rare', 'wii', 'epic', 'legendary'].includes(e.r)) toast(tr('🎣 {n} hat {f} gefangen ({cm} cm)!', { n: e.n, f: e.f, cm: e.cm }));
+      }
+      if (j.feed.length) LOBBY.seenFeed = Math.max(LOBBY.seenFeed || 1, j.feed[0].t);
+      LOBBY.feed = j.feed;
+    } catch (e) {
+      if (ev && e.status !== 404 && e.status !== 410) LOBBY.pending.unshift(ev);
+      if (e.status === 404 || e.status === 410) { toast(tr('👥 Lobby beendet: {e}', { e: e.message })); lobbyReset(); }
+      else LOBBY.err = e.status === 429 ? '' : e.message;
+    }
+    LOBBY.busy = false;
+    if (!$('lobby').hidden) renderLobby();
+    updateLobbyPill();
+  }
+  function lobbyStart() {
+    clearInterval(LOBBY.timer);
+    LOBBY.code = save.lobby.code; LOBBY.seenFeed = 0;
+    LOBBY.timer = setInterval(lobbySync, LOBBY_EVERY);
+    lobbySync();
+  }
+  function lobbyReset() {
+    clearInterval(LOBBY.timer);
+    delete save.lobby; persist();
+    Object.assign(LOBBY, { code: null, me: null, players: [], feed: [], pending: [], seenFeed: 0 });
+    updateLobbyPill();
+    if (!$('lobby').hidden) renderLobby();
+  }
+  function lobbyCatch(f, size, val, shiny) {
+    if (!save.lobby) return;
+    save.lobby.sc += val; save.lobby.n++;
+    LOBBY.pending.push({ f: f.name, cm: size, r: f.r, sh: !!shiny });
+    if (LOBBY.pending.length > 5) LOBBY.pending.shift();
+  }
+  function updateLobbyPill() {
+    const n = LOBBY.players.length;
+    $('lobby-pill').textContent = save.lobby ? `${save.lobby.code} · ${n || 1}` : tr('Lobby');
+    $('btn-lobby').classList.toggle('on', !!save.lobby);
+  }
+  function lobbyName() {
+    const n = $('lobby-name').value.replace(/\s+/g, ' ').trim();
+    if (!/^[\p{L}\p{N} ._\-!?]{2,16}$/u.test(n)) { $('lobby-err').textContent = tr('Name: 2–16 Zeichen (Buchstaben, Zahlen, Leerzeichen, . _ - ! ?).'); return null; }
+    return n;
+  }
+  async function lobbyEnter(action, code) {
+    const name = lobbyName(); if (!name) return;
+    $('lobby-err').textContent = '';
+    const id = hex(20);
+    $('lobby-create').disabled = $('lobby-join').disabled = true;
+    try {
+      const j = await lobbyFetch({ action, code, id, name, me: lobbyMe() });
+      save.lobby = { code: j.code || code, id, name, sc: 0, n: 0 }; save.lobbyName = name; persist();
+      lobbyStart(); renderLobby();
+    } catch (e) { $('lobby-err').textContent = e.message; }
+    $('lobby-create').disabled = $('lobby-join').disabled = false;
+  }
+  function renderLobby() {
+    const inside = !!save.lobby;
+    $('lobby-out').hidden = inside; $('lobby-in').hidden = !inside;
+    if (!inside) {
+      if (!$('lobby-name').value) $('lobby-name').value = save.lobbyName || (save.lb && save.lb.name) || '';
+      $('lobby-err').textContent = LOBBY.err;
+      return;
+    }
+    $('lobby-code-show').textContent = save.lobby.code;
+    const ps = LOBBY.players.length ? LOBBY.players.slice() : [{ k: LOBBY.me, name: save.lobby.name, sc: save.lobby.sc }];
+    ps.sort((a, b) => b.sc - a.sc);
+    $('lobby-players').replaceChildren(...ps.map((p, i) => {
+      const li = document.createElement('li'); if (p.k === LOBBY.me) li.className = 'me';
+      const pos = document.createElement('span'); pos.textContent = ['🥇', '🥈', '🥉'][i] || i + 1;
+      const n = document.createElement('b'); n.textContent = p.name;
+      const sc = document.createElement('span'); sc.className = 'sc'; sc.textContent = tr('{n} Taler', { n: (p.sc || 0).toLocaleString(I18N.locale) });
+      li.append(pos, n, sc);
+      if (p.big) { const b = document.createElement('span'); b.className = 'big'; b.textContent = tr('Größter: {f} ({cm} cm)', { f: p.big.f, cm: p.big.cm }); li.append(b); }
+      return li;
+    }));
+    $('lobby-feed').replaceChildren(...(LOBBY.feed.length ? LOBBY.feed.map(e => {
+      const li = document.createElement('li'); li.className = 'r-' + e.r;
+      li.textContent = `${e.sh ? '💫 ' : ''}${e.n}: ${e.f} · ${e.cm} cm`;
+      return li;
+    }) : [Object.assign(document.createElement('li'), { textContent: tr('Noch nichts gefangen. Los geht’s!') })]));
+    $('lobby-err').textContent = LOBBY.err;
+  }
+  $('lobby-create').addEventListener('click', () => lobbyEnter('create'));
+  $('lobby-join').addEventListener('click', () => {
+    const code = $('lobby-code').value.trim().toUpperCase();
+    if (!/^[A-Z2-9]{4}$/.test(code)) { $('lobby-err').textContent = tr('Der Code hat 4 Zeichen.'); return; }
+    lobbyEnter('join', code);
+  });
+  $('lobby-code').addEventListener('keydown', e => { if (e.key === 'Enter') $('lobby-join').click(); });
+  $('lobby-leave').addEventListener('click', async () => {
+    const l = save.lobby; lobbyReset();
+    try { await lobbyFetch({ action: 'leave', code: l.code, id: l.id }); } catch { /* the server forgets us after 90 s anyway */ }
+    toast(tr('👥 Lobby verlassen.'));
+  });
+  $('lobby-copy').addEventListener('click', async () => {
+    const url = `${location.origin}${location.pathname}?lobby=${save.lobby.code}`;
+    try { await navigator.clipboard.writeText(url); toast(tr('🔗 Link kopiert!')); } catch { prompt(tr('Link zum Beitreten:'), url); }
+  });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && save.lobby) lobbySync(); });
+  // back in the lobby after a reload; a ?lobby=CODE link pre-fills the code
+  if (save.lobby) lobbyStart();
+  try {
+    const q = new URLSearchParams(location.search).get('lobby');
+    if (q && /^[A-Za-z2-9]{4}$/.test(q) && !save.lobby) { $('lobby-code').value = q.toUpperCase(); LOBBY.invite = true; }
+  } catch { /* old browser */ }
+  updateLobbyPill();
 
   // ------------------------------------------------------------------ cloud save (secret key)
   // Optional: a secret key stores a copy of the save on the server (/api/save) so it can be
