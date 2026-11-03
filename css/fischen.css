@@ -562,13 +562,13 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
 
 /* =====================================================================
    Game UI skin: pixel font, chunky pixel-bordered panels and buttons.
-   Pixelify Sans (SIL OFL 1.1, see ../fonts/pixelify-OFL.txt) is self-hosted.
+   Silkscreen (SIL OFL 1.1, see ../fonts/silkscreen-OFL.txt) is self-hosted.
    Pixel borders: four hard shadows leave the corners notched.
    ===================================================================== */
-@font-face { font-family: "Pixelify Sans"; src: url("../fonts/pixelify-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
-@font-face { font-family: "Pixelify Sans"; src: url("../fonts/pixelify-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Silkscreen"; src: url("../fonts/silkscreen-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Silkscreen"; src: url("../fonts/silkscreen-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
 :root {
-  --px: "Pixelify Sans", "Poppins", monospace;
+  --px: "Silkscreen", "Poppins", monospace;
   --ink: #0b1020;            /* outline */
   --panel: #1a2340;          /* panel face */
   --panel-hi: #33416b;       /* top bevel */
@@ -776,7 +776,7 @@ h3 { font-size: 1.15rem; text-shadow: 2px 2px 0 var(--ink); }
   #baitbar { left: .6rem; bottom: max(.6rem, env(safe-area-inset-bottom)); }
   .bslot { width: 40px; height: 40px; }
 }
-/* Pixelify Sans turns "fi" into a ligature that reads like "A" ("Ölfisch" -> "ÖlAsch"); switch ligatures off */
+/* pixel fonts can turn "fi" into odd ligatures ("Ölfisch" -> "ÖlAsch"); switch ligatures off */
 body, button, input { font-variant-ligatures: none; font-feature-settings: "liga" 0, "clig" 0, "calt" 0; }
 
 /* ---------- language switch (DE / EN) */

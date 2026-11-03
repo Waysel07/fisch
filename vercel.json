@@ -177,17 +177,17 @@
     },
     {
       "source": "/pixelify-400.woff2",
-      "destination": "/fonts/pixelify-400.woff2",
+      "destination": "/fonts/silkscreen-400.woff2",
       "permanent": true
     },
     {
       "source": "/pixelify-700.woff2",
-      "destination": "/fonts/pixelify-700.woff2",
+      "destination": "/fonts/silkscreen-700.woff2",
       "permanent": true
     },
     {
       "source": "/pixelify-OFL.txt",
-      "destination": "/fonts/pixelify-OFL.txt",
+      "destination": "/fonts/silkscreen-OFL.txt",
       "permanent": true
     },
     {
@@ -473,6 +473,21 @@
     {
       "source": "/zackenbarsch.html",
       "destination": "/seiten/zackenbarsch.html",
+      "permanent": true
+    },
+    {
+      "source": "/fonts/pixelify-400.woff2",
+      "destination": "/fonts/silkscreen-400.woff2",
+      "permanent": true
+    },
+    {
+      "source": "/fonts/pixelify-700.woff2",
+      "destination": "/fonts/silkscreen-700.woff2",
+      "permanent": true
+    },
+    {
+      "source": "/fonts/pixelify-OFL.txt",
+      "destination": "/fonts/silkscreen-OFL.txt",
       "permanent": true
     }
   ]

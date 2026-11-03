@@ -25,6 +25,7 @@
     { id: 'pixel',   name: 'Pixelfisch',        img: 'img/fish-icon.png',        r: 'common',    min: 8,  max: 16,  val: 4,  say: 'Knusper, knusper.', desc: 'Besteht zu 100 % aus Pixeln. Sehr knusprig.', pixel: true },
     { id: 'poisson', name: 'Poisson',           img: 'img/frenchfish.gif',       r: 'common',    min: 25, max: 50,  val: 6,  photo: true, say: 'Bonjour! Du hast mich, non?', desc: 'Kommt aus Frankreich. Hat Schokolade dabei.' },
     { id: 'spezi3',  name: 'Kleiner Spezifisch', img: 'img/spezifisch3.png',     r: 'common', clip: [0, .93],    min: 10, max: 22,  val: 6,  say: 'Klein, aber spezifisch.', desc: 'Ein ganz kleiner, aber sehr spezifischer Fisch.' },
+    { id: 'platsch', name: 'Platschkarpfen',    img: 'img/platschkarpfen.png',   r: 'common',    min: 20, max: 50,  val: 3,  pixel: true, page: 'seiten/platschkarpfen.html', say: 'Platsch. Platsch. Platsch.', desc: 'Kann eigentlich nichts außer zappeln. Macht das aber mit voller Hingabe.' },
     { id: 'stink',   name: 'Stinkfisch',        img: 'img/stinkfisch.png',       r: 'common',    min: 10, max: 25,  val: 5,  pixel: true, page: 'seiten/stinkfisch.html', say: 'Riech lieber nicht so genau hin.', desc: 'Grün, fleckig und riecht drei Stege weit.' },
     { id: 'fisch2',  name: 'Fisch 2',           img: 'img/fish2-spin.gif',       r: 'uncommon',  min: 45, max: 90,  val: 14, photo: true, say: 'Diesmal mit mehr Budget.', desc: 'Die Fortsetzung. Länger als das Original.' },
     { id: 'spezi2',  name: 'Spezifische Spezifische', img: 'img/spezifisch2.png', r: 'uncommon', clip: [3.17, 4.9],  min: 22, max: 40,  val: 15, say: 'Spezifisch. Spezifisch.', desc: 'Spezifische Spezifische. Gut gekühlt.' },
@@ -1884,13 +1885,16 @@
   function rollBox(b) {
     const T = b.tier, P = b.price;
     const baits = BAITS.filter(x => x.pack && !lockText(x));
+    // Balance: bought boxes return ~85-90 % of their price on average (coins alone ~70 %, the
+    // rest as bait, XP and Schuppen). Prizes don't use the Taler bonus, otherwise boxes would
+    // turn into a money machine for players with many rebirths.
     const table = [
-      { w: 46, f: () => { const c = Math.round(P * (.4 + Math.random() * .9) * coinMult()); save.coins += c; save.totalEarned += c; return tr('🪙 {n} Taler', { n: c }); } },
-      { w: 18, f: () => { const x = pick(baits), c = [3, 6, 12][T]; save.baits[x.id] = (save.baits[x.id] || 0) + c; updateGear(); return tr('{n}× {b}', { n: c, b: x.name }); } },
-      { w: 16, f: () => tr('⭐ {n} EP', { n: gainXp([40, 140, 450][T]) }) },
-      { w: T ? 8 : 3, f: () => { const c = [1, 1, 3][T]; save.scales += c; return tr('🐚 Schuppen: {n}', { n: c }); } },
-      { w: 9, f: () => { save.coins += 5; return tr('🧦 Eine alte Socke. Und 5 Taler.'); } },
-      { w: 3, f: () => { const c = Math.round(P * 5 * coinMult()); save.coins += c; save.totalEarned += c; return tr('💰 JACKPOT! {n} Taler', { n: c }); }, big: true },
+      { w: 55, f: () => { const c = Math.round(P * (.6 + Math.random() * .8)); save.coins += c; save.totalEarned += c; return tr('🪙 {n} Taler', { n: c }); } },
+      { w: 14, f: () => { const x = pick(baits), c = [5, 10, 20][T]; save.baits[x.id] = (save.baits[x.id] || 0) + c; updateGear(); return tr('{n}× {b}', { n: c, b: x.name }); } },
+      { w: 14, f: () => tr('⭐ {n} EP', { n: gainXp(xpNeed(save.lvl) * [.2, .4, .8][T]) }) },
+      { w: [2, 5, 7][T], f: () => { const c = [1, 2, 4][T]; save.scales += c; return tr('🐚 Schuppen: {n}', { n: c }); } },
+      { w: 6, f: () => { save.coins += 5; return tr('🧦 Eine alte Socke. Und 5 Taler.'); } },
+      { w: 2, f: () => { const c = P * 5; save.coins += c; save.totalEarned += c; return tr('💰 JACKPOT! {n} Taler', { n: c }); }, big: true },
     ];
     let r = Math.random() * table.reduce((a, t) => a + t.w, 0), hit = table[0];
     for (const t of table) { r -= t.w; if (r <= 0) { hit = t; break; } }

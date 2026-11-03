@@ -204,6 +204,8 @@
     'Absolut.': 'Absolutely.',
     'Katzenfisch': 'Cat Fish',
     'Kritzelfisch': 'Scribble Fish',
+    'Platschkarpfen': 'Splash Carp', 'Platsch. Platsch. Platsch.': 'Splash. Splash. Splash.',
+    'Kann eigentlich nichts außer zappeln. Macht das aber mit voller Hingabe.': 'Can’t really do anything except flop about. But does it with full dedication.',
     'Nicht anschauen, ich bin nur eine Skizze!': 'Don’t look, I’m just a sketch!',
     'Mit Bleistift hingekritzelt und nie ganz fertig geworden. Zittert leicht.': 'Scribbled in pencil and never quite finished. Wobbles a little.', 'Miau. Ich meine: Blubb.': 'Meow. I mean: blub.', 'Halb Katze, halb Fisch, ganz flauschig. Kommt lieber nachts.': 'Half cat, half fish, all fluff. Prefers the night.',
     'UhrZeitFisch': 'UhrZeitFisch', 'Ich bin pünktlich. Seit 66 Millionen Jahren.': 'I’m punctual. Have been for 66 million years.',
