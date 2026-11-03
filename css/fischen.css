@@ -810,3 +810,69 @@ body, button, input { font-variant-ligatures: none; font-feature-settings: "liga
 @keyframes box-shake { 0% { transform: rotate(-8deg); } 100% { transform: rotate(8deg); } }
 @keyframes box-pop { 0% { transform: scale(.6); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) { .box-art.shake img, .box-art.open img { animation: none; } }
+
+/* ------------------------------------------------------------------ patch notes */
+.patch-sheet { max-width: 26rem; max-height: 85vh; overflow-y: auto; }
+.patch-entry + .patch-entry { margin-top: 1rem; padding-top: .8rem; border-top: 2px dashed rgba(148, 163, 184, .35); }
+.patch-entry h3 { margin: 0 0 .4rem; font-size: 1rem; }
+.patch-entry ul { margin: 0; padding-left: 1.2rem; font-family: var(--ui); line-height: 1.45; }
+.patch-entry li + li { margin-top: .3rem; }
+
+/* ------------------------------------------------------------------ Taktdrill (rhythm minigame) */
+.modal.rhythm { padding: 0; place-items: stretch; background: rgba(2, 6, 23, .72); }
+.rhythm-field { position: relative; width: 100%; height: 100%; overflow: hidden; touch-action: none; user-select: none; }
+.rhythm-hud {
+  position: absolute; top: .8rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: .3rem; align-items: center; text-align: center;
+  width: min(92%, 40rem); font-family: var(--ui); color: #fff; text-shadow: 0 2px 0 #000;
+}
+.rhythm-hud b { font-family: var(--ui); font-weight: 800; font-size: 1.1rem; color: #fbbf24; }
+.rhythm-hud span { font-weight: 800; font-variant-numeric: tabular-nums; }
+.rnote {
+  position: absolute; width: 4.2rem; height: 4.2rem; margin: -2.1rem 0 0 -2.1rem;
+  border-radius: 50%; border: 4px solid #fff; background: radial-gradient(circle, #f472b6 0 55%, #be185d 56% 100%);
+  color: #fff; font: 800 1.4rem var(--ui); text-shadow: 0 2px 0 #000; cursor: pointer; padding: 0;
+  box-shadow: 0 0 0 3px #000, 0 6px 14px rgba(0, 0, 0, .45);
+}
+.rnote .ring {
+  position: absolute; inset: -4px; border-radius: 50%; border: 4px solid #fde68a; pointer-events: none;
+  transform: scale(var(--s, 3)); opacity: .9;
+}
+.rpop {
+  position: absolute; transform: translate(-50%, -50%); pointer-events: none;
+  font: 800 1.3rem var(--ui); text-shadow: 0 2px 0 #000; animation: rpop .6s ease-out forwards;
+}
+.rpop.p300 { color: #7dd3fc; } .rpop.p100 { color: #86efac; } .rpop.p50 { color: #fde68a; } .rpop.miss { color: #f87171; }
+@keyframes rpop { from { opacity: 1; margin-top: 0; } to { opacity: 0; margin-top: -1.5rem; } }
+@media (prefers-reduced-motion: reduce) { .rpop { animation: none; } }
+
+/* ------------------------------------------------------------------ first catch of a fish */
+.first-burst { display: none; }
+.is-first .first-burst {
+  display: block; position: absolute; left: 50%; top: 45%; width: 2rem; height: 2rem; margin: -1rem 0 0 -1rem;
+  border-radius: 50%; border: 4px solid #fde047; pointer-events: none; opacity: 0;
+  animation: first-burst .9s ease-out .55s 1 forwards;
+}
+.is-first #catch-img { animation: first-reveal 1.1s ease-out 1 backwards, float 3s ease-in-out 1.1s infinite; }
+.first-stamp {
+  position: absolute; left: 50%; top: -.2rem; margin: 0; white-space: nowrap; z-index: 2;
+  font: 800 .95rem var(--ui); color: #1b1f2e; background: #fde047; padding: .25rem .6rem;
+  box-shadow: 0 -3px 0 #1b1f2e, 0 3px 0 #1b1f2e, -3px 0 0 #1b1f2e, 3px 0 0 #1b1f2e;
+  transform: translateX(-50%) rotate(-6deg);
+  animation: first-stamp .45s cubic-bezier(.2, 1.6, .4, 1) 1s 1 both;
+}
+@keyframes first-reveal {
+  0%   { filter: brightness(0); transform: scale(.55); }
+  45%  { filter: brightness(0) drop-shadow(0 0 6px #fff); transform: scale(1.08); }
+  58%  { filter: brightness(4); transform: scale(1.12); }
+  100% { filter: none; transform: none; }
+}
+@keyframes first-burst { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(9); } }
+@keyframes first-stamp {
+  from { opacity: 0; transform: translateX(-50%) rotate(-20deg) scale(3); }
+  to   { opacity: 1; transform: translateX(-50%) rotate(-6deg) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-first #catch-img, .first-stamp { animation: none; }
+  .is-first .first-burst { display: none; }
+}

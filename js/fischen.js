@@ -86,6 +86,23 @@
     { id: 'boxgold',   name: 'Goldkiste',   price: 1500, tier: 2, lvl: 8, desc: 'Glänzt so sehr, dass die Fische neidisch werden.', col: ['#facc15', '#b45309', '#f472b6'] },
   ];
   trAll(BOXES, ['name', 'desc']);
+
+  // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
+  // returning players see the entries they missed once after the update (📰 / N shows them again).
+  const PATCH_NOTES = [
+    { id: '2026-11-03-2', date: '03.11.2026', items: [
+      '🎵 Taktdrill: Legendäre Fische tanzen manchmal an der Leine. Tippe die Kreise im Takt an (oder Leertaste, Z, X), wenn der Ring sie erreicht – mit genug Genauigkeit gehört der Fisch dir.',
+      '📰 Die Steg-Zeitung: Nach jedem Update liegt hinten am Steg eine neue Ausgabe mit allem, was neu ist (auch mit 📰 oder N).',
+      '📖 Erstfang-Animation: Ein neuer Fisch erscheint erst als Schatten, dann in Farbe – mit Stempel „Neu im Fischdex!“.',
+    ] },
+    { id: '2026-11-03-1', date: '03.11.2026', items: [
+      '🔬 Neue Bestenliste: kleinster Fisch.',
+      '😜 Neuer Fake-Fang: täuscht einen legendären Fang vor.',
+      '🍤 Neuer Fisch: Fischstäbchen.',
+      '📦 Mysteryboxen geben jetzt feste EP (15 / 40 / 100).',
+      '🆕 Neue Versionen laden automatisch, sobald nichts an der Angel hängt.',
+    ] },
+  ];
   trAll(Object.values(RARITY), ['label']); trAll(FISH, ['name', 'say', 'desc', 'hint']); trAll(RODS, ['name', 'desc']); trAll(BAITS, ['name', 'desc']);
 
   // ------------------------------------------------------------------ save
@@ -313,6 +330,7 @@
     const skew = Math.pow(Math.random(), 1.6);
     hooked = { f, size: Math.round(f.min + (f.max - f.min) * skew), str: STRENGTH[f.r] };
     Object.assign(reel, { tension: .15, progress: .22, thrash: 0, thrashT: 1 + Math.random(), slack: 0, maxT: 0 });
+    if (f.r === 'legendary' && !f.fake && Math.random() < RHYTHM_CHANCE) { sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff'); startRhythm(); return; }
     state = 'reel'; $('reel').hidden = false; hint('');
     sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff');
   }
@@ -373,6 +391,83 @@
       fx.notes.forEach((n, i) => setTimeout(() => tone(n, .18, 'triangle', .09), i * 110));
       if (f.r === 'legendary') setTimeout(() => tone(1568, .6, 'sine', .07, 400), fx.notes.length * 110);
     } else reveal();
+  }
+
+  // ------------------------------------------------------------------ Taktdrill
+  // Sometimes a legendary fish doesn't fight on the line but dances: circles pop up and have to be
+  // hit in time when the shrinking ring reaches them (click/tap, or Space / Z / X). Enough
+  // accuracy lands the fish, otherwise it gets away.
+  const RHYTHM_CHANCE = .3, RHYTHM_N = 12, RHYTHM_GAP = 560, RHYTHM_APPROACH = 950, RHYTHM_PASS = .55;
+  const rhythm = { notes: [], score: 0, combo: 0, judged: 0, end: 0 };
+  function startRhythm() {
+    state = 'rhythm'; hint(''); closeModals();
+    const field = $('rhythm-field');
+    field.querySelectorAll('.rnote, .rpop').forEach(n => n.remove());
+    $('rhythm-title').textContent = tr('🎵 Taktdrill! {f} tanzt an der Leine.', { f: hooked.f.name });
+    Object.assign(rhythm, { notes: [], score: 0, combo: 0, judged: 0, end: 0 });
+    const start = performance.now() + 900;
+    let x = .5, y = .55;
+    for (let i = 0; i < RHYTHM_N; i++) {
+      // wander across the field so the circles form a little path
+      x = Math.min(.86, Math.max(.14, x + (Math.random() - .5) * .55));
+      y = Math.min(.84, Math.max(.24, y + (Math.random() - .5) * .45));
+      const el = document.createElement('button');
+      el.type = 'button'; el.className = 'rnote'; el.hidden = true;
+      el.style.left = x * 100 + '%'; el.style.top = y * 100 + '%';
+      el.innerHTML = `<span class="ring"></span>${i + 1}`;
+      const n = { el, x, y, at: start + RHYTHM_APPROACH + i * RHYTHM_GAP, done: false };
+      el.addEventListener('pointerdown', e => { e.preventDefault(); judgeNote(n, performance.now()); });
+      field.append(el); rhythm.notes.push(n);
+    }
+    updateRhythmHud();
+    $('rhythm').hidden = false;
+    requestAnimationFrame(rhythmTick);
+  }
+  function updateRhythmHud() {
+    $('rhythm-score').textContent = `${rhythm.score} · ${rhythm.combo}×`;
+  }
+  function judgeNote(n, now) {
+    if (n.done || state !== 'rhythm') return;
+    const d = Math.abs(now - n.at);
+    if (now < n.at - 320) return; // far too early: ignore, like tapping before the beat
+    const pts = d < 100 ? 300 : d < 200 ? 100 : d < 320 ? 50 : 0;
+    n.done = true; n.el.remove(); rhythm.judged++;
+    rhythm.score += pts; rhythm.combo = pts ? rhythm.combo + 1 : 0;
+    const pop = document.createElement('div');
+    pop.className = 'rpop ' + (pts ? 'p' + pts : 'miss'); pop.textContent = pts || '✗';
+    pop.style.left = n.x * 100 + '%'; pop.style.top = n.y * 100 + '%';
+    $('rhythm-field').append(pop); setTimeout(() => pop.remove(), 700);
+    if (pts) tone([523, 587, 659, 698, 784, 880, 988, 1047][rhythm.judged % 8], .09, 'triangle', .07); else sfx.snap();
+    updateRhythmHud();
+    if (rhythm.judged === rhythm.notes.length) rhythm.end = now + 450;
+  }
+  function rhythmHit() { // keyboard: hits the next circle in line
+    const n = rhythm.notes.find(n => !n.done);
+    if (n) judgeNote(n, performance.now());
+  }
+  function rhythmTick(now) {
+    if (state !== 'rhythm') return;
+    for (const n of rhythm.notes) {
+      if (n.done) continue;
+      if (now >= n.at - RHYTHM_APPROACH) n.el.hidden = false;
+      n.el.style.setProperty('--s', 1 + 2 * Math.max(0, (n.at - now) / RHYTHM_APPROACH));
+      if (now > n.at + 320) judgeNote(n, now);
+    }
+    if (rhythm.end && now >= rhythm.end) return finishRhythm();
+    requestAnimationFrame(rhythmTick);
+  }
+  function finishRhythm() {
+    const acc = rhythm.score / (rhythm.notes.length * 300);
+    $('rhythm').hidden = true;
+    const f = hooked.f;
+    if (acc >= RHYTHM_PASS) {
+      reel.maxT = acc >= .9 ? 0 : .8; // nearly perfect counts as a clean catch
+      toast(tr('🎵 Im Takt gefangen! Genauigkeit {n} %', { n: Math.round(acc * 100) }));
+      land_catch();
+    } else {
+      retract(tr('Aus dem Takt! {f} ist weg. ({n} %)', { f: f.name, n: Math.round(acc * 100) }) + lostXp(f));
+      bealinEvent({ type: 'lost' });
+    }
   }
 
   // ------------------------------------------------------------------ mutations
@@ -527,6 +622,7 @@
     const k = e.key.toLowerCase();
     if (k === 'escape') { closeModals(); return; }
     if (e.target.closest && e.target.closest('input, textarea')) return;
+    if (state === 'rhythm') { if ((k === ' ' || k === 'z' || k === 'x') && !e.repeat) { e.preventDefault(); rhythmHit(); } return; }
     if (!$('title').hidden) { if (k === ' ' || k === 'enter') { e.preventDefault(); $('start').click(); } return; }
     if (!$('catch').hidden) { if (k === ' ' || k === 'enter') { e.preventDefault(); $('catch-ok').click(); } return; }
     if (k === 'f') { toggleModal('dex'); return; }
@@ -534,6 +630,7 @@
     if (k === 'c') { toggleModal('casino'); return; }
     if (k === 'p') { toggleModal('prog'); return; }
     if (k === 'b') { toggleModal('lb'); return; }
+    if (k === 'n') { toggleModal('patch'); return; }
     if (!$('casino').hidden && (k === ' ' || k === 'enter')) { e.preventDefault(); $('spin').click(); return; }
     if (k === 'm') { $('btn-sound').click(); return; }
     if (anyModal()) return;
@@ -1237,6 +1334,15 @@
     px(x0 + .5, y - 8, 2.5, 1.75, page); px(x0 + 4, y - 8, 2.5, 1.75, page);
     px(x0 + 1, y - 7.5, 1.5, .5, '#94a3b8'); px(x0 + 4.5, y - 7.5, 1.5, .5, '#38bdf8');
   }
+  // the "Steg-Zeitung": a bundle of newspapers on the dock that holds the patch notes
+  function drawNewspaper(dark) {
+    const k = '#1b1f2e', x0 = 104, y = DOCK_Y;
+    const paper = mix([241, 245, 249], [140, 150, 170], dark), paperD = mix([203, 213, 225], [100, 110, 130], dark), ink = mix([71, 85, 105], [50, 60, 80], dark);
+    px(x0 - .5, y - 5.5, 8, 5.5, k);
+    px(x0, y - 2.5, 7, 2.5, paperD); px(x0, y - 5, 7, 2.5, paper);
+    px(x0 + .5, y - 4.5, 3, .75, k); px(x0 + 4, y - 4.5, 2.5, .5, ink); px(x0 + 4, y - 3.5, 2.5, .5, ink); px(x0 + .5, y - 3.25, 3, .5, ink);
+    px(x0 + 3.25, y - 5.5, .5, 5.5, mix([180, 83, 9], [100, 60, 20], dark)); // string
+  }
   function drawTrophy(dark) {
     const k = '#1b1f2e', cx = KIOSK.x + KIOSK.w / 2, yb = DOCK_Y - 37.5;
     const gold = mix([251, 191, 36], [160, 120, 40], dark), goldL = mix([253, 230, 138], [190, 160, 90], dark), goldD = mix([217, 119, 6], [120, 80, 20], dark);
@@ -1262,6 +1368,7 @@
   }
   const PROPS = [
     { id: 'casino', label: tr('Fischautomat'),  x: 2.5, y: DOCK_Y - 20, w: 12.5, h: 20, draw: drawSlotMachine, open: () => toggleModal('casino') },
+    { id: 'patch',  label: tr('Steg-Zeitung (Patch Notes)'), x: 103.5, y: DOCK_Y - 5.5, w: 8, h: 5.5, draw: drawNewspaper, open: () => toggleModal('patch'), ready: () => save.patchSeen !== PATCH_NOTES[0].id && save.total > 0 },
     { id: 'dex',    label: tr('Fischdex & Shinydex'), x: 28.5, y: DOCK_Y - 8.5, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
     { id: 'lb',     label: tr('Bestenliste'),   x: KIOSK.x + KIOSK.w / 2 - 5, y: DOCK_Y - 48, w: 10, h: 10.5, draw: drawTrophy, open: () => toggleModal('lb') },
     { id: 'prog',   label: tr('Aufträge & Fortschritt'), x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
@@ -1455,14 +1562,27 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch']) $(id).hidden = true;
+  }
+  function unreadPatches() { // how many entries are new since the last read (at least the newest 3 when nothing is new)
+    const i = PATCH_NOTES.findIndex(p => p.id === save.patchSeen);
+    return i === 0 ? 3 : i < 0 ? 2 : Math.min(i, 4);
+  }
+  function renderPatch(n) {
+    $('patch-list').replaceChildren(...PATCH_NOTES.slice(0, Math.max(1, n)).map(p => {
+      const box = document.createElement('section'); box.className = 'patch-entry';
+      const h = document.createElement('h3'); h.textContent = tr('Update vom {d}', { d: p.date });
+      const ul = document.createElement('ul');
+      ul.append(...p.items.map(t => Object.assign(document.createElement('li'), { textContent: tr(t) })));
+      box.append(h, ul); return box;
+    }));
   }
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
-    if (['charge', 'fly', 'bite', 'reel'].includes(state)) return;
+    if (['charge', 'fly', 'bite', 'reel', 'rhythm'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); } })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -1473,13 +1593,32 @@
   $('btn-casino').addEventListener('click', () => toggleModal('casino'));
   $('btn-prog').addEventListener('click', () => toggleModal('prog'));
   $('btn-lb').addEventListener('click', () => toggleModal('lb'));
+  $('btn-patch').addEventListener('click', () => toggleModal('patch'));
   $('lvl').addEventListener('click', () => toggleModal('prog'));
   $('btn-sound').addEventListener('click', () => {
     save.sound = !save.sound; persist();
     $('btn-sound').textContent = save.sound ? '🔊' : '🔇';
   });
-  $('start').addEventListener('click', () => { audio(); $('title').hidden = true; save.seen = true; persist(); });
-  $('catch-ok').addEventListener('click', () => { if ($('catch-ok').disabled) return; $('catch').hidden = true; state = 'idle'; hint(''); });
+  $('start').addEventListener('click', () => {
+    audio(); $('title').hidden = true;
+    // after an update: returning players get pointed at the new issue of the Steg-Zeitung
+    if (save.patchSeen !== PATCH_NOTES[0].id) {
+      if (save.seen && save.total > 0) setTimeout(() => toast(tr('📰 Neue Steg-Zeitung! Was sich geändert hat, liegt hinten am Steg (oder N).')), 900);
+      else save.patchSeen = PATCH_NOTES[0].id; // new players start with nothing to catch up on
+    }
+    save.seen = true; persist();
+  });
+  let lastFirst = null;
+  $('catch-ok').addEventListener('click', () => {
+    if ($('catch-ok').disabled) return;
+    $('catch').hidden = true; state = 'idle'; hint('');
+    if (lastFirst) { // the new fish "flies" into the Fischdex book on the dock
+      const bx = 32.5, by = DOCK_Y - 8;
+      for (let i = 0; i < 24; i++) glints.push({ x: bx + (Math.random() - .5) * 8, y: by - Math.random() * 4, vx: (Math.random() - .5) * 30, vy: -20 - Math.random() * 30, life: .7 + Math.random() * .6, c: ['#fde047', '#ffffff', '#38bdf8'][i % 3] });
+      floaters.push({ x: bx, y: by - 6, text: tr('📖 +1'), c: '#fde047', life: 2 });
+      lastFirst = null;
+    }
+  });
 
   // ------------------------------------------------------------------ gambling
   // Double or nothing on a fresh catch: a coin flip, once per catch.
@@ -1641,6 +1780,11 @@
     void sheet.offsetWidth; // restart the CSS animations
     if (FANFARE[f.r]) sheet.classList.add('fx-' + f.r);
     sheet.classList.toggle('is-shiny', !!shiny);
+    // first catch of this fish: silhouette → flash → colour, a burst ring and a "new in the Fischdex" stamp
+    sheet.classList.toggle('is-first', !!first);
+    $('catch-first').hidden = !first;
+    lastFirst = first ? f : null;
+    if (first) [523, 659, 784, 1047, 1319].forEach((n, i) => setTimeout(() => tone(n, .14, 'square', .045), 650 + i * 70));
     const conf = $('catch-confetti');
     conf.replaceChildren();
     const nConf = { rare: 0, wii: 14, epic: 18, legendary: 36 }[f.r] || 0;
@@ -2452,5 +2596,7 @@
 
   // tiny debug/test hook
   window.__fischen = { save, gainXp, rebirth, MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { time = v; },
-    land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); } };
+    land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); },
+    rhythm: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; reel.maxT = 0; startRhythm(); },
+    get notes() { return rhythm.notes; } };
 })();
