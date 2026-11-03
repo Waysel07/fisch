@@ -724,28 +724,29 @@
     const [line, clip] = NPC_LINES[npcIdx++ % NPC_LINES.length];
     npcLine = line; npcTalk = 2.2; playClip(clip);
   }
-  // Käpt'n Bealin: an original old angler in yellow rain gear who rows his little boat out on
-  // the water and is always far too excited about the fishing weather. Click him to chat.
-  const BEALIN_PAL = { k: '#1b1f2e', y: '#facc15', Y: '#ca8a04', l: '#fef08a', s: '#f2c9a0', S: '#d9a47a', w: '#f1f5f9', W: '#cbd5e1', e: '#0f172a', r: '#e57373', p: '#6b3a1f' };
+  // Käpt'n Bealin: an original old angler with a bushy grey beard, a green fishing hat with a
+  // lure stuck in it, a red checked shirt and a patched olive vest. He rows his little boat out
+  // on the water and is always far too excited about the fishing weather. Click him to chat.
+  const BEALIN_PAL = { k: '#1b1f2e', g: '#4d7c0f', G: '#365314', l: '#ef4444', o: '#facc15', s: '#f2c9a0', S: '#d9a47a', e: '#0f172a', b: '#e5e7eb', B: '#9ca3af', r: '#dc2626', R: '#7f1d1d', v: '#6b7a3a', V: '#4a5528', p: '#c8a26a' };
   const BEALIN_BODY = bake([
-    '....kkkkkkk.....',
-    '...kyyyllyyk....',
-    '..kyyyyyyyyyk...',
-    '.kkkkkkkkkkkkk..',
-    'kYYYYYYYYYYYYYk.',
-    '.kkssssssssskk..',
-    '..ksseesseessk..',
-    '..kssssrrsssSk..',
-    '..kwwssssssswk..',
-    '..kwwwwwwwwwwkpp',
-    '..kwwWwwwwwwwkp.',
-    '...kwwwwwwwwk...',
-    '..kkyyywwyyykk..',
-    '.kyyyyyyyyyyyyk.',
-    'kyyyyykyyyyyyyyk',
-    'kyyyyykyyyyyYYYk',
-    'kyyyyykyyyyyYYYk',
-    'kYYYYYkYYYYYYYYk',
+    '.....kkkkkk.....',
+    '....kggggggk....',
+    '....kgggglgk....',
+    '...kgggggogk....',
+    '..kGGGGGGGGGGk..',
+    '...kssssssssk...',
+    '...ksesssseSk...',
+    '...kbsssssbSk...',
+    '..kbbbsSSbbbbk..',
+    '..kbbbbbbbbbbk..',
+    '..kvbbbBbbbbvk..',
+    '.kvvrbbbbbbrvvk.',
+    '.kvvrRrbbrRrvVss',
+    '.kvpvrRrrRrvVVk.',
+    'kvvpvrrRRrrvVVVk',
+    'kvvvvrRrrRrvVVVk',
+    'kVVVVkRrrRkVVVVk',
+    'kVVVVkkkkkkVVVVk',
   ], BEALIN_PAL);
   const BEALIN = { x: 322, w: 30, h: 22 };
   const BEALIN_LINES = [
@@ -772,6 +773,8 @@
     const hull = mix([150, 62, 40], [70, 35, 30], dark), hullD = mix([110, 42, 28], [50, 25, 22], dark), rim = mix([222, 200, 160], [100, 92, 80], dark);
     // the old man sits in the middle of the boat
     ctx.drawImage(BEALIN_BODY, snap(x + 10), snap(y - 13), 8, 9);
+    // while he talks he waves with his free hand
+    if (bealinTalk > 0) { const wv = Math.sin(t * 10) > 0 ? .5 : 0; px(x + 9.5 - wv, y - 10.5, 1.5, 2, k); px(x + 10 - wv, y - 10, .5, 1, '#f2c9a0'); px(x + 9.5 - wv, y - 11.5, 1.5, 1.5, k); px(x + 10 - wv, y - 11, .5, .5, '#f2c9a0'); }
     // his rod points out over the water toward the island, line and red float bobbing
     const rx = x + 17, ry = y - 7, tx = x + 30, ty = y - 18;
     ctx.strokeStyle = '#3a2416'; ctx.lineWidth = .75;
