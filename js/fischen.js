@@ -604,7 +604,7 @@
     if (state === 'wait' && Math.random() < dt * .7) ripple(bob.x, .6);
 
     if (npcTalk > 0) npcTalk -= dt;
-    if (kalleTalk > 0) kalleTalk -= dt;
+    if (bealinTalk > 0) bealinTalk -= dt;
     if (welsTalk > 0) welsTalk -= dt;
     updateFx(dt);
     hintTick(dt);
@@ -724,10 +724,10 @@
     const [line, clip] = NPC_LINES[npcIdx++ % NPC_LINES.length];
     npcLine = line; npcTalk = 2.2; playClip(clip);
   }
-  // Käpt'n Kalle: an original old angler in yellow rain gear who rows his little boat out on
+  // Käpt'n Bealin: an original old angler in yellow rain gear who rows his little boat out on
   // the water and is always far too excited about the fishing weather. Click him to chat.
-  const KALLE_PAL = { k: '#1b1f2e', y: '#facc15', Y: '#ca8a04', l: '#fef08a', s: '#f2c9a0', S: '#d9a47a', w: '#f1f5f9', W: '#cbd5e1', e: '#0f172a', r: '#e57373', p: '#6b3a1f' };
-  const KALLE_BODY = bake([
+  const BEALIN_PAL = { k: '#1b1f2e', y: '#facc15', Y: '#ca8a04', l: '#fef08a', s: '#f2c9a0', S: '#d9a47a', w: '#f1f5f9', W: '#cbd5e1', e: '#0f172a', r: '#e57373', p: '#6b3a1f' };
+  const BEALIN_BODY = bake([
     '....kkkkkkk.....',
     '...kyyyllyyk....',
     '..kyyyyyyyyyk...',
@@ -746,9 +746,9 @@
     'kyyyyykyyyyyYYYk',
     'kyyyyykyyyyyYYYk',
     'kYYYYYkYYYYYYYYk',
-  ], KALLE_PAL);
-  const KALLE = { x: 322, w: 30, h: 22 };
-  const KALLE_LINES = [
+  ], BEALIN_PAL);
+  const BEALIN = { x: 322, w: 30, h: 22 };
+  const BEALIN_LINES = [
     'Moin! Herrliches Angelwetter heute!',
     'Ahoi! Hier draußen beißen sie am besten.',
     'Regen, Sonne, Sturm – Hauptsache Wasser!',
@@ -758,20 +758,20 @@
     'Der Kiosk-Wels schuldet mir noch einen Taler.',
     'Hoho! Fast hätte einer gebissen!',
   ];
-  const KALLE_NIGHT = ['Nachtangeln! Das beste Angeln!', 'Der Mond ist mein Leuchtturm.'];
-  let kalleTalk = 0, kalleLine = '', kalleIdx = 0;
-  function talkKalle() {
+  const BEALIN_NIGHT = ['Nachtangeln! Das beste Angeln!', 'Der Mond ist mein Leuchtturm.'];
+  let bealinTalk = 0, bealinLine = '', bealinIdx = 0;
+  function talkBealin() {
     const night = darkness() > .5 && Math.random() < .5;
-    kalleLine = tr(night ? KALLE_NIGHT[Math.floor(Math.random() * KALLE_NIGHT.length)] : KALLE_LINES[kalleIdx++ % KALLE_LINES.length]);
-    kalleTalk = 3;
+    bealinLine = tr(night ? BEALIN_NIGHT[Math.floor(Math.random() * BEALIN_NIGHT.length)] : BEALIN_LINES[bealinIdx++ % BEALIN_LINES.length]);
+    bealinTalk = 3;
     tone(220, .08, 'square', .08, 60); setTimeout(() => tone(330, .1, 'square', .08, -40), 90);
   }
-  function kalleBob() { return Math.sin(t * 1.6) * 1; }
-  function drawKalle(dark) {
-    const k = '#1b1f2e', x = KALLE.x, y = SURFACE - 1 + kalleBob();
+  function bealinBob() { return Math.sin(t * 1.6) * 1; }
+  function drawBealin(dark) {
+    const k = '#1b1f2e', x = BEALIN.x, y = SURFACE - 1 + bealinBob();
     const hull = mix([150, 62, 40], [70, 35, 30], dark), hullD = mix([110, 42, 28], [50, 25, 22], dark), rim = mix([222, 200, 160], [100, 92, 80], dark);
     // the old man sits in the middle of the boat
-    ctx.drawImage(KALLE_BODY, snap(x + 10), snap(y - 13), 8, 9);
+    ctx.drawImage(BEALIN_BODY, snap(x + 10), snap(y - 13), 8, 9);
     // his rod points out over the water toward the island, line and red float bobbing
     const rx = x + 17, ry = y - 7, tx = x + 30, ty = y - 18;
     ctx.strokeStyle = '#3a2416'; ctx.lineWidth = .75;
@@ -792,13 +792,13 @@
     if (dark > .3) { ctx.globalAlpha = (dark - .3) * .35; disc(x + 27, y - 6.5, 6, '#fde68a'); ctx.globalAlpha = 1; }
     // wake ripples around the hull
     ctx.globalAlpha = .45; px(x - 2 + Math.sin(t * 1.6) * .5, y + 1, 3, .5, '#e0f7ff'); px(x + 27 - Math.sin(t * 1.6) * .5, y + 1, 3, .5, '#e0f7ff'); ctx.globalAlpha = 1;
-    if (kalleTalk > 0) {
+    if (bealinTalk > 0) {
       setFont('6px Poppins, sans-serif');
-      const bw = Math.ceil(ctx.measureText(kalleLine).width) + 4, bx = snap(Math.max(1, Math.min(W - bw - 1, x + 14 - bw / 2))), byy = snap(y - 26);
-      ctx.globalAlpha = Math.min(1, kalleTalk * 3);
+      const bw = Math.ceil(ctx.measureText(bealinLine).width) + 4, bx = snap(Math.max(1, Math.min(W - bw - 1, x + 14 - bw / 2))), byy = snap(y - 26);
+      ctx.globalAlpha = Math.min(1, bealinTalk * 3);
       px(bx - .5, byy - .5, bw + 1, 9, '#0f172a'); px(bx, byy, bw, 8, '#fffbeb'); px(snap(x + 14), byy + 8, 2, 1.5, '#0f172a');
       ctx.fillStyle = '#0f172a'; ctx.textBaseline = 'top';
-      ctx.fillText(kalleLine, bx + 2, byy + 1);
+      ctx.fillText(bealinLine, bx + 2, byy + 1);
       ctx.textBaseline = 'alphabetic'; ctx.globalAlpha = 1;
     }
   }
@@ -1020,7 +1020,7 @@
     }
     ctx.globalAlpha = 1;
 
-    drawKalle(dark);
+    drawBealin(dark);
     drawDock(dark);
     drawNpc();
     drawKiosk(dark);
@@ -1202,7 +1202,7 @@
     { id: 'lb',     label: tr('Bestenliste'),   x: KIOSK.x + KIOSK.w / 2 - 5, y: DOCK_Y - 48, w: 10, h: 10.5, draw: drawTrophy, open: () => toggleModal('lb') },
     { id: 'prog',   label: tr('Aufträge & Fortschritt'), x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
     { id: 'shop',   label: tr('Laden'),         x: KIOSK.x - 3, y: DOCK_Y - 37.5, w: KIOSK.w + 6, h: 37.5, open: () => toggleModal('shop') },
-    { id: 'kalle',  label: tr("Käpt'n Kalle"), x: KALLE.x - 1, y: SURFACE - 16, w: KALLE.w + 2, h: 18, open: () => talkKalle() },
+    { id: 'bealin',  label: tr("Käpt'n Bealin"), x: BEALIN.x - 1, y: SURFACE - 16, w: BEALIN.w + 2, h: 18, open: () => talkBealin() },
     { id: 'npc',    label: 'Spezifischfischer', x: NPC.x - 1, y: DOCK_Y - NPC.h - 2, w: NPC.w + 2, h: NPC.h + 2, open: () => talkNpc() },
   ];
   let hoverProp = null;

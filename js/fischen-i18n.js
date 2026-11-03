@@ -371,8 +371,8 @@
     'Wii': 'Wii', 'Poisson': 'Poisson', 'Kleiner Spezifisch': 'Kleiner Spezifisch', 'Spezifische Spezifische': 'Spezifische Spezifische',
     'Spezifischer Spezifisch': 'Spezifischer Spezifisch', 'Lo': 'Lo', 'Wii-Arowana': 'Wii Arowana', 'Travis': 'Travis', 'Spee Zierfisch': 'Spee Zierfisch',
     'Spezifische Spee Zierfische': 'Spezifische Spee Zierfische', 'Spezifischfischer': 'Spezifischfischer', 'Absolute Odfisch': 'Absolute Odfisch',
-    // Käpt'n Kalle in his rowboat
-    "Käpt'n Kalle": 'Captain Kalle',
+    // Käpt'n Bealin in the rowboat
+    "Käpt'n Bealin": 'Captain Bealin',
     'Moin! Herrliches Angelwetter heute!': 'Ahoy! Glorious fishing weather today!',
     'Ahoi! Hier draußen beißen sie am besten.': 'Ahoy! They bite best out here.',
     'Regen, Sonne, Sturm – Hauptsache Wasser!': 'Rain, sun, storm – as long as there’s water!',
