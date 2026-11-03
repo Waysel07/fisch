@@ -413,7 +413,6 @@
     '🪙 {n} Taler': '🪙 {n} coins',
     '{n}× {b}': '{n}× {b}',
     '⭐ {n} EP': '⭐ {n} XP',
-    '🐚 Schuppen: {n}': '🐚 Scales: {n}',
     '🧦 Eine alte Socke. Und 5 Taler.': '🧦 An old sock. And 5 coins.',
     '💰 JACKPOT! {n} Taler': '💰 JACKPOT! {n} coins',
     'Nächste öffnen ({n})': 'Open the next one ({n})',
