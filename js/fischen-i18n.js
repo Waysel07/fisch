@@ -147,6 +147,7 @@
     '📖 Fischdex': '📖 Fishdex',
     '{a} Fische · {b} Mut.': '{a} fish · {b} mut.',
     '📏 Rekordfang': '📏 Record catch',
+    '🔬 Kleinster Fisch': '🔬 Smallest fish',
     'Bestenliste gerade nicht erreichbar.': 'Leaderboard not reachable right now.',
     'Lädt …': 'Loading …',
     'Noch niemand eingetragen. Sei der Erste!': 'Nobody here yet. Be the first!',

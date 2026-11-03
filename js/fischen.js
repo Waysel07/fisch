@@ -329,7 +329,7 @@
     const val = Math.max(1, Math.round(f.val * (0.7 + .6 * base) * coinMult() * (mut ? mut.val : 1) * (shiny ? SHINY_VAL : 1)));
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
-    e.n++; e.best = Math.max(e.best, size); save.dex[f.id] = e;
+    e.n++; e.best = Math.max(e.best, size); if (f.r !== 'junk') e.small = Math.min(e.small || Infinity, size); save.dex[f.id] = e;
     let newMut = false;
     if (mut) { e.muts = e.muts || {}; newMut = !e.muts[mut.id]; e.muts[mut.id] = (e.muts[mut.id] || 0) + 1; }
     let newShiny = false;
@@ -2272,6 +2272,7 @@
     wieder: { label: tr('🌀 Wiedergeburten'), fmt: s => s + '×' },
     dex:    { label: tr('📖 Fischdex'),       fmt: s => tr('{a} Fische · {b} Mut.', { a: Math.floor(s / 100), b: s % 100 }) },
     rekord: { label: tr('📏 Rekordfang'),     fmt: s => s + ' cm' },
+    klein:  { label: tr('🔬 Kleinster Fisch'), fmt: s => s ? s + ' cm' : '–' },
   };
   const LB = { boards: null, tab: 'taler', ranks: null, err: '', busy: false };
   if (!save.totalEarned) save.totalEarned = Math.max(save.lifeCoins || 0, save.coins || 0);
@@ -2281,6 +2282,7 @@
       wieder: save.rebirths,
       dex: discovered() * 100 + mutsFound().length,
       rekord: Math.max(0, ...Object.values(save.dex).map(e => e.best || 0)),
+      klein: Math.min(...Object.values(save.dex).map(e => e.small || Infinity), Infinity) | 0, // 0 = noch keiner
     };
   }
   const hex = n => [...crypto.getRandomValues(new Uint8Array(n))].map(b => b.toString(16).padStart(2, '0')).join('');
