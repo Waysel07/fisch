@@ -979,7 +979,7 @@ button#btn-boss:hover { background: #be123c; }
 /* Fischautomat: jackpot pot and stake cap */
 .jackpot { display: flex; justify-content: center; align-items: baseline; gap: .5rem; margin: .4rem 0 -.3rem;
   font-family: var(--px); color: #fde68a; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
-.jackpot b { font-size: 1.35rem; color: var(--gold); text-shadow: 0 0 10px rgba(251,191,36,.45); }
+.jackpot b { font-size: 1.35rem; color: var(--gold); text-shadow: 2px 2px 0 var(--ink); }
 .bet-cap { font-size: .72rem; color: #94a3b8; margin: 0; }
 .bets button[hidden] { display: none; }
 /* active snacks */
