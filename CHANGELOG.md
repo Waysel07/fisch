@@ -2,6 +2,12 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 03.11.2026 · `2026-11-03-12`
+
+- 💰 The Ember Cave now really pays: every cave fish is worth three times as much, and down there you get a +50 % heat bonus on every catch.
+- ⛏️ Glimm’s jobs: in the cave Glimm always has three jobs of his own with big rewards. Epic catches even earn you a pearl.
+- 🤝 Glimm’s trust: every three jobs done he trusts you more – each level gives a permanent +5 % coins in the cave, up to +50 %.
+
 ## 03.11.2026 · `2026-11-03-11`
 
 - 🐉 Gyarados now bites after just 14.5 Karpador instead of 25.
