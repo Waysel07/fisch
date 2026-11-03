@@ -32,6 +32,7 @@
         <button class="pill sr-only" id="btn-prog" title="Fortschritt (P)">📈 <span class="lbl">Fortschritt</span></button>
         <button class="pill sr-only" id="btn-lb" title="Bestenliste (B)">🏆 <span class="lbl">Bestenliste</span></button>
         <button class="pill sr-only" id="btn-casino" title="Fischautomat (C)">🎰 <span class="lbl">Automat</span></button>
+        <button class="pill" id="btn-patch" title="Patch Notes (N)">📰</button>
         <button class="pill" id="btn-sound" title="Ton an/aus (M)">🔊</button>
       </div>
     </div>
@@ -127,6 +128,22 @@
           <button class="btn ghost" id="box-again" hidden></button>
           <button class="btn" id="box-ok">Weiter</button>
         </div>
+      </div>
+    </div>
+
+    <!-- Patch notes: shown once after each update -->
+    <div class="modal" id="patch" hidden>
+      <div class="sheet patch-sheet" role="dialog" aria-modal="true" aria-labelledby="patch-title">
+        <h2 id="patch-title">📰 Neu im Spiel</h2>
+        <div id="patch-list"></div>
+        <div class="catch-actions"><button class="btn" data-close>Los geht’s!</button></div>
+      </div>
+    </div>
+
+    <!-- Taktdrill: rhythm minigame that sometimes replaces reeling in a legendary fish -->
+    <div class="modal rhythm" id="rhythm" hidden>
+      <div class="rhythm-field" id="rhythm-field" role="application" aria-label="Taktdrill: Kreise im Takt antippen (oder Leertaste, Z, X)">
+        <div class="rhythm-hud"><b id="rhythm-title"></b><span id="rhythm-score"></span></div>
       </div>
     </div>
 

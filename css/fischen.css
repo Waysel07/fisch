@@ -810,3 +810,38 @@ body, button, input { font-variant-ligatures: none; font-feature-settings: "liga
 @keyframes box-shake { 0% { transform: rotate(-8deg); } 100% { transform: rotate(8deg); } }
 @keyframes box-pop { 0% { transform: scale(.6); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) { .box-art.shake img, .box-art.open img { animation: none; } }
+
+/* ------------------------------------------------------------------ patch notes */
+.patch-sheet { max-width: 26rem; max-height: 85vh; overflow-y: auto; }
+.patch-entry + .patch-entry { margin-top: 1rem; padding-top: .8rem; border-top: 2px dashed rgba(148, 163, 184, .35); }
+.patch-entry h3 { margin: 0 0 .4rem; font-size: 1rem; }
+.patch-entry ul { margin: 0; padding-left: 1.2rem; font-family: var(--ui); line-height: 1.45; }
+.patch-entry li + li { margin-top: .3rem; }
+
+/* ------------------------------------------------------------------ Taktdrill (rhythm minigame) */
+.modal.rhythm { padding: 0; place-items: stretch; background: rgba(2, 6, 23, .72); }
+.rhythm-field { position: relative; width: 100%; height: 100%; overflow: hidden; touch-action: none; user-select: none; }
+.rhythm-hud {
+  position: absolute; top: .8rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; gap: .3rem; align-items: center; text-align: center;
+  width: min(92%, 40rem); font-family: var(--ui); color: #fff; text-shadow: 0 2px 0 #000;
+}
+.rhythm-hud b { font-family: var(--ui); font-weight: 800; font-size: 1.1rem; color: #fbbf24; }
+.rhythm-hud span { font-weight: 800; font-variant-numeric: tabular-nums; }
+.rnote {
+  position: absolute; width: 4.2rem; height: 4.2rem; margin: -2.1rem 0 0 -2.1rem;
+  border-radius: 50%; border: 4px solid #fff; background: radial-gradient(circle, #f472b6 0 55%, #be185d 56% 100%);
+  color: #fff; font: 800 1.4rem var(--ui); text-shadow: 0 2px 0 #000; cursor: pointer; padding: 0;
+  box-shadow: 0 0 0 3px #000, 0 6px 14px rgba(0, 0, 0, .45);
+}
+.rnote .ring {
+  position: absolute; inset: -4px; border-radius: 50%; border: 4px solid #fde68a; pointer-events: none;
+  transform: scale(var(--s, 3)); opacity: .9;
+}
+.rpop {
+  position: absolute; transform: translate(-50%, -50%); pointer-events: none;
+  font: 800 1.3rem var(--ui); text-shadow: 0 2px 0 #000; animation: rpop .6s ease-out forwards;
+}
+.rpop.p300 { color: #7dd3fc; } .rpop.p100 { color: #86efac; } .rpop.p50 { color: #fde68a; } .rpop.miss { color: #f87171; }
+@keyframes rpop { from { opacity: 1; margin-top: 0; } to { opacity: 0; margin-top: -1.5rem; } }
+@media (prefers-reduced-motion: reduce) { .rpop { animation: none; } }
