@@ -326,6 +326,7 @@
     if (shiny) { e.shiny = (e.shiny || 0) + 1; newShiny = e.shiny === 1; }
     save.coins += val; save.total++; save.lifeCoins += val; save.totalEarned += val;
     const gain = progressCatch(f, size, val, first, mut, newMut, reel.maxT < .7, shiny, newShiny);
+    bealinEvent({ type: 'catch', f, size, mut, clean: reel.maxT < .7, night: darkness() > .5 });
     setTimeout(() => lbSubmit(), 3000);
     if (dexClaimable().length) { updateDexBadge(); if (first || newMut || newShiny) toast(tr('📖 Fischdex-Belohnung bereit!')); }
     persist(); updateCoins();
@@ -653,8 +654,8 @@
     $('progress').style.width = Math.max(0, Math.min(100, reel.progress * 100)) + '%';
     $('reel').classList.toggle('thrash', !!reel.thrash);
 
-    if (reel.tension >= 1) { sfx.snap(); retract(tr('Schnur gerissen! 💥') + lostXp(h.f)); return; }
-    if (reel.progress <= 0) { retract(tr('Entkommen …') + lostXp(h.f)); return; }
+    if (reel.tension >= 1) { sfx.snap(); retract(tr('Schnur gerissen! 💥') + lostXp(h.f)); bealinEvent({ type: 'lost' }); return; }
+    if (reel.progress <= 0) { retract(tr('Entkommen …') + lostXp(h.f)); bealinEvent({ type: 'lost' }); return; }
     if (reel.progress >= 1) land_catch();
   }
 
@@ -749,22 +750,61 @@
     'kVVVVkkkkkkVVVVk',
   ], BEALIN_PAL);
   const BEALIN = { x: 322, w: 30, h: 22 };
-  const BEALIN_LINES = [
-    'Moin! Herrliches Angelwetter heute!',
-    'Ahoi! Hier draußen beißen sie am besten.',
-    'Regen, Sonne, Sturm – Hauptsache Wasser!',
-    'Pssst … die Fische hören mit.',
-    'Mein Boot leckt. Aber nur ein bisschen.',
-    'Seit 40 Jahren warte ich auf den Großen.',
-    'Der Kiosk-Wels schuldet mir noch einen Taler.',
-    'Hoho! Fast hätte einer gebissen!',
+  // He always says the same thing. Every second chat he lets slip a vague hint about what he
+  // secretly wants; doing it (whenever, wherever) pays out and he thinks of something new.
+  const BEALIN_SAY = 'Moin! Na, beißen se heute?';
+  const BEALIN_WISHES = [
+    { id: 'big',   hints: ['Ich träume von etwas Großem.', 'Größer als mein Boot wär übertrieben … aber fast.'], test: e => e.type === 'catch' && e.size >= 80 },
+    { id: 'tiny',  hints: ['Manchmal ist weniger mehr. Viel weniger.', 'Was Winziges würde mir das Herz wärmen.'], test: e => e.type === 'catch' && e.f.r !== 'junk' && e.size <= 12 },
+    { id: 'mut',   hints: ['Normal kann jeder.', 'Irgendwas an dem Fisch sollte … anders sein.'], test: e => e.type === 'catch' && !!e.mut },
+    { id: 'night', hints: ['Der Mond weiß, was ich will.', 'Wenn alle schlafen, beißen die Richtigen.'], test: e => e.type === 'catch' && e.f.r !== 'junk' && e.night },
+    { id: 'junk',  hints: ['Nicht alles im Wasser ist ein Fisch.', 'Ich sammle Dinge, die keiner will.'], test: e => e.type === 'catch' && e.f.r === 'junk' },
+    { id: 'lost',  hints: ['Manchmal muss man loslassen.', 'Nicht jeder Fang muss gelingen.'], test: e => e.type === 'lost' },
+    { id: 'slot',  hints: ['Ich hab so ein klimperndes Gefühl.', 'Das Glück wohnt nicht immer im Wasser.'], test: e => e.type === 'slot' && e.won },
+    { id: 'clean', hints: ['Ganz sanft. Ohne Zerren.', 'Die Schnur soll sich nicht anstrengen.'], test: e => e.type === 'catch' && e.clean && e.f.r !== 'junk' },
+    { id: 'rare',  hints: ['Ich will was, das nicht jeder hat.', 'Gewöhnlich hatte ich schon genug.'], test: e => e.type === 'catch' && RARITY_ORDER.indexOf(e.f.r) >= RARITY_ORDER.indexOf('epic') },
+    { id: 'letter', hints: ['Ich denk die ganze Zeit an ein „{l}“.', 'Da schwimmt was mit „{l}“ …'], test: (e, w) => e.type === 'catch' && e.f.id === w.f },
+    { id: 'visit', hints: ['Tagsüber bin ich so schüchtern.', 'Besuch mich mal, wenn man die Sterne sieht.'], test: e => e.type === 'talk' && darkness() > .5 },
+    { id: 'chat',  hints: ['Ich mag Gesellschaft. Viel Gesellschaft.', 'Redest du eigentlich gern? Ich schon. Sehr oft.'], test: (e, w) => e.type === 'talk' && (w.p = (w.p || 0) + 1) >= 12 },
   ];
-  const BEALIN_NIGHT = ['Nachtangeln! Das beste Angeln!', 'Der Mond ist mein Leuchtturm.'];
-  let bealinTalk = 0, bealinLine = '', bealinIdx = 0;
+  trAll(BEALIN_WISHES.map(w => w.hints), [0, 1]);
+  function newBealinWish() {
+    const last = save.bealin && save.bealin.w;
+    const pool = BEALIN_WISHES.filter(w => w.id !== last);
+    const w = { w: pick(pool).id, n: (save.bealin && save.bealin.n) || 0 };
+    if (w.w === 'letter') w.f = pick(FISH.filter(f => ['common', 'uncommon', 'rare'].includes(f.r) && !f.fullHour)).id;
+    save.bealin = w;
+  }
+  function bealinWish() {
+    if (!save.bealin || !BEALIN_WISHES.some(w => w.id === save.bealin.w)) newBealinWish();
+    return BEALIN_WISHES.find(w => w.id === save.bealin.w);
+  }
+  function bealinHint() {
+    const w = bealinWish(), f = FISH.find(x => x.id === save.bealin.f);
+    return pick(w.hints).replace('{l}', f ? f.name[0].toUpperCase() : '?');
+  }
+  // called from the game whenever something happens; returns true if it fulfilled his wish
+  function bealinEvent(e) {
+    const w = bealinWish();
+    if (!w.test(e, save.bealin)) return false;
+    const coins = Math.round((60 + 25 * save.lvl) * coinMult());
+    save.coins += coins; save.totalEarned += coins; save.lifeCoins += coins;
+    const ep = gainXp(30 + 5 * save.lvl);
+    const n = save.bealin.n + 1;
+    newBealinWish(); save.bealin.n = n;
+    bealinLine = tr('DAS! Genau das wollte ich!'); bealinTalk = 3; bealinAlt = false;
+    setTimeout(() => toast(tr('🎣 Käpt\'n Bealin ist glücklich: +{c} Taler · +{e} EP', { c: coins, e: ep })), 400);
+    [523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .12, 'square', .05), i * 80));
+    persist(); updateCoins();
+    return true;
+  }
+  let bealinTalk = 0, bealinLine = '', bealinAlt = false;
   function talkBealin() {
-    const night = darkness() > .5 && Math.random() < .5;
-    bealinLine = tr(night ? BEALIN_NIGHT[Math.floor(Math.random() * BEALIN_NIGHT.length)] : BEALIN_LINES[bealinIdx++ % BEALIN_LINES.length]);
+    if (bealinEvent({ type: 'talk' })) return;
+    bealinLine = bealinAlt ? bealinHint() : tr(BEALIN_SAY);
+    bealinAlt = !bealinAlt;
     bealinTalk = 3;
+    persist();
     tone(220, .08, 'square', .08, 60); setTimeout(() => tone(330, .1, 'square', .08, -40), 90);
   }
   function bealinBob() { return Math.sin(t * 1.6) * 1; }
@@ -1540,6 +1580,7 @@
     const win = Math.round(stake * mult);
     save.coins += win;
     save.gamble = (save.gamble || 0) + win - stake;
+    bealinEvent({ type: 'slot', won: win > stake });
     persist(); updateCoins();
     hits.forEach(i => slots[i].classList.add('hit'));
     const r = $('slot-result');
@@ -2278,6 +2319,6 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  window.__fischen = { save, gainXp, rebirth, MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, setTime: v => { time = v; },
+  window.__fischen = { save, gainXp, rebirth, MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), line: () => bealinLine, setTime: v => { time = v; },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); } };
 })();
