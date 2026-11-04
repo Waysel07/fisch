@@ -148,6 +148,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-5', date: '04.11.2026', items: [
+      '🖱️ Taktdrill: Links- und Rechtsklick lassen sich jetzt wie in osu! abwechselnd drücken – auch wenn die andere Taste noch gehalten wird, zählt jeder Klick.',
+    ] },
     { id: '2026-11-04-4', date: '04.11.2026', items: [
       '🎯 Taktdrill wie in osu!: Mit der Maus auf den Kreis zielen und mit Links- oder Rechtsklick (oder Z/X) irgendwo treffen – es zählt nur, wenn der Zeiger auf dem Kreis ist. Am Handy tippst du die Kreise wie bisher an, die Leertaste geht weiter ohne Zielen.',
     ] },
@@ -819,7 +822,10 @@
     const field = $('rhythm-field'), cur = $('rhythm-cursor');
     const move = e => { rcursor.x = e.clientX; rcursor.y = e.clientY; const r = field.getBoundingClientRect(); cur.style.left = (e.clientX - r.left) + 'px'; cur.style.top = (e.clientY - r.top) + 'px'; cur.hidden = e.pointerType !== 'mouse'; cur.classList.toggle('on', !!overNext()); };
     field.addEventListener('pointermove', move);
-    field.addEventListener('pointerdown', e => { e.preventDefault(); move(e); rhythmAimHit(); }); // left, right or middle button, or a finger
+    // mouse: mousedown fires for every button, also while another one is still held (left/right alternating like in osu!);
+    // pointerdown would only report the first pressed button. Fingers and pens still go through pointerdown.
+    field.addEventListener('mousedown', e => { e.preventDefault(); move(Object.assign({ pointerType: 'mouse' }, { clientX: e.clientX, clientY: e.clientY })); rhythmAimHit(); });
+    field.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') return; e.preventDefault(); move(e); rhythmAimHit(); });
     field.addEventListener('contextmenu', e => e.preventDefault());
   }
   function rhythmTick(now) {
