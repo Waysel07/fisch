@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-12`
+
+- ⏱ New: your play time. The top bar shows how long you have been fishing (tap or hover to see the current session too), and Progress lists it with your stats. It only counts while the game is open and visible. You can hide it from the top bar in the settings.
+
 ## 04.11.2026 · `2026-11-04-11`
 
 - 👹 New in the Ember Cave: lava creatures! Sometimes a creature bites instead of a fish – Ember Snail, Ash Crab, Slag Worm, Flame Jelly, Basalt Golem and the rare Ember Kraken, depending on the depth. Holding deals damage, let go while it rages, and beat it before the time runs out. Loot: ember stones, coins, XP and sometimes an ember heart.

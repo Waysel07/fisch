@@ -154,6 +154,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-12', date: '04.11.2026', items: [
+      '⏱ Neu: deine Spielzeit. Oben in der Leiste steht, wie lange du schon fischst (Tippen oder Hovern zeigt auch die aktuelle Sitzung), und im Fortschritt steht sie bei deinen Werten. Gezählt wird nur, solange das Spiel offen und sichtbar ist. In den Einstellungen kannst du die Anzeige oben ausblenden.',
+    ] },
     { id: '2026-11-04-11', date: '04.11.2026', items: [
       '👹 Neu in der Glutgrotte: Lava-Kreaturen! Manchmal beißt statt eines Fisches eine Kreatur an – Glutschnecke, Aschekrabbe, Schlackwurm, Flammenqualle, Basaltgolem und der seltene Glutkraken, je nach Tiefe. Halten macht Schaden, loslassen, wenn sie tobt, und schlag sie, bevor die Zeit abläuft. Beute: Glutsteine, Taler, EP und manchmal ein Glutherz.',
       '🎯 Neuer Wert Kreatur-Chance (Grundwert 5 %, höchstens 30 %): Lavaruten ab der Obsidianrute, der Glutköder, der neue Lockköder (Lava-Laden, ab Tiefe 2) und Glimms neues Werkstatt-Upgrade Lockruf erhöhen sie.',
@@ -541,6 +544,15 @@
   ];
   trAll(GLUT_UPS, ['name']);
   save.glut = save.glut | 0;
+  // Spielzeit: seconds the game was open and visible (the frame loop pauses in hidden tabs), never reset
+  save.playTime = Math.max(0, +save.playTime || 0);
+  let sessionTime = 0;
+  function fmtPlay(sec) {
+    const m = Math.floor(sec / 60), h = Math.floor(m / 60);
+    if (h < 1) return tr('{m} Min', { m });
+    if (h < 100) return tr('{h} Std {m} Min', { h, m: m % 60 });
+    return tr('{h} Std', { h: h.toLocaleString(I18N.locale) });
+  }
   if (!save.glutUps || typeof save.glutUps !== 'object') save.glutUps = {};
   function glutUp(id) { return (save.glutUps[id] | 0); }
   const glutUpCost = l => (l + 1) * 20;
@@ -2825,7 +2837,7 @@
     $('set-vol-val').textContent = Math.round(vol() * 100) + ' %';
     $('set-calm').checked = reduceMotion; $('set-calm').disabled = motionPref; $('set-short').checked = !!save.short;
     $('set-tamper').hidden = !save.tampered;
-    $('set-autoclose').checked = !!save.autoClose; $('set-autobait').checked = !!save.autoBait;
+    $('set-autoclose').checked = !!save.autoClose; $('set-autobait').checked = !!save.autoBait; $('set-play').checked = save.showPlay !== false;
   }
   function updateCoins() {
     $('coins').textContent = save.short ? shortN(save.coins) : save.coins; $('shop-coins').textContent = save.coins; $('casino-coins').textContent = save.coins;
@@ -2858,6 +2870,15 @@
     }));
   }
   let lastClock = '';
+  let lastPlay = '';
+  function updatePlayPill() {
+    const show = save.showPlay !== false, s = show ? '⏱ ' + fmtPlay(save.playTime) : '';
+    $('playtime').hidden = !show;
+    const key = s + '|' + Math.floor(sessionTime / 60);
+    if (key === lastPlay) return; lastPlay = key;
+    $('playtime').textContent = s;
+    $('playtime').title = tr('Spielzeit insgesamt: {a} · diese Sitzung: {b}', { a: fmtPlay(save.playTime), b: fmtPlay(sessionTime) });
+  }
   function updateClock() {
     const h = Math.floor(time * 24), m = Math.floor((time * 24 % 1) * 60 / 10) * 10;
     const s = `${isNight() ? '🌙' : '☀️'} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
@@ -2939,6 +2960,7 @@
   $('set-code-btn').addEventListener('click', redeemCode);
   $('set-autoclose').addEventListener('change', () => { save.autoClose = $('set-autoclose').checked; persist(); });
   $('set-autobait').addEventListener('change', () => { save.autoBait = $('set-autobait').checked; persist(); });
+  $('set-play').addEventListener('change', () => { save.showPlay = $('set-play').checked; lastPlay = '-'; updatePlayPill(); persist(); });
   $('set-code').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); redeemCode(); } });
   $('set-short').addEventListener('change', () => { save.short = $('set-short').checked; persist(); updateCoins(); });
   $('start').addEventListener('click', () => {
@@ -4327,7 +4349,7 @@
     $('prog-xpbar').style.width = Math.min(100, save.xp / need * 100) + '%';
     const rk = rankOf(save.rebirthsTotal), nrk = RANKS.find(k => k.r > save.rebirthsTotal);
     $('prog-rank').textContent = tr('🎖️ Rang: {r}', { r: presMark(save.prestige) + rk.name }) + (nrk ? tr(' · nächster Rang: {r} bei {n}× Wiedergeburt', { r: nrk.name, n: nrk.r }) : tr(' · höchster Rang erreicht'));
-    $('prog-stats').textContent = tr('{a} Fänge · {b} Aufträge · {c}× wiedergeboren · Taler-Bonus +{p} %', { a: save.total, b: save.questsDone, c: save.rebirths, p: Math.round((coinMult() - 1) * 100) }) + (save.prestige ? tr(' · {n}× Prestige (+{t} % EP)', { n: save.prestige, t: save.prestige * 25 }) : '');
+    $('prog-stats').textContent = tr('{a} Fänge · {b} Aufträge · {c}× wiedergeboren · Taler-Bonus +{p} %', { a: save.total, b: save.questsDone, c: save.rebirths, p: Math.round((coinMult() - 1) * 100) }) + tr(' · ⏱ Spielzeit {t}', { t: fmtPlay(save.playTime) }) + (save.prestige ? tr(' · {n}× Prestige (+{t} % EP)', { n: save.prestige, t: save.prestige * 25 }) : '');
     const left = dailyLeft();
     $('prog-bonus').textContent = (left ? tr('☀️ Tagesbonus: noch {n} Fänge mit doppelten EP', { n: left }) : tr('☀️ Tagesbonus für heute aufgebraucht – morgen wieder')) +
       tr(' · 🔥 Serie {n} (Rekord {r})', { n: streak, r: save.bestStreak || 0 });
@@ -4848,6 +4870,7 @@
   function frame(now) {
     const dt = Math.min(.05, (now - last) / 1000); last = now;
     update(dt); draw(); updateClock();
+    if ($('title').hidden) { save.playTime += dt; sessionTime += dt; updatePlayPill(); }
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
