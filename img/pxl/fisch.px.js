@@ -465,6 +465,145 @@ F('schummelfisch', 52, 34, {}, (c) => {
   c.line(4, 21, 9, 23, '#50553a')
 })
 
+F('dosensardine', 40, 20, {}, (c) => {
+  // Hinten der aufgerollte Deckel, davor schaut die Sardine aus der Dose
+  c.poly([24, 10, 28, 2, 38, 2, 38, 10], '#64748b')
+  c.poly([26, 10, 29, 3, 37, 3, 37, 10], '#94a3b8')
+  c.line(28, 1, 37, 1, '#e2e8f0'); c.line(28, 2, 26, 6, '#cbd5e1')
+  const p = P({ x0: 1, x1: 27, cy: 6, up: 5, dn: 6, peak: 0.24, hp: 0.5, end: 0.45 })
+  paint(c, p, (u, v, x, y) => {
+    if (v < 0.42) return v < 0.18 ? '#1f3f73' : '#2f5f9e'
+    if (v > 0.78) return '#ffffff'
+    return scale(x, y, 3) ? '#b6c4d6' : '#e4eaf2'
+  })
+  fan(c, [13, 1], [[15, 0], [20, 0], [21, 2]], '#1f3f73', '#16305a')
+  gill(c, p, 0.27, '#475569', 1)
+  eye(c, 4, 3)
+  c.line(1, 8, 5, 9, '#334155')
+  // Dose: blanker Rand, rotes Etikett mit Fischchen
+  c.rect(7, 11, 31, 7, '#b91c1c')
+  c.hline(7, 10, 31, '#f8fafc'); c.hline(7, 11, 31, '#94a3b8')
+  c.hline(7, 12, 31, '#ef4444'); c.hline(7, 16, 31, '#7f1d1d'); c.hline(7, 17, 31, '#64748b')
+  c.vline(7, 12, 5, '#7f1d1d'); c.vline(37, 12, 5, '#7f1d1d')
+  c.rect(16, 13, 8, 3, '#fde68a'); c.rect(24, 14, 1, 1, '#fde68a'); c.rect(25, 13, 2, 3, '#fde68a'); c.px(17, 14, '#7f1d1d')
+  // Öl läuft über den Rand
+  c.vline(10, 11, 3, '#fbbf24'); c.px(10, 14, '#fde68a')
+})
+
+F('kapitaensfisch', 48, 26, {}, (c) => {
+  const p = P({ x0: 6, x1: 36, cy: 15, up: 8, dn: 8, peak: 0.32, hp: 0.5, end: 0.16 })
+  fan(c, [20, 9], [[22, 5], [28, 5], [31, 9]], '#9a3412', '#7c2d12')
+  fan(c, [22, 21], [[23, 24], [28, 24], [30, 20]], '#9a3412', '#7c2d12')
+  tail(c, 34, 15, 11, 8, 3, '#c2410c', '#9a3412')
+  paint(c, p, (u, v, x, y) => {
+    if (v > 0.68) return v > 0.86 ? '#fde7c7' : '#fed7aa'
+    if (v < 0.16) return '#9a3412'
+    return scale(x, y, 4) && u > 0.28 ? '#c2410c' : v < 0.42 ? '#ea580c' : '#fb923c'
+  })
+  gill(c, p, 0.24, '#7c2d12')
+  fan(c, [18, 16], [[25, 20], [26, 16]], '#c2410c', '#7c2d12')
+  // weißer Seemannsbart
+  c.poly([7, 18, 14, 19, 14, 22, 12, 24, 11, 22, 9, 23, 8, 21], '#f1f5f9')
+  c.hline(9, 22, 4, '#cbd5e1')
+  eye(c, 10, 10)
+  // Pfeife im Maul, Bauch hängt nach unten, oben raucht es
+  c.line(8, 18, 4, 20, '#7c4a24')
+  c.rect(0, 18, 4, 5, '#7c4a24'); c.rect(1, 21, 2, 2, '#5c3517'); c.hline(0, 18, 4, '#a0662f'); c.rect(1, 18, 2, 1, '#fb923c')
+  for (const [x, y] of [[1, 16], [2, 14], [1, 12], [2, 10]]) c.px(x, y, '#cbd5e1')
+  // Kapitänsmütze: weißer Deckel, blaues Band, schwarzer Schirm, goldenes Abzeichen
+  c.poly([6, 2, 8, 0, 20, 0, 23, 3, 21, 6, 8, 6], '#f8fafc')
+  c.poly([8, 5, 21, 5, 21, 6, 8, 6], '#cbd5e1')
+  c.hline(9, 0, 10, '#ffffff')
+  c.rect(8, 6, 13, 2, '#1e3a8a'); c.hline(8, 7, 13, '#172554')
+  c.line(4, 9, 13, 8, INK); c.hline(5, 8, 5, '#334155')
+  c.rect(11, 3, 3, 3, '#facc15'); c.px(12, 4, '#a16207'); c.hline(9, 6, 7, '#fde047')
+})
+
+F('ankerbarsch', 50, 28, {}, (c) => {
+  // Kräftiger Barsch, vor dem Maul hängt ein rostiger Anker an der Kette
+  const p = P({ x0: 13, x1: 38, cy: 12, up: 10, dn: 9, peak: 0.36, hp: 0.5, end: 0.14 })
+  fan(c, [20, 4], [[21, 0], [23, 2], [25, 0], [27, 2], [29, 0], [31, 2], [33, 1], [35, 7]], '#3f6212', '#27400c')
+  fan(c, [27, 19], [[28, 24], [33, 24], [34, 17]], '#ea580c', '#9a3412')
+  tail(c, 36, 12, 11, 9, 2, '#ea580c', '#9a3412')
+  paint(c, p, (u, v, x) => {
+    if (v > 0.72) return v > 0.88 ? '#f3f4c8' : '#d9e29a'
+    if (u > 0.3 && u < 0.92 && (x - 21) % 6 < 2) return v < 0.2 ? '#27400c' : '#3f6212'
+    return v < 0.16 ? '#3f6212' : v < 0.5 ? '#65a30d' : '#84b82a'
+  })
+  gill(c, p, 0.28, '#27400c')
+  fan(c, [24, 12], [[30, 16], [31, 12]], '#ea580c', '#9a3412')
+  eye(c, 16, 8)
+  c.line(13, 14, 17, 15, '#27400c')
+  // Kette vom Maul zum Ankerring
+  for (const [i, [x, y]] of [[12, 12], [11, 10], [10, 8], [9, 6], [8, 4]].entries()) c.rect(x, y, 2, 2, i % 2 ? '#78716c' : '#a8a29e')
+  // Anker: Ring, Stock, Schaft, Arme mit Flunken
+  const R = '#92400e', RL = '#c2702a', RD = '#5b2c10'
+  c.ring(6, 3, 2, R)
+  c.rect(5, 5, 3, 16, R); c.vline(5, 5, 16, RL); c.vline(7, 5, 16, RD)
+  c.rect(1, 7, 11, 2, R); c.hline(1, 7, 11, RL); c.hline(1, 8, 11, RD)
+  c.line(6, 23, 2, 20, R, 2); c.line(6, 23, 10, 20, R, 2); c.rect(5, 21, 3, 3, R)
+  c.poly([0, 16, 4, 20, 0, 22], RL); c.poly([12, 16, 8, 20, 12, 22], R)
+  for (const [x, y] of [[6, 11], [6, 16], [3, 22], [9, 22], [10, 7]]) c.px(x, y, RD)
+  c.px(6, 14, RL)
+})
+
+F('rettungsrochen', 56, 32, {}, (c) => {
+  // Von oben: Rochen in den Farben eines Rettungsrings. Kopf links, Flügelspitzen oben und unten, langer Schwanz rechts.
+  const cx = 20, cy = 15, RIM = 40
+  const hh = (x) => {
+    const u = x + 0.5
+    const wing = u < cx ? 15 * (u / cx) ** 1.25 : 15 * Math.max(0, (RIM - u) / (RIM - cx)) ** 0.8
+    return Math.max(wing, u < 11 ? 5.5 * Math.sqrt(Math.min(1, u / 4)) : 0)
+  }
+  // Schwanz liegt unter dem Körper
+  for (let x = RIM - 3; x < 54; x++) {
+    const y = Math.round(14 + Math.sin((x - RIM) * 0.55) * 2)
+    c.rect(x, y, 1, 2, Math.floor((x - RIM) / 3) % 2 ? '#f8fafc' : '#ef4444')
+  }
+  for (let x = 0; x < RIM; x++) {
+    const H = hh(x)
+    for (let y = 0; y < 30; y++) {
+      const dy = y + 0.5 - cy, dx = x + 0.5 - cx
+      if (Math.abs(dy) > H) continue
+      const r = Math.hypot(dx * 0.9, dy)
+      if (r < 4.6) continue
+      const a = ((Math.atan2(dy, dx) + Math.PI * 2) % (Math.PI / 2)) / (Math.PI / 2)
+      const red = a > 0.26 && a < 0.74, low = dy > 4
+      let col = red ? (low ? '#c81e1e' : '#ef4444') : (low ? '#cbd5e1' : '#f8fafc')
+      if (r < 6) col = red ? '#991b1b' : '#94a3b8'
+      if (Math.abs(dy) > H - 1.4 && x > 3) col = (x + y) % 4 < 2 ? '#d6a45e' : '#92602c' // Tau am Rand
+      c.px(x, y, col)
+    }
+  }
+  eye(c, 5, 10); eye(c, 5, 18)
+  c.px(2, 14, '#64748b'); c.px(2, 16, '#64748b')
+})
+
+F('gummistiefel', 40, 28, {}, (c) => {
+  // Alter gelber Gummistiefel, Spitze zeigt nach links wie die Köpfe der Fische
+  const Y = '#d4a017', L = '#eeca4a', D = '#a16207', DD = '#713f12'
+  c.poly([20, 3, 34, 3, 34, 22, 3, 22, 3, 19, 7, 16, 14, 14, 20, 12], Y)
+  c.vline(23, 6, 9, L); c.vline(22, 6, 7, L)
+  c.rect(31, 5, 3, 17, D)
+  c.line(5, 19, 13, 16, L); c.line(4, 20, 7, 18, L)
+  c.hline(4, 21, 30, D)
+  // Falten am Knöchel, Risse und ein aufgeklebter Flicken
+  c.line(20, 13, 28, 15, D); c.line(18, 16, 27, 18, D); c.line(25, 12, 30, 13, D)
+  c.rect(25, 6, 5, 4, '#78716c'); c.rect(26, 7, 3, 2, '#a8a29e')
+  c.line(9, 20, 12, 18, DD); c.line(12, 18, 13, 19, DD)
+  // Oben der umgerollte Rand und die dunkle Öffnung
+  c.rect(19, 2, 16, 3, L); c.hline(19, 4, 16, D); c.ellipse(27, 2, 7, 1, '#1c1208')
+  // Sohle mit Profil
+  c.rect(2, 22, 33, 2, '#292524'); for (let x = 3; x < 34; x += 3) c.px(x, 23, '#57534e')
+  c.rect(23, 22, 2, 2, '#1c1917')
+  // Seetang hängt über den Rand
+  c.line(23, 1, 19, 3, '#15803d'); c.line(19, 3, 18, 11, '#15803d'); c.px(17, 6, '#22c55e'); c.px(19, 9, '#22c55e'); c.px(17, 10, '#22c55e')
+  c.line(29, 1, 33, 3, '#16a34a'); c.line(33, 3, 35, 9, '#16a34a'); c.px(36, 6, '#22c55e'); c.px(34, 8, '#4ade80')
+  c.line(26, 2, 26, 7, '#22c55e')
+  // Tropfen
+  drop(c, 12, 24); drop(c, 37, 12)
+})
+
 // ---------------------------------------------------------------- Boss
 F('odfisch-boss', 100, 58, {}, (c) => {
   // Eigener getigerter Katerkopf auf einem Stachel-Fischleib.
@@ -517,6 +656,34 @@ F('lava-aschebarsch', 56, 32, { flip: true }, (c) => {
   c.line(2, 18, 7, 19, '#374151')
 })
 
+F('lava-basaltbutt', 68, 36, { flip: true }, (c) => {
+  // Plattfisch von oben: dunkle Basaltplatte mit großen Säulenflächen, nur der Rand ist heiß
+  const cx = 27, cy = 17, rx = 26, ry = 16
+  tail(c, 50, 17, 15, 12, 3, '#44403c', '#f97316')
+  const cells = []
+  for (let r = -1; r < 6; r++) for (let q = -1; q < 7; q++) cells.push([q * 11 + (r % 2 ? 5.5 : 0) + 1, r * 8 + 2, ((q * 7 + r * 13 + 40) % 4 + 4) % 4])
+  for (let y = 0; y < 34; y++) for (let x = 0; x < 54; x++) {
+    const dx = x + 0.5 - cx, dy = y + 0.5 - cy, e = (Math.abs(dx) / rx) ** 1.8 + (Math.abs(dy) / ry) ** 1.8
+    if (e > 1) continue
+    if (e > 0.72) { // Flossensaum läuft als heißer Rand einmal herum
+      const ray = Math.floor((Math.atan2(dy, dx) + Math.PI) * 11) % 2 === 0
+      if (e > 0.93 && !ray) continue
+      c.px(x, y, e > 0.86 ? (ray ? '#fde047' : '#fb923c') : ray ? '#f97316' : '#c2410c')
+      continue
+    }
+    const near = cells.map(([gx, gy, id]) => [Math.hypot(x + 0.5 - gx, (y + 0.5 - gy) * 1.2), gy, id]).sort((a, b) => a[0] - b[0])
+    const [d1, gy, id] = near[0]
+    if (near[1][0] - d1 < 0.9) { c.px(x, y, e > 0.5 ? '#ea580c' : '#18181b'); continue }
+    const lift = y + 0.5 - gy
+    c.px(x, y, lift < -3 ? '#78716c' : lift > 3 ? '#292524' : ['#44403c', '#3f3f46', '#57534e', '#4b4640'][id])
+  }
+  // beide Augen auf einer Seite, schiefes Maul
+  c.circ(10, 10, 3, '#292524'); eye(c, 9, 9, { w: '#fef08a', p: INK })
+  c.circ(15, 16, 3, '#292524'); eye(c, 14, 15, { w: '#fef08a', p: INK })
+  c.line(3, 20, 9, 24, INK); c.line(4, 20, 9, 23, '#fb923c')
+  sprk(c, 59, 3); sprk(c, 62, 30)
+})
+
 F('lava-bimsfisch', 56, 32, { flip: true }, (c) => {
   const p = P({ x0: 2, x1: 42, cy: 15, up: 12, dn: 12, peak: 0.4, hp: 0.5, end: 0.34 })
   fan(c, [20, 4], [[23, 0], [28, 0], [32, 5]], '#a8a29e', '#78716c')
@@ -528,6 +695,26 @@ F('lava-bimsfisch', 56, 32, { flip: true }, (c) => {
   }
   eye(c, 6, 11)
   c.line(2, 18, 7, 19, '#78716c')
+})
+
+F('lava-bratfisch', 56, 30, { flip: true }, (c) => {
+  const p = P({ x0: 2, x1: 42, cy: 18, up: 9, dn: 9, peak: 0.34, hp: 0.5, end: 0.15 })
+  fan(c, [16, 11], [[19, 8], [27, 8], [31, 12]], '#92400e', '#451a03')
+  tail(c, 40, 18, 13, 9, 3, '#92400e', '#451a03')
+  paint(c, p, (u, v, x, y) => {
+    if (v > 0.8) return '#fcd34d'
+    if (v < 0.1) return '#92400e'
+    if (u > 0.22 && u < 0.97 && (((x - y * 0.7) % 9) + 9) % 9 < 2) return '#451a03' // Grillstreifen
+    return v < 0.34 ? '#b45309' : v < 0.6 ? '#d97706' : '#f59e0b'
+  })
+  // knusprige Stellen auf der Kruste
+  for (const [x, y] of [[15, 21], [23, 13], [29, 22], [34, 16], [20, 18]]) c.px(x, y, '#fde68a')
+  gill(c, p, 0.2, '#78350f')
+  // gar: helles, trübes Auge und offener Mund
+    c.rect(6, 13, 5, 5, '#451a03'); c.rect(7, 14, 3, 3, '#fef3c7'); c.px(8, 15, '#78350f')
+  c.line(2, 21, 7, 22, '#451a03')
+  // Dampf steigt auf
+  for (const [bx, n] of [[14, 7], [24, 7], [34, 8]]) for (let i = 0; i < n; i++) c.px(bx + Math.round(Math.sin(i * 1.1 + bx) * 1.4), i, i % 3 === 0 ? '#ffffff' : '#cbd5e1')
 })
 
 F('lava-funkenforelle', 64, 32, { flip: true }, (c) => {
@@ -561,6 +748,27 @@ F('lava-glutgrundel', 48, 28, { flip: true }, (c) => {
   gill(c, p, 0.22, '#9a3412', 1)
   eye(c, 5, 8)
   c.line(2, 15, 7, 16, '#7c2d12')
+})
+
+F('lava-kohlestint', 46, 24, { flip: true }, (c) => {
+  const p = P({ x0: 2, x1: 33, cy: 11, up: 8, dn: 8, peak: 0.34, hp: 0.55, end: 0.14 })
+  fan(c, [13, 5], [[16, 1], [22, 1], [25, 5]], '#3f3f46', '#18181b')
+  fan(c, [16, 18], [[17, 21], [22, 21], [24, 17]], '#3f3f46', '#18181b')
+  tail(c, 31, 11, 12, 8, 3, '#52525b', '#27272a')
+  // Holzkohle: gebrochene Flächen statt Schuppen, oben hell wie Asche
+  paint(c, p, (u, v, x, y) => {
+    if (v < 0.14) return '#71717a'
+    const f = (Math.floor((x + y) / 5) * 3 + Math.floor((x - y) / 6) * 5 + 50) % 4
+    return v > 0.74 ? '#27272a' : ['#3f3f46', '#52525b', '#3f3f46', '#63636b'][f]
+  })
+  // Glutrisse: außen Orange, im Kern Gelb
+  for (const pts of [[[12, 5], [15, 9], [13, 13], [16, 17]], [[21, 5], [19, 9], [23, 12], [21, 17]], [[28, 8], [26, 11], [29, 14]]]) {
+    for (let i = 0; i + 1 < pts.length; i++) c.line(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1], '#f97316')
+    for (const [x, y] of pts.slice(1, -1)) c.px(x, y, '#fde047')
+  }
+  c.px(42, 4, '#f97316'); c.px(42, 18, '#f97316'); c.px(21, 1, '#f97316')
+  eye(c, 5, 8, { w: '#fef08a', p: INK })
+  c.line(2, 14, 6, 15, '#f97316')
 })
 
 F('lava-kraterwaechter', 92, 52, {}, (c) => {
@@ -749,6 +957,50 @@ F('lava-schwefelkugel', 52, 44, { flip: true }, (c) => {
   for (const [x, y] of [[23, 9], [30, 14], [27, 21], [32, 24], [20, 27], [28, 31]]) c.rect(x, y, 2, 2, '#a3a30f')
   c.rect(10, 15, 6, 6, '#f8fafc'); c.rect(10, 17, 4, 4, INK); c.px(10, 17, '#ffffff')
   c.rect(6, 25, 7, 3, '#92400e'); c.hline(7, 26, 5, '#451a03')
+})
+
+F('lava-streichholzfisch', 48, 20, { flip: true }, (c) => {
+  // Hölzchen als Körper
+  tail(c, 37, 12, 9, 5, 2, '#d9a75f', '#a8743a')
+  c.rect(11, 10, 28, 4, '#e0b070'); c.hline(11, 10, 28, '#f2d19b'); c.hline(11, 13, 28, '#b9854a')
+  for (const [x, y, n] of [[18, 11, 5], [27, 12, 4], [33, 11, 3]]) c.hline(x, y, n, '#c4935a')
+  fan(c, [22, 10], [[24, 7], [28, 7], [30, 10]], '#d9a75f', '#a8743a')
+  fan(c, [23, 14], [[24, 17], [28, 17], [29, 14]], '#d9a75f', '#a8743a')
+  // angekohlter Übergang
+  c.rect(12, 10, 3, 4, '#44403c'); c.px(15, 10, '#44403c'); c.px(15, 13, '#44403c'); c.px(16, 11, '#78716c')
+  // Zündkopf
+  c.ellipse(7, 12, 6, 5, '#dc2626')
+  c.line(3, 9, 7, 8, '#f87171'); c.hline(3, 16, 7, '#7f1d1d'); c.line(10, 16, 12, 14, '#7f1d1d')
+  eye(c, 4, 10)
+  c.line(1, 14, 4, 15, '#7f1d1d')
+  // Flamme weht nach hinten
+  c.poly([2, 9, 3, 5, 6, 4, 7, 1, 9, 3, 12, 0, 13, 4, 15, 3, 14, 7, 12, 9], '#f97316')
+  c.poly([4, 9, 5, 6, 8, 5, 9, 3, 11, 5, 12, 3, 12, 7, 11, 9], '#fde047')
+  c.poly([6, 9, 7, 7, 9, 6, 10, 7, 10, 9], '#fffbeb')
+  c.px(17, 2, '#fb923c'); c.px(20, 5, '#fde047')
+})
+
+F('lava-verkohlte-angel', 44, 28, {}, (c) => {
+  // Griff unten links, Rute schräg nach oben, an der Bruchstelle glüht es noch
+  const A = '#57534e', AL = '#8a8580', AD = '#1c1917'
+  c.line(1, 25, 12, 17, A, 3); c.line(2, 23, 11, 17, AL)
+  for (const [x, y] of [[4, 23], [8, 20]]) c.line(x, y, x + 1, y + 2, AD)
+  c.line(12, 17, 31, 5, A, 2); c.line(14, 15, 30, 5, AL)
+  for (const [x, y] of [[18, 12], [23, 9], [27, 7]]) { c.px(x, y, '#f97316'); c.px(x + 1, y, '#7c2d12') }
+  // Bruch: Splitter und Glut
+  c.line(31, 5, 34, 1, A); c.line(31, 5, 35, 4, AL); c.line(30, 4, 31, 1, A)
+  c.px(32, 3, '#fde047'); c.px(33, 4, '#fb923c'); c.px(31, 3, '#f97316')
+  // abgebrochene Spitze baumelt an der Schnur
+  c.line(34, 3, 37, 7, '#d6d3d1')
+  c.line(37, 7, 41, 18, A, 2); c.line(37, 8, 40, 16, AL); c.px(39, 12, '#f97316')
+  // geschmolzene Rolle: oben noch rund, unten zerlaufen
+  c.circ(14, 17, 4, '#6b7280'); c.circ(14, 17, 2, '#9ca3af'); c.px(14, 17, '#374151'); c.px(13, 15, '#e5e7eb')
+  c.rect(10, 20, 9, 2, '#6b7280'); c.hline(10, 20, 9, '#9ca3af')
+  c.vline(11, 21, 4, '#6b7280'); c.px(11, 25, '#e5e7eb')
+  c.vline(14, 21, 3, '#9ca3af'); c.px(14, 24, '#fb923c')
+  c.vline(17, 21, 5, '#6b7280'); c.px(17, 25, '#e5e7eb')
+  // verschmorte Schnur kräuselt sich aus der Rolle
+  c.line(12, 13, 9, 10, '#d6d3d1'); c.line(9, 10, 11, 7, '#a8a29e'); c.line(11, 7, 8, 5, '#d6d3d1')
 })
 
 // ---------------------------------------------------------------- Lavasee-Kreaturen
