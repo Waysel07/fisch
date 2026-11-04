@@ -149,7 +149,7 @@
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
     { id: '2026-11-04-3', date: '04.11.2026', items: [
-      '✦ Prestige lohnt sich jetzt: +100 % Taler pro Prestige statt +50 %, 40 % deiner Wiedergeburten zählen als Erbe weiter, und deine Talente bleiben. Nach dem Prestige verdienst du mehr als vorher.',
+      '✦ Prestige lohnt sich mehr: +100 % Taler pro Prestige statt +50 %, und 40 % deiner Wiedergeburten zählen als Erbe weiter. Talente werden beim Prestige weiter zurückgesetzt.',
       '🎖️ Rang, Seebären-Jacke und Fischgott-Krone zählen jetzt alle Wiedergeburten insgesamt – ein Prestige nimmt sie dir nicht mehr weg. Lavaruten bleiben bei Wiedergeburt und Prestige erhalten.',
       '⚖️ Wirtschaft: Taler-Boni addieren sich innerhalb ihrer Gruppe (Weg, Talente, Sammlung) statt alle miteinander zu multiplizieren. Köder, Snacks und Boxen werden mit deinem Taler-Bonus etwas teurer. Neu: Schmiede bis +15, Sonnenkrone (500 000 Taler) und Galaxiemantel (1 Mio. Taler).',
       '🌀 Wiedergeburt braucht pro Stufe nur noch 2 Level mehr statt 3. Alle 5 Level gibt es einen Meilenstein mit Schuppen, alle 10 Level eine Mysterybox.',
@@ -3606,8 +3606,8 @@
   const talentMult = () => 1 + .08 * perk('taler') + .1 * pperk('ptaler');
   const collectMult = () => 1 + (dexPerk('taler10') ? .1 : 0) + goldBonus() / 100;
   function coinMult() { return pathMult() * talentMult() * collectMult(); }
-  // what the bonus would be right after the next prestige (talents stay, Erbe grows)
-  function coinMultAfterPrestige() { return pathMult(0, (save.rebHeir || 0) + save.rebirths * .4, save.prestige + 1) * talentMult() * collectMult(); }
+  // what the bonus would be right after the next prestige (talents reset, Erbe grows)
+  function coinMultAfterPrestige() { return pathMult(0, (save.rebHeir || 0) + save.rebirths * .4, save.prestige + 1) * (1 + .1 * pperk('ptaler')) * collectMult(); }
   function lockText(item) {
     if (item.pres && save.prestige < item.pres) return tr('🔒 {n}× Prestige', { n: item.pres });
     if (item.depth && caveDepth() < item.depth) return tr('🔒 Tiefe {n}', { n: item.depth });
@@ -3894,11 +3894,11 @@
   function prestige() {
     if (save.rebirths < PRESTIGE_REB) return;
     const gain = pearlsFor();
-    if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten, Köder, Wiedergeburten, Schuppen und die Schmiede.\nTalente, Fischdex, Medaillen, Rekorde, Kosmetik, Rang, Lavaruten und Perlen-Talente bleiben.', { n: gain }))) return;
+    if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten, Köder, Wiedergeburten, Schuppen, Talente und die Schmiede.\nFischdex, Medaillen, Rekorde, Kosmetik, Rang, Lavaruten und Perlen-Talente bleiben.', { n: gain }))) return;
     checkCosm(true); // keep the rebirth cosmetics earned so far
     save.rebHeir = (save.rebHeir || 0) + save.rebirths * .4; // the Erbe keeps 40 % of these rebirths in the Taler bonus
     save.prestige++; save.pearls += gain;
-    Object.assign(save, { rebirths: 0, scales: 0, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: keepLavaRods(), bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: keepLavaRods(), bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     if (save.map === 'see' && !seaOpen()) { save.map = 'steg'; bgKey = ''; boss.invite = null; $('btn-boss').hidden = true; updateMapUi(); }
     fillQuests(); persist(); updateCoins(); updateGear(); updateLevel(); renderProg();
     const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
@@ -4023,7 +4023,7 @@
     const pcan = save.rebirths >= PRESTIGE_REB;
     $('pres-info').textContent = pcan
       ? tr('Bereit! Du bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP – und {e} deiner {w} Wiedergeburten zählen als Erbe weiter. Taler-Bonus danach: +{a} % statt jetzt +{b} %.', { n: pearlsFor(), e: (save.rebirths * .4).toLocaleString(I18N.locale, { maximumFractionDigits: 1 }), w: save.rebirths, a: Math.round((coinMultAfterPrestige() - 1) * 100), b: Math.round((coinMult() - 1) * 100) })
-      : tr('Ab {r}× Wiedergeburt möglich (noch {d}). Fängt vieles von vorn an (Talente bleiben) – dafür gibt es Perlen, dauerhaft +100 % Taler und +25 % EP pro Prestige, und 40 % deiner Wiedergeburten zählen als Erbe weiter.', { r: PRESTIGE_REB, d: PRESTIGE_REB - save.rebirths });
+      : tr('Ab {r}× Wiedergeburt möglich (noch {d}). Fängt fast alles von vorn an, auch die Talente – dafür gibt es Perlen, dauerhaft +100 % Taler und +25 % EP pro Prestige, und 40 % deiner Wiedergeburten zählen als Erbe weiter.', { r: PRESTIGE_REB, d: PRESTIGE_REB - save.rebirths });
     $('btn-prestige').disabled = !pcan;
     $('prog-pearls').textContent = save.pearls;
     $('prog-pperks').replaceChildren(...PPERKS.map(p => {
