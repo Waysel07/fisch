@@ -2,6 +2,12 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-18`
+
+- 🗺️ More to discover away from the dock: the High Seas and the Ember Cave each get 5 new catches, including the Tinned Sardine, the Lifebuoy Ray, the Matchstick Fish and the Basalt Flounder.
+- 🚚 12 fish have moved and are worth more coins there. To the High Seas: Lo, Travis, Lip Fish, Face Shark, Cat Fish, News Fish and Propeller Fish. To the Ember Cave: Dogfish, Fucking Fish, Fish Stick, Comrade Catfish and Kept You Waiting.
+- 📖 You keep every fish you have already caught. In the Fishdex they now appear on the page of their new area.
+
 ## 04.11.2026 · `2026-11-04-17`
 
 - 🌊 All worlds have been repainted: the dock gets a proper island with a lighthouse, kelp and sunbeams in the water. The high seas now go deep, with a sea mount, a wreck, jellyfish and a passing whale.
