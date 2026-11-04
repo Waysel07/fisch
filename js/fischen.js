@@ -103,9 +103,9 @@
     { id: 'carbon', name: 'Carbonrute',       price: 260,  lvl: 5,  cast: .92, reel: 1.5,  tens: .7,   luck: 1.15, desc: 'Leicht, stark, weit.' },
     { id: 'gold',   name: 'Goldene Rute',     price: 900,  lvl: 9,  cast: 1.0, reel: 1.85, tens: .55,  luck: 1.4, desc: 'Glänzt. Fische lieben Glanz.' },
     { id: 'regen',  name: 'Regenbogenrute',   price: 2500, reb: 1, cast: 1.0, reel: 2.2,  tens: .48,  luck: 1.7, desc: 'Nur für Wiedergeborene. Schillert in allen Farben.' },
-    { id: 'stern',  name: 'Sternenrute',      price: 6000, reb: 3, cast: 1.0, reel: 2.6,  tens: .4,   luck: 2.1, desc: 'Aus einer Sternschnuppe geschnitzt.' },
-    { id: 'tiefsee', name: 'Tiefseerute',     price: 15000, reb: 4, cast: 1.0, reel: 3.0, tens: .34,  luck: 2.5, desc: 'Für die ganz tiefen Wasser. Hält fast alles aus.' },
-    { id: 'krake',  name: 'Krakenrute',       price: 40000, reb: 6, cast: 1.0, reel: 3.4, tens: .3,   luck: 3.0, desc: 'Acht Arme Kraft in einer Rute. Nichts reißt.' },
+    { id: 'stern',  name: 'Sternenrute',      price: 15000, reb: 3, cast: 1.0, reel: 2.6,  tens: .4,   luck: 2.1, desc: 'Aus einer Sternschnuppe geschnitzt.' },
+    { id: 'tiefsee', name: 'Tiefseerute',     price: 40000, reb: 4, cast: 1.0, reel: 3.0, tens: .34,  luck: 2.5, desc: 'Für die ganz tiefen Wasser. Hält fast alles aus.' },
+    { id: 'krake',  name: 'Krakenrute',       price: 120000, reb: 6, cast: 1.0, reel: 3.4, tens: .3,   luck: 3.0, desc: 'Acht Arme Kraft in einer Rute. Nichts reißt.' },
     // Lavaruten: normal rods melt in the Glutgrotte, there only these work (and they only work there)
     { id: 'basalt',   name: 'Basaltrute',         price: 400,   pres: 1, lava: true, cast: .8,  reel: 1.5, tens: .7,  luck: 1.1, desc: 'Aus erkalteter Lava. Die erste Rute, die in der Glutgrotte nicht schmilzt.' },
     { id: 'obsidian', name: 'Obsidianrute',       price: 4000,  pres: 1, depth: 2, lava: true, glut: 80, cast: .95, reel: 2.2, tens: .5,  luck: 1.6, desc: 'Schwarzes Vulkanglas, hart wie Stahl. Nur für die Glutgrotte.' },
@@ -148,6 +148,11 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-7', date: '04.11.2026', items: [
+      '🍀 Glück neu ausbalanciert: Rute, Köder und Talente bringen weiter spürbar mehr seltene Fische, aber nicht mehr so viel, dass Legendäre alltäglich werden. Auf Hoher See sind jetzt etwa 15–20 % der Fänge episch und 4–5 % legendär statt bis zu 75 %.',
+      '🌋 In der Glutgrotte zählt jeder Wurf als weit draußen, wie auf Hoher See. Dadurch beißen unten mehr seltene Fische, und die Grotte bringt ab Tiefe 3 mehr Taler als die See. Die See gibt dafür mehr EP.',
+      '💰 Die späten Ruten kosten mehr, damit sie wieder ein Ziel sind: Sternenrute 15 000, Tiefseerute 40 000, Krakenrute 120 000 Taler.',
+    ] },
     { id: '2026-11-04-6', date: '04.11.2026', items: [
       '📜 In der Steg-Zeitung gibt es unten den Knopf „Ältere Ausgaben“: Damit liest du alle früheren Patch Notes nach.',
       '🎣 Lavaruten werden bei Wiedergeburt und Prestige wieder zurückgesetzt, wie alle anderen Ruten.',
@@ -594,9 +599,12 @@
   }
 
   function pickFish() {
-    // out on the open sea every cast counts as far out
-    const d = Math.min(1, (onSea() ? Math.max(.7, castDistance()) : castDistance()) + (wx.far ? wx.far * (1 + .1 * perk('wetter')) : 0)), night = isNight(), b = bait(), r = rod(), map = save.map;
-    const luck = (b.lava && map !== 'lava' ? 1 : b.luck) * (map === 'lava' ? 1 + .08 * glutUp('licht') : 1) * r.luck * (1 + .08 * perk('glueck')) * (1 + .1 * pperk('pglueck')) * (dexPerk('luck10') ? 1.1 : 1);
+    // out on the open sea and on the lava lake every cast counts as far out
+    const d = Math.min(1, ((onSea() || inLava()) ? Math.max(.7, castDistance()) : castDistance()) + (wx.far ? wx.far * (1 + .1 * perk('wetter')) : 0)), night = isNight(), b = bait(), r = rod(), map = save.map;
+    const rawLuck = (b.lava && map !== 'lava' ? 1 : b.luck) * (map === 'lava' ? 1 + .08 * glutUp('licht') : 1) * r.luck * (1 + .08 * perk('glueck')) * (1 + .1 * pperk('pglueck')) * (dexPerk('luck10') ? 1.1 : 1);
+    // diminishing returns: rod × bait × talents multiply up to 30+ late, which made legendaries an everyday catch;
+    // the log keeps every upgrade noticeable while rare stays rare
+    const luck = 1 + .45 * Math.log(Math.max(1, rawLuck));
     const fullHour = (time * 24) % 1 < 1 / 6; // the clock shows xx:00
     const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night) && !(f.fullHour && !fullHour)
       && !(f.needs && Object.entries(f.needs).some(([id, n]) => ((save.dex[id] || {}).n || 0) < n))

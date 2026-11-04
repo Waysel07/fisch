@@ -2,6 +2,12 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-7`
+
+- 🍀 Luck rebalanced: rod, bait and talents still give noticeably more rare fish, but no longer so many that legendaries become an everyday catch. On the high seas about 15–20 % of catches are now epic and 4–5 % legendary instead of up to 75 %.
+- 🌋 In the Ember Cave every cast counts as far out, like on the high seas. More rare fish bite down there, and from depth 3 the cave pays more coins than the sea. The sea gives more XP instead.
+- 💰 The late rods cost more so they are a goal again: Star rod 15,000, Deep-sea rod 40,000, Kraken rod 120,000 coins.
+
 ## 04.11.2026 · `2026-11-04-6`
 
 - 📜 The Steg-Zeitung now has an “Older issues” button at the bottom to read all earlier patch notes.
