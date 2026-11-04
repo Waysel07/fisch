@@ -155,6 +155,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-15', date: '04.11.2026', items: [
+      '🎨 Neue Pixelkunst fast überall: Alle selbst gezeichneten Fische, Lava-Kreaturen und der Odfisch sind neu gemalt. Dazu kommen deine Spielfigur, Bealin, Glimm, Herr Zylinderwels, die Sachen am Steg (Automat, Kiosk, Brett, Pokal, Buch, Zeitung), Glutflosses Stand, die Boje, das Steuerrad, der David-Hasselhoff-Skin und die Laden-Icons. Snacks haben jetzt echte Pixel-Icons statt Emojis. Am Spiel selbst ändert sich nichts.',
+    ] },
     { id: '2026-11-04-14', date: '04.11.2026', items: [
       '🐚 Neu am Steg: die Magische Miesmuschel (episch, auch auf Hoher See). Beim Fang verrät sie dir gleich eine Antwort. Danach liegt sie auf einem Stein neben dem Steg: Klick sie an, stell eine Frage und zieh an der Schnur. Mit Ton an antwortet sie mit tiefer Stimme.',
     ] },
@@ -1672,9 +1675,65 @@
     return 0;
   }
 
+  // Sprites as char rows, drawn in img/pxl/code.px.js. 1 char = 1 fine pixel = 0.5 world units.
+  const ART = {
+    bait_abyss: [[".....kkkkk......","....kaaaaak.....","...kaaaaaaak....","..kabacccaaak...",".kaaacccccaaak..",".kaaccbbbccaak..",".kaaccbdbccaak..",".kaaccbbbccaak..",".kaaacccccaaak..","..kaaacccaaak...","...kaaaaaaak....","....kaaeaak.....",".....kkekkfk....","......kekkfk....","......kfffk.....",".......kkk......"], {"k":"#1b1f2e","a":"#0e7490","b":"#ecfeff","c":"#22d3ee","d":"#0b0f19","e":"#94a3b8","f":"#cbd5e1"}],
+    bait_glitzer: [["......kkk...k...","....kkaaakkkbk..","...kacccaaabdbk.","...kcccccaakbk..","..kcceccdcaak...","..kcceccccaak...","..kcceccccaak...","..kccecccfaak...","..kccccdccaak...","...kcccccaak....","...kacccaaak....","....kkaaakk.....","......kakkgk....","......kakkgk....","......kgggk.....",".......kkk......"], {"k":"#1b1f2e","a":"#94a3b8","b":"#fbbf24","c":"#e2e8f0","d":"#fde68a","e":"#ffffff","f":"#f9a8d4","g":"#cbd5e1"}],
+    bait_glutkoeder: [[".....kkkkk.k....","...kkaaaaakbk...","..kcaaaaaaakk...","..kadacccaaack..",".kaaacccccaaak..",".kaaccdddccaak..",".kaaccdedccaak..",".kaaccdddccaak..",".kaaacccccaaak..","..kaaacccaaak...","...kaaaaaaak....","....kaafaak.....",".....kkfkkgk....","......kfkkgk....","......kgggk.....",".......kkk......"], {"k":"#1b1f2e","a":"#dc2626","b":"#fbbf24","c":"#f97316","d":"#fef9c3","e":"#b91c1c","f":"#94a3b8","g":"#cbd5e1"}],
+    bait_lockkoeder: [[".....kkkkk......","....kaaaaak.....","...kaaaaaaak....","..kabacccaaak...",".kaaacccccaaak..",".kaaccbbbccaak..",".kaaccbdbccaak..",".kaaccbbbccaak..",".kaaacccccaaak..","..kaaacccaaak...","...kaaaaaaak....","....kaaeaak.....",".....kkekkfk....","......kekkfk....","......kfffk.....",".......kkk......"], {"k":"#1b1f2e","a":"#57534e","b":"#ef4444","c":"#a8a29e","d":"#450a0a","e":"#94a3b8","f":"#cbd5e1"}],
+    bait_mond: [["................",".....kkkkk..k...","....kaaaaakkbk..","...kbaaakkkbcbk.","..kbbaak...kbk..",".kbbbak.....k...","kbbbdak.........","kbbbbak.........","kbbbbbk.........","kbbbbbk.........","kbbbbdak........",".kbbbbaakkkk....","..kbbbaaaaaak...","...kbbbaaaak....","....kbbaaak.....",".....kkkkk......"], {"k":"#1b1f2e","a":"#fbbf24","b":"#fde68a","c":"#ffffff","d":"#d97706"}],
+    bait_odkoeder: [["................","...kkkkkk.......","..kaaaaabkk...k.",".kaaaaaacbbk.kbk","kaakkkaacabkkbbk","kaakdkaacabbbbek","kaakkkaaacbbbbek","kbaaaaaaacbbbbek","kcccaaaabcbkkbbk",".kbbbbbbbbbk.kbk","..kkbbbbbkk...k.","....kkbkkfk.....",".....kbkkfk.....",".....kfffk......","......kkk.......","................"], {"k":"#1b1f2e","a":"#f8fafc","b":"#94a3b8","c":"#475569","d":"#ef4444","e":"#64748b","f":"#cbd5e1"}],
+    bait_spezi: [["......kkkk......",".....kaaaak.....","......kbbk......","......kbbk......","......kbbk......",".....kbbbk......","....kcbbbbkk....","...kbcbbbbddk...","...keeeeeeddk...","...keeffffddk...","...keefgffddk...","...keeffffddk...","...keeeeeeddk...","...kbbbbbbddk...","....kkkkkkddk...","..........kk...."], {"k":"#1b1f2e","a":"#facc15","b":"#6b2d0f","c":"#a16207","d":"#4a1f0a","e":"#f97316","f":"#a855f7","g":"#f3e8ff"}],
+    bait_wurm: [["...........k....",".....kkkk.kak...","..kkkbbbbkkak...",".kkcbbdbbbbak...","..kbbbkkbdbbk...","...kkk..kkbbbk..",".........kbdbk..","......kkkkbbk...","....kkbbbbbbk...","...kbbdbbdbak...","..kbdbbkkkkek...","..kbbkk..kek....","..kbbkkkkkek....","...kkeeeeek.....",".....kkkkk......","................"], {"k":"#1b1f2e","a":"#94a3b8","b":"#f472b6","c":"#fbcfe8","d":"#be185d","e":"#cbd5e1"}],
+    bealin: [[".....kkkkkk.....","....kaaaaabk....","....kaaaacak....","...kaddddddak...","..kddddddddddk..","..kkeeeeeeeek...","...kefeeeefgk...","...kgeehheegk...","..kiiieeeeiiik..","..kiiiijjiiiik..","..kliiiiiiiilk..",".kllhmiiiimhllk.",".kllhmhiihmhlnee",".klolhmhhmhlnnk.","kllolhhmmhhlnnnk","kllllhmhhmhlnnnk","knnnnkmhhmknnnnk","knnnnkkkkkknnnnk"], {"k":"#1b1f2e","a":"#4d7c0f","b":"#ef4444","c":"#facc15","d":"#365314","e":"#f2c9a0","f":"#0f172a","g":"#d9a47a","h":"#dc2626","i":"#e5e7eb","j":"#9ca3af","l":"#6b7a3a","m":"#7f1d1d","n":"#4a5526","o":"#a16207"}],
+    board: [[".kkkkkkkkkkkkkkkkkk.","kaaaaaaaaaaaaaaaaaak","kbccccccccccccccccbk","kbcddedddcccccccccbk","kbcddddddfggghgggcbk","kbcdiiiidfgggggggfbk","kbcddddddfgiiiiigfbk","kbcdiiiidfgggggggfbk","kbcddddddfgggggggfbk","kbccffffffcfffffffbk","kbccccccccccccccccbk","kbcccjjjljjjjcccccbk","kbcccjjjjjjjjfccccbk","kbcccjiiiiiijfccccbk","kbcccjjjjjjjjfccccbk","kbcccjiiiiiijfccccbk","kbcccjjjjjjjjfccccbk","kbccccffffffffccccbk","kbccccccccccccccccbk","kmmmmmmmmmmmmmmmmmmk",".kkbmmkkkkkkkbmmkkk.","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","..kbmmk.....kbmmk...","...kkk.......kkk...."], {"k":"#1b1f2e","a":"#96663a","b":"#785028","c":"#b7834a","d":"#fef3c7","e":"#ef4444","f":"#9a6c3a","g":"#bfdbfe","h":"#22c55e","i":"#94a3b8","j":"#fecaca","l":"#3b82f6","m":"#603e24"}],
+    bottle: [[".a.",".k.","kbk","bcb","bdb","beb","kbk"], {"a":"#a16207","k":"#1b1f2e","b":"#6b2d0f","c":"#f97316","d":"#fed7aa","e":"#a855f7"}],
+    buoy: [["......kk......",".....kabk.....",".....kabk.....",".....kabk.....",".....kabk.....",".....kabk.....",".....kabk.....",".....kabk.....",".....kabk.....",".....kabk.....",".....kabk.....",".....kabk.....",".....kabk.....",".....kabk.....",".....kabk.....",".....kabk.....","...kkkabkkk...","..kcccccccck..",".kccccccccddk.",".kceccccccddk.",".kceccccccddk.",".kceccccccddk.",".kccccccccddk.",".kffffffffggk.",".kfhffffffggk.",".kfhffffffggk.",".kffffffffggk.",".kccccccccddk.",".kceccccccddk.",".kceccccccddk.","..kddddddddk..","...kkkkkkkk..."], {"k":"#1b1f2e","a":"#94a3b8","b":"#475569","c":"#dc3232","d":"#a11d1d","e":"#f87171","f":"#f0f0f0","g":"#a8b0bf","h":"#ffffff"}],
+    dex: [["...kkkk..kkkk...","..kaaaakkaaaak..",".kbbbbbbcdddddk.",".kbccccbceeeedk.",".kbbbbbbcdddddk.","kffffffffffffffk","kfffffffgffffffk","khhhhhhhhhhhhhhk","kiiiiiiiiiiiiiik","kjljjljjjjljjljk","kjjjjljjjjljjjjk","kjjjjljjjjljjjjk","kjjjjljjjjljjjjk","kjjjjljjjjljjjjk","kjljjljjjjljjljk","kllllllllllllllk",".kkkkkkkkkkkkkk."], {"k":"#1b1f2e","a":"#e2e8f0","b":"#f8fafc","c":"#94a3b8","d":"#f1f5f9","e":"#38bdf8","f":"#2563eb","g":"#facc15","h":"#1e3a8a","i":"#ba8652","j":"#96663a","l":"#684224"}],
+    glimm: [[".......kkkkkkk....",".....kkaaaaaaakk..","..kkkabbbacaaaaak.",".kdddaaaaacaaaaaak",".kbbdaaaaacaaaaaak",".kbbdaaaaacaaaaaak",".kdddaaaaacaaaaak.","..keeeeeeeeeeeeeek","...kffffggfffggkk.",".kkhhkkgggkkggggk.","kijhhhhhhhhgggggk.","kjjhhhhhhhhhhgggk.",".khhhhhhhhhhhggk..",".khhhlhhhhhhhgmmk.","..kkhhhhhhhggggmmk","..kkgghhhhhhhggmmk",".knnnghhhhhhhnnnmk",".kjnnghhhhhhhnnjk.","..kkkjjjhhhjjjmk..",".....kkkkkkkkkk..."], {"k":"#1b1f2e","a":"#facc15","b":"#fef9c3","c":"#fde047","d":"#475569","e":"#b45309","f":"#e5e7eb","g":"#6b4f3a","h":"#a78b6d","i":"#fce7f3","j":"#f9a8d4","l":"#f8fafc","m":"#4a3424","n":"#fbcfe8"}],
+    kiosk_back: [["aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaacaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaacaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaacccabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaacccabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaddddaaeeeabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaffffaaeeeabgggggaa","aaaabaaaaaaabaaaaaaabaaaaafhhfaacccabiiiiiaa","aaaabaaaaaaabaaaaaaabaaaaafhhfaacccabiiiiiaa","aaaabaaaaaaabaaaaaaabaaaaafhhfaacccabiiiiiaa","aaaabaaaaaaabaaaaaaabaaajjjjjjjjjjjjjjjjjjjj","aaaabaaaaaaabaaaaaaabaaajjjjjjjjjjjjjjjjjjjj","aaaabaaaaaaabaaaaaaabaaallllllllllllllllllll","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaammmaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaannnnnnaammmaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaannnnnnaammmaaoooaa","aaaabaaaaaaabaaaaaaabaaaaappppppaammmaaoooaa","aaaabaaaaaaabaaaaaaabaaaaannnnnnaammmaaoooaa","aaaabaaaaaaabaaaaaaabaaaaannnnnnaammmaaoooaa","aaaabaaaaaaabaaaaaaabaaajjjjjjjjjjjjjjjjjjjj","aaaabaaaaaaabaaaaaaabaaajjjjjjjjjjjjjjjjjjjj","aaaabaaaaaaabaaaaaaabaaallllllllllllllllllll","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa","aaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaabaaaaaaa"], {"a":"#5c3e28","b":"#684226","c":"#6b2d0f","d":"#475569","e":"#f97316","f":"#bae6fd","g":"#60a5fa","h":"#f472b6","i":"#2563eb","j":"#7c4a24","l":"#3f2a1b","m":"#94a3b8","n":"#b45309","o":"#facc15","p":"#7c2d12"}],
+    kiosk_front: [[".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.","kaaaaaaaabbbbbbbbaaaaaaaaabbbbbbbbaaaaaaaabbbbbbbbbaaaaaaaak","kccccccccddddddddcccccccccddddddddccccccccdddddddddcccccccck","kccccccccddddddddcccccccccddddddddccccccccdddddddddcccccccck","kccccccccddddddddcccccccccddddddddccccccccdddddddddcccccccck","kccccccccddddddddcccccccccddddddddccccccccdddddddddcccccccck","kccccccccddddddddcccccccccddddddddccccccccdddddddddcccccccck","kccccccccddddddddcccccccccddddddddccccccccdddddddddcccccccck","kccccccccddddddddcccccccccddddddddccccccccdddddddddcccccccck","keeeeeeeeffffffffeeeeeeeeeffffffffeeeeeeeefffffffffeeeeeeeek",".kcccccckkddddddkkccccccckkddddddkkcccccckkdddddddkkcccccck.",".keeeeeekkffffffkkeeeeeeekkffffffkkeeeeeekkfffffffkkeeeeeek.","..kkkkgghkkkkkkk..kkkkkkk..kkkkkk..kkkkkk..kkkkkkk.khhikkk..",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghk.........................................khhik....",".....kgghkkkkk.....................................khhik....",".....kggjjjjjjk....................................khhik....",".....kggllllllk................................k...khhik....",".....kggmlllllk...............................knk..khhik....",".....kggmlolllk...............................knkk.khhik....",".....kggmpppplk..............................kqqqqkkhhik....",".....kggmpppplk..............................kqqqqkkhhik....",".....kggmpppplk..............................kqqqqkkhhik....",".....kggllllllkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkqqqrkkhhik....","....kggggggggggggggggggggggggggggggggggggggggggggggggggk....","....kiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiik....","....kiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiik....",".....kggggggggggggggggggggggggggggggggggggggggggggggggk.....",".....khhhhhhihhhhhhhhhihhhhhhhhhihhhhhhhhhihhhhhhhhhihk.....",".....khhhhhhihhsssssssssssssssssssssssssssssshhhhhhhihk.....",".....khhhhhhihhsttttttttttttttttttttttttttttshhhhhhhihk.....",".....khhhhhhihhsuuuuuuuuuuuuuuuuuuuuuuuuuuuushhhhhhhihk.....",".....khhhhhhihhsuuuuuuuuuuuuuuuuuuuuuuuuuuuushhhhhhhihk.....",".....khhhhhhihhsuuuuuuuuuuuuuuuuuuuuuuuuuuuushhhhhhhihk.....",".....khhhhhhihhsuuuuuuuuuuuuuuuuuuuuuuuuuuuushhhhhhhihk.....",".....khhhhhhihhsuuuuuuuuuuuuuuuuuuuuuuuuuuuushhhhhhhihk.....",".....khhhhhhihhsuuuuuuuuuuuuuuuuuuuuuuuuuuuushhhhhhhihk.....",".....khhhhhhihhsuuuuuuuuuuuuuuuuuuuuuuuuuuuushhhhhhhihk.....",".....khhhhhhihhsuuuuuuuuuuuuuuuuuuuuuuuuuuuushhhhhhhihk.....",".....khhhhhhihhsvvvvvvvvvvvvvvvvvvvvvvvvvvvvshhhhhhhihk.....",".....khhhhhhihhsssssssssssssssssssssssssssssshhhhhhhihk.....",".....khhhhhhihhhhhhhhhihhhhhhhhhihhhhhhhhhihhhhhhhhhihk.....",".....khhhhhhihhhhhhhhhihhhhhhhhhihhhhhhhhhihhhhhhhhhihk.....",".....kiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiik.....","......kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk......"], {"k":"#1b1f2e","a":"#ef4444","b":"#ffffff","c":"#dc2626","d":"#f8fafc","e":"#b91c1c","f":"#cbd5e1","g":"#ba804e","h":"#96623a","i":"#684226","j":"#475569","l":"#bae6fd","m":"#e0f2fe","n":"#64748b","o":"#ec4899","p":"#f472b6","q":"#fbbf24","r":"#b45309","s":"#7c4a24","t":"#fffbeb","u":"#fef3c7","v":"#d6c49a"}],
+    ladder: [[".kk..............kk.","kabk............kabk","kabk............kabk","kabkkkkkkkkkkkkkkabk","kacaaaaaaaaaaaaaacbk","kabbbbbbbbbbbbbbbabk","kabkkkkkkkkkkkkkkabk","kabk............kabk","kabk............kabk","kabk............kabk","kabk............kabk","kabkkkkkkkkkkkkkkabk","kacaaaaaaaaaaaaaacbk","kabbbbbbbbbbbbbbbabk","kabkkkkkkkkkkkkkkabk","kabk............kabk","kabk............kabk","kabk............kabk","kabk............kabk","kabkkkkkkkkkkkkkkabk","kacaaaaaaaaaaaaaacbk","kabbbbbbbbbbbbbbbabk","kabkkkkkkkkkkkkkkabk","kabk............kabk","kabk............kabk","kabk............kabk","kabk............kabk","kabkkkkkkkkkkkkkkabk","kacaaaaaaaaaaaaaacbk","kabbbbbbbbbbbbbbbabk","kabkkkkkkkkkkkkkkabk","kabk............kabk","kabk............kabk","kabk............kabk","kabk............kabk","kabkkkkkkkkkkkkkkabk","kacaaaaaaaaaaaaaacbk","kabbbbbbbbbbbbbbbabk","kabkkkkkkkkkkkkkkabk","kabk............kabk","kabk............kabk","kabk............kabk","kabk............kabk","kabkkkkkkkkkkkkkkabk","kacaaaaaaaaaaaaaacbk","kabbbbbbbbbbbbbbbabk","kabkkkkkkkkkkkkkkabk","kabk............kabk","kabk............kabk","kabk............kabk","kabk............kabk","kabkkkkkkkkkkkkkkabk","kacaaaaaaaaaaaaaacbk","kabbbbbbbbbbbbbbbabk","kabkkkkkkkkkkkkkkabk",".kk..............kk."], {"k":"#1b1f2e","a":"#96623a","b":"#6e4628","c":"#d4b483"}],
+    lava_back: [["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbcbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbcbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbdbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbcbbbbabbbbbbbaa","aabbbcbbbbbbabbbbbbbbbbabbbbbbcbbbabbbbbbbaa","aabbbbcbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbdbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbcbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbcbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbcbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbcbbbbabbbbbbbbbbabbbbbbbbbbabcbbbbbaa","aabbbbbcbbbbabbbbbbbbbbabbbbbbbbbbacbbbbbbaa","aabbbbbcbbbbabbbbbbbbbbabbbbbbbbbbacbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbdbbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbcbbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbcabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aabbbbbbbbbbabbbbbbbbbbabbbbbbbbbbabbbbbbbaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"], {"a":"#2a2220","b":"#3f3533","c":"#7c2d12","d":"#f97316"}],
+    lava_fin: [[".........k......","........kak.....",".......kabak....","......kaabak....","...kkkaabaaak...","..kaaaaaaaaaak..","...kccccccccck..","..kccccccccccck.",".kccccccccccddck",".kcceecccceeddck",".kccekccccekddck",".kccccccccccddck",".kccccccccccddck",".kccccccccccddk.",".kccccccccccddk.",".kccccccccccddk.","..kkkkkkkkkkkk..","................"], {"k":"#1b1f2e","a":"#60a5fa","b":"#93c5fd","c":"#3b82f6","d":"#1d4ed8","e":"#f8fafc"}],
+    lava_front: [[".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.","kaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbk","kaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbk","kaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbk","kaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbk","kaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbk","kaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbk","kaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbaaaabbbbk","kcccccccccccccccccccccccccccccccccccccccccccccccccccccccck",".kkkkdeekkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkeefkkkk.","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeek........................................keefk....","....kdeekkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkeefk....","...kddddddddddddddddddddddddddddddddddddddddddddddddddk...","...kddddddddddddddddddddddddddddddddddddddddddddddddddk...","....keeeefeeeeeeeeeeefeeeeeeeeeeefeeeeeeeeeeefeeeeeeek....","....keeeefeeeeggggggggggggggggggggggggggggggefeeeeeeek....","....keeeefeeeeghhhhhhhhhhhhhhhhhhhhhhhhhhhhgefeeeeeeek....","....keeeefeeeeghhhhhhhhhhhhhhhhhhhhhhhhhhhhgefeeeeeeek....","....kfffffffffghhhhhhhhhhhhhhhhhhhhhhhhhhhhgfffffffffk....","....keeeeeeeeeghhhhhhhhhhhhhhhhhhhhhhhhhhhhgeeeeeeefek....","....keeeeeeeeeghhhhhhhhhhhhhhhhhhhhhhhhhhhhgeeeeeeefek....","....keeeeeeeeeghhhhhhhhhhhhhhhhhhhhhhhhhhhhgeeeeeeefek....","....keeeeeeeeeghhhhhhhhhhhhhhhhhhhhhhhhhhhhgeeeeeeefek....","....kfffffffffghhhhhhhhhhhhhhhhhhhhhhhhhhhhgfffffffffk....","....keeeefeeeeghhhhhhhhhhhhhhhhhhhhhhhhhhhhgefeeeeeeek....","....keeeefeeeeghhhhhhhhhhhhhhhhhhhhhhhhhhhhgefeeeeeeek....","....keeeefeeeeggggggggggggggggggggggggggggggefeeeeeeek....","....keeeefeeeeeeeeeeefeeeeeeeeeeefeeeeeeeeeeefeeeeeeek....","....kffffffffffffffffffffffffffffffffffffffffffffffffk....","....kffffffffffffffffffffffffffffffffffffffffffffffffk....",".....kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk....."], {"k":"#1b1f2e","a":"#7f1d1d","b":"#b91c1c","c":"#450a0a","d":"#78716c","e":"#44403c","f":"#292524","g":"#57190a","h":"#1c0a05"}],
+    muschelrock: [[".......kkkkkkkkkkkkk......","....kkkaabbbbbbbbaaak.....","...kbbbbbbbbbbbbaaaaakk...","..kaaaaaaaaaaaaaaaaaaaak..",".kaaaaaaaaaaaaaaaacccaaak.",".kaaaaaaaaaaaaaaaccccccck.","kaaaaaaaaaaaaaaaccccccccck",".kkkkkkkkkkkkkkkkkkkkkkkk."], {"k":"#1b1f2e","a":"#64748b","b":"#94a3b8","c":"#475569"}],
+    news: [[".kkkkkkkkkkkkkk.","kaaaaaaabaaaaaak","kakkkkkabcccccak","kakkkkkabaaaaaak","kaaaaaaabcccccak","kadddddabaaaaaak","keeeeeeebeeeeeek","keeeeeeebeeeeeek","kdddddddbddddddk","kfffffffbffffffk",".kkkkkkkkkkkkkk."], {"k":"#1b1f2e","a":"#f1f5f9","b":"#b45309","c":"#475569","d":"#94a3b8","e":"#cbd5e1","f":"#e2e8f0"}],
+    rift: [["......................................","................kk....................","...............kabkk..................",".............kkaabbbkkk...............","............kcccabbbbbbkk.............","............kaaaaabbbbbbbk............","...........kaaaaaabbbbbbbbk...........","..........kaacaaaabbbbbbbbdk..........",".........kaacaaaaabbbbbbbbdk..........","........kaacaaaaabbbbbbbbbddk.........",".......kaacaaaaabbbbbbbbbbddk.........","......kbbaaaaaabdddbbbbbbbdddk........","......kbbbaaaaddbbbbbbbbbbdddk........","......kbbbaaaabbbbbbbbbbbbddddk.......",".....kbbbbbaabbbbbbbbbbbbbddddk.......",".....kbbbbbbbbbbbbbbbbbbbbdddddk......",".....kbbbbbbbbbbbbbbbbbbbbdddddk......","....kbbbbbbbbbbbbbbbbbbbbddddddk......","....kbbbbbbbbbbbbbbbbbbbbdddddddk.....","....kbbbbbbdddbbbbbbbbbbbdddddddk.....","...kbbbddddbbbbbbbbbbbbbbddddddddk....","...kbddbbbbbbbbbbbbbbbbbbddddddddk....","...kbbbbbbbbbbbbbbbbbbbbbdddddddddk...","..kbbbbbbbbbbbbbbbbbbbbbbdddddddddk...","..kbbbbbbbbbbddddddddddbdddddddddddk..","..kddddddddddbbbbbbbbbbbdddddddddddk..",".keeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeek.","..kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.."], {"k":"#1b1f2e","a":"#807670","b":"#58504c","c":"#a8a29e","d":"#3c3634","e":"#2a2523"}],
+    slot: [["...kkkkkkkkkkkkkkkk...kkk.","..kaaaaaaaaaaaaaaaak.kbbbk",".kkcccccccccccccccckkbdbbk","kacccccccccccccccceeebbbbk","kacffffffffffffffffeebbbbk","kacggggggggggggggggeekbbbk","kacggggggggggggggggeekhik.","kacggggggggggggggggeekhik.","kacggggggggggggggggeekhik.","kacffffffffffffffffeekhik.","kacccccccccccccccceeekhik.","kacccccccccccccccceeekhik.","kackkkkkkkkkkkkkkkkeekhik.","kackjjjjljjjjljjjjkeekhik.","kackjjjjljjjjljjjjkeekhik.","kackjjjjljjjjljjjjkeeihik.","kackjjjjljjjjljjjjkeeiik..","kackjjjjljjjjljjjjkeeiik..","kackjjjjljjjjljjjjkeeiik..","kackjjjjljjjjljjjjkeekk...","kackjjjjljjjjljjjjkeek....","kackllllllllllllllkeek....","kackkkkkkkkkkkkkkkkeek....","kacccccccccccccccceeek....","kacccccccccccccccceeek....","kacmcckkkkkkkkcnnceeek....","kacccccccccccccnnceeek....","kacocccccccccccccceeek....","kacccccccccccccccceeek....","kacccccccccccccccceeek....","kackkkkkkkkkkkkkkkkeek....","kackppppppppppppppkeek....","kackqqqqqrnnqqqqqqkeek....","kackqqqqqnnnqqqqqqkeek....","kackqqqqqqqqqqqqqqkeek....","kackkkkkkkkkkkkkkkkeek....","kacccccccccccccccceeek....","keeeeeeeeeeeeeeeeeeeek....","keeeeeeeeeeeeeeeeeeeek....",".kkkkkkkkkkkkkkkkkkkk....."], {"k":"#1b1f2e","a":"#ec6064","b":"#ef4444","c":"#c42634","d":"#fecaca","e":"#881622","f":"#b45309","g":"#f59e0b","h":"#94a3b8","i":"#64748b","j":"#f8fafc","l":"#cbd5e1","m":"#4ade80","n":"#fbbf24","o":"#f472b6","p":"#334155","q":"#475569","r":"#fde68a"}],
+    snack_broetchen: [["................",".....kkkkkkk....","...kkaaaaaaakk..","..kbbbbbbcaaaak.",".kaaaacaaaaaaaak",".kaaaaaaaaacaaak",".kaaaaaaaaaaaaak",".kkdddddddddddk.","keeeeeeeeeeeeefk",".kgggggggggggffk",".khhkhhhhhhhhhfk","..kiiiiiiiiiikk.","..kjjjjjjjjjjk..","...kkkkkkkkkk...","................","................"], {"k":"#1b1f2e","a":"#e9b872","b":"#f5d79a","c":"#fff7cc","d":"#c98a45","e":"#22c55e","f":"#94a3b8","g":"#e2e8f0","h":"#cbd5e1","i":"#d9a05b","j":"#a86a3c"}],
+    snack_kaffee: [[".....k..k.......","....kakkak......","...kak.kak......","...kak.kak......","...kakkak.......","..kkkkkkkkk.....",".kbcccccccakkk..",".kbbbbbbbaabbbk.",".kbbbbbbbabkkkbk",".kbbddddbabk.kbk",".kbbddddbabkkkbk",".kbbbbbbbaabbbk.",".kbbbbbbbaakkk..",".kaaaaaaaaak....","..kkkkkkkkk.....","................"], {"k":"#1b1f2e","a":"#cbd5e1","b":"#f8fafc","c":"#5b3416","d":"#ef4444"}],
+    snack_keks: [["................",".....kkkkkk.....","....kaaaaabkk...","...kaaaaaaabbk..","..kaaaaaaaaabbk.",".kaacaaaaaacabk.",".kaaadeadeaaabbk",".kaaaeeaeeaaabbk",".kaaaaafaaaaabbk",".kaaaeeafeaaabbk",".kbaaeeaefacbbbk","..kbacaaafabbbk.","..kbbaaaaafbbbk.","...kbbbbbbbbbk..","....kkbbbbbkk...","......kkkkk....."], {"k":"#1b1f2e","a":"#d9a05b","b":"#b97a3d","c":"#7c4a24","d":"#86efac","e":"#22c55e","f":"#15803d"}],
+    snack_limo: [["......kkkk......",".....kaaaak..k..","......kbbk..kck.","......kbbk.kcdck","..k...kbbk..kck.",".kck.kbbbk...k..","..k.kbbbbbk.....","...kbebbbbbk....","...kbebbfbgk....","...khehhhhghk...","...khehhhhghk...","...khehfhhghk...","...khehhhhghk...","...kheehhfghk...","...khhhhhhhhk...","....kkkkkkkk...."], {"k":"#1b1f2e","a":"#fbbf24","b":"#f0abfc","c":"#fde047","d":"#fff7cc","e":"#fae8ff","f":"#ffffff","g":"#a21caf","h":"#d946ef"}],
+    trophy: [["....kkkkkkkkkkkk....","...kaaaaaaaaaaaak...","..kkkbbbbbbbccckkk..",".kbbbbbaabbbcccbbck.",".kbkkbbabbbbccckkck.",".kbkkbbabbbbccckkck.",".kbkkbbabbbbccckkck.",".kbkkbbabbbbccckkck.",".kcccbbbbbbbcccccck.","..kkkbbbbbbbckkkkk..",".....kbbbbbck.......","......kbbbbck.......",".......kkbck........","........kbck........",".......kkcckk.......",".....kkbbbbbbkk.....","....kddddddddddk....","....keeeaaaaeeek....","....keeeeeeeeeek....",".....kkkkkkkkkk....."], {"k":"#1b1f2e","a":"#fde68a","b":"#fbbf24","c":"#d97706","d":"#a0662f","e":"#7c4a24"}],
+    wels_00: [["......aaaaaaaaaa......",".....abccbbbbbbba.....",".....abcbbbbbbbba.....",".....abcbbbbbbbba.....",".....abbbbbbbbbba.....",".....abbbbbbbbbba.....",".....adeeddddddda.....",".....adddddddddda.....","..aaaabbbbbbbbbbaaaa..",".abcccbbbbbbbbbbbbbba.","..aaaaaaaaaaaaaaaaaa..","...affgggfffffffffa...","..affgggfhffffhffffa..",".affffffffffffffffffa.",".afiijffffffffffiijfa.",".afijjffffffffffijjfa.","affffffffffffffffffffa","ahllllllllllllllllllha","almmmmmmmmmmmmmmmmmmla","alnnnnnnnnnnnnnnnnnnla","alllllllllllllllllllla",".aooopoooooooooopoooa.",".aooooooooooooooooooa.","..aooooooooooooooooa..","..appppppppppppppppa.."], {"a":"#111827","b":"#1f2937","c":"#4b5563","d":"#7f1d1d","e":"#b91c1c","f":"#6b7a5e","g":"#8a9a7b","h":"#4f5b45","i":"#f8fafc","j":"#0b0f19","l":"#c9a99a","m":"#e2c7b9","n":"#3b1d1d","o":"#d9d2c0","p":"#bfb6a1"}],
+    wels_01: [["......aaaaaaaaaa......",".....abccbbbbbbba.....",".....abcbbbbbbbba.....",".....abcbbbbbbbba.....",".....abbbbbbbbbba.....",".....abbbbbbbbbba.....",".....adeeddddddda.....",".....adddddddddda.....","..aaaabbbbbbbbbbaaaa..",".abcccbbbbbbbbbbbbbba.","..aaaaaaaaaaaaaaaaaa..","...affgggfffffffffa...","..affgggfhffffhffffa..",".affffffffffffffffffa.",".afiijffffffffffiijfa.",".afijjffffffffffijjfa.","affffffffffffffffffffa","ahllllllllllllllllllha","almmmmmmmmmmmmmmmmmmla","almmmmnnnnnnnnnnmmmmla","alllllllllllllllllllla",".aooopoooooooooopoooa.",".aooooooooooooooooooa.","..aooooooooooooooooa..","..appppppppppppppppa.."], {"a":"#111827","b":"#1f2937","c":"#4b5563","d":"#7f1d1d","e":"#b91c1c","f":"#6b7a5e","g":"#8a9a7b","h":"#4f5b45","i":"#f8fafc","j":"#0b0f19","l":"#c9a99a","m":"#3b1d1d","n":"#d16b78","o":"#d9d2c0","p":"#bfb6a1"}],
+    wels_10: [["......aaaaaaaaaa......",".....abccbbbbbbba.....",".....abcbbbbbbbba.....",".....abcbbbbbbbba.....",".....abbbbbbbbbba.....",".....abbbbbbbbbba.....",".....adeeddddddda.....",".....adddddddddda.....","..aaaabbbbbbbbbbaaaa..",".abcccbbbbbbbbbbbbbba.","..aaaaaaaaaaaaaaaaaa..","...affgggfffffffffa...","..affgggfhffffhffffa..",".affffffffffffffffffa.",".afhhhffffffffffhhhfa.",".affffffffffffffffffa.","affffffffffffffffffffa","ahiiiiiiiiiiiiiiiiiiha","aijjjjjjjjjjjjjjjjjjia","aillllllllllllllllllia","aiiiiiiiiiiiiiiiiiiiia",".ammmnmmmmmmmmmmnmmma.",".ammmmmmmmmmmmmmmmmma.","..ammmmmmmmmmmmmmmma..","..annnnnnnnnnnnnnnna.."], {"a":"#111827","b":"#1f2937","c":"#4b5563","d":"#7f1d1d","e":"#b91c1c","f":"#6b7a5e","g":"#8a9a7b","h":"#4f5b45","i":"#c9a99a","j":"#e2c7b9","l":"#3b1d1d","m":"#d9d2c0","n":"#bfb6a1"}],
+    wels_11: [["......aaaaaaaaaa......",".....abccbbbbbbba.....",".....abcbbbbbbbba.....",".....abcbbbbbbbba.....",".....abbbbbbbbbba.....",".....abbbbbbbbbba.....",".....adeeddddddda.....",".....adddddddddda.....","..aaaabbbbbbbbbbaaaa..",".abcccbbbbbbbbbbbbbba.","..aaaaaaaaaaaaaaaaaa..","...affgggfffffffffa...","..affgggfhffffhffffa..",".affffffffffffffffffa.",".afhhhffffffffffhhhfa.",".affffffffffffffffffa.","affffffffffffffffffffa","ahiiiiiiiiiiiiiiiiiiha","aijjjjjjjjjjjjjjjjjjia","aijjjjlllllllllljjjjia","aiiiiiiiiiiiiiiiiiiiia",".ammmnmmmmmmmmmmnmmma.",".ammmmmmmmmmmmmmmmmma.","..ammmmmmmmmmmmmmmma..","..annnnnnnnnnnnnnnna.."], {"a":"#111827","b":"#1f2937","c":"#4b5563","d":"#7f1d1d","e":"#b91c1c","f":"#6b7a5e","g":"#8a9a7b","h":"#4f5b45","i":"#c9a99a","j":"#3b1d1d","l":"#d16b78","m":"#d9d2c0","n":"#bfb6a1"}],
+    wheel_0: [["............................","............................",".........kkk.......kkk......",".........kak.......kak......",".........kkkkkkkkk.kkk......",".........kkbcccccckb........","........kccbkkkkk.bck.......","..kkk..kc.kb.....kb.ck......","..kak.kckk..b....b.kkck.....","..kkkbc.k...b....b..k.ckkkk.",".....kbb.....b..b....kckkak.","....kc.kbb...b..b....bbbkkk.","....kck...bbkkkkk..bb.kck...","....kck.....kdeekbb...kck...","....kck.....keeek.....kck...","....kck...bbkeeek.....kck...","....kck.bb..kkkkkbb...kck...","..kkkbbb....bacbk..bbk.ck...","..kakkck....bacbk....bbk....","..kkkkc.k..bkacbb...k.cbkkk.","......kckk.bkacbb..kkck.kak.",".......kc.bkkacbkbk.ck..kkk.","........kcb.kkkkkbcck.......",".........bkccccccbkk........",".......kkk.kkkkkkkkk........",".......kak..kacbkkak........",".......kkk..kacbkkkk........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk..........."], {"k":"#1b1f2e","a":"#ba804e","b":"#6e4628","c":"#96623a","d":"#fde68a","e":"#fbbf24"}],
+    wheel_1: [["............................","...........kkk..............","...........kak..............","...........kkk......kkk.....","...........kbkkkkk..kak.....",".........kkccbcccckkkkk.....","...kkk..kcc.kbkkk.ccb.......","...kak.kc.kk.b...kkbck......","...kkkbckk...b....bkkck.....",".....kcbk....b...b..k.ck....",".....kckb....b...b...kck....","....kc.k.bb...b.b....k.ckkkk","....kck....bkkkkk.....kbbkak","....kck.....kdeekbbbbbbckkkk","....kck....bkeeek.....kck...",".kkkkbbbbbb.keeek.....kck...",".kakbck.....kkkkkb....kck...",".kkkkc.k....bacbk.b..k.ck...",".....kck...bkacbk..bbkck....",".....kc.k.b.kacbk...kbck....","......kckkb.kacbk..kkcbkkk..",".......kcbkkkacbkkk.ck.kak..","........bcc.kkkbk.cck..kkk..","......kkkkkcccccbckk........","......kak..kkkkkbk..........","......kkk...kackkk..........","............kackak..........","............kackkk..........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk..........."], {"k":"#1b1f2e","a":"#ba804e","b":"#6e4628","c":"#96623a","d":"#fde68a","e":"#fbbf24"}],
+    wheel_2: [["............................",".............kkk............",".............kak............",".............kkk............","...........kkkbkkk..........",".....kkk.kkcccbccckk.kkk....",".....kakkcc.kkbkk.cckkak....",".....kkkc.kk..b..kk.ckkk....","......kcbk....b....kbck.....",".....kc.kb....b....bk.ck....",".....kck..b...b...b..kck....","....kc.k...b..b..b...k.ck...","....kck.....kkkkk.....kck...",".kkkkck.....kdeek.....kckkkk",".kakbbbbbbbbkeeekbbbbbbbbkak",".kkkkck.....keeek.....kckkkk","....kck.....kkkkk.....kck...","....kc.k...bkabbkb...k.ck...",".....kck..b.kabbk.b..kck....",".....kc.kb..kabbk..bk.ck....","......kcbk..kabbk..kbck.....",".....kkkc.kkkabbkkk.ckkk....",".....kakkcc.kkbkk.cckkak....",".....kkk.kkcccbccckk.kkk....","...........kkkbkkk..........","............kkkkk...........","............kkakk...........","............kkkkk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk..........."], {"k":"#1b1f2e","a":"#ba804e","b":"#6e4628","c":"#96623a","d":"#fde68a","e":"#fbbf24"}],
+    wheel_3: [["............................","...............kkk..........","...............kak..........","......kkk......kkk..........","......kak..kkkkkbk..........","......kkkkkccccbcckk........","........bcc.kkkbk.cck..kkk..",".......kcbkk...b.kk.ck.kak..","......kckkb....b...kkcbkkk..",".....kc.k..b...b....kbck....",".....kck...b...b....bkck....",".kkkkc.k....b.b...bb.k.ck...",".kakbck.....kkkkkb....kck...",".kkkkbbbbbb.kdeek.....kck...","....kck....bkeeek.....kck...","....kck.....keeekbbbbbbckkkk","....kck....bkkkkk.....kbbkak","....kc.k..b.kbcbb....k.ckkkk",".....kckbb..kbcbkb...kck....",".....kcbk...kbcbk.b.k.ck....","...kkkbckk..kbcbk.bkkck.....","...kak.kc.kkkbcbkkkbck......","...kkk..kcc.kbkkk.ccb.......",".........kkcbccccckkkkk.....","...........kbkkkkk..kak.....","...........kkkcbk...kkk.....","...........kakcbk...........","...........kkkcbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk..........."], {"k":"#1b1f2e","a":"#ba804e","b":"#6e4628","c":"#96623a","d":"#fde68a","e":"#fbbf24"}],
+    wheel_4: [["............................","............................",".......kkk.......kkk........",".......kak.......kak........",".......kkk.kkkkkkkkk........",".........bkccccccbkk........","........kcb.kkkkkbcck.......",".......kc.bk.....bk.ck..kkk.","......kckk.b....b..kkck.kak.","..kkkkc.k..b....b...k.cbkkk.","..kakkck....b..b.....bbk....","..kkkbbb....b..b...bbk.ck...","....kck.bb..kkkkkbb...kck...","....kck...bbkdeek.....kck...","....kck.....keeek.....kck...","....kck.....keeekbb...kck...","....kck...bbkkkkk..bb.kck...","....kc.kbb..kbcbb....bbbkkk.",".....kbb....kbcbb....kckkak.","..kkkbc.k...bacbkb..k.ckkkk.","..kak.kckk..bacbkb.kkck.....","..kkk..kc.kbkacbkkb.ck......","........kccbkkkkk.bck.......",".........kkbcccccckb........",".........kkkkkkkkk.kkk......",".........kakkacbk..kak......",".........kkkkacbk..kkk......","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk...........","............kacbk..........."], {"k":"#1b1f2e","a":"#ba804e","b":"#6e4628","c":"#96623a","d":"#fde68a","e":"#fbbf24"}],
+  };
+  // A baked sprite and its darker copy for the night, made on first use.
+  const artCache = {};
+  function artImg(name) {
+    if (artCache[name]) return artCache[name];
+    const img = bake(...ART[name]), night = document.createElement('canvas');
+    night.width = img.width; night.height = img.height;
+    const x = night.getContext('2d'); x.drawImage(img, 0, 0);
+    x.globalCompositeOperation = 'source-atop'; x.fillStyle = 'rgba(10, 16, 40, .65)'; x.fillRect(0, 0, night.width, night.height);
+    return (artCache[name] = { img, night });
+  }
+  function drawArt(name, x, y, dark = 0) {
+    const { img, night } = artImg(name), w = img.width / 2, h = img.height / 2, sx = snap(x), sy = snap(y);
+    ctx.drawImage(img, sx, sy, w, h);
+    if (dark > .02) { ctx.globalAlpha = Math.min(1, dark); ctx.drawImage(night, sx, sy, w, h); ctx.globalAlpha = 1; }
+  }
   const PLAYER_PAL = {"k": "#1b1f2e", "h": "#22c55e", "H": "#15803d", "l": "#86efac", "s": "#f2c9a0", "S": "#d9a47a", "e": "#0f172a", "B": "#7c4a24", "b": "#a0662f", "c": "#f59e0b", "C": "#c2410c", "y": "#fcd34d", "w": "#f8fafc", "p": "#3b4a66", "P": "#26324a", "o": "#5b3a24", "O": "#3a2416", "r": "#e8a87c", "g": "#94a3b8"};
-  const PLAYER_BODY = ["........kkkkkk........", ".......khlllhhk.......", "......khhllhhhhk......", "......khhhhhhhhk......", "......khhhhhhhHk......", "...kkkkHHHHHHHHkkkk...", "..kHHHHHHHHHHHHHHHHk..", "...kkkkkkkkkkkkkkkk...", "......kssssssssk......", "......kssssssesk......", "......kSsssssesk......", "......kSssssssrsk.....", "......kSsssssssk......", "......kBBsssBBBk......", "......kBBBBBBBBk......", ".......kBBBBBBk.......", "......kkkcyyckkk......", ".....kcccyccccCCk.....", "....kccccyccccCCCk....", "....kcyccccwcccCCk....", "....kcyccccccccCCk....", "....kcycccccwccCCk....", "....kcyccccccccCCk....", "....kcycccccwccCCk....", "....kcyccccccccCCk....", "....kCCCCCCCCCCCCk....", "....kkpppppppppkkk....", ".....kppppPpppppk.....", ".....kppppkPppppk....."];
-  const PLAYER_LEGS = [[".....kpppk.kpppk......", ".....kpppk.kpppk......", ".....kPppk.kPppk......", ".....kPppk.kPppk......", ".....kooook.kooook....", ".....kOOOOk.kOOOOk....", "......kkkk...kkkk....."], [".....kpppk..kpppk.....", "....kpppk....kpppk....", "....kPppk....kPppk....", "...kPppk......kPppk...", "..kooook......kooook..", "..kOOOOk......kOOOOk..", "...kkkk........kkkk..."], ["......kpppk.kpppk.....", "......kpppk.kpppk.....", ".......kPppkkPppk.....", ".......kPppkkPppk.....", "......kooookooook.....", "......kOOOOkOOOOk.....", ".......kkkk.kkkk......"]];
+  const PLAYER_BODY = ["........kkkkkk........","......kkhlllhhkk......",".....khhlllhhhhhk.....",".....khhllhhhhhHk.....",".....khhhhhhhhHHk.....",".....kHHHHHHHHHHk.....","...kkkHHHHHHHHHHkkk...","..kHHHHHHHHHHHHHHHHk..","...kkkkkkkkkkkkkkkk...",".....kBBSsssssssk.....",".....kBBSssssewsk.....",".....kBSSssssessrk....",".....kBSssssssssrk....",".....kBBSsssSSSSk.....","......kBBSssssssk.....",".......kkSSSSSSkk.....",".....kkkyyyyyykkk.....","....kCccccyyycccck....","...kCCccccyyccccck....","...kCCcccccycccccck...","...kCCkccccyccccck....","...kCCkccccyccccck....","...kCCkcCCCyccCCck....","...kSskccccyccccck....","....kkkCcccyccccCk....","......kCcccyccccCk....","......kCCCCyCCCCCk....","......kPPPPPPPPPPk....","......kppppppPpppk...."];
+  const PLAYER_LEGS = [["......kpPpk.kppPk.....","......kpPpk.kppPk.....","......kPPpk.kPpPk.....","......koook.koook.....","......kOoook.kOoook...","......kOOOOk.kOOOOk...",".......kkkk...kkkk...."],[".....kpPpk...kppPk....","....kpPpk.....kppPk...","....kPPpk.....kPpPk...","...koook.......koook..","...kOoook......kOoook.","...kOOOOk......kOOOOk.","....kkkk........kkkk.."],[".......kpPpkppPk......",".......kpPpkppPk......",".......kPPpkPpPk......",".......koookoook......",".......kOoooooook.....",".......kOOOOOOOOOk....","........kkkkkkkkk....."]];
 
   // Bake a pixel map into a canvas (1 char = 1 fine pixel = 0.5 world units).
   function bake(rows, pal, flip) {
@@ -1801,27 +1860,7 @@
   // Käpt'n Bealin: an original old angler with a bushy grey beard, a green fishing hat with a
   // lure stuck in it, a red checked shirt and a patched olive vest. He rows his little boat out
   // on the water and is always far too excited about the fishing weather. Click him to chat.
-  const BEALIN_PAL = { k: '#1b1f2e', g: '#4d7c0f', G: '#365314', l: '#ef4444', o: '#facc15', s: '#f2c9a0', S: '#d9a47a', e: '#0f172a', b: '#e5e7eb', B: '#9ca3af', r: '#dc2626', R: '#7f1d1d', v: '#6b7a3a', V: '#4a5528', p: '#c8a26a' };
-  const BEALIN_BODY = bake([
-    '.....kkkkkk.....',
-    '....kggggggk....',
-    '....kgggglgk....',
-    '...kgggggogk....',
-    '..kGGGGGGGGGGk..',
-    '...kssssssssk...',
-    '...ksesssseSk...',
-    '...kbsssssbSk...',
-    '..kbbbsSSbbbbk..',
-    '..kbbbbbbbbbbk..',
-    '..kvbbbBbbbbvk..',
-    '.kvvrbbbbbbrvvk.',
-    '.kvvrRrbbrRrvVss',
-    '.kvpvrRrrRrvVVk.',
-    'kvvpvrrRRrrvVVVk',
-    'kvvvvrRrrRrvVVVk',
-    'kVVVVkRrrRkVVVVk',
-    'kVVVVkkkkkkVVVVk',
-  ], BEALIN_PAL);
+  const BEALIN_BODY = bake(...ART.bealin);
   const BEALIN = { x: 322, w: 30, h: 22 };
   // He always says the same thing. Every second chat he lets slip a vague hint about what he
   // secretly wants; doing it (whenever, wherever) pays out and he thinks of something new.
@@ -1919,7 +1958,7 @@
       ctx.textBaseline = 'alphabetic'; ctx.globalAlpha = 1;
     }
   }
-  const BOTTLE = bake(['.k.', '.k.', 'kbk', 'bob', 'byb', 'bob', 'kbk'], { k: '#1b1f2e', b: '#6b2d0f', o: '#f97316', y: '#a855f7' });
+  const BOTTLE = bake(...ART.bottle);
 
   let lastBg = '';
   const snap = v => Math.round(v * 2) / 2;
@@ -2201,31 +2240,18 @@
     }
   }
   function drawWheel(dark) { // the steering wheel on deck: back to the dock
-    const k = '#1b1f2e', cx = 12, cy = DOCK_Y - 15, wood = mix([150, 98, 56], [66, 48, 38], dark);
-    px(cx - .5, cy, 2, 15, k); px(cx, cy, 1, 15, wood);
-    ctx.strokeStyle = k; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(cx + .5, cy, 4.5, 0, 7); ctx.stroke();
-    ctx.strokeStyle = wood; ctx.lineWidth = .75; ctx.beginPath(); ctx.arc(cx + .5, cy, 4.5, 0, 7); ctx.stroke();
-    const a0 = Math.sin(t * .8) * .3;
-    for (let i = 0; i < 4; i++) {
-      const a = a0 + i * Math.PI / 4;
-      ctx.beginPath(); ctx.moveTo(cx + .5 - Math.cos(a) * 6, cy - Math.sin(a) * 6); ctx.lineTo(cx + .5 + Math.cos(a) * 6, cy + Math.sin(a) * 6); ctx.stroke();
-    }
-    px(cx - .5, cy - 1, 2, 2, k);
+    drawArt('wheel_' + Math.round((Math.sin(t * .8) + 1) * 2), 5.5, DOCK_Y - 22, dark); // five baked turns of the wheel
   }
   function drawRift(dark) { // a rock in the water with a glowing crack: the way down into the Glutgrotte
-    const k = '#1b1f2e', x0 = 196, by = SURFACE + 1, open = lavaOpen();
-    const rock = mix([88, 80, 76], [40, 36, 40], dark), rockL = mix([128, 118, 110], [60, 56, 60], dark), rockD = mix([60, 54, 52], [26, 24, 28], dark);
-    ctx.fillStyle = k; ctx.beginPath(); ctx.moveTo(x0 - .5, by); ctx.lineTo(x0 + 3, by - 9); ctx.lineTo(x0 + 8, by - 13.5); ctx.lineTo(x0 + 13, by - 11); ctx.lineTo(x0 + 18.5, by); ctx.fill();
-    ctx.fillStyle = rock; ctx.beginPath(); ctx.moveTo(x0 + .5, by); ctx.lineTo(x0 + 3.5, by - 8.5); ctx.lineTo(x0 + 8, by - 12.5); ctx.lineTo(x0 + 12.5, by - 10.5); ctx.lineTo(x0 + 17.5, by); ctx.fill();
-    px(x0 + 4, by - 8, 3, .5, rockL); px(x0 + 7.5, by - 12, 2, .5, rockL); px(x0 + 12, by - 4, 4, 3.5, rockD);
+    const x0 = 196, by = SURFACE + 1, open = lavaOpen();
+    drawArt('rift', x0 - .5, by - 13.5, dark);
     const glow = open ? (Math.sin(t * 3) > 0 ? '#fdba74' : '#f97316') : '#57534e';
     for (const [x, y] of [[8, 11], [8.5, 10], [9, 9], [8.5, 8], [9, 7], [9.5, 6], [9, 5], [9.5, 4], [10, 3], [9.5, 2]]) px(x0 + x, by - y, 1, 1, glow);
     if (open) { px(x0 + 9, by - 7, .5, .5, '#fef08a'); if (Math.sin(t * 2.3) > .6) px(x0 + 9 + Math.sin(t * 5), by - 13 - (t * 6) % 6, .5, .5, '#fdba74'); }
     drawGlimm(x0 + 3.5, by - 12, dark);
   }
   // Glimm: an old mole with a miner's helmet who lives on the glowing rock and knows the way down
-  const GLIMM = bake(['..kkkkk..', '.kHHHHHk.', 'kLHHHHHHk', '.kkkkkkk.', '.kBBBBBk.', 'kPkBBkBBk', 'kBBBBBBBk', '.kBbbbBk.', 'kCkBBBkCk', '.kk...kk.'],
-    { k: '#1b1f2e', H: '#facc15', L: '#fef9c3', B: '#6b4f3a', b: '#a78b6d', P: '#f9a8d4', C: '#fbcfe8' });
+  const GLIMM = bake(...ART.glimm);
   let glimmTalk = 0, glimmLine = '', glimmGo = 0;
   const GLIMM_SAY = {
     locked: ['Da unten ist es heißer als im Kiosk-Kaffee. Komm nach deinem ersten Prestige wieder.', 'Ohne Prestige lass ich keinen runter. Die Lava ist nichts für Anfänger.', 'Ich bin Glimm. Ich grabe. Und ich warte, bis du Prestige hast.'],
@@ -2254,9 +2280,7 @@
     }
   }
   function drawLadder(dark) { // the ladder up out of the cave, back to the dock
-    const k = '#1b1f2e', wood = mix([150, 98, 56], [80, 56, 40], dark * .4), woodD = mix([110, 70, 40], [60, 40, 30], dark * .4);
-    px(4.5, DOCK_Y - 28, 2, 28, k); px(12.5, DOCK_Y - 28, 2, 28, k); px(5, DOCK_Y - 28, 1, 28, wood); px(13, DOCK_Y - 28, 1, 28, wood);
-    for (let y = DOCK_Y - 26; y < DOCK_Y; y += 4) { px(5, y - .5, 9, 1.5, k); px(5.5, y, 8, .5, woodD); }
+    drawArt('ladder', 4.5, DOCK_Y - 28, dark * .4);
   }
   // the Glutgrotte: a rock ceiling with stalactites instead of sky, basalt columns and a lake of lava
   function renderCave(dark) {
@@ -2293,10 +2317,8 @@
     ctx.globalAlpha = .55 + .25 * Math.sin(t * 2); px(DOCK_END - .5, SURFACE - 1, 1, H - SURFACE + 1, glow); px(0, H - 3, DOCK_END, 3, '#c2410c'); ctx.globalAlpha = 1;
   }
   function drawBuoy(dark) { // red-white buoy near Bealin: the way out to the open sea
-    const k = '#1b1f2e', bx = 290, by = SURFACE - 6 + Math.sin(t * 2) * .8;
-    const red = mix([220, 50, 50], [90, 30, 40], dark), white = mix([240, 240, 240], [110, 116, 140], dark);
-    px(bx - 3.5, by - .5, 7, 7.5, k); px(bx - 3, by, 6, 2.5, red); px(bx - 3, by + 2.5, 6, 2, white); px(bx - 3, by + 4.5, 6, 2.5, red);
-    px(bx - .5, by - 9, 1, 9, k);
+    const bx = 290, by = SURFACE - 6 + Math.sin(t * 2) * .8;
+    drawArt('buoy', bx - 3.5, by - 9, dark);
     const locked = !seaOpen();
     for (let i = 0; i < 5; i++) px(bx + .5 + i, by - 9 + i * .1 + Math.sin(t * 5 - i) * .4, 1, 3.5 - i * .5, locked ? '#64748b' : '#facc15');
     if (dark > .3 && !locked && Math.sin(t * 3) > 0) px(bx - 1, by - 11, 2, 2, '#fde68a');
@@ -2541,38 +2563,7 @@
 
   // ------------------------------------------------------------------ shop kiosk with Herr Zylinderwels
   // An original pixel catfish in a top hat runs the shop from a little striped kiosk on the dock.
-  const WELS_PAL = {
-    k: '#111827', H: '#1f2937', h: '#4b5563', R: '#7f1d1d', r: '#b91c1c',
-    G: '#6b7a5e', g: '#8a9a7b', D: '#4f5b45', e: '#0b0f19', w: '#f8fafc',
-    L: '#c9a99a', l: '#e2c7b9', m: '#3b1d1d', p: '#d16b78', B: '#d9d2c0', b: '#bfb6a1',
-  };
-  const WELS_TOP = [
-    '......kkkkkkkkkk......',
-    '.....kHhhHHHHHHHk.....',
-    '.....kHhHHHHHHHHk.....',
-    '.....kHhHHHHHHHHk.....',
-    '.....kHHHHHHHHHHk.....',
-    '.....kHHHHHHHHHHk.....',
-    '.....kRrRRRRRRRRk.....',
-    '.....kRRRRRRRRRRk.....',
-    '..kkkkHHHHHHHHHHkkkk..',
-    '.kHhhhHHHHHHHHHHHHHHk.',
-    '..kkkkkkkkkkkkkkkkkk..',
-    '...kGGGgggGGGGGGGGk...',
-    '..kGGgggGGGGGGGGGGGk..',
-    '.kGGGGGGGGGGGGGGGGGGk.',
-  ];
-  const WELS_EYES = [
-    ['.kGewGGGGGGGGGGGGweGk.', '.kGeeGGGGGGGGGGGGeeGk.'],
-    ['.kGDDGGGGGGGGGGGGDDGk.', '.kGGGGGGGGGGGGGGGGGGk.'], // blink
-  ];
-  const WELS_MOUTH = [
-    ['kGGGGGGGGGGGGGGGGGGGGk', 'kGLLLLLLLLLLLLLLLLLLGk', 'kLlllllllllllllllllLLk', 'kLLmmmmmmmmmmmmmmmmLLk', 'kLLLLLLLLLLLLLLLLLLLLk'],
-    ['kGGGGGGGGGGGGGGGGGGGGk', 'kGLLLLLLLLLLLLLLLLLLGk', 'kLmmmmmmmmmmmmmmmmmmLk', 'kLmmmmppppppppppmmmmLk', 'kLLLLLLLLLLLLLLLLLLLLk'], // talking
-  ];
-  const WELS_BELLY = ['.kBBBbBBBBBBBBBBbBBBk.', '.kBBBBBBBBBBBBBBBBBBk.', '..kBBBBBBBBBBBBBBBBk..', '..kbbbbbbbbbbbbbbbbk..'];
-  const welsFrames = [0, 1].map(blink => [0, 1].map(talk =>
-    bake([...WELS_TOP, ...WELS_EYES[blink], ...WELS_MOUTH[talk], ...WELS_BELLY], WELS_PAL)));
+  const welsFrames = [0, 1].map(blink => [0, 1].map(talk => bake(...ART['wels_' + blink + talk])));
   const KIOSK = { x: 40, w: 24 };
   let welsTalk = 0, welsLine = '';
   function welsSay(line, secs = 2.6) { welsLine = line; welsTalk = secs; }
@@ -2581,62 +2572,26 @@
   // No menu buttons: the slot machine, the book on the crate, the trophy on the kiosk roof
   // and the notice board open their menus. Hover shows a label, "!" shows something to collect.
   function drawSlotMachine(dark) {
-    const k = '#1b1f2e', x0 = 3, y = DOCK_Y;
-    const red = mix([196, 38, 52], [86, 28, 40], dark), redL = mix([236, 96, 100], [118, 50, 60], dark), redD = mix([136, 22, 34], [56, 18, 26], dark);
-    px(x0 - .5, y - 20, 11, 20, k);
-    px(x0, y - 19.5, 10, 19.5, red); px(x0, y - 19.5, 10, .5, redL); px(x0 + 9, y - 19.5, 1, 19.5, redD);
-    px(x0 + 1, y - 18.5, 8, 3, '#f59e0b');
+    const x0 = 3, y = DOCK_Y;
+    drawArt('slot', x0 - .5, y - 20, dark);
     for (let i = 0; i < 4; i++) px(x0 + 1.5 + i * 2, y - 17.5, 1, 1, (Math.floor(t * 4) + i) % 2 ? '#fff7cc' : '#b45309');
-    px(x0 + 1, y - 14, 8, 5.5, k); px(x0 + 1.5, y - 13.5, 7, 4.5, '#f8fafc');
     const sym = ['#38bdf8', '#fbbf24', '#f472b6', '#4ade80'];
     for (let i = 0; i < 3; i++) { const c = sym[(Math.floor(t * .7) + i * 2) % 4]; px(x0 + 2 + i * 2.3, y - 12, 1.5, 1.5, c); px(x0 + 1.5 + i * 2.3, y - 11.5, .5, .5, c); }
-    px(x0 + 3, y - 7, 4, .5, k);
-    px(x0 + 1, y - 4.5, 8, 3, k); px(x0 + 1.5, y - 4, 7, 2, '#475569'); px(x0 + 4, y - 3.5, 1.5, 1, '#fbbf24');
-    px(x0 + 10, y - 12.5, 1, 1.5, k); px(x0 + 10.5, y - 17.5, .5, 5, '#94a3b8');
-    disc(x0 + 10.75, y - 18, 1.2, '#ef4444'); px(x0 + 10.25, y - 18.75, .5, .5, '#fecaca');
   }
   function drawDexBook(dark) {
-    const k = '#1b1f2e', x0 = 29, y = DOCK_Y;
-    const wood = mix([150, 102, 58], [70, 52, 40], dark), woodL = mix([186, 134, 82], [90, 66, 50], dark), woodD = mix([104, 66, 36], [48, 36, 28], dark);
-    px(x0 - .5, y - 5, 8, 5, k); px(x0, y - 4.5, 7, 4.5, wood); px(x0, y - 4.5, 7, .5, woodL);
-    px(x0 + 2.25, y - 4, .5, 4, woodD); px(x0 + 4.75, y - 4, .5, 4, woodD);
-    px(x0 - .5, y - 7, 8, 2, k); px(x0, y - 6.5, 7, 1.5, mix([37, 99, 235], [30, 58, 120], dark));
-    px(x0, y - 8.5, 3.25, 2.5, k); px(x0 + 3.75, y - 8.5, 3.25, 2.5, k);
-    const page = mix([248, 250, 252], [150, 160, 180], dark);
-    px(x0 + .5, y - 8, 2.5, 1.75, page); px(x0 + 4, y - 8, 2.5, 1.75, page);
-    px(x0 + 1, y - 7.5, 1.5, .5, '#94a3b8'); px(x0 + 4.5, y - 7.5, 1.5, .5, '#38bdf8');
+    drawArt('dex', 28.5, DOCK_Y - 8.5, dark);
   }
   // the "Steg-Zeitung": a bundle of newspapers on the dock that holds the patch notes
   function drawNewspaper(dark) {
-    const k = '#1b1f2e', x0 = 104, y = DOCK_Y;
-    const paper = mix([241, 245, 249], [140, 150, 170], dark), paperD = mix([203, 213, 225], [100, 110, 130], dark), ink = mix([71, 85, 105], [50, 60, 80], dark);
-    px(x0 - .5, y - 5.5, 8, 5.5, k);
-    px(x0, y - 2.5, 7, 2.5, paperD); px(x0, y - 5, 7, 2.5, paper);
-    px(x0 + .5, y - 4.5, 3, .75, k); px(x0 + 4, y - 4.5, 2.5, .5, ink); px(x0 + 4, y - 3.5, 2.5, .5, ink); px(x0 + .5, y - 3.25, 3, .5, ink);
-    px(x0 + 3.25, y - 5.5, .5, 5.5, mix([180, 83, 9], [100, 60, 20], dark)); // string
+    drawArt('news', 103.5, DOCK_Y - 5.5, dark);
   }
   function drawTrophy(dark) {
-    const k = '#1b1f2e', cx = KIOSK.x + KIOSK.w / 2, yb = DOCK_Y - 37.5;
-    const gold = mix([251, 191, 36], [160, 120, 40], dark), goldL = mix([253, 230, 138], [190, 160, 90], dark), goldD = mix([217, 119, 6], [120, 80, 20], dark);
-    px(cx - 3, yb - 2, 6, 2, k); px(cx - 2.5, yb - 1.5, 5, 1, '#7c4a24');
-    px(cx - 1, yb - 4, 2, 2, k); px(cx - .5, yb - 4, 1, 2, gold);
-    px(cx - 4.5, yb - 9, 1.5, 3, k); px(cx + 3, yb - 9, 1.5, 3, k);
-    px(cx - 4, yb - 8.5, .5, 2, gold); px(cx + 3.5, yb - 8.5, .5, 2, gold);
-    px(cx - 3.5, yb - 10, 7, 6, k); px(cx - 3, yb - 9.5, 6, 5, gold); px(cx - 3, yb - 9.5, 6, .5, goldL); px(cx + 2, yb - 9, 1, 4.5, goldD);
-    px(cx - 1.5, yb - 8, .5, 2, goldL);
+    const cx = KIOSK.x + KIOSK.w / 2, yb = DOCK_Y - 37.5;
+    drawArt('trophy', cx - 5, yb - 10, dark);
     if (Math.sin(t * 2.2) > .93) { px(cx + 1, yb - 11.5, .5, 2.5, '#fffbeb'); px(cx, yb - 10.5, 2.5, .5, '#fffbeb'); }
   }
   function drawBoard(dark) {
-    const k = '#1b1f2e', x0 = 65, y = DOCK_Y;
-    const post = mix([96, 62, 36], [42, 30, 26], dark), cork = mix([183, 131, 74], [82, 62, 44], dark), frame = mix([120, 78, 42], [56, 40, 30], dark);
-    px(x0 + .5, y - 10.5, 1.5, 10.5, k); px(x0 + 7, y - 10.5, 1.5, 10.5, k);
-    px(x0 + 1, y - 10.5, .75, 10.5, post); px(x0 + 7.5, y - 10.5, .75, 10.5, post);
-    px(x0 - .5, y - 20, 10, 10.5, k); px(x0, y - 19.5, 9, 9.5, frame); px(x0 + .5, y - 19, 8, 8.5, cork);
-    const paper = (x, yy, w, h, c) => { px(x, yy, w, h, c); px(x + .5, yy + 1, w - 1, .5, '#94a3b8'); if (h > 2) px(x + .5, yy + 2, w - 1.5, .5, '#94a3b8'); };
-    paper(x0 + 1, y - 18.5, 3, 3, mix([254, 243, 199], [120, 115, 100], dark));
-    paper(x0 + 4.5, y - 18, 3.5, 2.5, mix([191, 219, 254], [90, 105, 125], dark));
-    paper(x0 + 2, y - 14.5, 4, 3, mix([254, 202, 202], [120, 95, 95], dark));
-    px(x0 + 2.25, y - 18.75, .5, .5, '#ef4444'); px(x0 + 6, y - 18.25, .5, .5, '#22c55e'); px(x0 + 3.75, y - 14.75, .5, .5, '#3b82f6');
+    drawArt('board', 64.5, DOCK_Y - 20, dark);
   }
   const PROPS = [
     { id: 'casino', label: tr('Fischautomat'),  x: 2.5, y: DOCK_Y - 20, w: 12.5, h: 20, draw: drawSlotMachine, open: () => toggleModal('casino') },
@@ -2681,9 +2636,8 @@
   const muschelImg = new Image(); muschelImg.src = 'img/miesmuschel.png';
   let muschelNight = null;
   function drawMuschelRock(dark) {
-    const k = '#1b1f2e', x0 = 120, y = SURFACE;
-    const rock = mix([100, 116, 139], [40, 48, 66], dark), rockL = mix([148, 163, 184], [60, 70, 92], dark), rockD = mix([71, 85, 105], [30, 36, 52], dark);
-    px(x0 + 1, y - 3.5, 13, 4, k); px(x0 + 1.5, y - 3, 12, 3.5, rock); px(x0 + 2, y - 3, 6, .75, rockL); px(x0 + 9, y - 1, 4, 1, rockD);
+    const x0 = 120, y = SURFACE;
+    drawArt('muschelrock', x0 + 1, y - 3.5, dark);
     ctx.globalAlpha = .7; px(x0 + .5 + Math.sin(t * 2) * .5, y + .5, 14, .5, '#e0f2fe'); ctx.globalAlpha = 1;
     if (!muschelImg.complete || !muschelImg.naturalWidth) return;
     const lift = muschelPull > 0 ? Math.sin(muschelPull * Math.PI) * 1.5 : 0;
@@ -2738,28 +2692,19 @@
 
   // Glutflosse's stall in the Glutgrotte: basalt counter, glowing roof, a fin peeking out and a LAVA sign
   function drawLavaStall() {
-    const k = '#1b1f2e', x0 = KIOSK.x, w = KIOSK.w, y = DOCK_Y, glow = Math.sin(t * 3) > 0 ? '#fb923c' : '#f97316';
-    px(x0 + 1, y - 26, w - 2, 17, '#2a2220');                                    // back wall
-    px(x0 + 2, y - 25, w - 4, 15, '#3f3533');
-    for (let i = 0; i < 4; i++) px(x0 + 4 + i * 5, y - 20 + (i % 2) * 3, 2, 1, '#7c2d12'); // glowing cracks
-    const bob = Math.sin(t * 4) * .8;                                            // the shark's fin peeks over the counter
-    px(x0 + 8, y - 15 + bob, 8, 6, k); px(x0 + 9, y - 14 + bob, 6, 5, '#3b82f6'); px(x0 + 11, y - 17 + bob, 3, 3, k); px(x0 + 11.5, y - 16.5 + bob, 2, 2.5, '#60a5fa');
-    px(x0 + 10, y - 12.5 + bob, 1, 1, '#f8fafc'); px(x0 + 13, y - 12.5 + bob, 1, 1, '#f8fafc');
-    px(x0 - 2.5, y - 30.5, w + 5, 4.5, k);                                        // roof
-    for (let i = 0; i < w + 4; i += 2) px(x0 - 2 + i, y - 30, 2, 3.5, i % 4 ? '#b91c1c' : glow);
-    px(x0 - .5, y - 9.5, w + 1, 9.5, k);                                          // counter
-    px(x0, y - 9, w, 9, '#44403c'); px(x0, y - 9, w, 1, '#78716c');
-    px(x0 + 5, y - 7.5, 14, 5, '#1c0a05'); px(x0 + 5, y - 7.5, 14, .5, glow);
+    const x0 = KIOSK.x, w = KIOSK.w, y = DOCK_Y, glow = Math.sin(t * 3) > 0 ? '#fb923c' : '#f97316';
+    drawArt('lava_back', x0 + 1, y - 26);
+    drawArt('lava_fin', x0 + 8, y - 17 + Math.sin(t * 4) * .8);                  // the shark's fin peeks over the counter
+    drawArt('lava_front', x0 - 2.5, y - 30.5);
+    for (let i = 0; i < w + 4; i += 4) px(x0 - 2 + i, y - 30, 2, 3.5, glow);     // glowing roof stripes
+    px(x0 + 5, y - 7.5, 14, .5, glow);
     ctx.fillStyle = glow; setFont('700 4px Poppins, sans-serif'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText('LAVA', x0 + 12, y - 5); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
     if (Math.sin(t * 2.7) > .5) px(x0 + 2 + (t * 7) % (w - 4), y - 31 - (t * 5) % 4, .5, .5, '#fde047'); // sparks over the roof
   }
   function drawKiosk(dark) {
-    const k = '#1b1f2e', x0 = KIOSK.x, x1 = KIOSK.x + KIOSK.w, y = DOCK_Y;
-    const wood = mix([150, 98, 56], [66, 48, 38], dark), woodL = mix([186, 128, 78], [86, 62, 48], dark), woodD = mix([104, 66, 38], [46, 34, 28], dark);
-    // back wall
-    px(x0 + 1, y - 30, KIOSK.w - 2, 21, mix([92, 62, 40], [40, 30, 26], dark));
-    for (let xx = x0 + 3; xx < x1 - 2; xx += 4) px(xx, y - 30, .5, 21, woodD);
+    const x0 = KIOSK.x, x1 = KIOSK.x + KIOSK.w, y = DOCK_Y;
+    drawArt('kiosk_back', x0 + 1, y - 30, dark);
     // the catfish (bobs a little, blinks, opens its mouth while talking)
     const blink = (t % 4) < .12 ? 1 : 0, talk = welsTalk > 0 && Math.sin(t * 18) > 0 ? 1 : 0;
     const img = welsFrames[blink][talk], wy = y - 22.5 + Math.round(Math.sin(t * 2.2)) * .5;
@@ -2769,31 +2714,11 @@
     const my = wy + 17, sw = Math.sin(t * 2.6) * 1.2;
     ctx.beginPath(); ctx.moveTo(x0 + 1.5, my); ctx.quadraticCurveTo(x0 - 3, my + 1, x0 - 4 + sw, my + 5); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x0 + 11.5, my); ctx.quadraticCurveTo(x0 + 16, my + 1, x0 + 17 - sw, my + 5); ctx.stroke();
-    // counter
-    px(x0 - .5, y - 9.5, KIOSK.w + 1, 9.5, k);
-    px(x0, y - 9, KIOSK.w, 9, wood);
-    px(x0, y - 9, KIOSK.w, 1, woodL);
-    for (let xx = x0 + 4; xx < x1; xx += 5) px(xx, y - 8, .5, 8, woodD);
-    px(x0 - 1, y - 10.5, KIOSK.w + 2, 1.5, woodD); px(x0 - 1, y - 10.5, KIOSK.w + 2, .5, woodL);
-    // sign on the counter
-    px(x0 + 5, y - 7.5, 14, 5, '#fef3c7'); px(x0 + 5, y - 7.5, 14, .5, '#fffbeb'); px(x0 + 5, y - 3, 14, .5, '#d6c49a');
+    // counter, goods, posts and awning in front of him; the word on the sign stays translatable
+    drawArt('kiosk_front', x0 - 3, y - 37.5, dark);
     ctx.fillStyle = '#7f1d1d'; setFont('700 4px Poppins, sans-serif'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(tr('LADEN'), x0 + 12, y - 5); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-    // goods on the counter: a jar of worms and a sparkly lure
-    px(x0 + 1, y - 13.5, 3, 3, '#bae6fd'); px(x0 + 1.5, y - 12.5, 2, 1.5, '#f472b6'); px(x0 + 1, y - 14, 3, .5, '#475569');
-    const tw = (Math.sin(t * 6) + 1) / 2;
-    px(x1 - 4, y - 12.5, 2, 2, '#fbbf24'); px(x1 - 3.5, y - 12, 1, 1, tw > .5 ? '#fff7cc' : '#f59e0b');
-    // posts
-    px(x0 - .5, y - 33, 2, 23, k); px(x0, y - 32.5, 1, 22.5, woodL);
-    px(x1 - 1.5, y - 33, 2, 23, k); px(x1 - 1, y - 32.5, 1, 22.5, wood);
-    // striped awning with scalloped edge
-    px(x0 - 3, y - 37.5, KIOSK.w + 6, 5.5, k);
-    for (let i = 0; i < 7; i++) {
-      const sx = x0 - 2.5 + i * 4.25;
-      px(sx, y - 37, 4.25, 5, i % 2 ? '#f8fafc' : '#dc2626');
-      px(sx + .5, y - 32, 3.25, 1, i % 2 ? '#e2e8f0' : '#b91c1c');
-    }
-    px(x0 - 2.5, y - 37, KIOSK.w + 5, .5, 'rgba(255,255,255,.5)');
+    px(x1 - 3.5, y - 12, 1, 1, (Math.sin(t * 6) + 1) / 2 > .5 ? '#fff7cc' : '#f59e0b'); // the lure on the counter twinkles
     // speech bubble
     if (welsTalk > 0) {
       setFont('6px Poppins, sans-serif');
@@ -3573,42 +3498,27 @@
   for (const r of RODS) ICONS[r.id] = iconCanvas(p => {
     const col = ROD_COLORS[r.id] || ROD_COLORS.stock;
     for (let i = 0; i < 13; i++) { p(2 + i, 13 - i, col(i)); if (i < 4) p(2 + i, 14 - i, col(i)); }   // rod, thicker grip
-    p(3, 14, '#1b1f2e'); p(2, 14, '#1b1f2e');                                                       // butt cap
+    p(2, 14, '#1b1f2e'); p(3, 14, '#1b1f2e');                                                       // butt cap
+    p(10, 7, '#cbd5e1'); p(13, 4, '#cbd5e1');                                                       // line guides
     for (const [a, b] of [[5, 12], [6, 12], [5, 13], [6, 13]]) p(a, b, '#64748b'); p(5, 12, '#cbd5e1'); // reel
+    p(7, 13, '#94a3b8'); p(7, 14, '#f8fafc');                                                       // reel handle
     for (let y = 1; y < 9; y++) p(15, y, 'rgba(255,255,255,.7)');                                    // line
-    p(15, 9, '#ef4444'); p(15, 10, '#f8fafc');                                                       // bobber
+    p(14, 9, '#ef4444'); p(15, 9, '#ef4444'); p(14, 10, '#f8fafc'); p(15, 10, '#f8fafc');           // bobber
     if (r.id === 'stern') { p(13, 2, '#fde68a'); p(12, 3, '#fde68a'); p(14, 3, '#fde68a'); p(13, 4, '#fde68a'); p(13, 3, '#fff'); }
   });
-  const BAIT_ART = {
-    wurm:  [['....pppp........', '...pPPPPp.......', '...pP..Pp.......', '....p..Pp.......', '.......pP.ppp...', '.......pPpPPPp..', '........pP..Pp..', '.............Pp.', '.............Pp.', '............pPe.', '.............p..'], { p: '#f472b6', P: '#ec4899', e: '#1b1f2e' }],
-    spezi: [['......kk........', '......kk........', '.....kbbk.......', '....kbooBk......', '....kboyBk......', '....kbooBk......', '....kbyyBk......', '....kbooBk......', '....kbooBk......', '....kbbbBk......', '.....kkkk.......'], { k: '#1b1f2e', b: '#6b2d0f', B: '#4a1f0a', o: '#f97316', y: '#a855f7' }],
-    glitzer: [['.......k........', '.......k........', '......kSk.......', '.....kSsSk......', '....kSsWsSk.....', '....kSsssSk.....', '....kSsWsSk.....', '.....kSsSk......', '......kSk.......', '.......k........', '......kkk.......'], { k: '#1b1f2e', S: '#cbd5e1', s: '#e2e8f0', W: '#fde68a' }],
-    mond: [['.....kkkk.......', '...kkMMMMk......', '..kMMMmmkk......', '..kMMmk.........', '.kMMmk..........', '.kMMmk..........', '.kMMmk..........', '..kMMmk.........', '..kMMMmmkk......', '...kkMMMMk......', '.....kkkk.......'], { k: '#1b1f2e', M: '#fde68a', m: '#fbbf24' }],
-  };
-  // the Odköder: a black-and-white lure with a glaring eye and a big hook
-  BAIT_ART.abyss = [['......kk........', '.....kAAk.......', '....kAaaAk......', '...kAaWWaAk.....', '...kAaWWaAk.....', '....kAaaAk......', '.....kAAk.......', '......kk........', '......k.........', '......k..k......', '.......kk.......'],
-    { k: '#0b0f19', A: '#0e7490', a: '#22d3ee', W: '#ecfeff' }];
-  BAIT_ART.glutkoeder = [['......kk........', '.....kOOk.......', '....kOyyOk......', '...kOyWWyOk.....', '...kRyWWyRk.....', '....kRyyRk......', '.....kRRk.......', '......kk........', '......k.........', '......k..k......', '.......kk.......'],
-    { k: '#1b1f2e', O: '#f97316', y: '#facc15', W: '#fef9c3', R: '#b91c1c' }];
-  BAIT_ART.lockkoeder = [['......kk........', '.....kGGk.......', '....kGggGk......', '...kGgRRgGk.....', '...kGgRRgGk.....', '....kGggGk......', '.....kGGk.......', '......kk........', '......k.........', '......k..k......', '.......kk.......'],
-    { k: '#1b1f2e', G: '#57534e', g: '#a8a29e', R: '#ef4444' }];
-  BAIT_ART.odkoeder = [['................', '....kkkkkk......', '..kkWWWWwwkk....', '.kWWkkWWwwwwk...', 'kWWkRkWwwwwwkk.k', 'kWWWkkWwwwwwwkkk', '.kWWWWwwwwwwkk.k', '..kkwwwwwwkk....', '....kkkkkk......', '......k.........', '......k..k......', '.......kk.......'],
-    { k: '#0b0f19', W: '#f8fafc', w: '#94a3b8', R: '#ef4444' }];
-  for (const b of BAITS) ICONS[b.id] = iconCanvas(p => {
-    const [rows, pal] = BAIT_ART[b.id] || BAIT_ART.wurm;
-    rows.forEach((row, y) => [...row].forEach((ch, x) => { if (pal[ch]) p(x + 1, y + 3, pal[ch]); }));
-  });
+  const BAIT_ART = { wurm: ART.bait_wurm, spezi: ART.bait_spezi, glitzer: ART.bait_glitzer, mond: ART.bait_mond, abyss: ART.bait_abyss, glutkoeder: ART.bait_glutkoeder, lockkoeder: ART.bait_lockkoeder, odkoeder: ART.bait_odkoeder };
+  const artIcon = ([rows, pal]) => iconCanvas(p => rows.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.') p(x, y, pal[ch]); })));
+  for (const b of BAITS) ICONS[b.id] = artIcon(BAIT_ART[b.id] || BAIT_ART.wurm);
   for (const b of BAITS) if (b.img) ICONS[b.id] = b.img;
   for (const b of BOXES) ICONS[b.id] = iconCanvas(p => {
     const [m, d, g] = b.col, k = '#1b1f2e';
-    for (let x = 2; x < 14; x++) { p(x, 3, k); p(x, 14, k); }
-    for (let y = 3; y < 15; y++) { p(1, y, k); p(14, y, k); }
-    for (let y = 4; y < 14; y++) for (let x = 2; x < 14; x++) p(x, y, y < 7 ? (y === 4 ? g : m) : (x + y) % 5 ? m : d);
-    for (let x = 2; x < 14; x++) p(x, 7, k);                       // lid edge
-    for (let y = 4; y < 14; y++) { p(4, y, d); p(11, y, d); }       // bands
-    p(7, 7, g); p(8, 7, g); p(7, 8, g); p(8, 8, g); p(7, 9, k); p(8, 9, k); // lock
-    p(6, 1, '#fde68a'); p(9, 0, '#fde68a'); p(12, 1, '#fff');       // sparkle
-    p(7, 5, '#fff'); p(8, 5, '#fff');                               // question mark hint
+    for (let x = 2; x < 14; x++) { p(x, 2, k); p(x, 14, k); }
+    for (let y = 3; y < 14; y++) { p(1, y, k); p(14, y, k); }
+    for (let y = 3; y < 14; y++) for (let x = 2; x < 14; x++) p(x, y, y === 3 ? g : y === 7 ? k : y === 13 ? d : m); // lid, edge and floor
+    for (let y = 3; y < 14; y++) if (y !== 7) { p(4, y, d); p(11, y, d); }                                       // bands
+    p(4, 5, g); p(11, 5, g); p(4, 10, g); p(11, 10, g);                                                          // rivets
+    p(7, 6, k); p(8, 6, k); p(7, 7, g); p(8, 7, g); p(7, 8, g); p(8, 8, g); p(7, 9, k); p(8, 9, k);              // lock
+    p(13, 1, '#fff'); p(12, 1, '#fde68a'); p(14, 1, '#fde68a'); p(13, 0, '#fde68a');                             // sparkle
   });
 
   function statBar(label, v, max) {
@@ -3618,22 +3528,38 @@
     f.style.width = Math.min(100, v / max * 100) + '%'; bar.append(f);
     d.append(l, bar); return d;
   }
-  for (const sn of SNACKS) { // the emoji, drawn small so it looks like the rest of the pixel icons
-    const c = document.createElement('canvas'); c.width = c.height = 16;
-    const x = c.getContext('2d'); x.font = '13px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(sn.icon, 8, 9);
-    ICONS[sn.id] = c.toDataURL();
+  for (const sn of SNACKS) ICONS[sn.id] = artIcon(ART['snack_' + sn.id]);
+  function hatIcon(p, h, H, l) {
+    const k = '#1b1f2e';
+    for (let x = 5; x <= 10; x++) p(x, 3, k);
+    for (let y = 4; y <= 8; y++) { p(4, y, k); p(11, y, k); for (let x = 5; x <= 10; x++) p(x, y, y === 4 ? l : y >= 7 || x === 10 ? H : h); }
+    p(6, 5, l);
+    for (let x = 1; x <= 14; x++) { p(x, 9, k); p(x, 10, x > 10 ? H : h); p(x, 11, k); }
+    p(0, 10, k); p(15, 10, k);
+  }
+  function jacketIcon(p, cc, C, y) {
+    const k = '#1b1f2e';
+    for (let x = 5; x <= 10; x++) p(x, 2, k);
+    for (let yy = 3; yy <= 13; yy++) for (let x = 3; x <= 12; x++) p(x, yy, x === 3 || x === 12 || yy === 13 ? k : x === 7 || x === 8 && yy < 5 ? y : x > 9 ? C : cc);
+    for (let x = 6; x <= 9; x++) if (x !== 7 && x !== 8) p(x, 3, '#f2c9a0');
+    p(5, 10, C); p(6, 10, C); p(9, 10, C); p(10, 10, C);                 // pockets
+    for (let yy = 5; yy <= 11; yy++) { p(1, yy, k); p(2, yy, yy === 11 ? y : cc); p(13, yy, yy === 11 ? y : C); p(14, yy, k); } // sleeves with cuffs
+  }
+  function bobberIcon(p, top) {
+    const k = '#1b1f2e';
+    p(7, 1, k); p(8, 1, k); p(7, 2, k); p(8, 2, k);
+    for (let y = 3; y <= 13; y++) for (let x = 2; x <= 13; x++) {
+      const r = (x - 7.5) ** 2 + (y - 8) ** 2;
+      if (r <= 27) p(x, y, r > 18 || y === 8 ? k : y < 8 ? top(x, y) : '#f8fafc');
+    }
+    p(5, 5, '#fff');
   }
   for (const c of COSMETICS) ICONS[c.id] = iconCanvas(p => {
     const k = '#1b1f2e';
     if (c.slot === 'hat') {
-      const [h, H, l] = c.col;
-      for (let x = 5; x <= 10; x++) p(x, 4, k); for (let x = 4; x <= 11; x++) for (let y = 5; y <= 8; y++) p(x, y, x === 4 || x === 11 ? k : y === 5 ? l : h);
-      for (let x = 1; x <= 14; x++) { p(x, 9, k); p(x, 10, H); p(x, 11, k); } p(0, 10, k); p(15, 10, k);
+      hatIcon(p, ...c.col);
     } else if (c.slot === 'jacket') {
-      const [cc, C, y] = c.col;
-      for (let yy = 3; yy <= 13; yy++) for (let x = 3; x <= 12; x++) p(x, yy, x === 3 || x === 12 || yy === 13 ? k : x === 7 ? y : x > 9 ? C : cc);
-      for (let x = 5; x <= 10; x++) p(x, 2, k); p(6, 3, '#f2c9a0'); p(7, 3, '#f2c9a0'); p(8, 3, '#f2c9a0'); p(9, 3, '#f2c9a0');
-      for (let yy = 5; yy <= 11; yy++) { p(1, yy, k); p(2, yy, cc); p(13, yy, C); p(14, yy, k); }
+      jacketIcon(p, ...c.col);
     } else if (c.slot === 'boat') { // a tiny Hoff: curly hair, blue eyes, a smirk
       const H = '#4a2a12', S = '#c98552';
       for (let y = 2; y <= 13; y++) for (let x = 2; x <= 13; x++) {
@@ -3645,11 +3571,7 @@
       p(4, 1, H); p(7, 1, H); p(10, 1, H);
     } else {
       const rb = ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#a855f7'];
-      for (let x = 4; x <= 11; x++) for (let y = 3; y <= 12; y++) {
-        const edge = x === 4 || x === 11 || y === 3 || y === 12;
-        p(x, y, edge ? k : y < 8 ? (c.col || rb[(x + y) % 6]) : y === 8 ? k : '#f8fafc');
-      }
-      p(7, 1, k); p(7, 2, k); p(8, 1, k); p(8, 2, k);
+      bobberIcon(p, (x, y) => c.col || rb[y - 3]);
     }
   });
   function cosmWare(c) {
@@ -3723,10 +3645,15 @@
       sec.append(h, grid); return sec;
     }));
   }
-  ICONS['hut-std'] = iconCanvas(p => { const [h, H, l] = HATS[Math.min(HATS.length - 1, save.rebirths)]; for (let x = 5; x <= 10; x++) p(x, 4, '#1b1f2e'); for (let x = 4; x <= 11; x++) for (let y = 5; y <= 8; y++) p(x, y, x === 4 || x === 11 ? '#1b1f2e' : y === 5 ? l : h); for (let x = 1; x <= 14; x++) { p(x, 9, '#1b1f2e'); p(x, 10, H); p(x, 11, '#1b1f2e'); } });
-  ICONS['jacke-std'] = iconCanvas(p => { for (let yy = 3; yy <= 13; yy++) for (let x = 3; x <= 12; x++) p(x, yy, x === 3 || x === 12 || yy === 13 ? '#1b1f2e' : x === 7 ? '#fcd34d' : x > 9 ? '#c2410c' : '#f59e0b'); });
-  ICONS['boot-std'] = iconCanvas(p => { const k = '#1b1f2e'; for (let x = 1; x <= 14; x++) for (let y = 9; y <= 12; y++) if (x - 1 >= y - 9 || y < 11) p(x, y, x === 1 || x === 14 || y === 12 || y === 9 ? k : y === 11 ? '#be2828' : '#26487c'); for (let y = 2; y <= 9; y++) p(8, y, '#a87040'); for (let y = 3; y <= 6; y++) for (let x = 4; x <= 7; x++) p(x, y, '#e2e8f0'); });
-  ICONS['pose-std'] = iconCanvas(p => { for (let x = 4; x <= 11; x++) for (let y = 3; y <= 12; y++) p(x, y, x === 4 || x === 11 || y === 3 || y === 12 ? '#1b1f2e' : y < 8 ? '#ef4444' : y === 8 ? '#1b1f2e' : '#f8fafc'); });
+  ICONS['hut-std'] = iconCanvas(p => hatIcon(p, ...HATS[Math.min(HATS.length - 1, save.rebirths)]));
+  ICONS['jacke-std'] = iconCanvas(p => jacketIcon(p, '#f59e0b', '#c2410c', '#fcd34d'));
+  ICONS['boot-std'] = iconCanvas(p => {
+    const k = '#1b1f2e';
+    for (let y = 9; y <= 12; y++) { const a = y - 8, b = 23 - y; for (let x = a; x <= b; x++) p(x, y, x === a || x === b || y === 9 || y === 12 ? k : y === 11 ? '#be2828' : '#26487c'); }
+    for (let y = 1; y <= 8; y++) p(8, y, '#a87040');
+    for (let y = 2; y <= 7; y++) for (let x = 8 - (y - 1); x <= 7; x++) p(x, y, x === 8 - (y - 1) || y === 7 ? '#94a3b8' : '#e2e8f0');
+  });
+  ICONS['pose-std'] = iconCanvas(p => bobberIcon(p, () => '#ef4444'));
   function ware({ id, name, desc, stats, state, btnText, disabled, onClick, owned }) {
     const c = document.createElement('div'); c.className = 'ware' + (state ? ' ' + state : '');
     const ic = document.createElement('img'); ic.className = 'ware-icon' + (ICONS[id].startsWith('data:') ? '' : ' photo'); ic.src = ICONS[id]; ic.alt = '';

@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-15`
+
+- 🎨 New pixel art almost everywhere: every self-drawn fish, the lava creatures and the Odfisch have been repainted. So have your angler, Bealin, Glimm, Herr Zylinderwels, the things on the dock (slot machine, kiosk, board, trophy, book, newspaper), Glutflosse’s stall, the buoy, the steering wheel, the David Hasselhoff skin and the shop icons. Snacks now have real pixel icons instead of emoji. The gameplay itself doesn’t change.
+
 ## 04.11.2026 · `2026-11-04-14`
 
 - 🐚 New at the dock: the Magic Conch (epic, also on the high seas). When you catch it, it tells you an answer right away. After that it sits on a rock next to the dock: click it, ask a question and pull the string. With sound on it answers in a deep voice.
