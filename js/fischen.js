@@ -148,6 +148,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-9', date: '04.11.2026', items: [
+      '🎬 Der Odfisch-Kampf hat jetzt Zwischensequenzen: Er taucht mit Kinobalken, Beben und Titelkarte auf, springt bei jedem Phasenwechsel aus dem Wasser (in der Wut-Phase mit glühenden Augen), und am Ende gibt es eine Sieges- oder Abtauch-Szene. Dazu blitzt er bei Treffern auf und zeigt den Schaden als Zahlen.',
+    ] },
     { id: '2026-11-04-8', date: '04.11.2026', items: [
       '⛏️ Glutsteine und die Grotten-Tiefe werden bei Wiedergeburt und Prestige jetzt zurückgesetzt – du gräbst dich jedes Mal neu hinunter. Glimms Werkstatt, sein Vertrauen und seine Aufträge bleiben.',
     ] },
@@ -880,6 +883,40 @@
   const bossImg = new Image(); bossImg.src = ODBOSS.img;
   const boss = { on: false, id: '', max: 1, hp: 1, ends: 0, mine: 0, pend: 0, stun: 0, solo: true, n: 1, rhythmT: 0, shoutT: 0, won: false, x: W - 80, rise: 0, quake: 0, invite: null, synced: 0 };
   if (!Array.isArray(save.bossDone)) save.bossDone = [];
+  // cutscenes for the Odfisch: intro, phase changes, victory and escape. While one runs the fight pauses
+  // (solo: the clock is extended by its length), the canvas gets cinema bars and a title card.
+  const cine = { on: false, kind: '', t: 0, dur: 0, title: '', sub: '', c: '#fbbf24', then: null };
+  const bossFx = { flash: 0, jump: 0, hitT: 0, lastPh: 1, sink: 0 };
+  function startCine(kind, dur, title, sub, c, then) {
+    if (reduceMotion) dur = Math.min(dur, 1.6);
+    Object.assign(cine, { on: true, kind, t: 0, dur, title, sub, c: c || '#fbbf24', then: then || null });
+    holding = false;
+    if (boss.on && boss.solo) boss.ends += dur * 1000;
+  }
+  function updateCine(dt) {
+    if (!cine.on) return;
+    cine.t += dt;
+    if (cine.kind === 'intro' && cine.t > .4 && cine.t - dt <= .4) { splash(boss.x, SURFACE, 50, '#ffffff'); ripple(boss.x, 3); ripple(boss.x - 20, 3); ripple(boss.x + 20, 3); }
+    if (cine.kind === 'intro' && cine.t > 1.3 && cine.t - dt <= 1.3) { boss.quake = 1.4; bossFx.flash = 1; [62, 58, 55].forEach((n, i) => setTimeout(() => tone(n, .7, 'sawtooth', .09), i * 160)); }
+    if (cine.kind === 'win' && Math.random() < dt * 18) particles.push({ x: boss.x + (Math.random() - .5) * 60, y: SURFACE - 20 - Math.random() * 40, vx: (Math.random() - .5) * 50, vy: -30 - Math.random() * 40, life: 1, c: ['#fde047', '#f472b6', '#38bdf8', '#ffffff'][Math.floor(Math.random() * 4)] });
+    if (cine.t >= cine.dur) { cine.on = false; const f = cine.then; cine.then = null; if (f) f(); }
+  }
+  function drawCine() {
+    if (!cine.on) return;
+    const k = Math.min(1, cine.t / .35, (cine.dur - cine.t) / .35), bar = 22 * Math.max(0, k);
+    px(0, 0, W, bar, '#000'); px(0, H - bar, W, bar, '#000');                   // cinema bars
+    if (cine.kind === 'intro') { ctx.globalAlpha = .35 * Math.max(0, k); px(0, bar, W, H - 2 * bar, '#020617'); ctx.globalAlpha = 1; }
+    const tk = Math.min(1, Math.max(0, (cine.t - .25) / .3)) * Math.max(0, Math.min(1, (cine.dur - cine.t) / .3));
+    if (tk > 0 && cine.title) {
+      ctx.globalAlpha = tk; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const sc = 1 + (1 - tk) * .4;
+      setFont(`700 ${Math.round(18 * sc)}px Silkscreen, monospace`);
+      ctx.fillStyle = '#000'; ctx.fillText(cine.title, W / 2 + 1.5, 52 + 1.5); ctx.fillStyle = cine.c; ctx.fillText(cine.title, W / 2, 52);
+      if (cine.sub) { setFont('700 7px Poppins, sans-serif'); ctx.fillStyle = '#000'; ctx.fillText(cine.sub, W / 2 + .75, 68 + .75); ctx.fillStyle = '#f8fafc'; ctx.fillText(cine.sub, W / 2, 68); }
+      ctx.globalAlpha = 1; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    }
+    if (bossFx.flash > 0 && !reduceMotion) { ctx.globalAlpha = Math.min(.6, bossFx.flash * .6); px(0, 0, W, H, cine.kind === 'phase3' ? '#ef4444' : '#ffffff'); ctx.globalAlpha = 1; }
+  }
   const bossReady = () => onSea() && isNight();
   const bossPhase = () => (boss.hp / boss.max > 2 / 3 ? 1 : boss.hp / boss.max > 1 / 3 ? 2 : 3);
   const BOSS_PHASES = ['', tr('Phase 1/3 · Kurbeln!'), tr('Phase 2/3 · Taktdrill!'), tr('Phase 3/3 · Wut!')];
@@ -910,10 +947,14 @@
     hooked = { f: ODBOSS, size: ODBOSS.max, cls: 3, str: 1.6 };
     Object.assign(reel, { tension: .1, progress: 0, thrash: 0, thrashT: 2.5, slack: 0, maxT: 0 });
     bob.landX = boss.x - 26; bob.x = bob.landX;
-    $('reel').hidden = false; $('reel').classList.add('boss'); $('boss-hud').hidden = false;
-    hint('');
-    toast(solo ? tr('⚔️ Der Odfisch! Du hast 3 Minuten.') : tr('⚔️ Der Odfisch! Kämpft zusammen – ihr habt 3 Minuten.'));
-    updateBossHud();
+    $('reel').hidden = true; $('reel').classList.add('boss'); $('boss-hud').hidden = true;
+    hint(''); bossFx.lastPh = bossPhase(); bossFx.sink = 0;
+    startCine('intro', 3.4, tr('DER ODFISCH'), tr('Herrscher der Hohen See · halb Fisch, halb Katze, ganz Boss'), '#e2e8f0', () => {
+      if (!boss.on) return;
+      $('reel').hidden = false; $('boss-hud').hidden = false;
+      toast(solo ? tr('⚔️ Der Odfisch! Du hast 3 Minuten.') : tr('⚔️ Der Odfisch! Kämpft zusammen – ihr habt 3 Minuten.'));
+      updateBossHud();
+    });
   }
   function bossHit(d) {
     if (!boss.on || boss.won || d <= 0) return;
@@ -923,7 +964,19 @@
     else if (boss.hp <= 0) bossWin();
   }
   function updateBoss(dt) {
+    if (cine.on) return; // the fight waits for the cutscene
     const ph = bossPhase(), r = rod();
+    if (ph > bossFx.lastPh) { // phase change: short cutscene, a leap out of the water, a roar
+      bossFx.lastPh = ph; bossFx.jump = 1; bossFx.flash = 1; boss.quake = 1.3;
+      splash(boss.x, SURFACE, 40, '#ffffff'); ripple(boss.x, 3);
+      tone(ph === 3 ? 140 : 220, .6, 'sawtooth', .08, ph === 3 ? -60 : 120);
+      setTimeout(() => tone(520, .35, 'triangle', .07, 260), 220); setTimeout(() => tone(700, .4, 'triangle', .06, -380), 420);
+      $('reel').hidden = true; $('boss-hud').hidden = true;
+      startCine(ph === 3 ? 'phase3' : 'phase2', 2.2, ph === 3 ? tr('PHASE 3 · WUT!') : tr('PHASE 2 · ER TANZT!'),
+        ph === 3 ? tr('Die Augen glühen rot – jetzt zieht er richtig.') : tr('Triff den Takt, wenn er tanzt.'), ph === 3 ? '#f87171' : '#c084fc',
+        () => { if (boss.on) { $('reel').hidden = false; $('boss-hud').hidden = false; bossHudKey = ''; updateBossHud(); } });
+      return;
+    }
     if (ph === 3) {
       boss.shoutT -= dt;
       if (boss.shoutT <= 0) {
@@ -961,6 +1014,13 @@
       reel.tension += (.3 + pull * .55) * r.tens * (1 - .06 * perk('schnur')) * (wx.tens || 1) * (inLava() ? 1 - .05 * glutUp('schild') : 1) * dt;
       bossHit((reel.thrash ? 3 : 12 + 8 * r.reel) * dt);
       if (Math.random() < dt * 14) sfx.tick();
+      bossFx.hitT += dt;
+      if (bossFx.hitT > .45) { // a damage number and a little flash every half second while reeling
+        bossFx.hitT = 0; bossFx.flash = Math.max(bossFx.flash, .25);
+        const d = Math.round((reel.thrash ? 3 : 12 + 8 * r.reel) * .45);
+        floaters.push({ x: boss.x - 10 + Math.random() * 20, y: SURFACE - 40 - Math.random() * 8, text: '−' + d, c: reel.thrash ? '#94a3b8' : '#fde047', life: .9 });
+        if (!reel.thrash) splash(boss.x - 18, SURFACE - 2, 3, '#fde68a');
+      }
     } else reel.tension -= (.8 - pull * .15) * dt;
     reel.tension = Math.max(0, reel.tension);
     if (reel.thrash && Math.random() < dt * 12) splash(boss.x + (Math.random() - .5) * 30, SURFACE, 3, '#ffffff');
@@ -1020,9 +1080,10 @@
   }
   function bossEnd(msg) {
     if (!boss.on) return;
-    bossLeave(); state = 'idle'; hooked = null;
-    toast(msg || tr('🌊 Der Odfisch ist abgetaucht … Nächstes Mal!'));
-    tone(220, .5, 'triangle', .06, -120);
+    bossLeave(); state = 'idle'; hooked = null; bossFx.sink = .01;
+    startCine('escape', 2.2, tr('ABGETAUCHT'), msg || tr('🌊 Der Odfisch ist abgetaucht … Nächstes Mal!'), '#7dd3fc');
+    splash(boss.x, SURFACE, 30, '#ffffff'); ripple(boss.x, 3);
+    tone(220, .5, 'triangle', .06, -120); setTimeout(() => tone(150, .7, 'triangle', .05, -60), 300);
   }
   function bossWin() {
     if (boss.won || !boss.on) return;
@@ -1035,10 +1096,15 @@
     const bonus = Math.round((800 + 2200 * share) * coinMult());
     save.scales += BOSS_SCALES; save.coins += bonus; save.lifeCoins += bonus; save.totalEarned += bonus;
     setTimeout(() => toast(tr('⚔️ Odfisch besiegt! +{s} 🐚 · +{n} Taler Beute', { s: BOSS_SCALES, n: bonus })), 400);
-    // and the Odfisch himself comes on board – at least Kapital size
-    hooked = { f: ODBOSS, ...sizeIn(ODBOSS, Math.random() < .25 ? 4 : 3), str: 1.6 };
-    reel.maxT = 0; bob.x = boss.x - 20; state = 'reel';
-    land_catch();
+    // victory cutscene: he rears up one last time, fireworks, then the Odfisch himself comes on board – at least Kapital size
+    state = 'summon'; bossFx.jump = 1.4; bossFx.flash = 1; boss.rise = 1;
+    splash(boss.x, SURFACE, 60, '#ffffff'); splash(boss.x, SURFACE, 40, '#fde047');
+    [523, 659, 784, 1047, 1319].forEach((n, i) => setTimeout(() => tone(n, .3, 'square', .06), i * 140));
+    startCine('win', 3, tr('BESIEGT!'), tr('Der Odfisch gibt auf – Fih …'), '#fde047', () => {
+      hooked = { f: ODBOSS, ...sizeIn(ODBOSS, Math.random() < .25 ? 4 : 3), str: 1.6 };
+      reel.maxT = 0; bob.x = boss.x - 20; state = 'reel';
+      land_catch();
+    });
   }
 
   // ------------------------------------------------------------------ mutations
@@ -1235,6 +1301,9 @@
       else if (!boss.solo && Date.now() - boss.synced > 1500) { boss.synced = Date.now(); lobbySync(); }
     }
     boss.quake = Math.max(0, boss.quake - dt);
+    updateCine(dt);
+    bossFx.flash = Math.max(0, bossFx.flash - dt * 2.5); bossFx.jump = Math.max(0, bossFx.jump - dt * 1.4);
+    if (!boss.on && bossFx.sink > 0) bossFx.sink = Math.min(1, bossFx.sink + dt * .5);
     boss.rise = state === 'summon' || boss.on ? Math.min(1, boss.rise + dt * .7) : Math.max(0, boss.rise - dt * .5);
 
     // walking (only when not busy with the line)
@@ -2024,10 +2093,17 @@
     if (boss.rise <= 0 || !bossImg.complete || !bossImg.naturalWidth) return;
     const w = bossImg.naturalWidth / 2, h = bossImg.naturalHeight / 2, ph = boss.on ? bossPhase() : 1;
     boss.x = W - 78 + Math.sin(t * .6) * 8 + (reel.thrash && boss.on ? Math.sin(t * 40) * 1.5 : 0) + (boss.stun > 0 ? 14 : 0);
-    const top = SURFACE - h * .8 * boss.rise + (1 - boss.rise) * 10 + Math.sin(t * 1.4) * 1.5;
+    const leap = Math.sin(Math.min(1, bossFx.jump) * Math.PI) * 14, sinkY = bossFx.sink * h * .9;
+    const top = SURFACE - h * .8 * boss.rise + (1 - boss.rise) * 10 + Math.sin(t * 1.4) * 1.5 - leap + sinkY;
     if (ph === 3) { ctx.globalAlpha = .14 + .08 * Math.sin(t * 6); disc(boss.x, top + h * .5, w * .4, '#ef4444'); ctx.globalAlpha = 1; }
     ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, SURFACE + 1); ctx.clip();
-    ctx.drawImage(bossImg, snap(boss.x - w / 2), snap(top), w, h); ctx.restore();
+    const tilt = (reel.thrash && boss.on ? Math.sin(t * 30) * .06 : 0) + (cine.on && cine.kind === 'win' ? Math.sin(cine.t * 8) * .08 : 0);
+    ctx.translate(boss.x, top + h / 2); ctx.rotate(tilt); ctx.translate(-boss.x, -(top + h / 2));
+    ctx.drawImage(bossImg, snap(boss.x - w / 2), snap(top), w, h);
+    if (bossFx.flash > 0 && boss.on) { ctx.globalAlpha = Math.min(.55, bossFx.flash); ctx.globalCompositeOperation = 'lighter'; ctx.drawImage(bossImg, snap(boss.x - w / 2), snap(top), w, h); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; }
+    if (ph === 3 && boss.on && Math.sin(t * 5) > -.3) { px(boss.x - w * .1, top + h * .22, 2, 1.5, '#ef4444'); px(boss.x + w * .04, top + h * .22, 2, 1.5, '#ef4444'); } // glowing eyes
+    ctx.restore();
+    if (leap > 4 && Math.random() < .5) splash(boss.x + (Math.random() - .5) * w * .6, SURFACE, 2, '#e0f7ff');
     ctx.save(); ctx.beginPath(); ctx.rect(0, SURFACE + 1, W, H); ctx.clip(); ctx.globalAlpha = .3;
     ctx.drawImage(bossImg, snap(boss.x - w / 2), snap(top), w, h); ctx.restore();
     // foam ring where he breaks the surface
@@ -2159,6 +2235,7 @@
     ctx.globalAlpha = 1;
     drawWeatherFront(dark);
     drawFx();
+    drawCine();
     drawPropLabel();
 
     // power meter

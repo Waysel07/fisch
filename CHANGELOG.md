@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-9`
+
+- 🎬 The Odfish fight now has cutscenes: he rises with cinema bars, a quake and a title card, leaps out of the water at every phase change (with glowing eyes in the rage phase), and the fight ends with a victory or escape scene. He also flashes when hit and shows the damage as numbers.
+
 ## 04.11.2026 · `2026-11-04-8`
 
 - ⛏️ Ember stones and the cave depth are now reset on rebirth and prestige – you dig your way down again each time. Glimm’s workshop, his trust and his jobs stay.
