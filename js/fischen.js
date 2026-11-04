@@ -154,6 +154,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-13', date: '04.11.2026', items: [
+      '🛥️ Neuer Boot-Skin für die Hohe See: „David Hasselhoff“ (30 000 Taler im Laden unter Kosmetik, ab 3× Wiedergeburt). Statt Bealins Boot liegt dann ein riesiger Pixel-Hoff mit Lockenmähne, Sonnenbrille und roter Badehose auf dem Rücken im Meer, und du angelst von seinem Bauch aus. Im Kleiderschrank gibt es dafür den neuen Platz „Boot“.',
+    ] },
     { id: '2026-11-04-12', date: '04.11.2026', items: [
       '⏱ Neu: deine Spielzeit. Oben in der Leiste steht, wie lange du schon fischst (Tippen oder Hovern zeigt auch die aktuelle Sitzung), und im Fortschritt steht sie bei deinen Werten. Gezählt wird nur, solange das Spiel offen und sichtbar ist. In den Einstellungen kannst du die Anzeige oben ausblenden.',
     ] },
@@ -1687,6 +1690,8 @@
     { id: 'hut-diamant', slot: 'hat',    name: 'Diamanthut',         price: 40000, col: ['#a5f3fc', '#0891b2', '#ecfeff'], sparkle: true, desc: 'Funkelt. Ständig. Auch nachts.' },
     { id: 'hut-sonne',   slot: 'hat',    name: 'Sonnenkrone',        price: 500000, pres: 1, col: ['#fbbf24', '#c2410c', '#fff7ed'], sparkle: true, desc: 'Strahlt heller als die Sonne über dem Steg. Ab 1× Prestige.' },
     { id: 'jacke-galaxie', slot: 'jacket', name: 'Galaxiemantel',    price: 1000000, pres: 2, col: ['#312e81', '#0f0a2e', '#f0abfc'], desc: 'Voller Sterne. Ab 2× Prestige.' },
+    // boat skins: replace Bealin's boat on the open sea (drawBoat)
+    { id: 'boot-hoff',   slot: 'boat',   name: 'David Hasselhoff',   price: 30000, reb: 3, desc: 'Der Mann, die Mähne, das Boot. Liegt entspannt auf dem Rücken, Daumen hoch, und trägt dich über die Hohe See.' },
     { id: 'hut-krone',   slot: 'hat',    name: 'Kronen-Hut',         price: 100000, col: ['#fde047', '#a16207', '#ffffff'], sparkle: true, desc: 'Für Angler, die wirklich alles haben.' },
     // unlocked by achievements
     { id: 'hut-gold',    slot: 'hat',    name: 'Goldener Hut',       col: ['#facc15', '#b45309', '#fef08a'], desc: 'Für alle, die einen legendären Fisch gelandet haben.', ach: 'Fange einen legendären Fisch.', got: () => FISH.some(f => f.r === 'legendary' && save.dex[f.id]) },
@@ -1718,7 +1723,7 @@
   ];
   trAll(COSMETICS, ['name', 'desc', 'ach']);
   const COSM = Object.fromEntries(COSMETICS.map(c => [c.id, c]));
-  const SLOT_NAMES = { hat: tr('Hut'), jacket: tr('Jacke'), bob: tr('Pose') };
+  const SLOT_NAMES = { hat: tr('Hut'), jacket: tr('Jacke'), bob: tr('Pose'), boat: tr('Boot') };
   if (!save.cosm || typeof save.cosm !== 'object') save.cosm = { owned: [] };
   if (!Array.isArray(save.cosm.owned)) save.cosm.owned = [];
   if (!save.cosm.st || typeof save.cosm.st !== 'object') save.cosm.st = {};
@@ -2108,7 +2113,33 @@
   }
 
   // ------------------------------------------------------------------ the open sea: Bealin's boat
+  // boat skin „David Hasselhoff“: a giant pixel man floating on his back, you stand on his belly
+  const hoffImg = new Image(); hoffImg.src = 'img/boot-hoff.png';
+  let hoffNight = null, hoffWet = null;
+  function drawHoffBoat(dark) {
+    if (!hoffImg.complete || !hoffImg.naturalWidth) return false;
+    const w = hoffImg.naturalWidth / 2, h = hoffImg.naturalHeight / 2;
+    if (!hoffNight) { // a darker copy for the night, blended in with the darkness
+      hoffNight = document.createElement('canvas'); hoffNight.width = hoffImg.naturalWidth; hoffNight.height = hoffImg.naturalHeight;
+      const x = hoffNight.getContext('2d'); x.drawImage(hoffImg, 0, 0);
+      x.globalCompositeOperation = 'source-atop'; x.fillStyle = 'rgba(10, 16, 40, .65)'; x.fillRect(0, 0, hoffNight.width, hoffNight.height);
+      hoffWet = document.createElement('canvas'); hoffWet.width = hoffNight.width; hoffWet.height = hoffNight.height;
+      const y = hoffWet.getContext('2d'); y.drawImage(hoffImg, 0, 0);
+      y.globalCompositeOperation = 'source-atop'; y.fillStyle = '#1e3a5f'; y.fillRect(0, 0, hoffWet.width, hoffWet.height);
+    }
+    ctx.drawImage(hoffImg, -2, 64, w, h);
+    if (dark > .02) { ctx.globalAlpha = Math.min(1, dark); ctx.drawImage(hoffNight, -2, 64, w, h); ctx.globalAlpha = 1; }
+    // the part under the waterline looks wet, with foam along the body
+    ctx.save(); ctx.beginPath(); ctx.rect(-2, SURFACE + .5, w, h); ctx.clip();
+    ctx.globalAlpha = .45; ctx.drawImage(hoffWet, -2, 64, w, h); ctx.restore(); ctx.globalAlpha = .7;
+    for (let i = 0; i < 18; i++) px(2 + i * 8 + Math.sin(t * 3 + i) * 1.5, SURFACE - .5 + (i % 2) * .5, 2.5, .5, '#f8fafc');
+    ctx.globalAlpha = 1;
+    // a quick thumbs-up wiggle now and then
+    if ((t % 9) < .4) px(101.5, 75.5 + Math.sin(t * 40) * .5, 2, .5, '#f0b886');
+    return true;
+  }
   function drawBoat(dark) {
+    if (save.cosm.boat === 'boot-hoff' && drawHoffBoat(dark)) return;
     const k = '#1b1f2e', bowX = DOCK_END + 14, bottom = SURFACE + 7;
     const hull = mix([38, 72, 124], [16, 26, 46], dark), hullL = mix([84, 124, 176], [28, 42, 66], dark), hullD = mix([24, 46, 84], [10, 16, 30], dark);
     const red = mix([190, 40, 40], [72, 22, 28], dark), white = mix([226, 232, 240], [84, 92, 112], dark);
@@ -3522,6 +3553,15 @@
       for (let yy = 3; yy <= 13; yy++) for (let x = 3; x <= 12; x++) p(x, yy, x === 3 || x === 12 || yy === 13 ? k : x === 7 ? y : x > 9 ? C : cc);
       for (let x = 5; x <= 10; x++) p(x, 2, k); p(6, 3, '#f2c9a0'); p(7, 3, '#f2c9a0'); p(8, 3, '#f2c9a0'); p(9, 3, '#f2c9a0');
       for (let yy = 5; yy <= 11; yy++) { p(1, yy, k); p(2, yy, cc); p(13, yy, C); p(14, yy, k); }
+    } else if (c.slot === 'boat') { // a tiny Hoff: curly hair, sunglasses, big grin
+      const H = '#6b3a1a', S = '#d99a62', G = '#0b0f19';
+      for (let y = 2; y <= 13; y++) for (let x = 2; x <= 13; x++) {
+        const r = (x - 7.5) ** 2 + (y - 8) ** 2;
+        if (r <= 34) p(x, y, r > 26 ? k : y < 6 || ((x < 4 || x > 11) && y < 10) ? H : S);
+      }
+      for (let x = 3; x <= 12; x++) p(x, 7, G); for (const x of [4, 5, 6, 9, 10, 11]) p(x, 8, G); p(5, 7, '#e0f2fe'); p(10, 7, '#e0f2fe');
+      for (let x = 5; x <= 10; x++) p(x, 11, '#f8fafc'); p(4, 11, '#7f1d1d'); p(11, 11, '#7f1d1d');
+      p(4, 1, H); p(7, 1, H); p(10, 1, H);
     } else {
       const rb = ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#a855f7'];
       for (let x = 4; x <= 11; x++) for (let y = 3; y <= 12; y++) {
@@ -3532,15 +3572,15 @@
     }
   });
   function cosmWare(c) {
-    const owned = save.cosm.owned.includes(c.id), worn = save.cosm[c.slot] === c.id;
+    const owned = save.cosm.owned.includes(c.id), worn = save.cosm[c.slot] === c.id, lock = !owned && lockText(c);
     return ware({
       id: c.id, name: c.name, desc: c.desc, stats: [],
-      state: worn ? 'active' : owned ? 'owned' : '',
+      state: worn ? 'active' : owned ? 'owned' : lock ? 'locked' : '',
       owned: SLOT_NAMES[c.slot],
-      btnText: worn ? tr('Ablegen') : owned ? tr('Anziehen') : (c.pres && save.prestige < c.pres ? tr('🔒 {n}× Prestige', { n: c.pres }) : tr('{n} Taler', { n: c.price.toLocaleString(I18N.locale) })),
-      disabled: !owned && (save.coins < c.price || (c.pres && save.prestige < c.pres)),
+      btnText: worn ? tr('Ablegen') : owned ? tr('Anziehen') : lock || tr('{n} Taler', { n: c.price.toLocaleString(I18N.locale) }),
+      disabled: !owned && (save.coins < c.price || !!lock),
       onClick: () => {
-        if (!owned && c.pres && save.prestige < c.pres) return keeper(KEEPER.locked(tr('🔒 {n}× Prestige', { n: c.pres })));
+        if (lock) return keeper(KEEPER.locked(lock));
         if (worn) { save.cosm[c.slot] = null; keeper(tr('Wieder ganz klassisch. Steht dir auch.')); }
         else if (owned) { save.cosm[c.slot] = c.id; keeper(tr('Schick, schick!')); }
         else {
@@ -3586,7 +3626,7 @@
         b.append(im, n, s); b.addEventListener('click', onClick); return b;
       };
       const worn = save.cosm[slot];
-      grid.append(tile(slot === 'bob' ? ICONS['pose-std'] : slot === 'hat' ? ICONS['hut-std'] : ICONS['jacke-std'], tr('Standard'), slot === 'hat' ? tr('Hutfarbe nach Wiedergeburten') : tr('Klassisch'),
+      grid.append(tile(slot === 'bob' ? ICONS['pose-std'] : slot === 'hat' ? ICONS['hut-std'] : slot === 'boat' ? ICONS['boot-std'] : ICONS['jacke-std'], tr('Standard'), slot === 'hat' ? tr('Hutfarbe nach Wiedergeburten') : slot === 'boat' ? tr('Käpt’n Bealins Boot') : tr('Klassisch'),
         worn ? '' : 'on', () => { save.cosm[slot] = null; persist(); renderWardrobe(); }));
       for (const c of COSMETICS.filter(c => c.slot === slot)) {
         const owned = save.cosm.owned.includes(c.id);
@@ -3604,6 +3644,7 @@
   }
   ICONS['hut-std'] = iconCanvas(p => { const [h, H, l] = HATS[Math.min(HATS.length - 1, save.rebirths)]; for (let x = 5; x <= 10; x++) p(x, 4, '#1b1f2e'); for (let x = 4; x <= 11; x++) for (let y = 5; y <= 8; y++) p(x, y, x === 4 || x === 11 ? '#1b1f2e' : y === 5 ? l : h); for (let x = 1; x <= 14; x++) { p(x, 9, '#1b1f2e'); p(x, 10, H); p(x, 11, '#1b1f2e'); } });
   ICONS['jacke-std'] = iconCanvas(p => { for (let yy = 3; yy <= 13; yy++) for (let x = 3; x <= 12; x++) p(x, yy, x === 3 || x === 12 || yy === 13 ? '#1b1f2e' : x === 7 ? '#fcd34d' : x > 9 ? '#c2410c' : '#f59e0b'); });
+  ICONS['boot-std'] = iconCanvas(p => { const k = '#1b1f2e'; for (let x = 1; x <= 14; x++) for (let y = 9; y <= 12; y++) if (x - 1 >= y - 9 || y < 11) p(x, y, x === 1 || x === 14 || y === 12 || y === 9 ? k : y === 11 ? '#be2828' : '#26487c'); for (let y = 2; y <= 9; y++) p(8, y, '#a87040'); for (let y = 3; y <= 6; y++) for (let x = 4; x <= 7; x++) p(x, y, '#e2e8f0'); });
   ICONS['pose-std'] = iconCanvas(p => { for (let x = 4; x <= 11; x++) for (let y = 3; y <= 12; y++) p(x, y, x === 4 || x === 11 || y === 3 || y === 12 ? '#1b1f2e' : y < 8 ? '#ef4444' : y === 8 ? '#1b1f2e' : '#f8fafc'); });
   function ware({ id, name, desc, stats, state, btnText, disabled, onClick, owned }) {
     const c = document.createElement('div'); c.className = 'ware' + (state ? ' ' + state : '');

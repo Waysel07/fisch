@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-13`
+
+- 🛥️ New boat skin for the high seas: “David Hasselhoff” (30,000 coins in the shop under cosmetics, from 3 rebirths). Instead of Bealin’s boat, a giant pixel Hoff with a curly mane, sunglasses and red swim trunks floats on his back in the sea, and you fish from his belly. The wardrobe has a new “Boat” slot for it.
+
 ## 04.11.2026 · `2026-11-04-12`
 
 - ⏱ New: your play time. The top bar shows how long you have been fishing (tap or hover to see the current session too), and Progress lists it with your stats. It only counts while the game is open and visible. You can hide it from the top bar in the settings.
