@@ -4,7 +4,7 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 
 ## 04.11.2026 · `2026-11-04-13`
 
-- 🛥️ New boat skin for the high seas: “David Hasselhoff” (30,000 coins in the shop under cosmetics, from 3 rebirths). Instead of Bealin’s boat, a giant pixel Hoff with a curly mane, sunglasses and red swim trunks floats on his back in the sea, and you fish from his belly. The wardrobe has a new “Boat” slot for it.
+- 🛥️ New boat skin for the high seas: “David Hasselhoff” (30,000 coins in the shop under cosmetics, from 3 rebirths). Instead of Bealin’s boat, a giant pixel Hoff with curly hair and red swim trunks swims on his belly through the sea, and you fish from his back. The wardrobe has a new “Boat” slot for it.
 
 ## 04.11.2026 · `2026-11-04-12`
 
