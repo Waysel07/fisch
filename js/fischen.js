@@ -103,9 +103,9 @@
     { id: 'carbon', name: 'Carbonrute',       price: 260,  lvl: 5,  cast: .92, reel: 1.5,  tens: .7,   luck: 1.15, desc: 'Leicht, stark, weit.' },
     { id: 'gold',   name: 'Goldene Rute',     price: 900,  lvl: 9,  cast: 1.0, reel: 1.85, tens: .55,  luck: 1.4, desc: 'Glänzt. Fische lieben Glanz.' },
     { id: 'regen',  name: 'Regenbogenrute',   price: 2500, reb: 1, cast: 1.0, reel: 2.2,  tens: .48,  luck: 1.7, desc: 'Nur für Wiedergeborene. Schillert in allen Farben.' },
-    { id: 'stern',  name: 'Sternenrute',      price: 6000, reb: 3, cast: 1.0, reel: 2.6,  tens: .4,   luck: 2.1, desc: 'Aus einer Sternschnuppe geschnitzt.' },
-    { id: 'tiefsee', name: 'Tiefseerute',     price: 15000, reb: 4, cast: 1.0, reel: 3.0, tens: .34,  luck: 2.5, desc: 'Für die ganz tiefen Wasser. Hält fast alles aus.' },
-    { id: 'krake',  name: 'Krakenrute',       price: 40000, reb: 6, cast: 1.0, reel: 3.4, tens: .3,   luck: 3.0, desc: 'Acht Arme Kraft in einer Rute. Nichts reißt.' },
+    { id: 'stern',  name: 'Sternenrute',      price: 15000, reb: 3, cast: 1.0, reel: 2.6,  tens: .4,   luck: 2.1, desc: 'Aus einer Sternschnuppe geschnitzt.' },
+    { id: 'tiefsee', name: 'Tiefseerute',     price: 40000, reb: 4, cast: 1.0, reel: 3.0, tens: .34,  luck: 2.5, desc: 'Für die ganz tiefen Wasser. Hält fast alles aus.' },
+    { id: 'krake',  name: 'Krakenrute',       price: 120000, reb: 6, cast: 1.0, reel: 3.4, tens: .3,   luck: 3.0, desc: 'Acht Arme Kraft in einer Rute. Nichts reißt.' },
     // Lavaruten: normal rods melt in the Glutgrotte, there only these work (and they only work there)
     { id: 'basalt',   name: 'Basaltrute',         price: 400,   pres: 1, lava: true, cast: .8,  reel: 1.5, tens: .7,  luck: 1.1, desc: 'Aus erkalteter Lava. Die erste Rute, die in der Glutgrotte nicht schmilzt.' },
     { id: 'obsidian', name: 'Obsidianrute',       price: 4000,  pres: 1, depth: 2, lava: true, glut: 80, cast: .95, reel: 2.2, tens: .5,  luck: 1.6, desc: 'Schwarzes Vulkanglas, hart wie Stahl. Nur für die Glutgrotte.' },
@@ -148,6 +148,18 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-7', date: '04.11.2026', items: [
+      '🍀 Glück neu ausbalanciert: Rute, Köder und Talente bringen weiter spürbar mehr seltene Fische, aber nicht mehr so viel, dass Legendäre alltäglich werden. Auf Hoher See sind jetzt etwa 15–20 % der Fänge episch und 4–5 % legendär statt bis zu 75 %.',
+      '🌋 In der Glutgrotte zählt jeder Wurf als weit draußen, wie auf Hoher See. Dadurch beißen unten mehr seltene Fische, und die Grotte bringt ab Tiefe 3 mehr Taler als die See. Die See gibt dafür mehr EP.',
+      '💰 Die späten Ruten kosten mehr, damit sie wieder ein Ziel sind: Sternenrute 15 000, Tiefseerute 40 000, Krakenrute 120 000 Taler.',
+    ] },
+    { id: '2026-11-04-6', date: '04.11.2026', items: [
+      '📜 In der Steg-Zeitung gibt es unten den Knopf „Ältere Ausgaben“: Damit liest du alle früheren Patch Notes nach.',
+      '🎣 Lavaruten werden bei Wiedergeburt und Prestige wieder zurückgesetzt, wie alle anderen Ruten.',
+    ] },
+    { id: '2026-11-04-5', date: '04.11.2026', items: [
+      '🖱️ Taktdrill: Links- und Rechtsklick lassen sich jetzt wie in osu! abwechselnd drücken – auch wenn die andere Taste noch gehalten wird, zählt jeder Klick.',
+    ] },
     { id: '2026-11-04-4', date: '04.11.2026', items: [
       '🎯 Taktdrill wie in osu!: Mit der Maus auf den Kreis zielen und mit Links- oder Rechtsklick (oder Z/X) irgendwo treffen – es zählt nur, wenn der Zeiger auf dem Kreis ist. Am Handy tippst du die Kreise wie bisher an, die Leertaste geht weiter ohne Zielen.',
     ] },
@@ -587,9 +599,12 @@
   }
 
   function pickFish() {
-    // out on the open sea every cast counts as far out
-    const d = Math.min(1, (onSea() ? Math.max(.7, castDistance()) : castDistance()) + (wx.far ? wx.far * (1 + .1 * perk('wetter')) : 0)), night = isNight(), b = bait(), r = rod(), map = save.map;
-    const luck = (b.lava && map !== 'lava' ? 1 : b.luck) * (map === 'lava' ? 1 + .08 * glutUp('licht') : 1) * r.luck * (1 + .08 * perk('glueck')) * (1 + .1 * pperk('pglueck')) * (dexPerk('luck10') ? 1.1 : 1);
+    // out on the open sea and on the lava lake every cast counts as far out
+    const d = Math.min(1, ((onSea() || inLava()) ? Math.max(.7, castDistance()) : castDistance()) + (wx.far ? wx.far * (1 + .1 * perk('wetter')) : 0)), night = isNight(), b = bait(), r = rod(), map = save.map;
+    const rawLuck = (b.lava && map !== 'lava' ? 1 : b.luck) * (map === 'lava' ? 1 + .08 * glutUp('licht') : 1) * r.luck * (1 + .08 * perk('glueck')) * (1 + .1 * pperk('pglueck')) * (dexPerk('luck10') ? 1.1 : 1);
+    // diminishing returns: rod × bait × talents multiply up to 30+ late, which made legendaries an everyday catch;
+    // the log keeps every upgrade noticeable while rare stays rare
+    const luck = 1 + .45 * Math.log(Math.max(1, rawLuck));
     const fullHour = (time * 24) % 1 < 1 / 6; // the clock shows xx:00
     const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night) && !(f.fullHour && !fullHour)
       && !(f.needs && Object.entries(f.needs).some(([id, n]) => ((save.dex[id] || {}).n || 0) < n))
@@ -819,7 +834,10 @@
     const field = $('rhythm-field'), cur = $('rhythm-cursor');
     const move = e => { rcursor.x = e.clientX; rcursor.y = e.clientY; const r = field.getBoundingClientRect(); cur.style.left = (e.clientX - r.left) + 'px'; cur.style.top = (e.clientY - r.top) + 'px'; cur.hidden = e.pointerType !== 'mouse'; cur.classList.toggle('on', !!overNext()); };
     field.addEventListener('pointermove', move);
-    field.addEventListener('pointerdown', e => { e.preventDefault(); move(e); rhythmAimHit(); }); // left, right or middle button, or a finger
+    // mouse: mousedown fires for every button, also while another one is still held (left/right alternating like in osu!);
+    // pointerdown would only report the first pressed button. Fingers and pens still go through pointerdown.
+    field.addEventListener('mousedown', e => { e.preventDefault(); move(Object.assign({ pointerType: 'mouse' }, { clientX: e.clientX, clientY: e.clientY })); rhythmAimHit(); });
+    field.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') return; e.preventDefault(); move(e); rhythmAimHit(); });
     field.addEventListener('contextmenu', e => e.preventDefault());
   }
   function rhythmTick(now) {
@@ -2622,15 +2640,22 @@
     const i = PATCH_NOTES.findIndex(p => p.id === save.patchSeen);
     return i === 0 ? 3 : i < 0 ? 2 : Math.min(i, 4);
   }
+  let patchShown = 0;
   function renderPatch(n) {
-    $('patch-list').replaceChildren(...PATCH_NOTES.slice(0, Math.max(1, n)).map(p => {
+    patchShown = Math.max(1, n);
+    $('patch-list').replaceChildren(...PATCH_NOTES.slice(0, patchShown).map(p => {
       const box = document.createElement('section'); box.className = 'patch-entry';
       const h = document.createElement('h3'); h.textContent = tr('Update vom {d}', { d: p.date });
       const ul = document.createElement('ul');
       ul.append(...p.items.map(t => Object.assign(document.createElement('li'), { textContent: tr(t) })));
       box.append(h, ul); return box;
     }));
+    // older issues of the Steg-Zeitung: five more per click until all are shown
+    const left = PATCH_NOTES.length - patchShown;
+    $('patch-more').hidden = left <= 0;
+    $('patch-more').textContent = tr('📜 Ältere Ausgaben ({n})', { n: left });
   }
+  $('patch-more').addEventListener('click', () => { const y = $('patch-list').parentElement.scrollTop; renderPatch(patchShown + 5); $('patch-list').parentElement.scrollTop = y; });
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
     if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'boss', 'summon'].includes(state)) return;
@@ -3889,15 +3914,13 @@
   }
 
   // ---- rebirth
-  // lava rods belong to the Glutgrotte progress (Glutsteine, depth, workshop) and survive rebirth and prestige
-  const keepLavaRods = () => ['stock', ...save.rods.filter(id => (RODS.find(r => r.id === id) || {}).lava)];
   function rebirth() {
     if (save.lvl < rebirthLvl()) return;
     const gain = scalesFor();
     if (!confirm(tr('Wiedergeburt?\n\nDu bekommst {n} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level und Aufträge werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.', { n: gain }))) return;
     const oldRank = rankOf(save.rebirthsTotal);
     save.rebirths++; save.rebirthsTotal++; save.scales += gain;
-    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: keepLavaRods(), bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], lavaRod: '', bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     const newRank = rankOf(save.rebirthsTotal), ms = MILESTONES.find(m => m.r === save.rebirths);
     if (newRank !== oldRank) setTimeout(() => toast(tr('🎖️ Neuer Rang: {r}!', { r: newRank.name })), 2400);
     if (ms) setTimeout(() => toast(tr('🔓 Neu freigeschaltet: {t}', { t: ms.t })), 4400);
@@ -3919,11 +3942,11 @@
   function prestige() {
     if (save.rebirths < PRESTIGE_REB) return;
     const gain = pearlsFor();
-    if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten, Köder, Wiedergeburten, Schuppen, Talente und die Schmiede.\nFischdex, Medaillen, Rekorde, Kosmetik, Rang, Lavaruten und Perlen-Talente bleiben.', { n: gain }))) return;
+    if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten (auch Lavaruten), Köder, Wiedergeburten, Schuppen, Talente und die Schmiede.\nFischdex, Medaillen, Rekorde, Kosmetik, Rang und Perlen-Talente bleiben.', { n: gain }))) return;
     checkCosm(true); // keep the rebirth cosmetics earned so far
     save.rebHeir = (save.rebHeir || 0) + save.rebirths * .4; // the Erbe keeps 40 % of these rebirths in the Taler bonus
     save.prestige++; save.pearls += gain;
-    Object.assign(save, { rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: keepLavaRods(), bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: ['stock'], lavaRod: '', bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     if (save.map === 'see' && !seaOpen()) { save.map = 'steg'; bgKey = ''; boss.invite = null; $('btn-boss').hidden = true; updateMapUi(); }
     fillQuests(); persist(); updateCoins(); updateGear(); updateLevel(); renderProg();
     const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
