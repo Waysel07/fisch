@@ -104,7 +104,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
 
 - **Neuer Fisch:**
   1. Sprite nach `img/` (eigene Pixelgrafik oder ein Bild des Nutzers).
-  2. `FISH`-Eintrag (`id`, `name`, `img`, `r`, `min`/`max`, `val`, `say`, `desc`, `page`, optional `pixel`/`photo`/`map`/`weather`/`night`/`far`/`needs`, Fangbedingungen `bait`/`hours`/`crits`/`minRod`).
+  2. `FISH`-Eintrag (`id`, `name`, `img`, `r`, `min`/`max`, `val`, `say`, `desc`, `page`, optional `pixel`/`photo`/`whole` (Foto nicht beschneiden)/`map`/`weather`/`night`/`far`/`needs`, Fangbedingungen `bait`/`hours`/`crits`/`minRod`).
   3. `seiten/<name>.html` anlegen.
   4. EN-Texte für `name`, `say` und `desc`.
   5. Falls sinnvoll: Dex-Hinweis, Patch Notes, README.

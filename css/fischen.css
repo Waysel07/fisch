@@ -183,6 +183,8 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
   box-shadow: 0 6px 18px rgba(0,0,0,.45); rotate: -2deg;
 }
 .card img.photo { width: 76px; height: 76px; margin: 0 auto .3rem; border-width: 3px; border-bottom-width: 8px; border-radius: 4px; }
+/* whole: photos that must not be cropped (text or the subject would be cut off) */
+#catch-img.photo.whole, .card img.photo.whole { object-fit: contain; background: var(--slot); }
 .stats { font-weight: 600; margin-bottom: 1rem; }
 .stats #catch-value { color: #fbbf24; }
 

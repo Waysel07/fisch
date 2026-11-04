@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-16`
+
+- 🦞 12 new catches at the dock, including the Blue Lobster (legendary, with its own sound), the Giga Shark, Comrade Catfish and the Dogfish. Three of them also bite on the high seas.
+
 ## 04.11.2026 · `2026-11-04-15`
 
 - 🎨 New pixel art almost everywhere: every self-drawn fish, the lava creatures and the Odfisch have been repainted. So have your angler, Bealin, Glimm, Herr Zylinderwels, the things on the dock (slot machine, kiosk, board, trophy, book, newspaper), Glutflosse’s stall, the buoy, the steering wheel, the David Hasselhoff skin and the shop icons. Snacks now have real pixel icons instead of emoji. The gameplay itself doesn’t change.

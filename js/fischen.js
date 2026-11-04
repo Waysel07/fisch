@@ -59,6 +59,18 @@
     { id: 'katze',   name: 'Katzenfisch',       img: 'img/katzenfisch.png',  r: 'legendary', min: 40, max: 70,  val: 450, photo: true, page: 'seiten/katzenfisch.html', say: 'Miau. Ich meine: Blubb.', desc: 'Halb Katze, halb Fisch, ganz flauschig. Kommt lieber nachts.', far: .4, night: 2.5 },
     { id: 'uhrzeit', name: 'UhrZeitFisch',      img: 'img/uhrzeitfisch.gif', r: 'legendary', min: 160, max: 190, val: 480, photo: true, page: 'seiten/uhrzeitfisch.html', say: 'Ich bin pünktlich. Seit 66 Millionen Jahren.', desc: 'Ein Fisch aus der Urzeit, sehr cool. Beißt nur zur vollen Stunde.', fullHour: true, hint: 'Beißt nur zur vollen Stunde' },
     { id: 'drache',  name: 'Gyarados',    img: 'img/gyarados-water.gif', r: 'legendary', min: 150, max: 240, val: 520, pixel: true, page: 'seiten/drachenkarpfen.html', say: 'Ich bin den Wasserfall hochgesprungen. Jetzt bin ich sauer.', desc: 'Ein Karpfen, der es durchs Drachentor geschafft hat. Jade, Gold und schlechte Laune.', needs: { platsch: 14.5 }, bigSplash: true, hint: 'Erst wenn du 14,5 Karpador gefangen hast' },
+    { id: 'hundsfisch', name: 'Hundsfisch', img: 'img/hundsfisch.png', r: 'common', min: 30, max: 60, val: 6, photo: true, whole: true, page: 'seiten/hundsfisch.html', say: 'Wuff. Blubb. Wuff.', desc: 'Apportiert nichts, freut sich aber trotzdem.' },
+    { id: 'fuckingfisch', name: 'Fucking Fisch', img: 'img/fucking-fisch.png', r: 'uncommon', min: 25, max: 45, val: 15, photo: true, whole: true, page: 'seiten/fucking-fisch.html', say: 'FUCKING FISCH.', desc: 'Sein Name steht in Flammen über ihm. Mehr muss man nicht wissen.' },
+    { id: 'propeller', name: 'Propellerfisch', img: 'img/propellerfisch.png', r: 'uncommon', min: 12, max: 28, val: 14, photo: true, whole: true, page: 'seiten/propellerfisch.html', say: 'Darf ich den Lolli behalten?', desc: 'Kugelfisch mit Propellermütze und Lolli. Heute hat er Wandertag.' },
+    { id: 'nachricht', name: 'Sprecherfisch', img: 'img/nachrichtenfisch.png', r: 'uncommon', min: 20, max: 40, val: 16, photo: true, whole: true, page: 'seiten/nachrichtenfisch.html', say: 'Und nun das Wetter.', desc: 'Sendet live aus seinem Fernseher. Keiner weiß, wie er da reingekommen ist.' },
+    { id: 'genosse', name: 'Genosse Wels', img: 'img/genosse-wels.png', r: 'rare', min: 60, max: 120, val: 50, photo: true, whole: true, page: 'seiten/genosse-wels.html', say: 'Auf den Fang, Genosse.', desc: 'Pelzmütze, Flasche, kein Lächeln zu viel. Friert nie.' },
+    { id: 'affenfisch', name: 'Affenfisch', img: 'img/affenfisch.png', r: 'rare', min: 50, max: 100, val: 48, photo: true, whole: true, page: 'seiten/affenfisch.html', say: 'Uh uh. Blubb.', desc: 'Schaut dich an, als hättest du seine Banane.' },
+    { id: 'grinsehai', name: 'Grinsehai', img: 'img/grinsehai.png', r: 'rare', min: 110, max: 220, val: 55, photo: true, whole: true, page: 'seiten/grinsehai.html', sea: true, say: 'Schöne Zähne, oder?', desc: 'Geht zweimal im Jahr zum Zahnarzt. Der Zahnarzt nur einmal.' },
+    { id: 'gesichtshai', name: 'Gesichtshai', img: 'img/gesichtshai.png', r: 'epic', min: 120, max: 240, val: 150, photo: true, whole: true, page: 'seiten/gesichtshai.html', say: 'Was guckst du so?', desc: 'Hat ein Gesicht, das man nicht vergisst. Leider.' },
+    { id: 'gigahai', name: 'Giga-Hai', img: 'img/giga-hai.png', r: 'epic', min: 200, max: 350, val: 170, photo: true, whole: true, page: 'seiten/giga-hai.html', sea: true, say: 'Kein Bein-Tag ausgelassen.', desc: 'Sein Kinn kommt zwei Sekunden vor ihm an.' },
+    { id: 'keptwaiting', name: 'Kept You Waiting', img: 'img/kept-you-waiting.png', r: 'epic', min: 170, max: 190, val: 160, photo: true, whole: true, page: 'seiten/kept-you-waiting.html', say: 'Kept you waiting, huh?', desc: 'Du hast lange gewartet. Das ist nicht mal ein Fisch.' },
+    { id: 'hummer', name: 'Blauer Hummer', img: 'img/blauer-hummer.png', r: 'legendary', min: 30, max: 60, val: 500, photo: true, whole: true, page: 'seiten/blauer-hummer.html', sea: true, sound: 'sounds/blauer-hummer.mp3', say: 'BLAUER HUMMER!', desc: 'Nur einer von zwei Millionen Hummern ist blau. Er hat dich zuerst gesehen.' },
+    { id: 'laternerds', name: 'Later-Nerds-Schnecke', img: 'img/later-nerds.gif', r: 'junk', min: 5, max: 12, val: 3, photo: true, whole: true, page: 'seiten/later-nerds.html', say: 'Later, Nerds.', desc: 'Eine Schnecke auf einem Skateboard. Sie ist schon wieder weg.' },
     // weather fish: only bite while their weather is on (weather: id from WEATHER)
     { id: 'pfuetze',  name: 'Pfützenspringer',   img: 'img/pfuetzenspringer.png', r: 'uncommon', min: 12, max: 24, val: 20, pixel: true, page: 'seiten/pfuetzenspringer.html', weather: 'regen', say: 'Endlich Regen! Ich hüpf mal ein bisschen rum.', desc: 'Kommt nur raus, wenn es regnet. Springt von Tropfen zu Tropfen.' },
     { id: 'nebelgeist', name: 'Nebelgeist',      img: 'img/nebelgeist.png',       r: 'rare',     min: 30, max: 55, val: 55, pixel: true, page: 'seiten/nebelgeist.html', weather: 'nebel', say: 'Huuuh … ach, nur ein Angler.', desc: 'Halb durchsichtig. Taucht nur im Nebel auf.' },
@@ -155,6 +167,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-16', date: '04.11.2026', items: [
+      '🦞 12 neue Fänge am Steg, darunter der Blaue Hummer (legendär, mit eigenem Sound), der Giga-Hai, der Genosse Wels und der Hundsfisch. Drei davon beißen auch auf Hoher See.',
+    ] },
     { id: '2026-11-04-15', date: '04.11.2026', items: [
       '🎨 Neue Pixelkunst fast überall: Alle selbst gezeichneten Fische, Lava-Kreaturen und der Odfisch sind neu gemalt. Dazu kommen deine Spielfigur, Bealin, Glimm, Herr Zylinderwels, die Sachen am Steg (Automat, Kiosk, Brett, Pokal, Buch, Zeitung), Glutflosses Stand, die Boje, das Steuerrad, der David-Hasselhoff-Skin und die Laden-Icons. Snacks haben jetzt echte Pixel-Icons statt Emojis. Am Spiel selbst ändert sich nichts.',
     ] },
@@ -3182,6 +3197,7 @@
     $('catch-img').src = f.img; $('catch-img').alt = f.name;
     $('catch-img').classList.toggle('pixel', !!f.pixel);
     $('catch-img').classList.toggle('photo', !!f.photo);
+    $('catch-img').classList.toggle('whole', !!f.whole);
     $('catch-name').textContent = f.name;
     $('catch-img').className = $('catch-img').className.replace(/\bmut-\S+/g, '').trim();
     if (mut) $('catch-img').classList.add('mut-' + mut.id);
@@ -3279,7 +3295,7 @@
       const c = document.createElement('div');
       c.className = 'card ' + (sh ? 'b-' + f.r + ' shiny-card' : 'unknown');
       const img = document.createElement('img'); img.loading = 'lazy';
-      if (sh) { img.style.setProperty('--shiny-hue', shinyHue(f.id) + 'deg'); img.src = f.img; img.alt = f.name + ' (Shiny)'; img.className = ['shiny', f.pixel ? 'pixel' : '', f.photo ? 'photo' : ''].join(' ').trim(); }
+      if (sh) { img.style.setProperty('--shiny-hue', shinyHue(f.id) + 'deg'); img.src = f.img; img.alt = f.name + ' (Shiny)'; img.className = ['shiny', f.pixel ? 'pixel' : '', f.photo ? 'photo' : '', f.whole ? 'whole' : ''].join(' ').trim(); }
       else if (e && !f.photo) { img.src = f.img; img.alt = tr('Noch kein Shiny'); img.className = 'shadow' + (f.pixel ? ' pixel' : ''); }
       else { img.src = 'img/fish-icon.png'; img.alt = tr('Unbekannt'); img.className = 'pixel shadow'; }
       const name = document.createElement('b'); name.textContent = sh ? '💫 ' + f.name : e ? f.name : '???';
@@ -3318,7 +3334,7 @@
       const img = document.createElement('img');
       const hide = !e && f.photo;
       img.src = hide ? 'img/fish-icon.png' : f.img; img.alt = e ? f.name : tr('Unbekannt'); img.loading = 'lazy';
-      img.className = [f.pixel || hide ? 'pixel' : '', e && f.photo ? 'photo' : ''].join(' ').trim();
+      img.className = [f.pixel || hide ? 'pixel' : '', e && f.photo ? 'photo' : '', e && f.whole ? 'whole' : ''].join(' ').trim();
       const name = document.createElement('b'); name.textContent = e ? f.name : '???';
       const r = document.createElement('small'); r.className = 'r-' + f.r; r.textContent = RARITY[f.r].label;
       const info = document.createElement('small');
