@@ -2127,11 +2127,11 @@
       const y = hoffWet.getContext('2d'); y.drawImage(hoffImg, 0, 0);
       y.globalCompositeOperation = 'source-atop'; y.fillStyle = '#1e3a5f'; y.fillRect(0, 0, hoffWet.width, hoffWet.height);
     }
-    ctx.drawImage(hoffImg, -2, 64, w, h);
-    if (dark > .02) { ctx.globalAlpha = Math.min(1, dark); ctx.drawImage(hoffNight, -2, 64, w, h); ctx.globalAlpha = 1; }
+    ctx.drawImage(hoffImg, -2, 62, w, h);
+    if (dark > .02) { ctx.globalAlpha = Math.min(1, dark); ctx.drawImage(hoffNight, -2, 62, w, h); ctx.globalAlpha = 1; }
     // the part under the waterline looks wet, with foam along the body
     ctx.save(); ctx.beginPath(); ctx.rect(-2, SURFACE + .5, w, h); ctx.clip();
-    ctx.globalAlpha = .45; ctx.drawImage(hoffWet, -2, 64, w, h); ctx.restore(); ctx.globalAlpha = .7;
+    ctx.globalAlpha = .45; ctx.drawImage(hoffWet, -2, 62, w, h); ctx.restore(); ctx.globalAlpha = .7;
     for (let i = 0; i < 18; i++) px(2 + i * 8 + Math.sin(t * 3 + i) * 1.5, SURFACE - .5 + (i % 2) * .5, 2.5, .5, '#f8fafc');
     ctx.globalAlpha = 1;
     // his feet kick up a little spray now and then
