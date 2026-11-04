@@ -122,8 +122,8 @@
     ' (+{n} EP)': ' (+{n} XP)',
     '📜 Auftrag erledigt: {q} – im Fortschritt abholen': '📜 Quest done: {q} – claim it in your progress',
     '📜 +{c} Taler · +{x} EP': '📜 +{c} coins · +{x} XP',
-    'Wiedergeburt?\n\nDu bekommst {n} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level und Aufträge werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.':
-      'Rebirth?\n\nYou get {n} scales and a permanent +20 % coins.\nCoins, rods, bait, level and quests are reset.\nFishdex, records and talents stay.',
+    'Wiedergeburt?\n\nDu bekommst {n} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level, Aufträge, Glutsteine und die Grotten-Tiefe werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.':
+      'Rebirth?\n\nYou get {n} scales and a permanent +20 % coins.\nCoins, rods, bait, level, quests, ember stones and the cave depth are reset.\nFishdex, records and talents stay.',
     '🌀 Wiedergeboren! +{n} Schuppen · Taler-Bonus jetzt +{p} %': '🌀 Reborn! +{n} scales · coin bonus now +{p} %',
     '{x} / {n} EP': '{x} / {n} XP',
     '{a} Fänge · {b} Aufträge · {c}× wiedergeboren · Taler-Bonus +{p} %': '{a} catches · {b} quests · reborn {c}× · coin bonus +{p} %',
@@ -133,8 +133,8 @@
     '{a} / {b} · Belohnung {c} Taler, {x} EP': '{a} / {b} · reward {c} coins, {x} XP',
     'Belohnung abholen': 'Claim reward',
     'Neuer Auftrag für {n} Taler': 'New quest for {n} coins',
-    'Bereit! Du bekommst {n} Schuppen und dauerhaft +20 % Taler. Taler, Ruten, Köder und Level werden zurückgesetzt. Fischdex, Rekorde und Talente bleiben.':
-      'Ready! You get {n} scales and a permanent +20 % coins. Coins, rods, bait and level are reset. Fishdex, records and talents stay.',
+    'Bereit! Du bekommst {n} Schuppen und dauerhaft +20 % Taler. Taler, Ruten, Köder, Level, Glutsteine und die Grotten-Tiefe werden zurückgesetzt. Fischdex, Rekorde und Talente bleiben.':
+      'Ready! You get {n} scales and a permanent +20 % coins. Coins, rods, bait, level, ember stones and the cave depth are reset. Fishdex, records and talents stay.',
     'Ab Level {r} möglich (noch {d}). Je höher dein Level und je mehr Taler du verdienst, desto mehr Schuppen gibt es (aktuell {n}).':
       'Available from level {r} ({d} to go). The higher your level and the more coins you earn, the more scales you get (currently {n}).',
     'Freischaltung: Regenbogenrute (1×), Mondköder (2×), Sternenrute (3×), neue Hutfarben.': 'Unlocks: rainbow rod (1×), moon bait (2×), star rod (3×), new hat colours.',
@@ -887,7 +887,7 @@
     "🎁 Level-{l}-Meilenstein: +{s} 🐚": "🎁 Level {l} milestone: +{s} 🐚",
     " · eine {b} (im Laden öffnen)": " · a {b} (open it in the shop)",
     "📅 Wochenziel geschafft: {t}! +{s} 🐚": "📅 Weekly goal done: {t}! +{s} 🐚",
-    "Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten (auch Lavaruten), Köder, Wiedergeburten, Schuppen, Talente und die Schmiede.\nFischdex, Medaillen, Rekorde, Kosmetik, Rang und Perlen-Talente bleiben.": "Prestige?\n\nYou get {n} pearls, a permanent +100 % coins and +25 % XP. 40 % of your rebirths keep counting for the coin bonus as a legacy.\nReset: level, coins, rods (lava rods too), bait, rebirths, Schuppen, talents and the forge.\nKept: Fishdex, medals, records, cosmetics, rank and pearl talents.",
+    "Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten (auch Lavaruten), Köder, Wiedergeburten, Schuppen, Talente, Glutsteine, die Grotten-Tiefe und die Schmiede.\nFischdex, Medaillen, Rekorde, Kosmetik, Rang und Perlen-Talente bleiben.": "Prestige?\n\nYou get {n} pearls, a permanent +100 % coins and +25 % XP. 40 % of your rebirths keep counting for the coin bonus as a legacy.\nReset: level, coins, rods (lava rods too), bait, rebirths, Schuppen, talents, ember stones, the cave depth and the forge.\nKept: Fishdex, medals, records, cosmetics, rank and pearl talents.",
     "noch {n} Tage": "{n} days left",
     "{a} / {b} · Belohnung 6 🐚": "{a} / {b} · reward 6 🐚",
     ", 1 Perle": ", 1 pearl",
@@ -928,6 +928,7 @@
     "🍀 Glück neu ausbalanciert: Rute, Köder und Talente bringen weiter spürbar mehr seltene Fische, aber nicht mehr so viel, dass Legendäre alltäglich werden. Auf Hoher See sind jetzt etwa 15–20 % der Fänge episch und 4–5 % legendär statt bis zu 75 %.": "🍀 Luck rebalanced: rod, bait and talents still give noticeably more rare fish, but no longer so many that legendaries become an everyday catch. On the high seas about 15–20 % of catches are now epic and 4–5 % legendary instead of up to 75 %.",
     "🌋 In der Glutgrotte zählt jeder Wurf als weit draußen, wie auf Hoher See. Dadurch beißen unten mehr seltene Fische, und die Grotte bringt ab Tiefe 3 mehr Taler als die See. Die See gibt dafür mehr EP.": "🌋 In the Ember Cave every cast counts as far out, like on the high seas. More rare fish bite down there, and from depth 3 the cave pays more coins than the sea. The sea gives more XP instead.",
     "💰 Die späten Ruten kosten mehr, damit sie wieder ein Ziel sind: Sternenrute 15 000, Tiefseerute 40 000, Krakenrute 120 000 Taler.": "💰 The late rods cost more so they are a goal again: Star rod 15,000, Deep-sea rod 40,000, Kraken rod 120,000 coins.",
+    "⛏️ Glutsteine und die Grotten-Tiefe werden bei Wiedergeburt und Prestige jetzt zurückgesetzt – du gräbst dich jedes Mal neu hinunter. Glimms Werkstatt, sein Vertrauen und seine Aufträge bleiben.": "⛏️ Ember stones and the cave depth are now reset on rebirth and prestige – you dig your way down again each time. Glimm’s workshop, his trust and his jobs stay.",
     "✦ Prestige gibt es jetzt schon ab der 7. Wiedergeburt. Jede Wiedergeburt darüber bringt weiterhin 2 Perlen mehr.": "✦ Prestige is now available from the 7th rebirth. Every rebirth above that still gives 2 more pearls.",
     "✦ Neu: Prestige ab der 10. Wiedergeburt. Es setzt alles zurück, auch Wiedergeburten, Rang, Schuppen und Talente – dafür gibt es pro Prestige dauerhaft +50 % Taler und +25 % EP.": "✦ New: prestige from the 10th rebirth. It resets everything, including rebirths, rank, Schuppen and talents – in return every prestige gives a permanent +50 % coins and +25 % XP.",
     "🦪 Perlen-Talente: Für Perlen aus dem Prestige gibt es Perlenhaken, Perlenglück, Schuppensegen, Frühreif und die Seekarte (Hohe See ohne Wiedergeburt). Sie bleiben für immer.": "🦪 Pearl talents: spend pearls from prestige on Pearl Hook, Pearl Luck, Scale Blessing, Early Bloomer and the Sea Chart (high seas without rebirths). They stay forever.",

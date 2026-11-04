@@ -148,6 +148,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-8', date: '04.11.2026', items: [
+      '⛏️ Glutsteine und die Grotten-Tiefe werden bei Wiedergeburt und Prestige jetzt zurückgesetzt – du gräbst dich jedes Mal neu hinunter. Glimms Werkstatt, sein Vertrauen und seine Aufträge bleiben.',
+    ] },
     { id: '2026-11-04-7', date: '04.11.2026', items: [
       '🍀 Glück neu ausbalanciert: Rute, Köder und Talente bringen weiter spürbar mehr seltene Fische, aber nicht mehr so viel, dass Legendäre alltäglich werden. Auf Hoher See sind jetzt etwa 15–20 % der Fänge episch und 4–5 % legendär statt bis zu 75 %.',
       '🌋 In der Glutgrotte zählt jeder Wurf als weit draußen, wie auf Hoher See. Dadurch beißen unten mehr seltene Fische, und die Grotte bringt ab Tiefe 3 mehr Taler als die See. Die See gibt dafür mehr EP.',
@@ -3917,14 +3920,16 @@
   function rebirth() {
     if (save.lvl < rebirthLvl()) return;
     const gain = scalesFor();
-    if (!confirm(tr('Wiedergeburt?\n\nDu bekommst {n} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level und Aufträge werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.', { n: gain }))) return;
+    if (!confirm(tr('Wiedergeburt?\n\nDu bekommst {n} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level, Aufträge, Glutsteine und die Grotten-Tiefe werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.', { n: gain }))) return;
     const oldRank = rankOf(save.rebirthsTotal);
     save.rebirths++; save.rebirthsTotal++; save.scales += gain;
-    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], lavaRod: '', bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], lavaRod: '', glut: 0, caveDepth: 1, bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     const newRank = rankOf(save.rebirthsTotal), ms = MILESTONES.find(m => m.r === save.rebirths);
     if (newRank !== oldRank) setTimeout(() => toast(tr('🎖️ Neuer Rang: {r}!', { r: newRank.name })), 2400);
     if (ms) setTimeout(() => toast(tr('🔓 Neu freigeschaltet: {t}', { t: ms.t })), 4400);
     checkCosm();
+    // the cave starts again at depth 1: open Glimm jobs may ask for deeper fish, so only finished ones stay
+    save.glimmQ = (save.glimmQ || []).filter(q => q.p >= q.n); bgKey = ''; wx = currentWeather(); updateWeatherPill();
     fillQuests(); persist(); updateCoins(); updateGear(); updateLevel(); renderProg();
     const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
     [262, 330, 392, 523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .25, 'triangle', .08), i * 120));
@@ -3942,12 +3947,14 @@
   function prestige() {
     if (save.rebirths < PRESTIGE_REB) return;
     const gain = pearlsFor();
-    if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten (auch Lavaruten), Köder, Wiedergeburten, Schuppen, Talente und die Schmiede.\nFischdex, Medaillen, Rekorde, Kosmetik, Rang und Perlen-Talente bleiben.', { n: gain }))) return;
+    if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten (auch Lavaruten), Köder, Wiedergeburten, Schuppen, Talente, Glutsteine, die Grotten-Tiefe und die Schmiede.\nFischdex, Medaillen, Rekorde, Kosmetik, Rang und Perlen-Talente bleiben.', { n: gain }))) return;
     checkCosm(true); // keep the rebirth cosmetics earned so far
     save.rebHeir = (save.rebHeir || 0) + save.rebirths * .4; // the Erbe keeps 40 % of these rebirths in the Taler bonus
     save.prestige++; save.pearls += gain;
-    Object.assign(save, { rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: ['stock'], lavaRod: '', bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: ['stock'], lavaRod: '', glut: 0, caveDepth: 1, bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     if (save.map === 'see' && !seaOpen()) { save.map = 'steg'; bgKey = ''; boss.invite = null; $('btn-boss').hidden = true; updateMapUi(); }
+    // the cave starts again at depth 1: open Glimm jobs may ask for deeper fish, so only finished ones stay
+    save.glimmQ = (save.glimmQ || []).filter(q => q.p >= q.n); bgKey = ''; wx = currentWeather(); updateWeatherPill();
     fillQuests(); persist(); updateCoins(); updateGear(); updateLevel(); renderProg();
     const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
     [196, 262, 330, 392, 523, 659, 784, 1047, 1319].forEach((n, i) => setTimeout(() => tone(n, .3, 'triangle', .08), i * 110));
@@ -4046,7 +4053,7 @@
     }
     const req = rebirthLvl(), can = save.lvl >= req;
     $('reb-info').textContent = can
-      ? tr('Bereit! Du bekommst {n} Schuppen und dauerhaft +20 % Taler. Taler, Ruten, Köder und Level werden zurückgesetzt. Fischdex, Rekorde und Talente bleiben.', { n: scalesFor() })
+      ? tr('Bereit! Du bekommst {n} Schuppen und dauerhaft +20 % Taler. Taler, Ruten, Köder, Level, Glutsteine und die Grotten-Tiefe werden zurückgesetzt. Fischdex, Rekorde und Talente bleiben.', { n: scalesFor() })
       : tr('Ab Level {r} möglich (noch {d}). Je höher dein Level und je mehr Taler du verdienst, desto mehr Schuppen gibt es (aktuell {n}).', { r: req, d: req - save.lvl, n: scalesFor() });
     $('btn-rebirth').disabled = !can;
     const ms = MILESTONES.find(m => m.r > save.rebirths);

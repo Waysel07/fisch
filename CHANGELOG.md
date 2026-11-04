@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-8`
+
+- ⛏️ Ember stones and the cave depth are now reset on rebirth and prestige – you dig your way down again each time. Glimm’s workshop, his trust and his jobs stay.
+
 ## 04.11.2026 · `2026-11-04-7`
 
 - 🍀 Luck rebalanced: rod, bait and talents still give noticeably more rare fish, but no longer so many that legendaries become an everyday catch. On the high seas about 15–20 % of catches are now epic and 4–5 % legendary instead of up to 75 %.
