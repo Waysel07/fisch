@@ -1055,3 +1055,9 @@ button#btn-boss:hover { background: #be123c; }
   .dex-filters input { flex-basis: 100%; }
   .dex-filters select { flex: 1 1 0; }
 }
+
+/* Lava-Kreaturen: the boss HUD without the phase marks, and the creature list in the Fischdex */
+#boss-hud.crit .boss-bar em { display: none; }
+#boss-hud.crit .boss-top b { color: #fdba74; }
+.dex-crits[hidden] { display: none; }
+.dex-crits h3 { font: 700 .95rem/1.3 var(--ui); margin: 1.2rem 0 .6rem; }

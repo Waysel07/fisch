@@ -46,7 +46,7 @@
     <div id="gear" class="pill"></div>
     <button class="pill" id="btn-boss" type="button" hidden>⚔️ Mitmachen</button>
     <div id="boss-hud" hidden>
-      <div class="boss-top"><b>🐟 ODFISCH</b><span id="boss-phase"></span><span id="boss-time"></span></div>
+      <div class="boss-top"><b id="boss-name">🐟 ODFISCH</b><span id="boss-phase"></span><span id="boss-time"></span></div>
       <div class="boss-bar"><i id="boss-hp"></i><em class="t1"></em><em class="t2"></em><span id="boss-hp-num"></span></div>
       <div class="boss-sub"><span id="boss-info"></span><button type="button" class="boss-quit" id="boss-quit">Aufgeben</button></div>
     </div>
@@ -121,6 +121,7 @@
           <div class="rewards" id="dex-rewards"></div>
         </details>
         <div class="grid" id="dex-grid"></div>
+        <div class="dex-crits" id="dex-crits" hidden></div>
       </div>
     </div>
 
