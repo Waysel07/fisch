@@ -177,6 +177,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-19', date: '04.11.2026', items: [
+      '🐟 Der Schatten am Köder verwandelt sich nicht mehr: Schon wenn er heranschwimmt, zeigt er ungefähr, was gleich anbeißt.',
+    ] },
     { id: '2026-11-04-18', date: '04.11.2026', items: [
       '🗺️ Mehr zu entdecken abseits vom Steg: Hohe See und Glutgrotte bekommen je 5 neue Fänge, darunter die Dosensardine, den Rettungsrochen, den Streichholzfisch und den Basaltbutt.',
       '🚚 12 Fische sind umgezogen und bringen dort mehr Taler. Auf Hohe See: Lo, Travis, Lippenfisch, Gesichtshai, Katzenfisch, Sprecherfisch und Propellerfisch. In die Glutgrotte: Hundsfisch, Fucking Fisch, Fischstäbchen, Genosse Wels und Kept You Waiting.',
@@ -631,6 +634,7 @@
   const bob = { x: 0, y: 0, vx: 0, vy: 0, dunk: 0, landX: 0 };
   let waitT = 0, nibbles = 0, nibbleT = 0, biteT = 0;
   let approacher = null;
+  let nextBite = null; // the fish is chosen when its shadow sets off, so the shadow never has to change shape
   let hooked = null;
   const reel = { tension: 0, progress: 0, thrash: 0, thrashT: 0, slack: 0 };
   let holding = false;
@@ -661,7 +665,7 @@
     state = 'fly'; sfx.whoosh();
   }
   function land() {
-    state = 'wait'; bob.y = SURFACE; bob.dunk = 0;
+    state = 'wait'; bob.y = SURFACE; bob.dunk = 0; nextBite = null;
     splash(bob.x, SURFACE, 10, '#bfe9ff'); ripple(bob.x); sfx.splash();
     waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss')) * (wx.bite ? 1 / wBoost(1 / wx.bite) : 1) * (wx.slow || 1) * (Date.now() < energyUntil ? .6 : 1) * (buffOn('kaffee') ? .7 : 1);
     if (bait().boss && !bossReady()) hint(tr('Der Odköder wirkt nur nachts auf Hoher See.'), 2.4);
@@ -673,8 +677,21 @@
   function retract(msg) {
     // a fish that was on the line darts away
     if (approacher && (state === 'bite' || state === 'reel')) approacher.vx = 35 + Math.random() * 15;
-    state = 'idle'; hooked = null; approacher = null; $('reel').hidden = true;
+    state = 'idle'; hooked = null; approacher = null; nextBite = null; $('reel').hidden = true;
     if (msg) hint(msg, 1.8);
+  }
+  // Sends the fish that will bite: the nearest swimmer with the right shadow, otherwise a new one
+  // swims in from the right while another swimmer leaves, so the shoal keeps its size.
+  function callFish() {
+    const f = pickFish(), kind = hookedShadow({ f }), map = save.map in SHADOW_POOL ? save.map : 'steg';
+    nextBite = { f, bait: save.bait };
+    const near = list => list.reduce((a, b) => Math.abs(b.x - bob.x) < Math.abs(a.x - bob.x) ? b : a);
+    const free = fishes.filter(s => !s.leaving), same = free.filter(s => s.kind === kind);
+    if (same.length) { approacher = near(same); return; }
+    const gone = free.reduce((a, b) => Math.abs(b.x - bob.x) > Math.abs(a.x - bob.x) ? b : a);
+    gone.leaving = true; gone.vx = 30;
+    approacher = Object.assign(newSwimmer(), { x: W + 30, kind, pool: map });
+    fishes.push(approacher);
   }
 
   function pickFish() {
@@ -712,7 +729,8 @@
   }
 
   function hook() {
-    const f = pickFish();
+    const f = nextBite && nextBite.bait === save.bait ? nextBite.f : pickFish(); // the bait can change while the shop is open
+    nextBite = null;
     // bait gets used up on a hook attempt
     if (save.bait !== 'wurm' && !bait().boss) {
       save.baits[save.bait] = (save.baits[save.bait] || 1) - 1;
@@ -1533,8 +1551,10 @@
     } else player.walk = 0;
 
     // swimmers
-    for (const f of fishes) {
+    for (let i = fishes.length - 1; i >= 0; i--) {
+      const f = fishes[i];
       if (f === approacher) continue;
+      if (f.leaving) { f.x += f.vx * dt; if (f.x > W + 30) fishes.splice(i, 1); continue; }
       f.x += f.vx * dt; f.y += Math.sin(t * .8 + f.phase) * 3 * dt;
       if (f.x < 30 || f.x > W + 10) f.vx *= -1;
       if (Math.random() < dt * .08) f.vx *= -1;
@@ -1554,12 +1574,10 @@
       case 'wait': {
         waitT -= dt;
         bob.dunk *= .9;
-        if (!approacher && waitT < 2.2) {
-          approacher = fishes.reduce((a, b) => Math.abs(b.x - bob.x) < Math.abs(a.x - bob.x) ? b : a);
-        }
+        if (!approacher && waitT < 2.2) callFish();
         if (approacher) {
-          const tx = bob.x + (approacher.x < bob.x ? -8 : 8), ty = SURFACE + 9;
-          approacher.x += (tx - approacher.x) * Math.min(1, dt * 2);
+          const tx = bob.x + (approacher.x < bob.x ? -8 : 8), ty = SURFACE + 9, step = 150 * dt; // no darting across the screen
+          approacher.x += Math.max(-step, Math.min(step, (tx - approacher.x) * Math.min(1, dt * 2)));
           approacher.y += (ty - approacher.y) * Math.min(1, dt * 2);
           approacher.vx = (bob.x - approacher.x) || 1;
         }

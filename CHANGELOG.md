@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-19`
+
+- 🐟 The shadow at your bait no longer changes shape: as it swims in, it already shows roughly what is about to bite.
+
 ## 04.11.2026 · `2026-11-04-18`
 
 - 🗺️ More to discover away from the dock: the High Seas and the Ember Cave each get 5 new catches, including the Tinned Sardine, the Lifebuoy Ray, the Matchstick Fish and the Basalt Flounder.
