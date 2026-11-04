@@ -107,7 +107,7 @@
     { id: 'tiefsee', name: 'Tiefseerute',     price: 15000, reb: 4, cast: 1.0, reel: 3.0, tens: .34,  luck: 2.5, desc: 'Für die ganz tiefen Wasser. Hält fast alles aus.' },
     { id: 'krake',  name: 'Krakenrute',       price: 40000, reb: 6, cast: 1.0, reel: 3.4, tens: .3,   luck: 3.0, desc: 'Acht Arme Kraft in einer Rute. Nichts reißt.' },
     // Lavaruten: normal rods melt in the Glutgrotte, there only these work (and they only work there)
-    { id: 'basalt',   name: 'Basaltrute',         price: 400,   pres: 1, lava: true, glut: 10, cast: .8,  reel: 1.5, tens: .7,  luck: 1.1, desc: 'Aus erkalteter Lava. Die erste Rute, die in der Glutgrotte nicht schmilzt.' },
+    { id: 'basalt',   name: 'Basaltrute',         price: 400,   pres: 1, lava: true, cast: .8,  reel: 1.5, tens: .7,  luck: 1.1, desc: 'Aus erkalteter Lava. Die erste Rute, die in der Glutgrotte nicht schmilzt.' },
     { id: 'obsidian', name: 'Obsidianrute',       price: 4000,  pres: 1, depth: 2, lava: true, glut: 80, cast: .95, reel: 2.2, tens: .5,  luck: 1.6, desc: 'Schwarzes Vulkanglas, hart wie Stahl. Nur für die Glutgrotte.' },
     { id: 'magma',    name: 'Magmarute',          price: 15000, pres: 1, depth: 3, lava: true, glut: 250, cast: 1.0, reel: 2.9, tens: .38, luck: 2.2, desc: 'In ihr fließt noch Magma. Wird nie kalt. Nur für die Glutgrotte.' },
     { id: 'drachenknochen', name: 'Drachenknochenrute', price: 50000, pres: 1, depth: 4, lava: true, glut: 700, cast: 1.0, reel: 3.6, tens: .28, luck: 3.0, desc: 'Aus dem Knochen eines Lavadrachen. Hält jede Glut aus. Nur für die Glutgrotte.' },
@@ -146,6 +146,10 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-1', date: '04.11.2026', items: [
+      '🌋 Glutflosses Lava-Laden ist jetzt ein eigener Stand unten in der Glutgrotte – nicht mehr im Kiosk am Steg.',
+      '🎣 Die Basaltrute kostet jetzt 400 Taler statt Glutsteinen. So kommst du an deine erste Lavarute, ohne schon Glutsteine zu haben.',
+    ] },
     { id: '2026-11-03-16', date: '03.11.2026', items: [
       '⏩ Neue Einstellungen: Die Fangkarte kann sich nach 2,5 Sekunden von selbst schließen (nicht bei neuen Fischen, Legendären und Shinys), und leere Köder lassen sich automatisch nachkaufen.',
     ] },
@@ -1865,7 +1869,7 @@
   let glimmTalk = 0, glimmLine = '', glimmGo = 0;
   const GLIMM_SAY = {
     locked: ['Da unten ist es heißer als im Kiosk-Kaffee. Komm nach deinem ersten Prestige wieder.', 'Ohne Prestige lass ich keinen runter. Die Lava ist nichts für Anfänger.', 'Ich bin Glimm. Ich grabe. Und ich warte, bis du Prestige hast.'],
-    down: ['Halt dich fest – ab in die Glutgrotte!', 'Kopf einziehen, da unten hängen Tropfsteine!', 'Runter geht’s. Nimm eine Lavarute mit, sonst schmilzt dir alles.'],
+    down: ['Unten verkauft Glutflosse Lavaruten – die erste gibt’s für Taler.', 'Halt dich fest – ab in die Glutgrotte!', 'Kopf einziehen, da unten hängen Tropfsteine!', 'Runter geht’s. Nimm eine Lavarute mit, sonst schmilzt dir alles.'],
     up: ['Ich hab Arbeit für dich!', 'Schau mal, was ich für dich habe.', 'Hilf mir, dann zahl ich gut.'],
   };
   function talkGlimm() {
@@ -2277,6 +2281,7 @@
     { id: 'buoy',   get label() { return seaOpen() ? tr('⛵ Auf die Hohe See') : tr('⛵ Hohe See (🔒 3× Wiedergeburt)'); }, x: 285, y: SURFACE - 16, w: 12, h: 18, draw: drawBuoy, open: () => travel('see'), ready: () => seaOpen() && !save.seaSeen },
     { id: 'rift',   get label() { return lavaOpen() ? tr('⛏️ Glimm · In die Glutgrotte') : tr('⛏️ Glimm · Glutgrotte (🔒 1× Prestige)'); }, x: 196, y: SURFACE - 24, w: 18, h: 25, draw: drawRift, open: () => talkGlimm(), ready: () => lavaOpen() && !save.lavaSeen },
     { id: 'glimm',  map: 'lava', label: tr('⛏️ Glimm · Aufträge'), x: 19, y: DOCK_Y - 11, w: 10, h: 11, draw: () => drawGlimm(20, DOCK_Y, 1), open: () => talkGlimm(), ready: () => save.glimmQ.some(q => q.p >= q.n) || canDig() },
+    { id: 'lavashop', map: 'lava', label: tr('🌋 Glutflosses Lava-Laden'), x: KIOSK.x - 3, y: DOCK_Y - 30, w: KIOSK.w + 6, h: 30, draw: drawLavaStall, open: () => toggleModal('shop') },
     { id: 'ladder', map: 'lava', label: tr('🪜 Zurück zum Steg'), x: 4, y: DOCK_Y - 28, w: 12, h: 28, draw: drawLadder, open: () => travel('steg') },
     { id: 'wheel',  map: 'see', label: tr('⚓ Zurück zum Steg'), x: 5, y: DOCK_Y - 22, w: 15, h: 22, draw: drawWheel, open: () => travel('steg') },
     { id: 'npc',    label: 'Spezifischfischer', x: NPC.x - 1, y: DOCK_Y - NPC.h - 2, w: NPC.w + 2, h: NPC.h + 2, open: () => talkNpc() },
@@ -2302,6 +2307,24 @@
     ctx.fillStyle = '#fffbeb'; ctx.textBaseline = 'top'; ctx.fillText(p.label, lx + 2, ly + 1); ctx.textBaseline = 'alphabetic';
   }
 
+  // Glutflosse's stall in the Glutgrotte: basalt counter, glowing roof, a fin peeking out and a LAVA sign
+  function drawLavaStall() {
+    const k = '#1b1f2e', x0 = KIOSK.x, w = KIOSK.w, y = DOCK_Y, glow = Math.sin(t * 3) > 0 ? '#fb923c' : '#f97316';
+    px(x0 + 1, y - 26, w - 2, 17, '#2a2220');                                    // back wall
+    px(x0 + 2, y - 25, w - 4, 15, '#3f3533');
+    for (let i = 0; i < 4; i++) px(x0 + 4 + i * 5, y - 20 + (i % 2) * 3, 2, 1, '#7c2d12'); // glowing cracks
+    const bob = Math.sin(t * 4) * .8;                                            // the shark's fin peeks over the counter
+    px(x0 + 8, y - 15 + bob, 8, 6, k); px(x0 + 9, y - 14 + bob, 6, 5, '#3b82f6'); px(x0 + 11, y - 17 + bob, 3, 3, k); px(x0 + 11.5, y - 16.5 + bob, 2, 2.5, '#60a5fa');
+    px(x0 + 10, y - 12.5 + bob, 1, 1, '#f8fafc'); px(x0 + 13, y - 12.5 + bob, 1, 1, '#f8fafc');
+    px(x0 - 2.5, y - 30.5, w + 5, 4.5, k);                                        // roof
+    for (let i = 0; i < w + 4; i += 2) px(x0 - 2 + i, y - 30, 2, 3.5, i % 4 ? '#b91c1c' : glow);
+    px(x0 - .5, y - 9.5, w + 1, 9.5, k);                                          // counter
+    px(x0, y - 9, w, 9, '#44403c'); px(x0, y - 9, w, 1, '#78716c');
+    px(x0 + 5, y - 7.5, 14, 5, '#1c0a05'); px(x0 + 5, y - 7.5, 14, .5, glow);
+    ctx.fillStyle = glow; setFont('700 4px Poppins, sans-serif'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('LAVA', x0 + 12, y - 5); ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    if (Math.sin(t * 2.7) > .5) px(x0 + 2 + (t * 7) % (w - 4), y - 31 - (t * 5) % 4, .5, .5, '#fde047'); // sparks over the roof
+  }
   function drawKiosk(dark) {
     const k = '#1b1f2e', x0 = KIOSK.x, x1 = KIOSK.x + KIOSK.w, y = DOCK_Y;
     const wood = mix([150, 98, 56], [66, 48, 38], dark), woodL = mix([186, 128, 78], [86, 62, 48], dark), woodD = mix([104, 66, 38], [46, 34, 28], dark);
@@ -3159,7 +3182,10 @@
         if (owned) grid.append(tile(ICONS[c.id], c.name, worn === c.id ? tr('Angezogen') : tr('Anziehen'), worn === c.id ? 'on' : '',
           () => { save.cosm[slot] = worn === c.id ? null : c.id; persist(); renderWardrobe(); sfx.tick(); }));
         else if (c.price) grid.append(tile(ICONS[c.id], c.name, tr('🛒 Laden · {n} Taler', { n: c.price }), 'locked', () => { closeModals(); shopTab = 'cosm'; toggleModal('shop'); }));
-        else if (c.glut) grid.append(tile(ICONS[c.id], c.name, tr('🌋 Lava-Laden · {n} 🔥', { n: c.glut }), 'locked', () => { closeModals(); shopTab = 'lava'; toggleModal('shop'); }));
+        else if (c.glut) grid.append(tile(ICONS[c.id], c.name, tr('🌋 Lava-Laden in der Glutgrotte · {n} 🔥', { n: c.glut }), 'locked', () => {
+          if (!inLava()) return toast(tr('🌋 Den Lava-Laden gibt es nur unten in der Glutgrotte.'));
+          closeModals(); toggleModal('shop');
+        }));
         else grid.append(tile(ICONS[c.id], c.name, '🔒 ' + c.ach, 'locked', () => toast('🔒 ' + c.ach), c.ach));
       }
       sec.append(h, grid); return sec;
@@ -3304,13 +3330,15 @@
         id: r.id, name: '🌋 ' + r.name, desc: r.desc,
         stats: [statBar(tr('Wurf'), r.cast, 1), statBar(tr('Kurbel'), r.reel, 4.2), statBar(tr('Glück'), r.luck, 3.6), statBar(tr('Ruhe'), 1.1 - r.tens, .8)],
         state: active ? 'active' : lock ? 'locked' : owned ? 'owned' : '',
-        btnText: active ? tr('In der Hand') : owned ? tr('Nehmen') : lock || `${r0.glut} 🔥`,
-        disabled: active || (!owned && (!!lock || save.glut < r0.glut)),
+        // the first lava rod (no glut price) is paid in Taler, so you can get started without Glutsteine
+        btnText: active ? tr('In der Hand') : owned ? tr('Nehmen') : lock || (r0.glut ? `${r0.glut} 🔥` : tr('{n} Taler', { n: r0.price })),
+        disabled: active || (!owned && (!!lock || (r0.glut ? save.glut < r0.glut : save.coins < r0.price))),
         onClick: () => {
           if (active) return keeper(pick(KEEPER.equip));
           if (lock) return keeper(KEEPER.locked(lock));
-          if (!owned && save.glut < r0.glut) return poor(r0.glut);
-          if (!owned) { save.glut -= r0.glut; save.rods.push(r0.id); sfx.coin(); keeper(tr('Hält jede Glut aus. Viel Erfolg da unten!')); }
+          if (!owned && r0.glut && save.glut < r0.glut) return poor(r0.glut);
+          if (!owned && !r0.glut && save.coins < r0.price) return keeper(KEEPER.poor(r0.price - save.coins));
+          if (!owned) { if (r0.glut) save.glut -= r0.glut; else spend(r0.price); save.rods.push(r0.id); sfx.coin(); keeper(tr('Hält jede Glut aus. Viel Erfolg da unten!')); }
           else keeper(pick(KEEPER.equip));
           save.lavaRod = r0.id; persist(); updateCoins(); updateGear(); renderShop(false);
         },
@@ -3359,10 +3387,10 @@
   }
   function renderShop(greet) {
     updateCoins();
-    $('shop-tab-lava').hidden = !lavaOpen();
-    if (shopTab === 'lava' && !lavaOpen()) shopTab = 'rods';
-    if (greet !== false && inLava()) shopTab = 'lava'; // down in the cave the kiosk opens with the lava wares
-    $('shop-glut-p').hidden = shopTab !== 'lava'; $('shop-coins-p').hidden = shopTab === 'lava';
+    // the Lava-Laden is its own shop, only down in the Glutgrotte; the kiosk at the dock never shows it
+    if (inLava()) shopTab = 'lava'; else if (shopTab === 'lava') shopTab = 'rods';
+    $('shop-tabs').hidden = inLava();
+    $('shop-glut-p').hidden = shopTab !== 'lava'; $('shop-coins-p').hidden = false;
     { // the Lava-Laden has its own dealer: Glutflosse, a shark dancing in the flames
       const lava = shopTab === 'lava', ph = $('keeper-photo');
       ph.src = lava ? 'img/lava-haendler.jpg' : 'img/tophat-fish-fish.gif';
@@ -3370,7 +3398,7 @@
       $('shop-title').textContent = lava ? tr('Glutflosses Lava-Laden') : tr('Zylinderwels & Söhne');
       $('keeper-name').textContent = lava ? tr('Glutflosse, Lava-Händler') : tr('Herr Zylinderwels, Inhaber');
     }
-    if (greet !== false) keeper(shopTab === 'lava' ? tr('Hey! Glutsteine? Die nehme ich gern. Taler bitte oben lassen.') : pick(KEEPER.hello));
+    if (greet !== false) keeper(shopTab === 'lava' ? tr('Hey! Die Basaltrute gibt’s für Taler, alles andere nur für Glutsteine.') : pick(KEEPER.hello));
     document.querySelectorAll('[data-shop-tab]').forEach(t => {
       const on = t.dataset.shopTab === shopTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
@@ -3414,7 +3442,7 @@
     });
     $('shop-wares').replaceChildren(...wares);
   }
-  document.querySelectorAll('[data-shop-tab]').forEach(t => t.addEventListener('click', () => { shopTab = t.dataset.shopTab; renderShop(false); if (shopTab === 'lava') keeper(tr('Hey! Glutsteine? Die nehme ich gern. Taler bitte oben lassen.')); }));
+  document.querySelectorAll('[data-shop-tab]').forEach(t => t.addEventListener('click', () => { shopTab = t.dataset.shopTab; renderShop(false); }));
 
 
   function flashSaved() {
