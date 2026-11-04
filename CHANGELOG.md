@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-2`
+
+- ⚖️ Balance: the Ember Cave pays fewer coins. Cave fish are now worth about half, the heat bonus is +20 %, each depth gives +10 %, Glimm’s trust +3 % per level and the Ember Net +5 % per level. Glimm’s jobs pay about half. Ember stones stay as they are.
+
 ## 04.11.2026 · `2026-11-04-1`
 
 - 🌋 Glutflosse’s lava store is now its own stall down in the Ember Cave – no longer in the kiosk at the dock.

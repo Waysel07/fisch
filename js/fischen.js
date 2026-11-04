@@ -76,18 +76,18 @@
     { id: 'sturmhai', name: 'Sturmhai',          img: 'img/sturmhai.png',         r: 'legendary', min: 220, max: 320, val: 650, pixel: true, page: 'seiten/sturmhai.html', map: 'see', weather: 'gewitter', say: 'Ich reite den Blitz.', desc: 'Jagt nur bei Gewitter auf Hoher See.' },
     { id: 'flaschenpost', name: 'Flaschenpost',  img: 'img/flaschenpost.png',     r: 'junk',     min: 20, max: 30, val: 2,  pixel: true, page: 'seiten/flaschenpost.html', map: 'see', post: true, say: 'Hilfe, ich stecke in einer Flasche! … Nein, Spaß.', desc: 'Manchmal stecken ein paar Taler drin.' },
     // Glutgrotte (map: 'lava'): the lava cave under the dock, opens after the 1st prestige. Only its own fish bite there.
-    { id: 'schlacke',  name: 'Schlackebrocken',  img: 'img/lava-schlacke.png',  r: 'junk',  min: 15, max: 30, val: 9, pixel: true, page: 'seiten/schlackebrocken.html', map: 'lava', post: 'slag', say: 'Ich glühe noch ein bisschen nach.', desc: 'Ein Klumpen erkalteter Lava. Manchmal stecken geschmolzene Taler drin.' },
-    { id: 'glutgrundel', name: 'Glutgrundel',    img: 'img/lava-glutgrundel.png', r: 'common', min: 10, max: 20, val: 42, pixel: true, page: 'seiten/glutgrundel.html', map: 'lava', say: 'Heiß hier, oder? Ich find’s gemütlich.', desc: 'Klein, rund und glühend wie ein Stück Kohle.' },
-    { id: 'aschebarsch', name: 'Aschebarsch',    img: 'img/lava-aschebarsch.png', r: 'common', min: 20, max: 40, val: 48, pixel: true, page: 'seiten/aschebarsch.html', map: 'lava', say: 'Nicht pusten, sonst staube ich.', desc: 'Aschgrau mit dunklen Streifen und Flossen wie Flammen.' },
-    { id: 'bimsfisch', name: 'Bimssteinfisch',   img: 'img/lava-bimsfisch.png', r: 'uncommon', min: 25, max: 45, val: 90, pixel: true, page: 'seiten/bimssteinfisch.html', map: 'lava', say: 'Ich bin leichter, als ich aussehe.', desc: 'Voller kleiner Löcher und so leicht, dass er oben auf der Lava treibt.' },
-    { id: 'funkenforelle', name: 'Funkenforelle', img: 'img/lava-funkenforelle.png', r: 'uncommon', min: 30, max: 55, val: 96, pixel: true, page: 'seiten/funkenforelle.html', map: 'lava', say: 'Pssst … knister.', desc: 'Sprüht beim Springen Funken. Nicht in der Nähe von Heu angeln.' },
-    { id: 'obsidianhecht', name: 'Obsidianhecht', img: 'img/lava-obsidianhecht.png', r: 'rare', min: 60, max: 120, val: 285, pixel: true, page: 'seiten/obsidianhecht.html', map: 'lava', say: 'Scharf. In jeder Hinsicht.', desc: 'Lang, schwarz und glatt wie Vulkanglas. Schimmert lila.' },
-    { id: 'schwefelkugel', name: 'Schwefel-Kugelfisch', img: 'img/lava-schwefelkugel.png', r: 'rare', min: 20, max: 40, val: 300, pixel: true, page: 'seiten/schwefel-kugelfisch.html', map: 'lava', say: 'Riechst du das? Das bin ich.', desc: 'Bläht sich auf, wenn er sich ärgert. Riecht nach faulen Eiern.' },
-    { id: 'magmakarpfen', name: 'Magmakarpfen',  img: 'img/lava-magmakarpfen.png', r: 'epic', min: 70, max: 130, val: 720, pixel: true, page: 'seiten/magmakarpfen.html', map: 'lava', say: 'Unter meiner Kruste brodelt es.', desc: 'Ein schwerer Karpfen aus Basalt, durch dessen Risse das Magma leuchtet.' },
-    { id: 'salamanderfisch', name: 'Salamanderfisch', img: 'img/lava-salamanderfisch.png', r: 'epic', min: 40, max: 70, val: 750, pixel: true, page: 'seiten/salamanderfisch.html', map: 'lava', night: 2, say: 'Ich hab Beine. Ich benutze sie nur nicht.', desc: 'Schwarz mit orangen Flecken und vier kleinen Beinen. Kommt lieber nachts.' },
-    { id: 'kristallwels', name: 'Kristallwels',  img: 'img/lava-kristallwels.png', r: 'epic', min: 80, max: 160, val: 780, pixel: true, page: 'seiten/kristallwels.html', map: 'lava', far: .5, say: 'Mir wachsen Steine aus dem Rücken. Normal.', desc: 'Auf seinem Rücken wachsen leuchtende Kristalle. Lebt weit draußen im Glutsee.' },
-    { id: 'lavadrache', name: 'Lavadrache',      img: 'img/lava-lavadrache.png', r: 'legendary', min: 300, max: 500, val: 2550, pixel: true, page: 'seiten/lavadrache.html', map: 'lava', bigSplash: true, say: 'Ich bin kein Fisch. Ich bin ein Vulkan mit Schwanz.', desc: 'Schlängelt sich durch die Glut. Seine Mähne brennt seit tausend Jahren.' },
-    { id: 'phoenixfisch', name: 'Phönixfisch',   img: 'img/lava-phoenixfisch.png', r: 'legendary', min: 60, max: 110, val: 3000, pixel: true, page: 'seiten/phoenixfisch.html', map: 'lava', needs: { magmakarpfen: 10 }, bigSplash: true, hint: 'Zeigt sich erst, wenn du 10 Magmakarpfen gefangen hast', say: 'Ich war schon Asche. Zweimal.', desc: 'Steigt aus der Glut auf, wenn genug Magmakarpfen gefangen wurden. Brennt und wird nie kleiner.' },
+    { id: 'schlacke',  name: 'Schlackebrocken',  img: 'img/lava-schlacke.png',  r: 'junk',  min: 15, max: 30, val: 4, pixel: true, page: 'seiten/schlackebrocken.html', map: 'lava', post: 'slag', say: 'Ich glühe noch ein bisschen nach.', desc: 'Ein Klumpen erkalteter Lava. Manchmal stecken geschmolzene Taler drin.' },
+    { id: 'glutgrundel', name: 'Glutgrundel',    img: 'img/lava-glutgrundel.png', r: 'common', min: 10, max: 20, val: 21, pixel: true, page: 'seiten/glutgrundel.html', map: 'lava', say: 'Heiß hier, oder? Ich find’s gemütlich.', desc: 'Klein, rund und glühend wie ein Stück Kohle.' },
+    { id: 'aschebarsch', name: 'Aschebarsch',    img: 'img/lava-aschebarsch.png', r: 'common', min: 20, max: 40, val: 24, pixel: true, page: 'seiten/aschebarsch.html', map: 'lava', say: 'Nicht pusten, sonst staube ich.', desc: 'Aschgrau mit dunklen Streifen und Flossen wie Flammen.' },
+    { id: 'bimsfisch', name: 'Bimssteinfisch',   img: 'img/lava-bimsfisch.png', r: 'uncommon', min: 25, max: 45, val: 45, pixel: true, page: 'seiten/bimssteinfisch.html', map: 'lava', say: 'Ich bin leichter, als ich aussehe.', desc: 'Voller kleiner Löcher und so leicht, dass er oben auf der Lava treibt.' },
+    { id: 'funkenforelle', name: 'Funkenforelle', img: 'img/lava-funkenforelle.png', r: 'uncommon', min: 30, max: 55, val: 48, pixel: true, page: 'seiten/funkenforelle.html', map: 'lava', say: 'Pssst … knister.', desc: 'Sprüht beim Springen Funken. Nicht in der Nähe von Heu angeln.' },
+    { id: 'obsidianhecht', name: 'Obsidianhecht', img: 'img/lava-obsidianhecht.png', r: 'rare', min: 60, max: 120, val: 140, pixel: true, page: 'seiten/obsidianhecht.html', map: 'lava', say: 'Scharf. In jeder Hinsicht.', desc: 'Lang, schwarz und glatt wie Vulkanglas. Schimmert lila.' },
+    { id: 'schwefelkugel', name: 'Schwefel-Kugelfisch', img: 'img/lava-schwefelkugel.png', r: 'rare', min: 20, max: 40, val: 150, pixel: true, page: 'seiten/schwefel-kugelfisch.html', map: 'lava', say: 'Riechst du das? Das bin ich.', desc: 'Bläht sich auf, wenn er sich ärgert. Riecht nach faulen Eiern.' },
+    { id: 'magmakarpfen', name: 'Magmakarpfen',  img: 'img/lava-magmakarpfen.png', r: 'epic', min: 70, max: 130, val: 360, pixel: true, page: 'seiten/magmakarpfen.html', map: 'lava', say: 'Unter meiner Kruste brodelt es.', desc: 'Ein schwerer Karpfen aus Basalt, durch dessen Risse das Magma leuchtet.' },
+    { id: 'salamanderfisch', name: 'Salamanderfisch', img: 'img/lava-salamanderfisch.png', r: 'epic', min: 40, max: 70, val: 375, pixel: true, page: 'seiten/salamanderfisch.html', map: 'lava', night: 2, say: 'Ich hab Beine. Ich benutze sie nur nicht.', desc: 'Schwarz mit orangen Flecken und vier kleinen Beinen. Kommt lieber nachts.' },
+    { id: 'kristallwels', name: 'Kristallwels',  img: 'img/lava-kristallwels.png', r: 'epic', min: 80, max: 160, val: 390, pixel: true, page: 'seiten/kristallwels.html', map: 'lava', far: .5, say: 'Mir wachsen Steine aus dem Rücken. Normal.', desc: 'Auf seinem Rücken wachsen leuchtende Kristalle. Lebt weit draußen im Glutsee.' },
+    { id: 'lavadrache', name: 'Lavadrache',      img: 'img/lava-lavadrache.png', r: 'legendary', min: 300, max: 500, val: 1275, pixel: true, page: 'seiten/lavadrache.html', map: 'lava', bigSplash: true, say: 'Ich bin kein Fisch. Ich bin ein Vulkan mit Schwanz.', desc: 'Schlängelt sich durch die Glut. Seine Mähne brennt seit tausend Jahren.' },
+    { id: 'phoenixfisch', name: 'Phönixfisch',   img: 'img/lava-phoenixfisch.png', r: 'legendary', min: 60, max: 110, val: 1500, pixel: true, page: 'seiten/phoenixfisch.html', map: 'lava', needs: { magmakarpfen: 10 }, bigSplash: true, hint: 'Zeigt sich erst, wenn du 10 Magmakarpfen gefangen hast', say: 'Ich war schon Asche. Zweimal.', desc: 'Steigt aus der Glut auf, wenn genug Magmakarpfen gefangen wurden. Brennt und wird nie kleiner.' },
     // the boss of the open sea: never bites normally, only lands after winning the boss fight
     { id: 'odboss',   name: 'Odfisch',           img: 'img/odfisch-boss.png',     r: 'legendary', min: 260, max: 320, val: 900, pixel: true, page: 'seiten/odfisch.html', map: 'see', boss: true, say: 'Fih.', desc: 'Halb Fisch, halb Katze, ganz Boss. Der Herrscher der Hohen See lässt sich nur im Bossfight bezwingen – am besten zusammen mit der Lobby.' },
     { id: 'schummel', name: 'Ditto',    img: 'img/ditto-dance.gif', r: 'junk', min: 6, max: 14, val: 1, pixel: true, page: 'seiten/schummelfisch.html', fake: true, say: 'Das ist kein Fisch.', desc: '+1 Coin' },
@@ -146,6 +146,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-2', date: '04.11.2026', items: [
+      '⚖️ Balance: Die Glutgrotte bringt weniger Taler. Grotten-Fische sind jetzt etwa halb so viel wert, der Hitzebonus liegt bei +20 %, jede Tiefe gibt +10 %, Glimms Vertrauen +3 % pro Stufe und das Glutnetz +5 % pro Stufe. Glimms Aufträge zahlen etwa die Hälfte. Glutsteine bleiben, wie sie sind.',
+    ] },
     { id: '2026-11-04-1', date: '04.11.2026', items: [
       '🌋 Glutflosses Lava-Laden ist jetzt ein eigener Stand unten in der Glutgrotte – nicht mehr im Kiosk am Steg.',
       '🎣 Die Basaltrute kostet jetzt 400 Taler statt Glutsteinen. So kommst du an deine erste Lavarute, ohne schon Glutsteine zu haben.',
@@ -477,7 +480,7 @@
   function caveDepth() { return Math.max(1, Math.min(CAVE_DEPTHS.length, save.caveDepth | 0)); }
   const GLUT_DROP = { junk: .5, common: 1, uncommon: 2, rare: 5, wii: 5, epic: 12, legendary: 40 };
   const GLUT_UPS = [
-    { id: 'netz',     icon: '🔥', name: 'Glutnetz',     max: 10, desc: l => tr('+{n} % Taler in der Glutgrotte', { n: l * 10 }) },
+    { id: 'netz',     icon: '🔥', name: 'Glutnetz',     max: 10, desc: l => tr('+{n} % Taler in der Glutgrotte', { n: l * 5 }) },
     { id: 'schild',   icon: '🛡️', name: 'Hitzeschild',  max: 5,  desc: l => tr('{n} % weniger Spannung in der Glutgrotte', { n: l * 5 }) },
     { id: 'licht',    icon: '✨', name: 'Funkenlicht',  max: 10, desc: l => tr('+{n} % Glück in der Glutgrotte', { n: l * 8 }) },
     { id: 'kristall', icon: '💎', name: 'Glutkristall', max: 10, desc: l => tr('+{n} % Glutsteine pro Fang', { n: l * 10 }) },
@@ -682,7 +685,7 @@
       setTimeout(() => toast(tr('⚡ Energy! 60 Sekunden lang schnellere Bisse.')), 1800);
     }
     if (f.post && Math.random() < .35) { // a message in a bottle (or a lump of slag) sometimes holds a few Taler
-      const extra = Math.round((f.post === 'slag' ? 360 + Math.random() * 1440 : 40 + Math.random() * 260) * coinMult());
+      const extra = Math.round((f.post === 'slag' ? 180 + Math.random() * 720 : 40 + Math.random() * 260) * coinMult());
       save.coins += extra; save.lifeCoins += extra; save.totalEarned += extra;
       setTimeout(() => toast(f.post === 'slag' ? tr('🔥 Im Schlackebrocken waren {n} Taler eingeschmolzen!', { n: extra }) : tr('📜 In der Flasche steckten {n} Taler!', { n: extra })), 1800);
     }
@@ -3652,8 +3655,8 @@
   // Glimm's trust (+5 % Taler in the cave per level, up to 10). They survive rebirth and prestige.
   const GLIMM_TRUST_MAX = 10;
   function glimmTrust() { return Math.min(GLIMM_TRUST_MAX, Math.floor((save.glimmDone | 0) / 3)); }
-  // Taler bonus in the cave: +50 % heat bonus, +20 % per depth, Glimm's trust and the Glutnetz upgrade
-  function caveBonus() { return 1.5 * (1 + .2 * (caveDepth() - 1)) * (1 + .05 * glimmTrust()) * (1 + .1 * glutUp('netz')); }
+  // Taler bonus in the cave: +20 % heat bonus, +10 % per depth, +3 % per trust level and +5 % per Glutnetz level (at most about ×3.3)
+  function caveBonus() { return 1.2 * (1 + .1 * (caveDepth() - 1)) * (1 + .03 * glimmTrust()) * (1 + .05 * glutUp('netz')); }
   function caveMult() { return inLava() ? caveBonus() : 1; }
   function canDig() { const nx = CAVE_DEPTHS[caveDepth()]; return !!nx && save.glut >= nx.cost; }
   function digDeeper() {
@@ -3681,8 +3684,8 @@
     if (kind === 'lfish') { const pool = FISH.filter(f => f.map === 'lava' && ['common', 'uncommon', 'rare'].includes(f.r) && !f.needs && !f.far && f.depth <= caveDepth()); const f = pool[Math.floor(Math.random() * pool.length)]; q.id = f.id; q.n = f.r === 'rare' ? 2 : f.r === 'uncommon' ? 3 + Math.floor(Math.random() * 2) : 4 + Math.floor(Math.random() * 2); }
     if (kind === 'lrar') { q.r = caveDepth() >= 3 ? 'epic' : 'rare'; q.n = q.r === 'epic' ? 1 + (Math.random() < .4 ? 1 : 0) : 2 + Math.floor(Math.random() * 2); }
     if (kind === 'lcoins') q.n = Math.round(6000 * coinMult() / 100) * 100;
-    const tier = { lcount: 1, lfish: 1.3, lrar: q.r === 'epic' ? 2 * q.n : .8 * q.n, lcoins: 1.2 }[kind], deep = 1 + .5 * (caveDepth() - 1);
-    q.coins = Math.round(2500 * tier * deep * coinMult() / 50) * 50;
+    const tier = { lcount: 1, lfish: 1.3, lrar: q.r === 'epic' ? 2 * q.n : .8 * q.n, lcoins: 1.2 }[kind], deep = 1 + .25 * (caveDepth() - 1);
+    q.coins = Math.round(1200 * tier * deep * coinMult() / 50) * 50;
     q.xp = Math.round(300 * tier);
     q.glut = Math.round(15 * tier * (1 + .25 * (caveDepth() - 1)));
     if (kind === 'lrar' && q.r === 'epic') q.pearls = 1;
@@ -3706,7 +3709,7 @@
     sfx.coin(); toast(tr('⛏️ Glimm zahlt: +{c} Taler · +{x} EP', { c: q.coins.toLocaleString(I18N.locale), x: q.xp }) + (q.glut ? ` · +${q.glut} 🔥` : '') + (q.pearls ? tr(' · +{n} 🦪', { n: q.pearls }) : ''));
     gainXp(q.xp);
     if (glimmTrust() > before) {
-      setTimeout(() => toast(tr('🤝 Glimm vertraut dir mehr: Stufe {n}/{m} · +{p} % Taler in der Glutgrotte', { n: glimmTrust(), m: GLIMM_TRUST_MAX, p: glimmTrust() * 5 })), 1400);
+      setTimeout(() => toast(tr('🤝 Glimm vertraut dir mehr: Stufe {n}/{m} · +{p} % Taler in der Glutgrotte', { n: glimmTrust(), m: GLIMM_TRUST_MAX, p: glimmTrust() * 3 })), 1400);
       [392, 523, 659, 784].forEach((n, k) => setTimeout(() => tone(n, .14, 'triangle', .07), 1400 + k * 90));
     }
     fillQuests(); persist(); updateCoins(); renderProg();
@@ -3875,7 +3878,7 @@
     if (lavaOpen()) {
       fillQuests();
       const tl = glimmTrust();
-      $('glimm-trust').textContent = tr('🤝 Vertrauen {n}/{m} · +{p} % Taler in der Glutgrotte (dazu immer +50 % Hitzebonus)', { n: tl, m: GLIMM_TRUST_MAX, p: tl * 5 })
+      $('glimm-trust').textContent = tr('🤝 Vertrauen {n}/{m} · +{p} % Taler in der Glutgrotte (dazu immer +20 % Hitzebonus)', { n: tl, m: GLIMM_TRUST_MAX, p: tl * 3 })
         + (tl < GLIMM_TRUST_MAX ? tr(' · nächste Stufe in {n} Aufträgen', { n: 3 - (save.glimmDone % 3) }) : '');
       const cd = caveDepth(), cur = CAVE_DEPTHS[cd - 1], nx = CAVE_DEPTHS[cd];
       $('dig-info').textContent = tr('Tiefe {n}/{m}: {t} · +{p} % Taler in der Grotte · {g} 🔥', { n: cd, m: CAVE_DEPTHS.length, t: cur.name, p: Math.round((caveBonus() - 1) * 100), g: save.glut });
