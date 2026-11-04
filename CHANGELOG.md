@@ -4,6 +4,7 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 
 ## 04.11.2026 · `2026-11-04-3`
 
+- 🏆 Leaderboard: “Rebirths” now shows your current rebirths and drops to 0 on prestige, just like in the game. New rebirths show up right away.
 - ✦ Prestige pays off more: +100 % coins per prestige instead of +50 %, and 40 % of your rebirths keep counting as a legacy. Talents are still reset on prestige.
 - 🎖️ Rank, Old Salt jacket and Fish God crown now count all rebirths ever – a prestige no longer takes them away. Lava rods stay through rebirth and prestige.
 - ⚖️ Economy: coin boni add up within their group (path, talents, collection) instead of all multiplying each other. Bait, snacks and boxes get a little pricier with your coin bonus. New: forge up to +15, Sun Crown (500,000 coins) and Galaxy Coat (1 million coins).

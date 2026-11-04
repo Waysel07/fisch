@@ -85,7 +85,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
 
 ## Server (`api/`)
 
-- **`leaderboard.js`:** In `BOARDS` steht pro Liste ein Maximalwert `max` und ein Plausibilitätsschritt `step(dt)`. Eine neue Liste braucht drei Einträge:
+- **`leaderboard.js`:** In `BOARDS` steht pro Liste ein Maximalwert `max` und ein Plausibilitätsschritt `step(dt)`. Normale Listen speichern nur Verbesserungen (`ZADD GT`), `live: true` (Wiedergeburten) speichert den aktuellen Wert und darf sinken. Eine neue Liste braucht drei Einträge:
   - `BOARDS` auf dem Server;
   - `LB_TABS` im Client;
   - `lbScores()` im Client.

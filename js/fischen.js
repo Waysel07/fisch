@@ -149,6 +149,7 @@
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
     { id: '2026-11-04-3', date: '04.11.2026', items: [
+      '🏆 Bestenliste: „Wiedergeburten“ zeigt jetzt deine aktuellen Wiedergeburten und fällt beim Prestige wie im Spiel auf 0. Neue Wiedergeburten erscheinen sofort.',
       '✦ Prestige lohnt sich mehr: +100 % Taler pro Prestige statt +50 %, und 40 % deiner Wiedergeburten zählen als Erbe weiter. Talente werden beim Prestige weiter zurückgesetzt.',
       '🎖️ Rang, Seebären-Jacke und Fischgott-Krone zählen jetzt alle Wiedergeburten insgesamt – ein Prestige nimmt sie dir nicht mehr weg. Lavaruten bleiben bei Wiedergeburt und Prestige erhalten.',
       '⚖️ Wirtschaft: Taler-Boni addieren sich innerhalb ihrer Gruppe (Weg, Talente, Sammlung) statt alle miteinander zu multiplizieren. Köder, Snacks und Boxen werden mit deinem Taler-Bonus etwas teurer. Neu: Schmiede bis +15, Sonnenkrone (500 000 Taler) und Galaxiemantel (1 Mio. Taler).',
@@ -3883,6 +3884,7 @@
     [262, 330, 392, 523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .25, 'triangle', .08), i * 120));
     toast(tr('🌀 Wiedergeboren! +{n} Schuppen · Taler-Bonus jetzt +{p} %', { n: gain, p: Math.round((coinMult() - 1) * 100) }));
     checkCosm();
+    if (save.lb) { save.lbT = 0; lbSubmit(true); } // the leaderboard shows the new rebirth at once
   }
   function buyPerk(id) {
     const l = perk(id), c = perkCost(l);
@@ -3905,7 +3907,7 @@
     [196, 262, 330, 392, 523, 659, 784, 1047, 1319].forEach((n, i) => setTimeout(() => tone(n, .3, 'triangle', .08), i * 110));
     toast(tr('✦ Prestige {p}! +{n} Perlen · Taler-Bonus jetzt +{b} %', { p: save.prestige, n: gain, b: Math.round((coinMult() - 1) * 100) }));
     checkCosm();
-    if (save.lb) lbSubmit(true);
+    if (save.lb) { save.lbT = 0; lbSubmit(true); } // rebirths drop to 0 on the leaderboard too
   }
   function buyPPerk(id) {
     const p = PPERKS.find(x => x.id === id), l = pperk(id), c = pperkCost(l);
@@ -4062,7 +4064,7 @@
   const LB_API = '/api/leaderboard';
   const LB_TABS = {
     taler:  { label: tr('🪙 Taler'),          fmt: s => tr('{n} Taler', { n: s.toLocaleString(I18N.locale) }) },
-    wieder: { label: tr('🌀 Wiedergeburten'), fmt: s => s + '× · ' + rankOf(s).name },
+    wieder: { label: tr('🌀 Wiedergeburten'), fmt: s => s + '×' }, // current rebirths, they drop to 0 on prestige
     dex:    { label: tr('📖 Fischdex'),       fmt: s => tr('{a} Fische · {b} Mut.', { a: Math.floor(s / 100), b: s % 100 }) },
     rekord: { label: tr('📏 Rekordfang'),     fmt: s => s + ' cm' },
     klein:  { label: tr('🔬 Kleinster Fisch'), fmt: s => s ? s + ' cm' : '–' },
