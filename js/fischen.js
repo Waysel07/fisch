@@ -51,6 +51,7 @@
     { id: 'lippe',   name: 'Lippenfisch',       img: 'img/lippenfisch-spin.gif', r: 'epic',      min: 30, max: 60,  val: 120, photo: true, say: 'Also … wo fange ich an?', desc: 'Er möchte reden. Er hat viel zu sagen.', night: 2.5 },
     { id: 'travis',  name: 'Travis',            img: 'img/twawis.jpg',           r: 'epic',      min: 35, max: 65,  val: 140, photo: true, say: 'Jetzt bin ich da.', desc: 'Jetzt kommt Travis.', far: .4, sound: 'sounds/jetzt-kommt-travis.mp3' },
     { id: 'blob',    name: 'Blobfisch',         img: 'img/blobfisch.gif',        r: 'epic',      min: 25, max: 40,  val: 130, photo: true, page: 'seiten/blobfisch.html', say: 'Hier oben ist mir der Druck zu wenig.', desc: 'Lebt eigentlich tief unten. Nur weit draußen und am liebsten nachts.', far: .5, night: 2, sea: true },
+    { id: 'muschel', name: 'Magische Miesmuschel', img: 'img/miesmuschel.png', r: 'epic', min: 12, max: 20, val: 150, pixel: true, page: 'seiten/miesmuschel.html', sea: true, say: 'Frag mich etwas.', desc: 'Liegt still im Sand und weiß alles. Zieh an der Schnur, dann antwortet sie. Meistens mit Nein.', hint: 'Wer sie fängt, kann ihr am Steg Fragen stellen' },
     { id: 'spee',    name: 'Spee Zierfisch',    img: 'img/spee-zierfisch.png',   r: 'epic',      min: 6,  max: 9,   val: 110, clip: [12.63, 13.9], say: 'Riech mal. Frühlingsfrisch!', desc: 'Ein Zierfisch, frisch gewaschen. Duftet nach Spee.', night: 1.5 },
     { id: 'spees',   name: 'Spezifische Spee Zierfische', img: 'img/spee-zierfische.png', r: 'epic', min: 12, max: 18, val: 160, clip: [13.9, 16.43], say: 'Wir bleiben zusammen!', desc: 'Zwei auf einmal. Spezifischer geht es kaum.', far: .5 },
     { id: 'fischer', name: 'Spezifischfischer', img: 'img/spezifischfischer-cut.png', r: 'legendary', min: 175, max: 190, val: 400, clip: [16.43, null], say: 'Moment … ich bin doch der Fischer!', desc: 'Der spezifische Spezifischfischer fischt spezifische Spezifische. Jetzt hast du ihn gefischt.', far: .45, hint: 'Steht am Steg. Fischt man ihn auch?' },
@@ -154,6 +155,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-14', date: '04.11.2026', items: [
+      '🐚 Neu am Steg: die Magische Miesmuschel (episch, auch auf Hoher See). Beim Fang verrät sie dir gleich eine Antwort. Danach liegt sie auf einem Stein neben dem Steg: Klick sie an, stell eine Frage und zieh an der Schnur. Mit Ton an antwortet sie mit tiefer Stimme.',
+    ] },
     { id: '2026-11-04-13', date: '04.11.2026', items: [
       '🛥️ Neuer Boot-Skin für die Hohe See: „David Hasselhoff“ (30 000 Taler im Laden unter Kosmetik, ab 3× Wiedergeburt). Statt Bealins Boot schwimmt dann ein riesiger Pixel-Hoff mit Locken und roter Badehose auf dem Bauch durchs Meer, und du angelst von seinem Rücken aus. Im Kleiderschrank gibt es dafür den neuen Platz „Boot“.',
     ] },
@@ -2635,10 +2639,11 @@
     { id: 'lavashop', map: 'lava', label: tr('🌋 Glutflosses Lava-Laden'), x: KIOSK.x - 3, y: DOCK_Y - 30, w: KIOSK.w + 6, h: 30, draw: drawLavaStall, open: () => toggleModal('shop') },
     { id: 'ladder', map: 'lava', label: tr('🪜 Zurück zum Steg'), x: 4, y: DOCK_Y - 28, w: 12, h: 28, draw: drawLadder, open: () => travel('steg') },
     { id: 'wheel',  map: 'see', label: tr('⚓ Zurück zum Steg'), x: 5, y: DOCK_Y - 22, w: 15, h: 22, draw: drawWheel, open: () => travel('steg') },
+    { id: 'muschel', label: tr('🐚 Magische Miesmuschel'), x: 121, y: SURFACE - 13, w: 13, h: 14, draw: drawMuschelRock, open: () => toggleModal('muschel'), show: () => !!(save.dex.muschel && save.dex.muschel.n) },
     { id: 'npc',    label: 'Spezifischfischer', x: NPC.x - 1, y: DOCK_Y - NPC.h - 2, w: NPC.w + 2, h: NPC.h + 2, open: () => talkNpc() },
   ];
   let hoverProp = null;
-  const propOn = p => (p.map || 'steg') === 'all' || (p.map || 'steg') === save.map;
+  const propOn = p => ((p.map || 'steg') === 'all' || (p.map || 'steg') === save.map) && (!p.show || p.show());
   function propAt(wx, wy) { return PROPS.find(p => propOn(p) && wx > p.x - 1.5 && wx < p.x + p.w + 1.5 && wy > p.y - 1.5 && wy < p.y + p.h + 1.5) || null; }
   function drawProps(dark) {
     for (const p of PROPS) if (p.draw && propOn(p)) p.draw(dark);
@@ -2657,6 +2662,65 @@
     px(lx - .5, ly - .5, w + 1, 9, '#fde68a'); px(lx, ly, w, 8, '#0f172a');
     ctx.fillStyle = '#fffbeb'; ctx.textBaseline = 'top'; ctx.fillText(p.label, lx + 2, ly + 1); ctx.textBaseline = 'alphabetic';
   }
+
+  // The Magische Miesmuschel on a little rock in the water next to the dock (after the first catch)
+  const muschelImg = new Image(); muschelImg.src = 'img/miesmuschel.png';
+  let muschelNight = null;
+  function drawMuschelRock(dark) {
+    const k = '#1b1f2e', x0 = 120, y = SURFACE;
+    const rock = mix([100, 116, 139], [40, 48, 66], dark), rockL = mix([148, 163, 184], [60, 70, 92], dark), rockD = mix([71, 85, 105], [30, 36, 52], dark);
+    px(x0 + 1, y - 3.5, 13, 4, k); px(x0 + 1.5, y - 3, 12, 3.5, rock); px(x0 + 2, y - 3, 6, .75, rockL); px(x0 + 9, y - 1, 4, 1, rockD);
+    ctx.globalAlpha = .7; px(x0 + .5 + Math.sin(t * 2) * .5, y + .5, 14, .5, '#e0f2fe'); ctx.globalAlpha = 1;
+    if (!muschelImg.complete || !muschelImg.naturalWidth) return;
+    const lift = muschelPull > 0 ? Math.sin(muschelPull * Math.PI) * 1.5 : 0;
+    muschelPull = Math.max(0, muschelPull - .04);
+    ctx.drawImage(muschelImg, x0 + 1.5, y - 13.5 + lift, 12, 10);
+    if (dark > .02) {
+      if (!muschelNight) {
+        muschelNight = document.createElement('canvas'); muschelNight.width = muschelImg.naturalWidth; muschelNight.height = muschelImg.naturalHeight;
+        const c = muschelNight.getContext('2d'); c.drawImage(muschelImg, 0, 0); c.globalCompositeOperation = 'source-atop'; c.fillStyle = 'rgba(10,16,40,.65)'; c.fillRect(0, 0, muschelNight.width, muschelNight.height);
+      }
+      ctx.globalAlpha = Math.min(1, dark); ctx.drawImage(muschelNight, x0 + 1.5, y - 13.5 + lift, 12, 10); ctx.globalAlpha = 1;
+    }
+  }
+  const MUSCHEL_ANSWERS = ['Nein.', 'Nein.', 'Ja.', 'Vielleicht eines Tages.', 'Ich glaube nicht.', 'Frag später noch einmal.', 'Auf keinen Fall.', 'Gar nichts.',
+    'Versuch es noch einmal.', 'Ganz bestimmt.', 'Nur wenn du einen Odfisch fängst.', 'Frag Käpt’n Bealin.', 'Wirf noch einmal aus.'].map(a => tr(a));
+  let muschelLast = -1, muschelPull = 0, muschelTimer = 0;
+  function muschelAnswer() {
+    let i;
+    do { i = Math.floor(Math.random() * MUSCHEL_ANSWERS.length); } while (i === muschelLast);
+    muschelLast = i;
+    return MUSCHEL_ANSWERS[i];
+  }
+  // Deep voice from the browser's speech synthesis; only on-device voices, so nothing leaves the browser
+  function muschelSpeak(text) {
+    const synth = window.speechSynthesis;
+    if (!save.sound || !synth || !window.SpeechSynthesisUtterance) return;
+    const lang = I18N.lang === 'en' ? 'en' : 'de';
+    const voices = synth.getVoices().filter(v => v.localService && v.lang.toLowerCase().startsWith(lang));
+    if (!voices.length) return;
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.voice = voices[0]; u.lang = voices[0].lang; u.pitch = .1; u.rate = .75; u.volume = vol();
+    synth.speak(u);
+  }
+  function renderMuschel() {
+    $('muschel-answer').textContent = tr('Stell eine Frage und zieh an der Schnur.');
+    $('muschel-answer').classList.remove('said');
+    $('muschel-q').value = '';
+  }
+  function pullMuschel() {
+    const q = $('muschel-q').value.trim();
+    const a = q ? muschelAnswer() : tr('Du musst mir schon eine Frage stellen.');
+    clearTimeout(muschelTimer);
+    const img = $('muschel-img'), out = $('muschel-answer');
+    img.classList.remove('pull'); void img.offsetWidth; img.classList.add('pull');
+    out.textContent = '…'; out.classList.remove('said');
+    muschelPull = 1; sfx.plip();
+    muschelTimer = setTimeout(() => { out.textContent = a; out.classList.add('said'); muschelSpeak(a); }, 600);
+  }
+  $('muschel-form').addEventListener('submit', e => { e.preventDefault(); pullMuschel(); });
+  $('muschel-img').addEventListener('click', pullMuschel);
 
   // Glutflosse's stall in the Glutgrotte: basalt counter, glowing roof, a fin peeking out and a LAVA sign
   function drawLavaStall() {
@@ -2934,7 +2998,8 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel']) $(id).hidden = true;
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
   }
   function unreadPatches() { // how many entries are new since the last read (at least the newest 3 when nothing is new)
     const i = PATCH_NOTES.findIndex(p => p.id === save.patchSeen);
@@ -2961,7 +3026,7 @@
     if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'boss', 'summon', 'crit'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings, muschel: renderMuschel })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -3190,7 +3255,9 @@
     if (mut) { mb.textContent = `${mut.icon} ${mut.name} · ` + tr('×{n} Wert', { n: mut.val }) + (newMut ? tr(' · neue Mutation!') : ''); mb.style.setProperty('--mc', mut.c); }
     $('catch-desc').textContent = f.desc;
     $('catch-xp').textContent = gain ? [tr('+{n} EP', { n: gain.xp }), ...gain.tags].join(' · ') : '';
-    $('catch-say').textContent = I18N.lang === 'en' ? `“${f.say}”` : `„${f.say}“`;
+    const say = f.id === 'muschel' ? muschelAnswer() : f.say;
+    $('catch-say').textContent = I18N.lang === 'en' ? `“${say}”` : `„${say}“`;
+    if (f.id === 'muschel') setTimeout(() => muschelSpeak(say), 700);
     const sheet = $('catch').querySelector('.sheet');
     sheet.classList.remove('fx-rare', 'fx-wii', 'fx-epic', 'fx-legendary');
     void sheet.offsetWidth; // restart the CSS animations

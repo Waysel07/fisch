@@ -176,6 +176,20 @@
       </div>
     </div>
 
+    <!-- Magische Miesmuschel (after the first catch, on the rock next to the dock) -->
+    <div class="modal" id="muschel" hidden>
+      <div class="sheet muschel-sheet" role="dialog" aria-modal="true" aria-labelledby="muschel-title">
+        <h2 id="muschel-title">🐚 Magische Miesmuschel</h2>
+        <img id="muschel-img" src="img/miesmuschel.png" alt="Rosa Pixel-Muschel mit Zugschnur" title="An der Schnur ziehen">
+        <p class="muschel-answer" id="muschel-answer" aria-live="polite"></p>
+        <form class="muschel-form" id="muschel-form">
+          <input type="text" id="muschel-q" maxlength="120" autocomplete="off" placeholder="Deine Frage …" aria-label="Deine Frage an die Muschel">
+          <button class="btn" type="submit">🪢 An der Schnur ziehen</button>
+        </form>
+        <div class="catch-actions"><button class="btn ghost" data-close>Zurück</button></div>
+      </div>
+    </div>
+
     <!-- Settings -->
     <div class="modal" id="settings" hidden>
       <div class="sheet patch-sheet settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
