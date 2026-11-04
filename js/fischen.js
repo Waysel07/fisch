@@ -148,6 +148,11 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-10', date: '04.11.2026', items: [
+      '📖 Der Fischdex hat jetzt eine Seite pro Gebiet: Steg, Hohe See und Glutgrotte, jeweils mit eigenem Zähler am Tab. Er öffnet sich dort, wo du gerade angelst. Fische, die auch auf Hoher See beißen, stehen auf beiden Seiten.',
+      '🔎 Suche und Filter im Fischdex: nach Namen suchen, nur fehlende, nur gefangene oder Fische ohne Gold-Medaille anzeigen und nach Seltenheit filtern. Gilt auch im Shinydex.',
+      '🕘 Neu im Fortschritt: der Fang-Verlauf mit deinen letzten 20 Fängen – Fisch, Größe, Mutation, Shiny, Ort und wie viele Taler er gebracht hat.',
+    ] },
     { id: '2026-11-04-9', date: '04.11.2026', items: [
       '👑 Der Odfisch sieht neu aus: Katzenkopf mit Krone, Narbe über dem Auge, Reißzähne, stachelige Rückenflosse und Kampfnarben – endlich wie ein echter Herrscher der Hohen See.',
       '🎬 Der Odfisch-Kampf hat jetzt Zwischensequenzen: Er taucht mit Kinobalken, Beben und Titelkarte auf, springt bei jedem Phasenwechsel aus dem Wasser (in der Wut-Phase mit glühenden Augen), und am Ende gibt es eine Sieges- oder Abtauch-Szene. Dazu blitzt er bei Treffern auf und zeigt den Schaden als Zahlen.',
@@ -713,6 +718,9 @@
     let newShiny = false;
     if (shiny) { e.shiny = (e.shiny || 0) + 1; newShiny = e.shiny === 1; }
     save.coins += val; save.total++; save.lifeCoins += val; save.totalEarned += val;
+    // Fang-Verlauf: the last 20 catches for the progress board
+    save.history.unshift({ id: f.id, s: size, v: val, c: cls, m: mut ? mut.id : '', sh: shiny ? 1 : 0, map: save.map || 'steg', t: Date.now() });
+    if (save.history.length > HISTORY_MAX) save.history.length = HISTORY_MAX;
     const gain = progressCatch(f, size, val, first, mut, newMut, reel.maxT < .7, shiny, newShiny);
     if (inLava()) { // Glutsteine
       const g = Math.round((f.r === 'junk' ? (Math.random() < .5 ? 1 : 0) : GLUT_DROP[f.r] || 1) * (cls >= 3 ? 2 : 1) * (shiny ? 3 : 1) * (1 + .1 * glutUp('kristall')));
@@ -883,6 +891,9 @@
   const ODBOSS = FISH.find(f => f.id === 'odboss');
   const bossImg = new Image(); bossImg.src = ODBOSS.img;
   const boss = { on: false, id: '', max: 1, hp: 1, ends: 0, mine: 0, pend: 0, stun: 0, solo: true, n: 1, rhythmT: 0, shoutT: 0, won: false, x: W - 80, rise: 0, quake: 0, invite: null, synced: 0 };
+  const HISTORY_MAX = 20;
+  if (!Array.isArray(save.history)) save.history = [];
+  save.history = save.history.filter(h => h && typeof h === 'object' && FISH.some(f => f.id === h.id)).slice(0, HISTORY_MAX);
   if (!Array.isArray(save.bossDone)) save.bossDone = [];
   // cutscenes for the Odfisch: intro, phase changes, victory and escape. While one runs the fight pauses
   // (solo: the clock is extended by its length), the canvas gets cinema bars and a title card.
@@ -1260,7 +1271,7 @@
   window.addEventListener('keydown', e => {
     const k = e.key.toLowerCase();
     if (k === 'escape') { closeModals(); return; }
-    if (e.target.closest && e.target.closest('input, textarea')) return;
+    if (e.target.closest && e.target.closest('input, textarea, select')) return;
     if (state === 'rhythm') { if (!e.repeat && k === ' ') { e.preventDefault(); rhythmHit(); } else if (!e.repeat && (k === 'z' || k === 'x')) { e.preventDefault(); rhythmAimHit(); } return; }
     if (!$('title').hidden) { if (k === ' ' || k === 'enter') { e.preventDefault(); $('start').click(); } return; }
     if (!$('catch').hidden) { if (k === ' ' || k === 'enter') { e.preventDefault(); $('catch-ok').click(); } return; }
@@ -2742,7 +2753,7 @@
     if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'boss', 'summon'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -3009,13 +3020,46 @@
   let autoCloseT = 0;
   $('catch').addEventListener('pointerdown', () => clearTimeout(autoCloseT)); // touching the card keeps it open
 
-  let dexTab = 'fish';
+  // Fischdex: one page per area (Steg, Hohe See, Glutgrotte) plus the Shinydex; dock fish that also bite at sea show up on both
+  const DEX_AREAS = {
+    steg: { icon: '🏝️', name: tr('Steg'), has: f => !f.map },
+    see: { icon: '⛵', name: tr('Hohe See'), has: f => f.map === 'see' || !!f.sea },
+    lava: { icon: '🌋', name: tr('Glutgrotte'), has: f => f.map === 'lava' },
+  };
+  let dexTab = 'steg';
+  const dexF = { q: '', show: 'all', r: '' };
+  function dexFilter(list, got) { // search only matches fish you already know, so it never gives away a name
+    const q = dexF.q.trim().toLocaleLowerCase(I18N.locale);
+    return list.filter(f => {
+      const e = save.dex[f.id];
+      if (dexF.r && f.r !== dexF.r) return false;
+      if (q && !(e && f.name.toLocaleLowerCase(I18N.locale).includes(q))) return false;
+      if (dexF.show === 'missing') return !got(f);
+      if (dexF.show === 'have') return !!got(f);
+      if (dexF.show === 'nogold') return !!e && (e.m || 0) < 3;
+      return true;
+    });
+  }
+  function dexEmpty() {
+    const p = document.createElement('p'); p.className = 'sub dex-empty';
+    p.textContent = tr('Keine Fische passen zu deiner Suche.');
+    return p;
+  }
+  function syncDexFilters() {
+    $('dex-filters').hidden = false;
+    const nogold = $('dex-show').querySelector('[value="nogold"]'); nogold.hidden = dexTab === 'shiny';
+    if (dexTab === 'shiny' && dexF.show === 'nogold') dexF.show = 'all';
+    $('dex-show').value = dexF.show; $('dex-rar').value = dexF.r;
+    if ($('dex-search').value !== dexF.q) $('dex-search').value = dexF.q;
+  }
   const SHINY_REWARDS = ['s1', 's5', 'sall'];
   function shinysFound() { return FISH.filter(f => save.dex[f.id] && save.dex[f.id].shiny).length; }
   function renderShinydex() {
     $('dex-count').textContent = tr('{a} von {b} Shinys gefunden · Chance pro Fang gerade {c} %', { a: shinysFound(), b: FISH.length, c: (shinyChance() * 100).toLocaleString(I18N.locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) });
     renderDexRewards();
-    $('dex-grid').replaceChildren(...FISH.map(f => {
+    const list = dexFilter(FISH, f => save.dex[f.id] && save.dex[f.id].shiny);
+    if (!list.length) return $('dex-grid').replaceChildren(dexEmpty());
+    $('dex-grid').replaceChildren(...list.map(f => {
       const e = save.dex[f.id], sh = e && e.shiny;
       const c = document.createElement('div');
       c.className = 'card ' + (sh ? 'b-' + f.r + ' shiny-card' : 'unknown');
@@ -3035,14 +3079,24 @@
     document.querySelectorAll('[data-dex-tab]').forEach(t => {
       const on = t.dataset.dexTab === dexTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
+    if (!DEX_AREAS[dexTab] && dexTab !== 'shiny') dexTab = 'steg';
+    for (const [id, a] of Object.entries(DEX_AREAS)) { // per-area progress right on the tab
+      const all = FISH.filter(a.has);
+      $('dex-n-' + id).textContent = `${all.filter(f => save.dex[f.id]).length}/${all.length}`;
+    }
+    syncDexFilters();
     $('dex-title').textContent = dexTab === 'shiny' ? tr('Shinydex') : tr('Fischdex');
     if (dexTab === 'shiny') return renderShinydex();
-    const got = FISH.filter(f => save.dex[f.id]).length;
+    const area = DEX_AREAS[dexTab], inArea = FISH.filter(area.has);
+    const got = FISH.filter(f => save.dex[f.id]).length, gotA = inArea.filter(f => save.dex[f.id]).length;
     const g = save.gamble || 0;
-    $('dex-count').textContent = tr('{a} von {b} entdeckt · {c} von {d} Mutationen · {e} Fänge insgesamt', { a: got, b: FISH.length, c: mutsFound().length, d: MUTATIONS.length, e: save.total })
+    $('dex-count').textContent = tr('{i} {n}: {a} von {b} entdeckt', { i: area.icon, n: area.name, a: gotA, b: inArea.length })
+      + tr(' · Gesamt {a} von {b} · {c} von {d} Mutationen · {e} Fänge insgesamt', { a: got, b: FISH.length, c: mutsFound().length, d: MUTATIONS.length, e: save.total })
       + tr(' · Meisterschaft: {g} 🥇 (+{p} % Taler)', { g: masteryCount(3), p: goldBonus() }) + (save.gamble !== undefined ? tr(' · Glücksspiel {n} Taler', { n: (g >= 0 ? '+' : '') + g }) : '');
     renderDexRewards();
-    $('dex-grid').replaceChildren(...FISH.map(f => {
+    const list = dexFilter(inArea, f => save.dex[f.id]);
+    if (!list.length) return $('dex-grid').replaceChildren(dexEmpty());
+    $('dex-grid').replaceChildren(...list.map(f => {
       const e = save.dex[f.id];
       const c = document.createElement('div');
       c.className = 'card ' + (e ? 'b-' + f.r : 'unknown');
@@ -3055,7 +3109,7 @@
       const info = document.createElement('small');
       info.textContent = e ? tr('{n}× · Rekord {b} cm', { n: e.n, b: e.best }) + (e.cls >= 2 ? ' ' + SIZE_CLASSES[e.cls].icon : '') : hintFor(f);
       if (e && e.cls >= 2) info.title = tr('Beste Größenklasse: {c}', { c: SIZE_CLASSES[e.cls].name });
-      if (e && f.sea) { info.textContent += ' ⛵'; info.title = (info.title ? info.title + ' · ' : '') + tr('Beißt auch auf Hoher See'); }
+      if (e && f.sea && dexTab === 'steg') { info.textContent += ' ⛵'; info.title = (info.title ? info.title + ' · ' : '') + tr('Beißt auch auf Hoher See'); }
       c.append(img, name, r, info);
       if (e) { // mastery: medal and the way to the next one
         const m = e.m || 0, need = masteryNeed(f), ms = document.createElement('small'); ms.className = 'mastery m' + m;
@@ -3126,6 +3180,12 @@
   }
   function updateDexBadge() { $('btn-dex').classList.toggle('ready', dexClaimable().length > 0); }
   document.querySelectorAll('[data-dex-tab]').forEach(t => t.addEventListener('click', () => { dexTab = t.dataset.dexTab; renderDex(); }));
+  $('dex-search').addEventListener('input', () => { dexF.q = $('dex-search').value; renderDex(); });
+  $('dex-show').addEventListener('change', () => { dexF.show = $('dex-show').value; renderDex(); });
+  $('dex-rar').addEventListener('change', () => { dexF.r = $('dex-rar').value; renderDex(); });
+  for (const r of ['common', 'uncommon', 'rare', 'wii', 'epic', 'legendary', 'junk']) {
+    const o = document.createElement('option'); o.value = r; o.textContent = RARITY[r].label; $('dex-rar').append(o);
+  }
   function renderDexRewards() {
     const claimed = save.dexClaimed || [];
     // the Shinydex tab shows only shiny rewards, the Fischdex tab the rest
@@ -4046,7 +4106,40 @@
     save.pearls -= c; save.pperks[id] = l + 1; sfx.coin(); persist(); renderProg(); updateMapUi();
   }
 
+  function agoText(t) {
+    const m = Math.floor((Date.now() - t) / 60000);
+    if (m < 1) return tr('gerade eben');
+    if (m < 60) return tr('vor {n} Min.', { n: m });
+    if (m < 1440) return tr('vor {n} Std.', { n: Math.floor(m / 60) });
+    return tr('vor {n} Tagen', { n: Math.floor(m / 1440) });
+  }
+  function renderHistory() {
+    const box = $('prog-history');
+    $('hist-n').textContent = save.history.length;
+    if (!save.history.length) {
+      const p = document.createElement('p'); p.className = 'sub'; p.textContent = tr('Noch keine Fänge. Wirf die Angel aus!');
+      return box.replaceChildren(p);
+    }
+    const MAPI = { steg: '🏝️', see: '⛵', lava: '🌋' };
+    box.replaceChildren(...save.history.map(h => {
+      const f = FISH.find(x => x.id === h.id), mu = h.m && MUTATIONS.find(x => x.id === h.m), sc = SIZE_CLASSES[h.c] || SIZE_CLASSES[1];
+      const d = document.createElement('div'); d.className = 'hist b-' + f.r;
+      const img = document.createElement('img'); img.src = f.img; img.alt = ''; img.loading = 'lazy';
+      img.className = [f.pixel ? 'pixel' : '', f.photo ? 'photo' : '', h.sh ? 'shiny' : ''].join(' ').trim();
+      if (h.sh) img.style.setProperty('--shiny-hue', shinyHue(f.id) + 'deg');
+      const txt = document.createElement('div');
+      const b = document.createElement('b'); b.textContent = (h.sh ? '💫 ' : '') + (mu ? mu.icon + ' ' : '') + f.name;
+      const s = document.createElement('small');
+      s.textContent = [`${(MAPI[h.map] || '')} ${h.s.toLocaleString(I18N.locale)} cm`.trim(), h.c >= 2 && f.r !== 'junk' ? sc.icon + ' ' + sc.name : '', mu ? mu.name : '', agoText(h.t)].filter(Boolean).join(' · ');
+      txt.append(b, s);
+      const v = document.createElement('span'); v.className = 'hist-val'; v.textContent = '+' + h.v.toLocaleString(I18N.locale);
+      v.title = tr('{n} Taler', { n: h.v.toLocaleString(I18N.locale) });
+      d.append(img, txt, v);
+      return d;
+    }));
+  }
   function renderProg() {
+    renderHistory();
     updateLevel();
     const need = xpNeed(save.lvl);
     $('prog-level').textContent = save.lvl;

@@ -97,12 +97,26 @@
       <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="dex-title">
         <button class="close" data-close aria-label="Schließen">✕</button>
         <h2 id="dex-title">Fischdex</h2>
-        <div class="tabs dex-tabs" role="tablist" aria-label="Fischdex oder Shinydex">
-          <button class="tab on" data-dex-tab="fish" role="tab" aria-selected="true">📖 Fischdex</button>
+        <div class="tabs dex-tabs" role="tablist" aria-label="Gebiete und Shinydex">
+          <button class="tab on" data-dex-tab="steg" role="tab" aria-selected="true">🏝️ Steg <small id="dex-n-steg"></small></button>
+          <button class="tab" data-dex-tab="see" role="tab" aria-selected="false">⛵ Hohe See <small id="dex-n-see"></small></button>
+          <button class="tab" data-dex-tab="lava" role="tab" aria-selected="false">🌋 Glutgrotte <small id="dex-n-lava"></small></button>
           <button class="tab" data-dex-tab="shiny" role="tab" aria-selected="false">💫 Shinydex</button>
         </div>
+        <div class="dex-filters" id="dex-filters">
+          <input type="search" id="dex-search" maxlength="30" autocomplete="off" spellcheck="false" placeholder="🔎 Fisch suchen …" aria-label="Fisch suchen">
+          <select id="dex-show" aria-label="Anzeigen">
+            <option value="all">Alle</option>
+            <option value="missing">Nur fehlende</option>
+            <option value="have">Nur gefangene</option>
+            <option value="nogold">Ohne Gold-Medaille</option>
+          </select>
+          <select id="dex-rar" aria-label="Seltenheit">
+            <option value="">Jede Seltenheit</option>
+          </select>
+        </div>
         <p class="sub" id="dex-count"></p>
-        <details class="dexrew" open>
+        <details class="dexrew">
           <summary>🎁 Belohnungen</summary>
           <div class="rewards" id="dex-rewards"></div>
         </details>
@@ -309,6 +323,11 @@
         <h3>📅 Wochenziele <span class="sub">· <span id="week-left"></span></span></h3>
         <p class="sub">Drei größere Ziele pro Woche, für alle gleich. Jedes gibt Schuppen, ab Prestige eine Perle, ab der Glutgrotte Glutsteine.</p>
         <div class="list" id="week-goals"></div>
+
+        <details class="dexrew hist-box">
+          <summary>🕘 Fang-Verlauf <span class="sub">· letzte <span id="hist-n">0</span></span></summary>
+          <div class="list" id="prog-history"></div>
+        </details>
 
         <h3>🌀 Wiedergeburt</h3>
         <div class="rebirth">

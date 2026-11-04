@@ -1027,3 +1027,31 @@ button#btn-boss:hover { background: #be123c; }
 @keyframes rnope { 25% { translate: -4px 0; } 75% { translate: 4px 0; } }
 .btn.patch-more { display: block; margin: .6rem auto 0; }
 .btn.patch-more[hidden] { display: none; }
+/* Fischdex: area tabs, search and filters */
+.dex-tabs { flex-wrap: wrap; }
+.dex-tabs .tab small { font: 600 .72rem var(--ui); opacity: .75; margin-left: .15rem; }
+.dex-filters { display: flex; flex-wrap: wrap; gap: .4rem; margin: .1rem 0 .5rem; }
+.dex-filters[hidden] { display: none; }
+.dex-filters input, .dex-filters select { font: 600 .9rem var(--ui); padding: .4rem .55rem; border: 3px solid #1b1f2e; border-radius: 0; background: #f8fafc; color: #0f172a; min-width: 0; }
+.dex-filters input { flex: 1 1 11rem; }
+.dex-filters select { flex: 0 1 auto; cursor: pointer; }
+.dex-empty { grid-column: 1 / -1; text-align: center; padding: 1.2rem 0; }
+/* Fang-Verlauf */
+.hist-box { margin: 1rem 0 .4rem; }
+.hist-box .list { margin-top: .5rem; gap: .35rem; }
+.hist { display: flex; align-items: center; gap: .6rem; padding: .35rem .6rem; background: #0f172a; border: 3px solid #1b1f2e; border-left-width: 6px; }
+.hist img { width: 2.2rem; height: 2.2rem; object-fit: contain; flex: none; }
+.hist img.pixel { image-rendering: pixelated; }
+.hist img.photo { object-fit: cover; }
+.hist > div { flex: 1; min-width: 0; display: grid; }
+.hist b { font: 800 .92rem var(--ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hist small { color: #94a3b8; font-size: .78rem; }
+.hist-val { font-family: var(--px); color: var(--gold); white-space: nowrap; }
+.hist.b-common { border-left-color: #94a3b8; } .hist.b-uncommon { border-left-color: #22c55e; } .hist.b-rare { border-left-color: #3b82f6; }
+.hist.b-wii { border-left-color: #38bdf8; } .hist.b-epic { border-left-color: #a855f7; } .hist.b-legendary { border-left-color: #f59e0b; } .hist.b-junk { border-left-color: #57534e; }
+@media (max-width: 560px) {
+  .dex-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; }
+  .dex-tabs .tab { justify-content: center; text-align: center; padding-left: .3rem; padding-right: .3rem; }
+  .dex-filters input { flex-basis: 100%; }
+  .dex-filters select { flex: 1 1 0; }
+}

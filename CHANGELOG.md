@@ -2,6 +2,12 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-10`
+
+- 📖 The Fishdex now has one page per area: Dock, High Seas and Ember Cave, each with its own counter on the tab. It opens where you are fishing right now. Fish that also bite on the high seas appear on both pages.
+- 🔎 Search and filters in the Fishdex: search by name, show only missing, only caught or fish without a gold medal, and filter by rarity. Works in the Shinydex too.
+- 🕘 New in Progress: the catch history with your last 20 catches – fish, size, mutation, shiny, location and how many coins it brought.
+
 ## 04.11.2026 · `2026-11-04-9`
 
 - 👑 The Odfish has a new look: a cat head with a crown, a scar over one eye, fangs, a spiky dorsal fin and battle scars – finally like a true ruler of the high seas.
