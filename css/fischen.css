@@ -1025,3 +1025,5 @@ button#btn-boss:hover { background: #be123c; }
 .rcursor.on { border-color: #7dd3fc; background: rgba(125, 211, 252, .25); }
 .rcursor.nope { animation: rnope .25s; }
 @keyframes rnope { 25% { translate: -4px 0; } 75% { translate: 4px 0; } }
+.btn.patch-more { display: block; margin: .6rem auto 0; }
+.btn.patch-more[hidden] { display: none; }

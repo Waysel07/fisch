@@ -148,6 +148,10 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-6', date: '04.11.2026', items: [
+      '📜 In der Steg-Zeitung gibt es unten den Knopf „Ältere Ausgaben“: Damit liest du alle früheren Patch Notes nach.',
+      '🎣 Lavaruten werden bei Wiedergeburt und Prestige wieder zurückgesetzt, wie alle anderen Ruten.',
+    ] },
     { id: '2026-11-04-5', date: '04.11.2026', items: [
       '🖱️ Taktdrill: Links- und Rechtsklick lassen sich jetzt wie in osu! abwechselnd drücken – auch wenn die andere Taste noch gehalten wird, zählt jeder Klick.',
     ] },
@@ -2628,15 +2632,22 @@
     const i = PATCH_NOTES.findIndex(p => p.id === save.patchSeen);
     return i === 0 ? 3 : i < 0 ? 2 : Math.min(i, 4);
   }
+  let patchShown = 0;
   function renderPatch(n) {
-    $('patch-list').replaceChildren(...PATCH_NOTES.slice(0, Math.max(1, n)).map(p => {
+    patchShown = Math.max(1, n);
+    $('patch-list').replaceChildren(...PATCH_NOTES.slice(0, patchShown).map(p => {
       const box = document.createElement('section'); box.className = 'patch-entry';
       const h = document.createElement('h3'); h.textContent = tr('Update vom {d}', { d: p.date });
       const ul = document.createElement('ul');
       ul.append(...p.items.map(t => Object.assign(document.createElement('li'), { textContent: tr(t) })));
       box.append(h, ul); return box;
     }));
+    // older issues of the Steg-Zeitung: five more per click until all are shown
+    const left = PATCH_NOTES.length - patchShown;
+    $('patch-more').hidden = left <= 0;
+    $('patch-more').textContent = tr('📜 Ältere Ausgaben ({n})', { n: left });
   }
+  $('patch-more').addEventListener('click', () => { const y = $('patch-list').parentElement.scrollTop; renderPatch(patchShown + 5); $('patch-list').parentElement.scrollTop = y; });
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
     if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'boss', 'summon'].includes(state)) return;
@@ -3895,15 +3906,13 @@
   }
 
   // ---- rebirth
-  // lava rods belong to the Glutgrotte progress (Glutsteine, depth, workshop) and survive rebirth and prestige
-  const keepLavaRods = () => ['stock', ...save.rods.filter(id => (RODS.find(r => r.id === id) || {}).lava)];
   function rebirth() {
     if (save.lvl < rebirthLvl()) return;
     const gain = scalesFor();
     if (!confirm(tr('Wiedergeburt?\n\nDu bekommst {n} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level und Aufträge werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.', { n: gain }))) return;
     const oldRank = rankOf(save.rebirthsTotal);
     save.rebirths++; save.rebirthsTotal++; save.scales += gain;
-    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: keepLavaRods(), bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], lavaRod: '', bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     const newRank = rankOf(save.rebirthsTotal), ms = MILESTONES.find(m => m.r === save.rebirths);
     if (newRank !== oldRank) setTimeout(() => toast(tr('🎖️ Neuer Rang: {r}!', { r: newRank.name })), 2400);
     if (ms) setTimeout(() => toast(tr('🔓 Neu freigeschaltet: {t}', { t: ms.t })), 4400);
@@ -3925,11 +3934,11 @@
   function prestige() {
     if (save.rebirths < PRESTIGE_REB) return;
     const gain = pearlsFor();
-    if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten, Köder, Wiedergeburten, Schuppen, Talente und die Schmiede.\nFischdex, Medaillen, Rekorde, Kosmetik, Rang, Lavaruten und Perlen-Talente bleiben.', { n: gain }))) return;
+    if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten (auch Lavaruten), Köder, Wiedergeburten, Schuppen, Talente und die Schmiede.\nFischdex, Medaillen, Rekorde, Kosmetik, Rang und Perlen-Talente bleiben.', { n: gain }))) return;
     checkCosm(true); // keep the rebirth cosmetics earned so far
     save.rebHeir = (save.rebHeir || 0) + save.rebirths * .4; // the Erbe keeps 40 % of these rebirths in the Taler bonus
     save.prestige++; save.pearls += gain;
-    Object.assign(save, { rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: keepLavaRods(), bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: ['stock'], lavaRod: '', bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     if (save.map === 'see' && !seaOpen()) { save.map = 'steg'; bgKey = ''; boss.invite = null; $('btn-boss').hidden = true; updateMapUi(); }
     fillQuests(); persist(); updateCoins(); updateGear(); updateLevel(); renderProg();
     const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
