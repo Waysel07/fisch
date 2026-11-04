@@ -167,6 +167,11 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-17', date: '04.11.2026', items: [
+      '🌊 Alle Welten sind neu gemalt: Der Steg bekommt eine richtige Insel mit Leuchtturm, Seegras und Sonnenstrahlen im Wasser. Auf Hoher See geht es jetzt tief hinunter, mit Seeberg, Wrack, Quallen und einem Wal, der vorbeizieht.',
+      '🌋 Jede Tiefe der Glutgrotte sieht anders aus: Aschedünen, Kristalle, ein Drachenskelett auf seinem Gold, das Phönixnest mit Ei und dazu Lavafälle.',
+      '🐟 Neue Schatten im Wasser: 14 Formen vom Kleinfischschwarm bis zum Hai schwimmen mit schlagendem Schwanz. Hängt etwas am Haken, verrät der Schatten grob, was es ist.',
+    ] },
     { id: '2026-11-04-16', date: '04.11.2026', items: [
       '🦞 12 neue Fänge am Steg, darunter der Blaue Hummer (legendär, mit eigenem Sound), der Giga-Hai, der Genosse Wels und der Hundsfisch. Drei davon beißen auch auf Hoher See.',
     ] },
@@ -474,23 +479,6 @@
   }
 
   // ------------------------------------------------------------------ sprites
-  // Swimming silhouettes come from the site's pixel fish icon.
-  const icon = new Image();
-  icon.src = 'img/fish-icon.png';
-  let silL = null, silR = null;
-  icon.onload = () => {
-    const make = flip => {
-      const c = document.createElement('canvas'); c.width = c.height = 48;
-      const x = c.getContext('2d'); x.imageSmoothingEnabled = false;
-      x.translate(24, 24); if (flip) x.scale(-1, 1); x.rotate(-Math.PI / 4);
-      x.drawImage(icon, -22, -22, 44, 44);
-      x.setTransform(1, 0, 0, 1, 0, 0);
-      x.globalCompositeOperation = 'source-in';
-      x.fillStyle = '#04263a'; x.fillRect(0, 0, 48, 48);
-      return c;
-    };
-    silL = make(false); silR = make(true);
-  };
   // Preload catch images so the reveal is instant
   FISH.forEach(f => { const i = new Image(); i.src = f.img; });
 
@@ -611,7 +599,7 @@
   for (let i = 0; i < 9; i++) fishes.push(newSwimmer());
   function newSwimmer() {
     return {
-      x: 120 + Math.random() * (W - 120), y: SURFACE + 14 + Math.random() * (H - SURFACE - 24),
+      x: 120 + Math.random() * (W - 120), y: SURFACE + 14 + Math.random() * (H - SURFACE - 38),
       vx: (Math.random() < .5 ? -1 : 1) * (6 + Math.random() * 10), s: .55 + Math.random() * .6,
       phase: Math.random() * 6, a: .25 + Math.random() * .25,
     };
@@ -1960,7 +1948,7 @@
     px(x + 4, y - 6, 1, 4, '#a0662f'); px(x + 3.5, y - 2, 2, 3, '#a0662f');
     // lantern at the bow lights up at night
     px(x + 26, y - 7.5, 2, 2.5, k); px(x + 26.5, y - 7, 1, 1.5, dark > .3 ? '#fde68a' : '#94a3b8');
-    if (dark > .3) { ctx.globalAlpha = (dark - .3) * .35; disc(x + 27, y - 6.5, 6, '#fde68a'); ctx.globalAlpha = 1; }
+    if (dark > .3) { const a = dark - .3; ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = a * .1; disc(x + 27, y - 6.5, 9, '#f59e0b'); ctx.globalAlpha = a * .16; disc(x + 27, y - 6.5, 5, '#fde68a'); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; }
     // wake ripples around the hull
     ctx.globalAlpha = .45; px(x - 2 + Math.sin(t * 1.6) * .5, y + 1, 3, .5, '#e0f7ff'); px(x + 27 - Math.sin(t * 1.6) * .5, y + 1, 3, .5, '#e0f7ff'); ctx.globalAlpha = 1;
     if (bealinTalk > 0) {
@@ -2009,6 +1997,17 @@
   const bgC = document.createElement('canvas'); bgC.width = cv.width; bgC.height = cv.height;
   const bg = bgC.getContext('2d'); bg.imageSmoothingEnabled = false; bg.setTransform(2, 0, 0, 2, 0, 0);
   let bgKey = '', bgAt = -1;
+  // the painted worlds (img/welt-*.png, drawn in img/pxl/welt.px.js) lie on their own layer above the sky things
+  const sceneC = document.createElement('canvas'); sceneC.width = cv.width; sceneC.height = cv.height;
+  const scene = sceneC.getContext('2d'); scene.imageSmoothingEnabled = false;
+  const worldImgs = {};
+  function worldImg(name) {
+    let im = worldImgs[name];
+    if (!im) { im = worldImgs[name] = new Image(); im.onload = () => { bgKey = ''; }; im.src = `img/${name}.png`; }
+    return im;
+  }
+  const imgReady = im => im.complete && im.naturalWidth > 0;
+  const sceneName = () => inLava() ? `welt-lava-${caveDepth()}` : onSea() ? 'welt-see' : 'welt-steg';
   function bands(c, y0, y1, colors) {
     const n = colors.length, bh = (y1 - y0) / n;
     colors.forEach((col, i) => { c.fillStyle = col; c.fillRect(0, snap(y0 + i * bh), W, Math.ceil(bh) + 1); });
@@ -2029,53 +2028,24 @@
     return bg.createPattern(ditherTile, 'repeat');
   }
   function renderBg(top, bot, dark) {
-    if (inLava()) { renderCave(dark); return; }
-    const skyTop = top.match(/\d+/g).map(Number), skyBot = bot.match(/\d+/g).map(Number);
-    bands(bg, 0, HORIZON, Array.from({ length: 9 }, (_, i) => mix(skyTop, skyBot, i / 8)));
-    const w0 = [[70, 165, 210], [16, 44, 86]], w1 = [[8, 40, 80], [4, 10, 28]];
-    const wa = w0.map((c, i) => c.map((v, j) => lerp(v, w0[1][j], dark)))[0];
-    const wb = w1.map((c, i) => c.map((v, j) => lerp(v, w1[1][j], dark)))[0];
-    bands(bg, HORIZON, H, Array.from({ length: 10 }, (_, i) => mix(wa, wb, Math.pow(i / 9, .8))));
-    if (onSea()) { // open sea: no land in sight, just long swells and a ship far away
-      const sw = mix([40, 120, 170], [10, 30, 60], dark), swL = mix([150, 210, 235], [40, 70, 110], dark);
-      for (let i = 0; i < 14; i++) {
-        const y = HORIZON + 3 + i * i * .55, x0 = (i * 53) % 90 - 20;
-        for (let x = x0; x < W; x += 70 + (i % 3) * 20) { bg.fillStyle = sw; bg.fillRect(x, snap(y), 22 + i * 2, .5); bg.fillStyle = swL; bg.fillRect(x + 4, snap(y) - .5, 10 + i, .5); }
-      }
-      const ship = mix([60, 72, 92], [20, 26, 40], dark);
-      bg.fillStyle = ship; bg.fillRect(250, HORIZON - 2, 16, 2); bg.fillRect(254, HORIZON - 4, 7, 2); bg.fillRect(258, HORIZON - 6.5, 1.5, 2.5);
-      return;
+    const cave = inLava();
+    if (cave) renderCave(dark);
+    else {
+      const skyTop = top.match(/\d+/g).map(Number), skyBot = bot.match(/\d+/g).map(Number);
+      bands(bg, 0, HORIZON, Array.from({ length: 9 }, (_, i) => mix(skyTop, skyBot, i / 8)));
+      bands(bg, HORIZON, H, Array.from({ length: 10 }, (_, i) => mix(mix3([70, 165, 210], [16, 44, 86], dark), mix3([8, 40, 80], [4, 10, 28], dark), Math.pow(i / 9, .8))));
     }
-    // island: rolling hill, pines, rocks, lighthouse
-    const hill = mix([74, 122, 84], [16, 28, 40], dark), hillD = mix([52, 92, 66], [12, 20, 32], dark), hillL = mix([120, 170, 96], [22, 36, 48], dark);
-    for (let x = 246; x <= 356; x += .5) {
-      const k = (x - 246) / 110, h = 15 * Math.pow(Math.sin(Math.PI * k), .7) + Math.sin(x * .6) * .6;
-      bg.fillStyle = hill; bg.fillRect(x, snap(HORIZON + 1 - h), .5, snap(h));
-      bg.fillStyle = hillL; bg.fillRect(x, snap(HORIZON + 1 - h), .5, .5);
-      bg.fillStyle = hillD; bg.fillRect(x, HORIZON - 1.5, .5, 2.5);
-    }
-    const pine = mix([34, 84, 60], [8, 16, 26], dark), pineL = mix([60, 120, 76], [14, 24, 36], dark);
-    for (const [tx, s] of [[262, 1], [270, 1.3], [279, .9], [292, 1.2], [300, .8], [337, 1]]) {
-      const base = HORIZON + 1 - 15 * Math.pow(Math.sin(Math.PI * (tx - 246) / 110), .7);
-      for (let r = 0; r < 9 * s; r += .5) {
-        const hw = snap((r / (9 * s)) * 3 * s);
-        bg.fillStyle = pine; bg.fillRect(snap(tx - hw), snap(base - 9 * s + r), hw * 2 + .5, .5);
-        bg.fillStyle = pineL; bg.fillRect(snap(tx - hw), snap(base - 9 * s + r), .5, .5);
-      }
-      bg.fillStyle = hillD; bg.fillRect(tx, base, .5, 1.5);
-    }
-    // lighthouse (5 wide, striped)
-    const lx = 318, lb = HORIZON + 1 - 15 * Math.pow(Math.sin(Math.PI * (lx - 246) / 110), .7);
-    const wht = mix([240, 240, 240], [110, 116, 140], dark), red = mix([220, 50, 50], [90, 30, 40], dark), sh = mix([190, 190, 200], [80, 84, 104], dark);
-    for (let y = 0; y < 18; y += .5) {
-      const w = 5 - y * .08;
-      bg.fillStyle = Math.floor(y / 3) % 2 ? red : wht; bg.fillRect(snap(lx - w / 2), snap(lb - y), snap(w), .5);
-      bg.fillStyle = sh; bg.fillRect(snap(lx + w / 2 - 1), snap(lb - y), 1, .5);
-    }
-    bg.fillStyle = '#1e293b'; bg.fillRect(lx - 3, lb - 19, 6, 1); bg.fillRect(lx - 2, lb - 22.5, 4, .5);
-    bg.fillStyle = dark > .3 ? '#fde68a' : '#cbd5e1'; bg.fillRect(lx - 1.5, lb - 22, 3, 3);
-    bg.fillStyle = red; bg.fillRect(lx - 2, lb - 24, 4, 1.5); bg.fillRect(lx - .5, lb - 25, 1, 1);
+    scene.globalCompositeOperation = 'source-over'; scene.globalAlpha = 1;
+    scene.clearRect(0, 0, sceneC.width, sceneC.height);
+    const im = worldImg(sceneName());
+    if (!imgReady(im)) return;
+    scene.drawImage(im, 0, 0);
+    scene.globalCompositeOperation = 'source-atop';
+    scene.fillStyle = cave ? `rgba(18,6,10,${dark * .28})` : `rgba(6,12,36,${dark * .72})`;
+    scene.fillRect(0, 0, sceneC.width, sceneC.height);
+    if (!cave) { scene.globalAlpha = .3; scene.fillStyle = bot; scene.fillRect(0, HORIZON * 2, sceneC.width, (SURFACE - HORIZON) * 2); }
   }
+  const mix3 = (a, b, k) => a.map((v, i) => lerp(v, b[i], k));
 
   // Fish-shaped clouds: soft white puffs in the shape of a fish that swims right
   // (tail at the back, dorsal fin on top, belly fin, eye at the head). Halo and blue underside as before.
@@ -2298,31 +2268,20 @@
     drawArt('ladder', 4.5, DOCK_Y - 28, dark * .4);
   }
   // the Glutgrotte: a rock ceiling with stalactites instead of sky, basalt columns and a lake of lava
-  function renderCave(dark) {
+  function renderCave(dark) { // only seen until the painted depth has loaded
     const d = dark * .35, k = (caveDepth() - 1) / (CAVE_DEPTHS.length - 1); // deeper = redder and hotter
     bands(bg, 0, HORIZON, Array.from({ length: 9 }, (_, i) => mix([22 - k * 8, 16 - k * 8, 20 - k * 8], [86 + k * 70, 40 - k * 10, 26 - k * 10], Math.pow(i / 8, 1.6) * (1 - d))));
-    const st = mix([40, 30, 30], [24, 18, 20], d), stL = mix([74, 54, 46], [40, 30, 30], d);
-    for (let i = 0; i < 26; i++) {
-      const x = (i * 61) % W + (i % 3) * 2, len = 8 + (i * 37) % 26, w = 3 + (i * 13) % 5;
-      for (let y = 0; y < len; y += .5) { const hw = snap(w * (1 - y / len)); bg.fillStyle = st; bg.fillRect(snap(x - hw), y, hw * 2 + .5, .5); bg.fillStyle = stL; bg.fillRect(snap(x - hw), y, .5, .5); }
-    }
-    const col = mix([46, 30, 30], [28, 20, 22], d), colL = mix([96, 52, 38], [54, 32, 28], d);
-    for (let x = 120; x < W; x += 9) {
-      const h = 6 + ((x * 7) % 17);
-      bg.fillStyle = col; bg.fillRect(x, HORIZON - h, 8, h + 1); bg.fillStyle = colL; bg.fillRect(x, HORIZON - h, 8, .5); bg.fillRect(x + 7, HORIZON - h, .5, h);
-    }
-    if (k >= .5) for (let i = 0; i < 18; i++) { // glowing crystals in the ceiling from depth 3
-      const x = (i * 47 + 13) % W, y = 4 + (i * 23) % 30, c = i % 2 ? '#a5f3fc' : '#f0abfc';
-      bg.fillStyle = c; bg.fillRect(x, y, 1, 1.5); bg.fillStyle = '#ffffff'; bg.fillRect(x, y, .5, .5);
-    }
     bands(bg, HORIZON, H, Array.from({ length: 10 }, (_, i) => mix([253, 186 + k * 50, 74 + k * 90], [124 + k * 60, 22 + k * 10, 12], Math.pow(i / 9, .7))));
-    const crust = mix([70, 30, 22], [50, 22, 18], d);
-    for (let i = 0; i < 22; i++) {
-      const y = HORIZON + 4 + (i * i * .7) % (H - HORIZON - 6), x = (i * 89) % W;
-      bg.fillStyle = crust; bg.fillRect(x, snap(y), 10 + (i % 4) * 5, 1 + (i % 2) * .5);
-    }
   }
   function drawLedge(dark) { // a basalt ledge to stand on, instead of the dock
+    const fels = worldImg('welt-lava-fels');
+    if (imgReady(fels)) {
+      ctx.drawImage(fels, 0, DOCK_Y - 1, fels.width / 2, fels.height / 2);
+      ctx.globalAlpha = .4 + .3 * Math.sin(t * 2);
+      for (let y = SURFACE - 1, i = 0; y < H; y += 3, i++) px(DOCK_END - .5 + Math.sin(i * 1.7) * .5, y, 1, 3, i % 3 ? '#f97316' : '#fdba74');
+      ctx.globalAlpha = 1;
+      return;
+    }
     const k = '#1b1f2e', rock = '#3f3533', rockL = '#6b5b53', rockD = '#2a2220', glow = '#f97316';
     px(0, DOCK_Y - .5, DOCK_END + .5, H - DOCK_Y + .5, k);
     px(0, DOCK_Y, DOCK_END, H - DOCK_Y, rock);
@@ -2333,6 +2292,8 @@
   }
   function drawBuoy(dark) { // red-white buoy near Bealin: the way out to the open sea
     const bx = 290, by = SURFACE - 6 + Math.sin(t * 2) * .8;
+    for (let y = SURFACE + 2, i = 0; y < 199; y += 2, i++) { ctx.globalAlpha = .55 - (y - SURFACE) / 96 * .3; px(bx + Math.sin(y * .08 + t * .7) * (y - SURFACE) * .012 + (i % 2) * .5, y, 1, 1, dark > .5 ? '#1c3550' : '#2b5d78'); }
+    ctx.globalAlpha = 1;
     drawArt('buoy', bx - 3.5, by - 9, dark);
     const locked = !seaOpen();
     for (let i = 0; i < 5; i++) px(bx + .5 + i, by - 9 + i * .1 + Math.sin(t * 5 - i) * .4, 1, 3.5 - i * .5, locked ? '#64748b' : '#facc15');
@@ -2384,8 +2345,7 @@
     ctx.setTransform(2, 0, 0, 2, Math.round((Math.random() - .5) * quake) * 2, Math.round((Math.random() - .5) * quake) * 2);
     const [top, bot, dark] = skyColors();
     // letterbox continues the scene (sky above, deep water below)
-    const deep = mix([8, 40, 80], [4, 10, 28], dark);
-    const cave = inLava(), bgTop = cave ? '#161014' : top, bgDeep = cave ? '#7c1d0c' : deep;
+    const cave = inLava(), bgTop = cave ? '#160d10' : top, bgDeep = cave ? '#120808' : onSea() ? '#01050b' : mix([9, 42, 82], [4, 10, 28], dark);
     if (bgTop + bgDeep !== lastBg) { lastBg = bgTop + bgDeep; $('stage').style.background = `linear-gradient(${bgTop} 0 50%, ${bgDeep} 50% 100%)`; }
     const key = top + bot + save.map + (inLava() ? caveDepth() : '');
     // at dawn and dusk the colours change every frame; repainting sky and sea 4x a second is plenty
@@ -2435,47 +2395,32 @@
     }
 
     ctx.restore();
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(sceneC, 0, 0); ctx.restore();
     // lighthouse beam
     if (dark > .3 && !onSea() && !cave) {
       const sw = Math.sin(t * 1.2);
-      ctx.globalAlpha = dark * .18; ctx.fillStyle = '#fde68a';
-      ctx.beginPath(); ctx.moveTo(318, HORIZON - 22); ctx.lineTo(318 + sw * 60, HORIZON - 28); ctx.lineTo(318 + sw * 60, HORIZON - 16); ctx.fill();
+      const reach = Math.abs(sw) * 84, dir = sw < 0 ? -1 : 1;
+      ctx.globalCompositeOperation = 'lighter'; // light adds to the sky, it never reads as a solid bar
+      for (let i = 0; i < reach; i += 2) { const hw = .5 + i * .07; ctx.globalAlpha = dark * .16 * (1 - i / reach); px(dir < 0 ? 316 - i : 318 + i, 58 - hw, 2, hw * 2, '#fde68a'); }
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = Math.min(1, dark * 1.3); px(316, 55.5, 4.5, 5.5, '#fde68a'); px(317, 56.5, 2.5, 3.5, '#fffbeb');
       ctx.globalAlpha = 1;
     }
 
-    // shimmer and sparkles
-    for (let i = 0; i < 40; i++) {
-      const y = HORIZON + 2 + ((i * 37) % (H - HORIZON - 4));
-      const x = ((i * 71 + t * (6 + (i % 4) * 3)) % (W + 30)) - 15;
-      ctx.globalAlpha = .18 + (y - HORIZON) / (H - HORIZON) * -.1 + .12;
-      px(x, y, 4 + (i % 4) * 3, .5, cave ? '#fde68a' : dark > .5 ? '#3b5b8a' : '#d4f1ff');
-      px(x + 2, y + .5, 2 + (i % 3) * 2, .5, cave ? '#fb923c' : dark > .5 ? '#22385e' : '#7cc4ea');
-    }
-    ctx.globalAlpha = 1;
+    drawWorldFx(dark, cave);
     if (cave) for (let i = 0; i < 12; i++) { // lava bubbles pop now and then
       const ph = (t * .7 + i * .37) % 1, bx = (i * 113) % W, by = HORIZON + 4 + (i * 41) % 60;
       if (ph < .2) { px(bx - .5, by - ph * 6, 1.5 + ph * 4, 1 + ph * 3, '#fef08a'); px(bx, by - ph * 6 - .5, .5, .5, '#ffffff'); }
     }
-    if (dark < .6 && !cave) for (let i = 0; i < 18; i++) {
-      if (Math.sin(t * 3 + i * 7.3) < .85) continue;
-      px((i * 97) % W, HORIZON + 3 + (i * 29) % 40, .5, .5, '#ffffff');
-    }
-    // sun/moon reflection
+    // sun/moon reflection, only on the far water
     const rx = sy < HORIZON ? sx : mx;
     if ((sy < HORIZON || my < HORIZON) && !cave) {
       ctx.globalAlpha = .3;
-      for (let i = 0; i < 10; i++) px(rx - 6 + i * .3 + Math.sin(t * 2 + i) * 2, HORIZON + 2 + i * 2.5, 12 - i * .9, .5, '#fff7cc');
+      for (let i = 0; i < 6; i++) px(rx - 6 + i * .3 + Math.sin(t * 2 + i) * 2, HORIZON + 1 + i * 1.7, 12 - i * .9, .5, '#fff7cc');
       ctx.globalAlpha = 1;
     }
 
-    // swimming fish silhouettes
-    if (silL) for (const f of fishes) {
-      const img = f.vx < 0 ? silL : silR;
-      const wob = Math.sin(t * 6 + f.phase) * .6;
-      ctx.globalAlpha = f.a + (f === approacher ? .2 : 0);
-      ctx.drawImage(img, snap(f.x - 12 * f.s), snap(f.y - 12 * f.s + wob), snap(24 * f.s), snap(24 * f.s));
-    }
-    ctx.globalAlpha = 1;
+    drawShadows(dark);
 
     // ripples
     ctx.strokeStyle = cave ? '#fef08a' : '#e0f7ff'; ctx.lineWidth = .5;
@@ -2525,23 +2470,272 @@
     if (dark > 0) { ctx.globalAlpha = dark * .18; px(0, 0, W, H, '#1e1b4b'); ctx.globalAlpha = 1; }
   }
 
+  // ------------------------------------------------------------------ living worlds on top of the painted scenes
+  function raysFor(map) { // baked light shafts: slanted, stepped and fading with depth
+    if (raysFor[map]) return raysFor[map];
+    const c = document.createElement('canvas'); c.width = cv.width; c.height = cv.height - SURFACE * 2;
+    const x = c.getContext('2d'), reach = map === 'see' ? 150 : 226;
+    for (let i = 0; i < 8; i++) {
+      const x0 = (i * 97 + (i * i * 31) % 60) % c.width, w = 14 + (i * 37) % 34, str = .1 + (i % 3) * .035;
+      for (let y = 0; y < reach; y += 4) {
+        const k = 1 - y / reach, a = Math.round(k * k * 5) / 5 * str;
+        if (a <= 0) continue;
+        x.fillStyle = `rgba(190,235,255,${a})`;
+        const l = Math.round((x0 + y * .35) / 2) * 2, n = Math.round((w + y * .12) / 2) * 2;
+        x.fillRect(l, y, n, 4); x.fillRect(l - c.width, y, n, 4);
+      }
+    }
+    return raysFor[map] = c;
+  }
+  function drawRays(map, alpha) {
+    if (alpha <= 0) return;
+    const c = raysFor(map);
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'lighter';
+    [[3, 1], [-2, .7]].forEach(([v, a], i) => {
+      const off = Math.round(((t * v + i * 300) % c.width + c.width) % c.width / 2) * 2;
+      ctx.globalAlpha = alpha * a;
+      ctx.drawImage(c, off, SURFACE * 2); ctx.drawImage(c, off - c.width, SURFACE * 2);
+    });
+    ctx.restore();
+  }
+  function drawWaveLine(line, foam) { // the waterline moves, drawn column by column
+    for (let x = 0; x < W; x++) {
+      const y = snap(SURFACE + Math.sin(x * .12 + t * 1.4) * .7 + Math.sin(x * .05 - t * .9) * .5);
+      ctx.fillStyle = line; ctx.fillRect(x, y, 1, .5);
+      if (Math.sin(x * .31 + t * .8 + Math.sin(x * .07)) > .8) { ctx.fillStyle = foam; ctx.fillRect(x, y - .5, 1, .5); }
+    }
+  }
+  const KELP = [[126, 30, 3], [160, 22, 1], [248, 26, 5], [268, 36, 2], [345, 28, 4], [368, 20, 6]];
+  function drawKelp(dark) {
+    const col = mix([24, 96, 92], [8, 30, 44], dark), hi = mix([58, 150, 118], [16, 50, 60], dark);
+    for (const [x0, h, ph] of KELP) for (let i = 0; i < h; i++) {
+      const y = 198 - i, x = x0 + Math.sin(t * .9 + ph + i * .16) * i * .07;
+      px(x, y, 1, 1, col);
+      if (i % 5 === (ph % 5)) { const d = i % 2 ? 1 : -1.5; px(x + d, y, 1.5, .5, hi); }
+    }
+  }
+  function drawBubbles(n, col) {
+    for (let i = 0; i < n; i++) {
+      const ph = (t * (.05 + (i % 4) * .012) + i * .37) % 1, x = (i * 67 + 130) % (W - 124) + 120 + Math.sin(ph * 18 + i) * 1.6, y = 196 - ph * 88;
+      ctx.globalAlpha = (1 - ph) * .55 + .15;
+      if (i % 3) px(x, y, .5, .5, col); else { px(x, y, 1, 1, col); px(x, y, .5, .5, '#ffffff'); }
+    }
+    ctx.globalAlpha = 1;
+  }
+  function drawStegFx(dark) {
+    drawRays('steg', (1 - dark * .85) * .55);
+    // glints on the far water
+    for (let i = 0; i < 24; i++) {
+      const tw = Math.sin(t * 2.2 + i * 2.7); if (tw < .15) continue;
+      ctx.globalAlpha = tw * (dark > .5 ? .35 : .7);
+      px((i * 53 + t * (1 + i % 3)) % W, HORIZON + 1 + (i * 7) % (SURFACE - HORIZON - 2), 2 + i % 4, .5, dark > .5 ? '#5a7fb0' : '#e8fbff');
+    }
+    ctx.globalAlpha = 1;
+    // caustics flicker just under the surface
+    for (let i = 0; i < 26; i++) {
+      const tw = Math.sin(t * 1.7 + i * 4.1); if (tw < .3) continue;
+      ctx.globalAlpha = tw * (.3 - dark * .2);
+      px((i * 41 + Math.sin(t * .4 + i) * 6) % W, SURFACE + 3 + (i * 11) % 34, 2 + i % 5, .5, '#c9f3ff');
+    }
+    ctx.globalAlpha = 1;
+    drawKelp(dark);
+    drawBubbles(12, dark > .5 ? '#5f8db5' : '#c9f3ff');
+    drawWaveLine(mix([190, 238, 248], [62, 104, 150], dark), mix([255, 255, 255], [120, 160, 200], dark));
+    if (dark > .25) { // warm window in the cabin on the island
+      ctx.globalAlpha = Math.min(1, dark * 1.5) * (.85 + Math.sin(t * 7) * .06); px(291, 75, 2.5, 2, '#fbbf24'); ctx.globalAlpha = 1;
+    }
+  }
+  const JELLIES = [[250, 150, 0], [305, 128, 2], [150, 176, 4], [352, 170, 1]];
+  function drawSeaFx(dark) {
+    drawRays('see', (1 - dark * .9) * .4);
+    for (let i = 0; i < 18; i++) { // long swells on the far water
+      const tw = Math.sin(t * 1.4 + i * 2.1); if (tw < 0) continue;
+      ctx.globalAlpha = tw * (dark > .5 ? .3 : .55);
+      px((i * 61 - t * (1 + i % 2)) % W + (i * 61 - t < 0 ? W : 0), HORIZON + 1 + (i * 5) % (SURFACE - HORIZON - 2), 3 + i % 6, .5, dark > .5 ? '#3f6592' : '#d6f2ff');
+    }
+    ctx.globalAlpha = 1;
+    // the whale, far below everything else
+    const sheet = shadowSheet(dark);
+    if (sheet) {
+      ctx.globalAlpha = .34;
+      const wx0 = (t * 5) % (W + 260) - 130, fr = Math.floor(t * 2.2) % 4;
+      ctx.drawImage(sheet, fr * 256, 840, 256, 100, snap(wx0 - 64), snap(150 + Math.sin(t * .2) * 3 - 25), 128, 50);
+      ctx.globalAlpha = 1;
+    }
+    // marine snow, drifting down slowly
+    for (let i = 0; i < 26; i++) {
+      const ph = (t * (.012 + (i % 5) * .004) + i * .173) % 1;
+      ctx.globalAlpha = (.14 + (i % 3) * .07) * (1 - dark * .3);
+      px((i * 83 + Math.sin(t * .3 + i) * 3) % W, SURFACE + 6 + ph * (H - SURFACE - 8), .5, .5, '#bfe4f2');
+    }
+    ctx.globalAlpha = 1;
+    // bioluminescence in the dark water, stronger at night
+    for (let i = 0; i < 30; i++) {
+      const tw = Math.sin(t * (.6 + (i % 4) * .2) + i * 1.9); if (tw < .35) continue;
+      ctx.globalAlpha = tw * (.3 + dark * .65);
+      px((i * 79 + 31) % W, 150 + (i * 31) % 62, .5, .5, i % 3 ? '#5eead4' : '#a5f3fc');
+    }
+    ctx.globalAlpha = 1;
+    const q = worldImg('welt-qualle');
+    if (imgReady(q)) JELLIES.forEach(([x0, y0, ph], i) => {
+      const k = t * .35 + ph, x = x0 + Math.sin(k * .6) * 16, y = y0 + Math.sin(k) * 8;
+      ctx.globalAlpha = .5 + dark * .35;
+      ctx.drawImage(q, (Math.floor(t * 3 + i) % 4) * 22, 0, 22, 32, snap(x - 5.5), snap(y - 8), 11, 16);
+    });
+    ctx.globalAlpha = 1;
+    drawBubbles(6, '#7cc4ea');
+    drawWaveLine(mix([140, 214, 236], [46, 86, 130], dark), mix([240, 252, 255], [104, 146, 190], dark));
+    if (dark > .25) { // lights on the far ship
+      ctx.globalAlpha = Math.min(1, dark * 1.4);
+      for (const [x, y] of [[250, 88], [254, 88], [258, 88], [262, 88], [259, 85]]) px(x, y, .5, .5, '#fde68a');
+      if (Math.sin(t * 2) > .4) px(267, 86, .5, .5, '#fb7185');
+      ctx.globalAlpha = 1;
+    }
+  }
+  const LAVAFALLS = { 1: [210], 2: [], 3: [150, 330], 4: [130], 5: [140, 340] };
+  const LAVA_RAMP = ['#fff0a0', '#ffc53d', '#ff8a1f', '#e8481c'];
+  function drawCaveFx(dark) {
+    const depth = caveDepth();
+    for (const x0 of LAVAFALLS[depth] || []) {
+      for (let y = 0; y < SURFACE + 1; y++) {
+        const wob = Math.sin(y * .22 + x0) * .5, n = 5 + Math.floor(y / SURFACE * 3);
+        for (let c = 0; c < n; c++) {
+          const edge = c === 0 || c === n - 1, i = (Math.floor((y - t * 26 + c * 2.3 + x0) / 3) % 4 + 4) % 4;
+          ctx.fillStyle = edge ? '#a82a10' : LAVA_RAMP[i];
+          ctx.fillRect(snap(x0 - n / 2 + c + wob), y, 1, 1);
+        }
+      }
+      // where it hits the lake: flat bright sheets and spatter, no round glow
+      ctx.globalAlpha = .55 + .2 * Math.sin(t * 5 + x0); px(x0 - 9, SURFACE - 1, 18, 1, '#fff0a0'); px(x0 - 14, SURFACE, 28, 1, '#ffc53d'); ctx.globalAlpha = .4; px(x0 - 19, SURFACE + 1, 38, 1, '#ff8a1f'); ctx.globalAlpha = 1;
+      for (let i = 0; i < 6; i++) { const ph = (t * 1.3 + i * .23 + x0) % 1; px(x0 + Math.sin(i * 3) * (6 + ph * 5), SURFACE - 1 - Math.sin(ph * Math.PI) * 6, 1, 1, '#ffe26a'); }
+    }
+    if (depth === 2) for (let i = 0; i < 44; i++) { // ash falls through the hall
+      const ph = (t * (.03 + (i % 4) * .012) + i * .137) % 1;
+      ctx.globalAlpha = .3 + (i % 3) * .14;
+      px((i * 71 + Math.sin(t * .5 + i) * 5) % W, ph * SURFACE, i % 5 ? .5 : 1, .5, i % 2 ? '#b7a79c' : '#6e625c');
+    }
+    ctx.globalAlpha = 1;
+    if (depth === 4) for (let i = 0; i < 14; i++) { // the hoard glints
+      const tw = Math.sin(t * 2.6 + i * 3.3); if (tw < .78) continue;
+      const x = 327 + (i * 37) % 55, y = 76 + (i * 11) % 15;
+      px(x, y, .5, .5, '#ffffff'); px(x - .5, y, 1.5, .5, '#fff3b0'); px(x, y - .5, .5, 1.5, '#fff3b0');
+    }
+    if (depth === 5) { // the egg in the nest
+      const glow = .16 + .08 * Math.sin(t * 2);
+      ctx.globalAlpha = glow; disc(295, 49, 14, '#fb923c'); ctx.globalAlpha = glow * 1.4; disc(295, 49, 10, '#fde047'); ctx.globalAlpha = 1;
+      const ex = 295, ey = 49, rx = 5, ry = 7;
+      for (let y = -ry; y <= ry; y += .5) {
+        const k = y / ry, hw = snap(rx * Math.sqrt(1 - k * k) * (y < 0 ? 1 + k * .22 : 1));
+        px(ex - hw - .5, ey + y, hw * 2 + 1, .5, '#7c2d12');
+        px(ex - hw, ey + y, hw * 2, .5, y < -2 ? '#fff0a0' : y < 2 ? '#ffc53d' : '#f97316');
+        if (y > 2) px(ex + hw - 1.5, ey + y, 1.5, .5, '#c2410c');
+      }
+      px(ex - 2.5, ey - 4, 1.5, 3, '#ffffff');
+      if (Math.sin(t * 2) > 0) { px(ex + 1, ey - 1, 1, 2.5, '#ffffff'); px(ex, ey + 1, 1.5, .5, '#fff0a0'); } // a crack glows now and then
+      for (let i = 0; i < 9; i++) { // feathers rise and burn out
+        const ph = (t * .09 + i * .111) % 1;
+        ctx.globalAlpha = 1 - ph;
+        px(295 + Math.sin(ph * 12 + i) * (10 + i * 2.5), 56 - ph * 50, 1.5, .5, i % 2 ? '#fb923c' : '#fde047');
+      }
+      ctx.globalAlpha = 1;
+    }
+    // slow bright flecks drifting in the magma
+    for (let i = 0; i < 26; i++) {
+      const tw = Math.sin(t * .9 + i * 2.3); if (tw < -.1) continue;
+      const y = SURFACE + 3 + (i * 23) % (H - SURFACE - 5);
+      ctx.globalAlpha = (tw + .2) * (1 - (y - SURFACE) / 150);
+      px((i * 59 + t * (.8 + i % 3)) % W, y, 2 + i % 4, .5, i % 3 ? '#ffb347' : '#ffe26a');
+    }
+    ctx.globalAlpha = 1;
+    drawWaveLine('#ffd166', '#fff3b0');
+  }
+  function drawWorldFx(dark, cave) {
+    if (cave) drawCaveFx(dark); else if (onSea()) drawSeaFx(dark); else drawStegFx(dark);
+  }
+  // ------------------------------------------------------------------ swimming shadows
+  // welt-schatten.png holds colour masks (body, back, rim, eye); each world paints them in its own water colours.
+  const SHADOW_ROWS = ['minnow', 'perch', 'carp', 'pike', 'catfish', 'eel', 'tuna', 'shark', 'sword', 'ray', 'squid', 'boot', 'panzer', 'wyrm'];
+  const SHADOW_TINT = {
+    steg: { core: [10, 47, 79], mid: [19, 74, 110], rim: [43, 126, 168], eye: [127, 200, 221] },
+    see: { core: [3, 15, 29], mid: [8, 35, 58], rim: [29, 90, 134], eye: [111, 182, 216] },
+    stegN: { core: [4, 13, 30], mid: [8, 24, 46], rim: [28, 66, 100], eye: [127, 200, 221] },
+    seeN: { core: [2, 6, 16], mid: [5, 14, 30], rim: [20, 52, 86], eye: [111, 182, 216] },
+    lava: { core: [42, 10, 5], mid: [74, 19, 10], rim: [255, 154, 60], eye: [255, 226, 106] },
+  };
+  const SHADOW_POOL = {
+    steg: ['minnow', 'minnow', 'minnow', 'minnow', 'perch', 'perch', 'perch', 'carp', 'carp', 'pike', 'pike', 'catfish', 'eel'],
+    see: ['minnow', 'minnow', 'minnow', 'tuna', 'tuna', 'perch', 'sword', 'shark', 'ray', 'squid', 'eel'],
+    lava: ['panzer', 'panzer', 'panzer', 'eel', 'eel', 'ray', 'wyrm', 'minnow', 'minnow'],
+  };
+  const shadowSheets = {};
+  function shadowSheet(dark) {
+    const base = save.map in SHADOW_POOL ? save.map : 'steg', map = dark > .45 && SHADOW_TINT[base + 'N'] ? base + 'N' : base;
+    if (map in shadowSheets) return shadowSheets[map];
+    const src = worldImg('welt-schatten');
+    if (!imgReady(src)) return null;
+    const c = document.createElement('canvas'); c.width = src.width; c.height = src.height;
+    const x = c.getContext('2d'), tint = SHADOW_TINT[map];
+    x.drawImage(src, 0, 0);
+    try {
+      const d = x.getImageData(0, 0, c.width, c.height), p = d.data;
+      for (let i = 0; i < p.length; i += 4) {
+        if (!p[i + 3]) continue;
+        const col = p[i] > 128 ? tint.rim : p[i + 1] > 128 ? tint.eye : p[i + 2] > 128 ? tint.mid : tint.core;
+        p[i] = col[0]; p[i + 1] = col[1]; p[i + 2] = col[2];
+      }
+      x.putImageData(d, 0, 0);
+      return shadowSheets[map] = c;
+    } catch (e) { return shadowSheets[map] = false; }
+  }
+  // once a fish is on the hook its shadow shows roughly what you have caught
+  function hookedShadow(h) {
+    const f = h.f, m = f.max || 30;
+    if (f.r === 'junk') return 'boot';
+    if (f.id === 'kalmar') return 'squid';
+    if (inLava()) return m >= 150 ? 'wyrm' : m >= 60 ? 'eel' : 'panzer';
+    if (onSea()) return m >= 300 ? 'shark' : m >= 150 ? 'tuna' : m >= 60 ? 'pike' : 'perch';
+    return m >= 200 ? 'shark' : m >= 100 ? 'catfish' : m >= 60 ? 'pike' : m >= 30 ? 'carp' : 'perch';
+  }
+  function drawShadowFish(sheet, kind, fr, x, y, flip) {
+    const sx = fr * 104, sy = SHADOW_ROWS.indexOf(kind) * 60, X = snap(x), Y = snap(y - 15);
+    if (!flip) { ctx.drawImage(sheet, sx, sy, 104, 60, X - 26, Y, 52, 30); return; }
+    ctx.save(); ctx.translate(X, 0); ctx.scale(-1, 1); ctx.drawImage(sheet, sx, sy, 104, 60, -26, Y, 52, 30); ctx.restore();
+  }
+  function drawShadows(dark) {
+    const sheet = shadowSheet(dark);
+    if (!sheet) return;
+    const map = save.map in SHADOW_POOL ? save.map : 'steg';
+    for (const f of fishes) {
+      if (f.pool !== map) { f.pool = map; const list = SHADOW_POOL[map]; f.kind = list[Math.floor(f.phase / 6 * list.length) % list.length]; }
+      const hot = f === approacher, kind = hot && hooked ? hookedShadow(hooked) : f.kind;
+      const fr = Math.floor(t * (hot && state === 'reel' ? 12 : 5 + f.s * 3) + f.phase * 4) % 4, flip = f.vx < 0, wob = Math.sin(t * 2 + f.phase) * .5;
+      ctx.globalAlpha = Math.min(1, lerp(.9, .55, (f.y - SURFACE) / (H - SURFACE)) + (hot ? .1 : 0));
+      if (kind === 'minnow') { // minnows come in small schools
+        drawShadowFish(sheet, kind, fr, f.x, f.y + wob, flip);
+        drawShadowFish(sheet, kind, (fr + 1) % 4, f.x - (flip ? -13 : 13), f.y + wob + 5, flip);
+        drawShadowFish(sheet, kind, (fr + 2) % 4, f.x - (flip ? -9 : 9), f.y + wob - 6, flip);
+      } else drawShadowFish(sheet, kind, fr, f.x, f.y + wob, flip);
+    }
+    ctx.globalAlpha = 1;
+  }
+
   function drawDock(dark) {
     const k = '#1b1f2e';
     const wood = mix([168, 112, 64], [74, 54, 42], dark), woodL = mix([196, 140, 86], [92, 68, 52], dark), woodD = mix([118, 74, 42], [52, 38, 30], dark);
     const post = mix([96, 62, 36], [42, 30, 26], dark), postL = mix([128, 86, 52], [58, 42, 34], dark), postD = mix([64, 40, 24], [28, 20, 18], dark);
-    const algae = mix([62, 98, 40], [24, 38, 24], dark), water = mix([30, 100, 150], [10, 24, 50], dark);
-    // posts with shading, algae line and a submerged part
+    const algae = mix([62, 98, 40], [24, 38, 24], dark), water = mix([14, 74, 118], [4, 14, 34], dark), floor = 200;
+    // posts stand on the seabed, the water swallows them with depth; barnacles and algae at the waterline
     for (let x = 6; x < DOCK_END; x += 26) {
-      px(x, DOCK_Y, 5, H - DOCK_Y, post);
-      px(x, DOCK_Y, 1, H - DOCK_Y, postL);
-      px(x + 4, DOCK_Y, 1, H - DOCK_Y, postD);
-      for (let y = DOCK_Y + 9; y < H; y += 7) px(x + 1.5, y, 2, .5, postD);
-      px(x - .5, SURFACE - .5, 6, 1.5, algae);
-      ctx.globalAlpha = .45; px(x - .5, SURFACE + 1, 6, H - SURFACE, water); ctx.globalAlpha = 1;
-      // wobbly reflection
-      ctx.globalAlpha = .25;
-      for (let y = SURFACE + 1; y < SURFACE + 14; y += 1) px(x + Math.sin(t * 3 + y) * .8, y, 5, .5, postD);
+      px(x, DOCK_Y, 5, floor - DOCK_Y, post);
+      px(x, DOCK_Y, 1, floor - DOCK_Y, postL);
+      px(x + 4, DOCK_Y, 1, floor - DOCK_Y, postD);
+      for (let y = DOCK_Y + 9; y < floor; y += 7) px(x + 1.5, y, 2, .5, postD);
+      for (let y = SURFACE + 1; y < floor; y += 8) { ctx.globalAlpha = Math.round((.28 + (y - SURFACE) / (floor - SURFACE) * .5) * 8) / 8; px(x, y, 5, 8, water); }
       ctx.globalAlpha = 1;
+      px(x - .5, SURFACE - .5, 6, 1.5, algae);
+      px(x, SURFACE + 1, 1, 1, '#c7cfc4'); px(x + 3, SURFACE + 1.5, 1, .5, '#a9b3a8'); px(x + 1, SURFACE + 3, 1, .5, '#a9b3a8');
+      for (let i = 0; i < 3; i++) { const sway = Math.sin(t * 1.3 + x + i) * .8; px(x + i * 2 + sway, SURFACE + 2 + i, .5, 3 + (i % 2) * 2, algae); }
+      px(x - 1 + Math.sin(t * 2 + x) * .5, snap(SURFACE + Math.sin(x * .12 + t * 1.4) * .7), 7, .5, mix([220, 246, 252], [84, 124, 170], dark));
     }
     // cross brace
     ctx.strokeStyle = postD; ctx.lineWidth = 1;
