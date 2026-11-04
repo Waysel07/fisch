@@ -10,4 +10,6 @@ Static site, no build step. Layout: `index.html`, `fischen.html` and `datenschut
 
 Twelve user-supplied catches (`img/hundsfisch.png`, `img/blauer-hummer.png` and others, unchanged from the originals) are in `FISH` as `photo: true, whole: true` (shown uncropped) with their own pages. The Blauer Hummer plays `sounds/blauer-hummer.mp3` when caught.
 
+The fish are spread across three areas: the Steg has 47, the Hohe See 35 (11 of them shared with the Steg) and the Glutgrotte 25. Fish that moved to a harder area are worth more Taler there, in line with the other fish of that area and rarity. Caught fish stay in the Fischdex, because it is keyed by fish id.
+
 The worlds are painted images on their own canvas layer above the sky: `img/welt-steg.png`, `img/welt-see.png` and `img/welt-lava-1.png` to `-5.png` (one per cave depth), plus `img/welt-lava-fels.png` (the ledge) and `img/welt-qualle.png`, all drawn in `img/pxl/welt.px.js`, which the game doesn't load. `renderBg` tints them for the time of day; waves, light shafts, kelp, bubbles, jellyfish, the whale, lavafalls and other moving parts are drawn on top in `drawWorldFx`. Swimming shadows come from colour masks in `img/welt-schatten.png` (14 shapes with 4 frames each, plus the whale) and are recoloured per world in `shadowSheet()`.
