@@ -149,6 +149,7 @@
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
     { id: '2026-11-04-9', date: '04.11.2026', items: [
+      '👑 Der Odfisch sieht neu aus: Katzenkopf mit Krone, Narbe über dem Auge, Reißzähne, stachelige Rückenflosse und Kampfnarben – endlich wie ein echter Herrscher der Hohen See.',
       '🎬 Der Odfisch-Kampf hat jetzt Zwischensequenzen: Er taucht mit Kinobalken, Beben und Titelkarte auf, springt bei jedem Phasenwechsel aus dem Wasser (in der Wut-Phase mit glühenden Augen), und am Ende gibt es eine Sieges- oder Abtauch-Szene. Dazu blitzt er bei Treffern auf und zeigt den Schaden als Zahlen.',
     ] },
     { id: '2026-11-04-8', date: '04.11.2026', items: [
@@ -2101,7 +2102,7 @@
     ctx.translate(boss.x, top + h / 2); ctx.rotate(tilt); ctx.translate(-boss.x, -(top + h / 2));
     ctx.drawImage(bossImg, snap(boss.x - w / 2), snap(top), w, h);
     if (bossFx.flash > 0 && boss.on) { ctx.globalAlpha = Math.min(.55, bossFx.flash); ctx.globalCompositeOperation = 'lighter'; ctx.drawImage(bossImg, snap(boss.x - w / 2), snap(top), w, h); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; }
-    if (ph === 3 && boss.on && Math.sin(t * 5) > -.3) { px(boss.x - w * .1, top + h * .22, 2, 1.5, '#ef4444'); px(boss.x + w * .04, top + h * .22, 2, 1.5, '#ef4444'); } // glowing eyes
+    if (ph === 3 && boss.on && Math.sin(t * 5) > -.3) { for (const ex of [-.38, -.25]) { px(boss.x + w * ex - 1.5, top + h * .43 - 1.5, 3, 3.5, '#ef4444'); px(boss.x + w * ex - .5, top + h * .43 - 1, 1, 2.5, '#fef08a'); } } // glowing eyes
     ctx.restore();
     if (leap > 4 && Math.random() < .5) splash(boss.x + (Math.random() - .5) * w * .6, SURFACE, 2, '#e0f7ff');
     ctx.save(); ctx.beginPath(); ctx.rect(0, SURFACE + 1, W, H); ctx.clip(); ctx.globalAlpha = .3;
@@ -2110,7 +2111,7 @@
     ctx.globalAlpha = .8;
     for (let i = 0; i < 9; i++) px(boss.x - w * .45 + i * w * .11 + Math.sin(t * 4 + i) * 1.2, SURFACE - .5, 3, .5, '#f8fafc');
     ctx.globalAlpha = 1;
-    if (boss.on) bob.x = boss.x - w * .36; // the line hangs at the cat's mouth
+    if (boss.on) bob.x = boss.x - w * .32; // the line hangs at the cat's mouth
   }
 
   function draw() {

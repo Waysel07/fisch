@@ -4,6 +4,7 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 
 ## 04.11.2026 · `2026-11-04-9`
 
+- 👑 The Odfish has a new look: a cat head with a crown, a scar over one eye, fangs, a spiky dorsal fin and battle scars – finally like a true ruler of the high seas.
 - 🎬 The Odfish fight now has cutscenes: he rises with cinema bars, a quake and a title card, leaps out of the water at every phase change (with glowing eyes in the rage phase), and the fight ends with a victory or escape scene. He also flashes when hit and shows the damage as numbers.
 
 ## 04.11.2026 · `2026-11-04-8`
