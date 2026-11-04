@@ -1017,3 +1017,11 @@ button#btn-boss:hover { background: #be123c; }
 .settings-sheet .set-row > span { min-width: 0; }
 .settings-sheet .code-line input { width: 0; }
 #shop-tabs[hidden] { display: none; }
+#prog-next { color: #fde68a; font-weight: 600; }
+/* osu!-style cursor in the Taktdrill */
+.rhythm-field { cursor: none; }
+.rcursor { position: absolute; width: 1.6rem; height: 1.6rem; margin: -.8rem 0 0 -.8rem; border-radius: 50%; border: 3px solid #fde68a; box-shadow: 0 0 0 2px #000; pointer-events: none; z-index: 3; }
+.rcursor[hidden] { display: none; }
+.rcursor.on { border-color: #7dd3fc; background: rgba(125, 211, 252, .25); }
+.rcursor.nope { animation: rnope .25s; }
+@keyframes rnope { 25% { translate: -4px 0; } 75% { translate: 4px 0; } }

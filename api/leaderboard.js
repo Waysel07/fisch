@@ -19,7 +19,7 @@ const ADMIN = process.env.ADMIN_TOKEN || '';
 // Browser, echtes Schummeln lässt sich nicht verhindern, nur eindämmen).
 const BOARDS = {
   taler:  { max: 1e10, step: (dt) => 200000 + dt * 20000 }, // insgesamt verdiente Taler
-  wieder: { max: 1000, step: (dt) => 1 + dt / 240 },        // Wiedergeburten
+  wieder: { max: 1000, step: (dt) => 1 + dt / 240, live: true }, // Wiedergeburten seit dem letzten Prestige (fallen beim Prestige auf 0)
   dex:    { max: 9999, step: () => 9999 },                  // Fische × 100 + Mutationen
   rekord: { max: 1200, step: () => 1200 },                  // größter Fang in cm (Monster-Klasse und Mutationen können weit übers Maximum gehen)
   klein:  { max: 400,  step: () => 400, asc: true },        // kleinster Fang in cm (0 = noch keiner), kleiner ist besser
@@ -136,10 +136,11 @@ module.exports = async function handler(req, res) {
     const out = await redis([
       ['HSET', 'lb:names', id, name],
       ['SET', 'lb:last:' + id, JSON.stringify({ t: Date.now(), s: scores })],
-      // aufsteigende Listen (kleinster Fang): nur echte Werte eintragen und nur verbessern (LT)
+      // aufsteigende Listen (kleinster Fang): nur echte Werte eintragen und nur verbessern (LT);
+      // „live“-Listen zeigen den aktuellen Wert und dürfen auch sinken, alle anderen nur steigen (GT)
       ...keys.map((b) => BOARDS[b].asc
         ? (scores[b] > 0 ? ['ZADD', 'lb:' + b, 'LT', scores[b], id] : ['ZSCORE', 'lb:' + b, id])
-        : ['ZADD', 'lb:' + b, 'GT', scores[b], id]),
+        : BOARDS[b].live ? ['ZADD', 'lb:' + b, scores[b], id] : ['ZADD', 'lb:' + b, 'GT', scores[b], id]),
       ...keys.map((b) => [BOARDS[b].asc ? 'ZRANK' : 'ZREVRANK', 'lb:' + b, id]),
       ...keys.map((b) => ['ZCARD', 'lb:' + b]),
     ]);

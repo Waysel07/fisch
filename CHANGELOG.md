@@ -2,6 +2,23 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-4`
+
+- 🎯 Rhythm reel like osu!: aim at the circle with the mouse and hit with a left or right click (or Z/X) – it only counts while the pointer is on the circle. On phones you tap the circles as before, and Space still works without aiming.
+
+## 04.11.2026 · `2026-11-04-3`
+
+- 🏆 Leaderboard: “Rebirths” now shows your current rebirths and drops to 0 on prestige, just like in the game. New rebirths show up right away.
+- ✦ Prestige pays off more: +100 % coins per prestige instead of +50 %, and 40 % of your rebirths keep counting as a legacy. Talents are still reset on prestige.
+- 🎖️ Rank, Old Salt jacket and Fish God crown now count all rebirths ever – a prestige no longer takes them away. Lava rods stay through rebirth and prestige.
+- ⚖️ Economy: coin boni add up within their group (path, talents, collection) instead of all multiplying each other. Bait, snacks and boxes get a little pricier with your coin bonus. New: forge up to +15, Sun Crown (500,000 coins) and Galaxy Coat (1 million coins).
+- 🌀 Each rebirth now needs only 2 more levels instead of 3. Every 5 levels there is a milestone with Schuppen, every 10 levels a mystery box.
+- 📅 New weekly goals: three bigger goals per week, the same for everyone, with Schuppen, pearls and ember stones. Progress now always shows what comes next.
+
+## 04.11.2026 · `2026-11-04-2`
+
+- ⚖️ Balance: the Ember Cave pays fewer coins. Cave fish are now worth about half, the heat bonus is +20 %, each depth gives +10 %, Glimm’s trust +3 % per level and the Ember Net +5 % per level. Glimm’s jobs pay about half. Ember stones stay as they are.
+
 ## 04.11.2026 · `2026-11-04-1`
 
 - 🌋 Glutflosse’s lava store is now its own stall down in the Ember Cave – no longer in the kiosk at the dock.

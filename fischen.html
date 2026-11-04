@@ -223,8 +223,9 @@
 
     <!-- Taktdrill: rhythm minigame that sometimes replaces reeling in a legendary fish -->
     <div class="modal rhythm" id="rhythm" hidden>
-      <div class="rhythm-field" id="rhythm-field" role="application" aria-label="Taktdrill: Kreise im Takt antippen (oder Leertaste, Z, X)">
+      <div class="rhythm-field" id="rhythm-field" role="application" aria-label="Taktdrill: auf die Kreise zielen und im Takt klicken oder tippen (Z/X auf dem Kreis, Leertaste ohne Zielen)">
         <div class="rhythm-hud"><b id="rhythm-title"></b><span id="rhythm-score"></span></div>
+        <div class="rcursor" id="rhythm-cursor" hidden></div>
       </div>
     </div>
 
@@ -279,6 +280,7 @@
           </div>
         </div>
         <p class="rank-line" id="prog-rank"></p>
+        <p class="sub next-line" id="prog-next"></p>
         <p class="sub" id="prog-stats"></p>
         <p class="sub bonus" id="prog-bonus"></p>
 
@@ -302,6 +304,10 @@
           <p class="sub bonus" id="glimm-trust"></p>
           <div class="list" id="glimm-quests"></div>
         </div>
+
+        <h3>📅 Wochenziele <span class="sub">· <span id="week-left"></span></span></h3>
+        <p class="sub">Drei größere Ziele pro Woche, für alle gleich. Jedes gibt Schuppen, ab Prestige eine Perle, ab der Glutgrotte Glutsteine.</p>
+        <div class="list" id="week-goals"></div>
 
         <h3>🌀 Wiedergeburt</h3>
         <div class="rebirth">
