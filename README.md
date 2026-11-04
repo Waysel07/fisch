@@ -377,4 +377,4 @@ It only makes cheating harder. Every save carries a checksum (`sig`, with `fisch
 - Game text is written in German, wrapped in `tr('…')`, and gets an English entry in `js/fischen-i18n.js`.
 - Every update players can notice gets a `PATCH_NOTES` entry and a `CHANGELOG.md` entry.
 - New save or server fields must be mentioned in `datenschutz.html`.
-- No secrets in the repo, and no copies of other people's brands, logos, characters or games.
+- No secrets in the repo.
