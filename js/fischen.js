@@ -555,7 +555,7 @@
   save.playTime = Math.max(0, +save.playTime || 0);
   // One-time gifts, matched by the player's name (leaderboard or lobby, case-insensitive);
   // `gifts` remembers which ones already arrived. Checked at start and with every autosave.
-  const NAME_GIFTS = [{ id: 'katie-20h', name: 'katie', playTime: 20 * 3600 }];
+  const NAME_GIFTS = [{ id: 'fae-20h', name: 'fae', playTime: 20 * 3600 }];
   if (!Array.isArray(save.gifts)) save.gifts = [];
   function nameGifts() {
     const names = [save.lb && save.lb.name, save.lobbyName, save.lobby && save.lobby.name]
