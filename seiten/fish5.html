@@ -67,6 +67,62 @@
       cursor: pointer;
     }
     .ttf button:hover { background: #4ade80; }
+    .voice { margin: -0.6rem 0 1.25rem; font-size: 0.85rem; color: #94a3b8; }
+    .voice select {
+      font: inherit;
+      background: #0f172a;
+      color: #e2e8f0;
+      border: 2px solid #334155;
+      border-radius: 8px;
+      padding: 0.3rem 0.5rem;
+      max-width: 100%;
+    }
+    .voice p { margin: 0.4rem 0 0; font-size: 0.8rem; }
+
+    /* Magische Miesmuschel */
+    .muschel {
+      margin: 0 0 1.5rem;
+      padding: 1.25rem 1rem 1.4rem;
+      border: 2px solid #334155;
+      border-radius: 12px;
+      background: #111c33;
+      box-shadow: 0 4px 0 #0b1222;
+    }
+    .muschel h2 { color: #f0abfc; font-size: 1.4rem; margin-bottom: 0.75rem; }
+    .card .muschel img {
+      width: 216px;
+      max-width: 70%;
+      aspect-ratio: auto;
+      object-fit: contain;
+      image-rendering: pixelated;
+      box-shadow: none;
+      border-radius: 0;
+      margin: 0 auto 0.75rem;
+      cursor: pointer;
+    }
+    .card .muschel img.pull { animation: pull 0.5s ease-in-out; }
+    @keyframes pull {
+      30% { transform: translateY(10px) rotate(-4deg); }
+      60% { transform: translateY(-4px) rotate(2deg); }
+    }
+    .card .muschel img.talking { animation: hum 0.22s ease-in-out infinite alternate; }
+    @keyframes hum { to { transform: rotate(-2deg) scale(1.02); } }
+    #answer {
+      min-height: 1.6em;
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: #f5d0fe;
+      margin-bottom: 0.9rem;
+    }
+    .muschel .ttf { margin-bottom: 0; }
+    .muschel .ttf input { border-color: #e879f9; }
+    .muschel .ttf button { background: #e879f9; }
+    .muschel .ttf button:hover { background: #f0abfc; }
+    @media (max-width: 480px) {
+      .muschel .ttf { flex-wrap: wrap; }
+      .muschel .ttf input { flex-basis: 100%; max-width: none; }
+      .muschel .ttf button { flex: 1; }
+    }
   </style>
   <link rel="stylesheet" href="../css/legal.css">
 </head>
@@ -82,6 +138,27 @@
       <input id="say" type="text" maxlength="200" placeholder="Was soll der Fisch sagen?" aria-label="Was soll der Fisch sagen?">
       <button type="submit">Sprich, Fisch!</button>
     </form>
+    <div class="voice">
+      <label>Stimme:
+        <select id="voice">
+          <option value="klar">Fischstimme (verständlich)</option>
+          <option value="blub">Fischisch (nur Blub)</option>
+        </select>
+      </label>
+      <p id="voice-hint" hidden>Dein Gerät hat keine deutsche Stimme. Der Fisch spricht deshalb nur Fischisch.</p>
+    </div>
+
+    <section class="muschel" aria-label="Magische Miesmuschel">
+      <h2>Die magische Miesmuschel</h2>
+      <img id="muschel" src="../img/miesmuschel.png"
+           alt="Rosa Pixel-Muschel mit einer Zugschnur und einem goldenen Ring"
+           title="Stell eine Frage und zieh an der Schnur!">
+      <div id="answer" aria-live="polite"></div>
+      <form class="ttf" id="ask">
+        <input id="question" type="text" maxlength="200" placeholder="Frag die Muschel etwas …" aria-label="Frage an die magische Miesmuschel">
+        <button type="submit">An der Schnur ziehen</button>
+      </form>
+    </section>
     <nav class="links">
       <a href="../index.html">Fisch!</a>
       <a href="fish3.html">Fisch 3!</a>
@@ -107,19 +184,39 @@
     ];
     let last = -1;
 
-    // ---- FISCH-TTS ------------------------------------------------------
-    // Every letter is spoken with a tiny slice of ../sounds/fish.mp3 ("FISCH!"):
-    //   0.01–0.17 s is the voiced "Fi", 0.19–0.26 s is the hissy "sch".
-    // Vowels and most consonants play a pitched "Fi" grain, s/z/c/x/ß play
-    // the "sch" grain, spaces and punctuation are pauses.
+    // ---- TEXT TO FISCH ---------------------------------------------------
+    // Two voices:
+    //  * "klar": the browser's own speech synthesis with a German voice that
+    //    runs on the device (localService), pitched down so it sounds fishy.
+    //    Only on-device voices are used, so the text never leaves the browser.
+    //  * "blub": the old fish language. Every letter is a tiny slice of
+    //    ../sounds/fish.mp3 ("FISCH!"). Also the fallback without a voice.
+    const FISH_VOICE  = { bubble: 'bubble', el: 'lippenfisch', pitch: 0.6, rate: 0.95, blub: 1 };
+    const SHELL_VOICE = { bubble: 'answer', el: 'muschel', pitch: 0.1, rate: 0.75, blub: 0.6, clear: true };
+
     const FI   = { offset: 0.03, dur: 0.10 };
     const SCH  = { offset: 0.19, dur: 0.07 };
     const STEP = 0.068;                       // seconds per letter
     const VOWEL_SEMIS = { a: 0, e: 4, i: 7, o: -3, u: -5, y: 5, 'ä': 2, 'ö': -1, 'ü': -6 };
     const HISS = new Set(['s', 'z', 'c', 'x', 'ß']);
+    const synth = window.speechSynthesis || null;
+    const voiceHint = document.getElementById('voice-hint');
 
     let ctx = null, fishBuffer = null, loading = null;
-    let playing = [], timers = [];
+    let playing = [], timers = [], talkingEl = null;
+
+    function germanVoice() {
+      if (!synth) return null;
+      const local = synth.getVoices().filter(v => v.localService && /^de/i.test(v.lang));
+      return local.find(v => /^de[-_]DE/i.test(v.lang)) || local[0] || null;
+    }
+    function updateHint() {
+      voiceHint.hidden = !!germanVoice();
+    }
+    if (synth) {
+      updateHint();
+      synth.addEventListener && synth.addEventListener('voiceschanged', updateHint);
+    } else voiceHint.hidden = false;
 
     function loadFish() {
       if (loading) return loading;
@@ -153,11 +250,13 @@
       playing = [];
       timers.forEach(clearTimeout);
       timers = [];
+      if (synth) synth.cancel();
+      if (talkingEl) talkingEl.classList.remove('talking');
     }
 
-    // Plan the utterance: one event per character with its time and sound
-    function plan(text) {
-      const base = 0.85 + Math.random() * 0.35;   // every utterance a slightly different fish
+    // Plan the fish language: one event per character with its time and sound
+    function plan(text, pitch) {
+      const base = (0.85 + Math.random() * 0.35) * pitch;
       const asks = /\?\s*$/.test(text);
       const chars = [...text];
       const events = [];
@@ -172,7 +271,6 @@
         else if (c in VOWEL_SEMIS)  { sound = { part: FI, semis: VOWEL_SEMIS[c], gain: 0.9 }; }
         else if (/[a-z0-9]/.test(c)){ sound = { part: FI, semis: (c.charCodeAt(0) * 5) % 9 - 4, gain: 0.6 }; }
         if (sound) {
-          // Questions go up at the end
           const rise = asks && i > chars.length - 6 ? (i - (chars.length - 6)) * 2 : 0;
           sound.rate = base * Math.pow(2, (sound.semis + rise) / 12);
         }
@@ -182,14 +280,10 @@
       return { events, length: t + 0.15 };
     }
 
-    async function speak(text) {
-      stopTalking();
-      bubble.textContent = '';
-      fish.classList.add('talking');
+    async function speakBlub(text, v, bubble, el) {
       await loadFish();
       if (ctx && ctx.state === 'suspended') await ctx.resume();
-
-      const { events, length } = plan(text);
+      const { events, length } = plan(text, v.blub);
       const chars = [...text];
       const t0 = ctx && fishBuffer ? ctx.currentTime + 0.05 : 0;
       events.forEach(ev => {
@@ -198,24 +292,97 @@
       });
       timers.push(setTimeout(() => {
         bubble.textContent = text;
-        fish.classList.remove('talking');
+        el.classList.remove('talking');
       }, length * 1000 + 50));
+    }
+
+    function speakClear(text, v, voice, bubble, el) {
+      const u = new SpeechSynthesisUtterance(text);
+      u.voice = voice;
+      u.lang = voice.lang;
+      u.pitch = v.pitch;
+      u.rate = v.rate;
+      let finished = false;
+      const done = () => {
+        if (finished) return;
+        finished = true;
+        bubble.textContent = text;
+        el.classList.remove('talking');
+      };
+      // Show the text word by word as it is spoken
+      u.onboundary = e => {
+        if (finished) return;
+        const rest = text.slice(e.charIndex);
+        const len = e.charLength || (rest.match(/^\S*/) || [''])[0].length;
+        bubble.textContent = text.slice(0, e.charIndex + len);
+      };
+      u.onend = done;
+      u.onerror = done;
+      // Some browsers never fire onend: stop the lips after a generous guess
+      timers.push(setTimeout(done, (text.length * 110 / v.rate) + 3000));
+      synth.speak(u);
+    }
+
+    function speak(text, v) {
+      stopTalking();
+      const bubble = document.getElementById(v.bubble);
+      const el = document.getElementById(v.el);
+      bubble.textContent = '';
+      el.classList.add('talking');
+      talkingEl = el;
+      const mode = v.clear ? 'klar' : document.getElementById('voice').value;
+      const voice = mode === 'klar' ? germanVoice() : null;
+      if (voice) speakClear(text, v, voice, bubble, el);
+      else speakBlub(text, v, bubble, el);
     }
 
     fish.addEventListener('click', () => {
       let i;
       do { i = Math.floor(Math.random() * lines.length); } while (i === last && lines.length > 1);
       last = i;
-      speak(lines[i]);
+      speak(lines[i], FISH_VOICE);
     });
 
     document.getElementById('ttf').addEventListener('submit', e => {
       e.preventDefault();
       const input = document.getElementById('say');
       const text = input.value.trim();
-      if (text) speak(text);
+      if (text) speak(text, FISH_VOICE);
       input.value = '';
     });
+
+    // ---- MAGISCHE MIESMUSCHEL --------------------------------------------
+    // Ask a question, pull the string, and the shell answers in a deep voice.
+    const shell = document.getElementById('muschel');
+    const ANSWERS = [
+      'Nein.', 'Nein.', 'Ja.', 'Vielleicht eines Tages.', 'Ich glaube nicht.',
+      'Frag später noch einmal.', 'Auf keinen Fall.', 'Gar nichts.',
+      'Versuch es noch einmal.', 'Ganz bestimmt.', 'Nur wenn du einen Odfisch fängst.',
+      'Frag den Lippenfisch.'
+    ];
+    let lastAnswer = -1;
+
+    function pull() {
+      const text = document.getElementById('question').value.trim();
+      let reply = 'Du musst mir schon eine Frage stellen.';
+      if (text) {
+        let i;
+        do { i = Math.floor(Math.random() * ANSWERS.length); } while (i === lastAnswer);
+        lastAnswer = i;
+        reply = ANSWERS[i];
+      }
+      stopTalking();
+      document.getElementById('answer').textContent = '';
+      shell.classList.remove('pull');
+      void shell.offsetWidth;                 // restart the animation
+      shell.classList.add('pull');
+      timers.push(setTimeout(() => {
+        shell.classList.remove('pull');
+        speak(reply, SHELL_VOICE);
+      }, 500));
+    }
+    shell.addEventListener('click', pull);
+    document.getElementById('ask').addEventListener('submit', e => { e.preventDefault(); pull(); });
   </script>
 
 <script src="/js/fish.js" defer></script>
