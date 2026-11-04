@@ -148,6 +148,18 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-10', date: '04.11.2026', items: [
+      '📖 Der Fischdex hat jetzt eine Seite pro Gebiet: Steg, Hohe See und Glutgrotte, jeweils mit eigenem Zähler am Tab. Er öffnet sich dort, wo du gerade angelst. Fische, die auch auf Hoher See beißen, stehen auf beiden Seiten.',
+      '🔎 Suche und Filter im Fischdex: nach Namen suchen, nur fehlende, nur gefangene oder Fische ohne Gold-Medaille anzeigen und nach Seltenheit filtern. Gilt auch im Shinydex.',
+      '🕘 Neu im Fortschritt: der Fang-Verlauf mit deinen letzten 20 Fängen – Fisch, Größe, Mutation, Shiny, Ort und wie viele Taler er gebracht hat.',
+    ] },
+    { id: '2026-11-04-9', date: '04.11.2026', items: [
+      '👑 Der Odfisch sieht neu aus: Katzenkopf mit Krone, Narbe über dem Auge, Reißzähne, stachelige Rückenflosse und Kampfnarben – endlich wie ein echter Herrscher der Hohen See.',
+      '🎬 Der Odfisch-Kampf hat jetzt Zwischensequenzen: Er taucht mit Kinobalken, Beben und Titelkarte auf, springt bei jedem Phasenwechsel aus dem Wasser (in der Wut-Phase mit glühenden Augen), und am Ende gibt es eine Sieges- oder Abtauch-Szene. Dazu blitzt er bei Treffern auf und zeigt den Schaden als Zahlen.',
+    ] },
+    { id: '2026-11-04-8', date: '04.11.2026', items: [
+      '⛏️ Glutsteine und die Grotten-Tiefe werden bei Wiedergeburt und Prestige jetzt zurückgesetzt – du gräbst dich jedes Mal neu hinunter. Glimms Werkstatt, sein Vertrauen und seine Aufträge bleiben.',
+    ] },
     { id: '2026-11-04-7', date: '04.11.2026', items: [
       '🍀 Glück neu ausbalanciert: Rute, Köder und Talente bringen weiter spürbar mehr seltene Fische, aber nicht mehr so viel, dass Legendäre alltäglich werden. Auf Hoher See sind jetzt etwa 15–20 % der Fänge episch und 4–5 % legendär statt bis zu 75 %.',
       '🌋 In der Glutgrotte zählt jeder Wurf als weit draußen, wie auf Hoher See. Dadurch beißen unten mehr seltene Fische, und die Grotte bringt ab Tiefe 3 mehr Taler als die See. Die See gibt dafür mehr EP.',
@@ -706,6 +718,9 @@
     let newShiny = false;
     if (shiny) { e.shiny = (e.shiny || 0) + 1; newShiny = e.shiny === 1; }
     save.coins += val; save.total++; save.lifeCoins += val; save.totalEarned += val;
+    // Fang-Verlauf: the last 20 catches for the progress board
+    save.history.unshift({ id: f.id, s: size, v: val, c: cls, m: mut ? mut.id : '', sh: shiny ? 1 : 0, map: save.map || 'steg', t: Date.now() });
+    if (save.history.length > HISTORY_MAX) save.history.length = HISTORY_MAX;
     const gain = progressCatch(f, size, val, first, mut, newMut, reel.maxT < .7, shiny, newShiny);
     if (inLava()) { // Glutsteine
       const g = Math.round((f.r === 'junk' ? (Math.random() < .5 ? 1 : 0) : GLUT_DROP[f.r] || 1) * (cls >= 3 ? 2 : 1) * (shiny ? 3 : 1) * (1 + .1 * glutUp('kristall')));
@@ -876,7 +891,44 @@
   const ODBOSS = FISH.find(f => f.id === 'odboss');
   const bossImg = new Image(); bossImg.src = ODBOSS.img;
   const boss = { on: false, id: '', max: 1, hp: 1, ends: 0, mine: 0, pend: 0, stun: 0, solo: true, n: 1, rhythmT: 0, shoutT: 0, won: false, x: W - 80, rise: 0, quake: 0, invite: null, synced: 0 };
+  const HISTORY_MAX = 20;
+  if (!Array.isArray(save.history)) save.history = [];
+  save.history = save.history.filter(h => h && typeof h === 'object' && FISH.some(f => f.id === h.id)).slice(0, HISTORY_MAX);
   if (!Array.isArray(save.bossDone)) save.bossDone = [];
+  // cutscenes for the Odfisch: intro, phase changes, victory and escape. While one runs the fight pauses
+  // (solo: the clock is extended by its length), the canvas gets cinema bars and a title card.
+  const cine = { on: false, kind: '', t: 0, dur: 0, title: '', sub: '', c: '#fbbf24', then: null };
+  const bossFx = { flash: 0, jump: 0, hitT: 0, lastPh: 1, sink: 0 };
+  function startCine(kind, dur, title, sub, c, then) {
+    if (reduceMotion) dur = Math.min(dur, 1.6);
+    Object.assign(cine, { on: true, kind, t: 0, dur, title, sub, c: c || '#fbbf24', then: then || null });
+    holding = false;
+    if (boss.on && boss.solo) boss.ends += dur * 1000;
+  }
+  function updateCine(dt) {
+    if (!cine.on) return;
+    cine.t += dt;
+    if (cine.kind === 'intro' && cine.t > .4 && cine.t - dt <= .4) { splash(boss.x, SURFACE, 50, '#ffffff'); ripple(boss.x, 3); ripple(boss.x - 20, 3); ripple(boss.x + 20, 3); }
+    if (cine.kind === 'intro' && cine.t > 1.3 && cine.t - dt <= 1.3) { boss.quake = 1.4; bossFx.flash = 1; [62, 58, 55].forEach((n, i) => setTimeout(() => tone(n, .7, 'sawtooth', .09), i * 160)); }
+    if (cine.kind === 'win' && Math.random() < dt * 18) particles.push({ x: boss.x + (Math.random() - .5) * 60, y: SURFACE - 20 - Math.random() * 40, vx: (Math.random() - .5) * 50, vy: -30 - Math.random() * 40, life: 1, c: ['#fde047', '#f472b6', '#38bdf8', '#ffffff'][Math.floor(Math.random() * 4)] });
+    if (cine.t >= cine.dur) { cine.on = false; const f = cine.then; cine.then = null; if (f) f(); }
+  }
+  function drawCine() {
+    if (!cine.on) return;
+    const k = Math.min(1, cine.t / .35, (cine.dur - cine.t) / .35), bar = 22 * Math.max(0, k);
+    px(0, 0, W, bar, '#000'); px(0, H - bar, W, bar, '#000');                   // cinema bars
+    if (cine.kind === 'intro') { ctx.globalAlpha = .35 * Math.max(0, k); px(0, bar, W, H - 2 * bar, '#020617'); ctx.globalAlpha = 1; }
+    const tk = Math.min(1, Math.max(0, (cine.t - .25) / .3)) * Math.max(0, Math.min(1, (cine.dur - cine.t) / .3));
+    if (tk > 0 && cine.title) {
+      ctx.globalAlpha = tk; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const sc = 1 + (1 - tk) * .4;
+      setFont(`700 ${Math.round(18 * sc)}px Silkscreen, monospace`);
+      ctx.fillStyle = '#000'; ctx.fillText(cine.title, W / 2 + 1.5, 52 + 1.5); ctx.fillStyle = cine.c; ctx.fillText(cine.title, W / 2, 52);
+      if (cine.sub) { setFont('700 7px Poppins, sans-serif'); ctx.fillStyle = '#000'; ctx.fillText(cine.sub, W / 2 + .75, 68 + .75); ctx.fillStyle = '#f8fafc'; ctx.fillText(cine.sub, W / 2, 68); }
+      ctx.globalAlpha = 1; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    }
+    if (bossFx.flash > 0 && !reduceMotion) { ctx.globalAlpha = Math.min(.6, bossFx.flash * .6); px(0, 0, W, H, cine.kind === 'phase3' ? '#ef4444' : '#ffffff'); ctx.globalAlpha = 1; }
+  }
   const bossReady = () => onSea() && isNight();
   const bossPhase = () => (boss.hp / boss.max > 2 / 3 ? 1 : boss.hp / boss.max > 1 / 3 ? 2 : 3);
   const BOSS_PHASES = ['', tr('Phase 1/3 · Kurbeln!'), tr('Phase 2/3 · Taktdrill!'), tr('Phase 3/3 · Wut!')];
@@ -907,10 +959,14 @@
     hooked = { f: ODBOSS, size: ODBOSS.max, cls: 3, str: 1.6 };
     Object.assign(reel, { tension: .1, progress: 0, thrash: 0, thrashT: 2.5, slack: 0, maxT: 0 });
     bob.landX = boss.x - 26; bob.x = bob.landX;
-    $('reel').hidden = false; $('reel').classList.add('boss'); $('boss-hud').hidden = false;
-    hint('');
-    toast(solo ? tr('⚔️ Der Odfisch! Du hast 3 Minuten.') : tr('⚔️ Der Odfisch! Kämpft zusammen – ihr habt 3 Minuten.'));
-    updateBossHud();
+    $('reel').hidden = true; $('reel').classList.add('boss'); $('boss-hud').hidden = true;
+    hint(''); bossFx.lastPh = bossPhase(); bossFx.sink = 0;
+    startCine('intro', 3.4, tr('DER ODFISCH'), tr('Herrscher der Hohen See · halb Fisch, halb Katze, ganz Boss'), '#e2e8f0', () => {
+      if (!boss.on) return;
+      $('reel').hidden = false; $('boss-hud').hidden = false;
+      toast(solo ? tr('⚔️ Der Odfisch! Du hast 3 Minuten.') : tr('⚔️ Der Odfisch! Kämpft zusammen – ihr habt 3 Minuten.'));
+      updateBossHud();
+    });
   }
   function bossHit(d) {
     if (!boss.on || boss.won || d <= 0) return;
@@ -920,7 +976,19 @@
     else if (boss.hp <= 0) bossWin();
   }
   function updateBoss(dt) {
+    if (cine.on) return; // the fight waits for the cutscene
     const ph = bossPhase(), r = rod();
+    if (ph > bossFx.lastPh) { // phase change: short cutscene, a leap out of the water, a roar
+      bossFx.lastPh = ph; bossFx.jump = 1; bossFx.flash = 1; boss.quake = 1.3;
+      splash(boss.x, SURFACE, 40, '#ffffff'); ripple(boss.x, 3);
+      tone(ph === 3 ? 140 : 220, .6, 'sawtooth', .08, ph === 3 ? -60 : 120);
+      setTimeout(() => tone(520, .35, 'triangle', .07, 260), 220); setTimeout(() => tone(700, .4, 'triangle', .06, -380), 420);
+      $('reel').hidden = true; $('boss-hud').hidden = true;
+      startCine(ph === 3 ? 'phase3' : 'phase2', 2.2, ph === 3 ? tr('PHASE 3 · WUT!') : tr('PHASE 2 · ER TANZT!'),
+        ph === 3 ? tr('Die Augen glühen rot – jetzt zieht er richtig.') : tr('Triff den Takt, wenn er tanzt.'), ph === 3 ? '#f87171' : '#c084fc',
+        () => { if (boss.on) { $('reel').hidden = false; $('boss-hud').hidden = false; bossHudKey = ''; updateBossHud(); } });
+      return;
+    }
     if (ph === 3) {
       boss.shoutT -= dt;
       if (boss.shoutT <= 0) {
@@ -958,6 +1026,13 @@
       reel.tension += (.3 + pull * .55) * r.tens * (1 - .06 * perk('schnur')) * (wx.tens || 1) * (inLava() ? 1 - .05 * glutUp('schild') : 1) * dt;
       bossHit((reel.thrash ? 3 : 12 + 8 * r.reel) * dt);
       if (Math.random() < dt * 14) sfx.tick();
+      bossFx.hitT += dt;
+      if (bossFx.hitT > .45) { // a damage number and a little flash every half second while reeling
+        bossFx.hitT = 0; bossFx.flash = Math.max(bossFx.flash, .25);
+        const d = Math.round((reel.thrash ? 3 : 12 + 8 * r.reel) * .45);
+        floaters.push({ x: boss.x - 10 + Math.random() * 20, y: SURFACE - 40 - Math.random() * 8, text: '−' + d, c: reel.thrash ? '#94a3b8' : '#fde047', life: .9 });
+        if (!reel.thrash) splash(boss.x - 18, SURFACE - 2, 3, '#fde68a');
+      }
     } else reel.tension -= (.8 - pull * .15) * dt;
     reel.tension = Math.max(0, reel.tension);
     if (reel.thrash && Math.random() < dt * 12) splash(boss.x + (Math.random() - .5) * 30, SURFACE, 3, '#ffffff');
@@ -1017,9 +1092,10 @@
   }
   function bossEnd(msg) {
     if (!boss.on) return;
-    bossLeave(); state = 'idle'; hooked = null;
-    toast(msg || tr('🌊 Der Odfisch ist abgetaucht … Nächstes Mal!'));
-    tone(220, .5, 'triangle', .06, -120);
+    bossLeave(); state = 'idle'; hooked = null; bossFx.sink = .01;
+    startCine('escape', 2.2, tr('ABGETAUCHT'), msg || tr('🌊 Der Odfisch ist abgetaucht … Nächstes Mal!'), '#7dd3fc');
+    splash(boss.x, SURFACE, 30, '#ffffff'); ripple(boss.x, 3);
+    tone(220, .5, 'triangle', .06, -120); setTimeout(() => tone(150, .7, 'triangle', .05, -60), 300);
   }
   function bossWin() {
     if (boss.won || !boss.on) return;
@@ -1032,10 +1108,15 @@
     const bonus = Math.round((800 + 2200 * share) * coinMult());
     save.scales += BOSS_SCALES; save.coins += bonus; save.lifeCoins += bonus; save.totalEarned += bonus;
     setTimeout(() => toast(tr('⚔️ Odfisch besiegt! +{s} 🐚 · +{n} Taler Beute', { s: BOSS_SCALES, n: bonus })), 400);
-    // and the Odfisch himself comes on board – at least Kapital size
-    hooked = { f: ODBOSS, ...sizeIn(ODBOSS, Math.random() < .25 ? 4 : 3), str: 1.6 };
-    reel.maxT = 0; bob.x = boss.x - 20; state = 'reel';
-    land_catch();
+    // victory cutscene: he rears up one last time, fireworks, then the Odfisch himself comes on board – at least Kapital size
+    state = 'summon'; bossFx.jump = 1.4; bossFx.flash = 1; boss.rise = 1;
+    splash(boss.x, SURFACE, 60, '#ffffff'); splash(boss.x, SURFACE, 40, '#fde047');
+    [523, 659, 784, 1047, 1319].forEach((n, i) => setTimeout(() => tone(n, .3, 'square', .06), i * 140));
+    startCine('win', 3, tr('BESIEGT!'), tr('Der Odfisch gibt auf – Fih …'), '#fde047', () => {
+      hooked = { f: ODBOSS, ...sizeIn(ODBOSS, Math.random() < .25 ? 4 : 3), str: 1.6 };
+      reel.maxT = 0; bob.x = boss.x - 20; state = 'reel';
+      land_catch();
+    });
   }
 
   // ------------------------------------------------------------------ mutations
@@ -1190,7 +1271,7 @@
   window.addEventListener('keydown', e => {
     const k = e.key.toLowerCase();
     if (k === 'escape') { closeModals(); return; }
-    if (e.target.closest && e.target.closest('input, textarea')) return;
+    if (e.target.closest && e.target.closest('input, textarea, select')) return;
     if (state === 'rhythm') { if (!e.repeat && k === ' ') { e.preventDefault(); rhythmHit(); } else if (!e.repeat && (k === 'z' || k === 'x')) { e.preventDefault(); rhythmAimHit(); } return; }
     if (!$('title').hidden) { if (k === ' ' || k === 'enter') { e.preventDefault(); $('start').click(); } return; }
     if (!$('catch').hidden) { if (k === ' ' || k === 'enter') { e.preventDefault(); $('catch-ok').click(); } return; }
@@ -1232,6 +1313,9 @@
       else if (!boss.solo && Date.now() - boss.synced > 1500) { boss.synced = Date.now(); lobbySync(); }
     }
     boss.quake = Math.max(0, boss.quake - dt);
+    updateCine(dt);
+    bossFx.flash = Math.max(0, bossFx.flash - dt * 2.5); bossFx.jump = Math.max(0, bossFx.jump - dt * 1.4);
+    if (!boss.on && bossFx.sink > 0) bossFx.sink = Math.min(1, bossFx.sink + dt * .5);
     boss.rise = state === 'summon' || boss.on ? Math.min(1, boss.rise + dt * .7) : Math.max(0, boss.rise - dt * .5);
 
     // walking (only when not busy with the line)
@@ -2021,17 +2105,24 @@
     if (boss.rise <= 0 || !bossImg.complete || !bossImg.naturalWidth) return;
     const w = bossImg.naturalWidth / 2, h = bossImg.naturalHeight / 2, ph = boss.on ? bossPhase() : 1;
     boss.x = W - 78 + Math.sin(t * .6) * 8 + (reel.thrash && boss.on ? Math.sin(t * 40) * 1.5 : 0) + (boss.stun > 0 ? 14 : 0);
-    const top = SURFACE - h * .8 * boss.rise + (1 - boss.rise) * 10 + Math.sin(t * 1.4) * 1.5;
+    const leap = Math.sin(Math.min(1, bossFx.jump) * Math.PI) * 14, sinkY = bossFx.sink * h * .9;
+    const top = SURFACE - h * .8 * boss.rise + (1 - boss.rise) * 10 + Math.sin(t * 1.4) * 1.5 - leap + sinkY;
     if (ph === 3) { ctx.globalAlpha = .14 + .08 * Math.sin(t * 6); disc(boss.x, top + h * .5, w * .4, '#ef4444'); ctx.globalAlpha = 1; }
     ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, SURFACE + 1); ctx.clip();
-    ctx.drawImage(bossImg, snap(boss.x - w / 2), snap(top), w, h); ctx.restore();
+    const tilt = (reel.thrash && boss.on ? Math.sin(t * 30) * .06 : 0) + (cine.on && cine.kind === 'win' ? Math.sin(cine.t * 8) * .08 : 0);
+    ctx.translate(boss.x, top + h / 2); ctx.rotate(tilt); ctx.translate(-boss.x, -(top + h / 2));
+    ctx.drawImage(bossImg, snap(boss.x - w / 2), snap(top), w, h);
+    if (bossFx.flash > 0 && boss.on) { ctx.globalAlpha = Math.min(.55, bossFx.flash); ctx.globalCompositeOperation = 'lighter'; ctx.drawImage(bossImg, snap(boss.x - w / 2), snap(top), w, h); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; }
+    if (ph === 3 && boss.on && Math.sin(t * 5) > -.3) { for (const ex of [-.38, -.25]) { px(boss.x + w * ex - 1.5, top + h * .43 - 1.5, 3, 3.5, '#ef4444'); px(boss.x + w * ex - .5, top + h * .43 - 1, 1, 2.5, '#fef08a'); } } // glowing eyes
+    ctx.restore();
+    if (leap > 4 && Math.random() < .5) splash(boss.x + (Math.random() - .5) * w * .6, SURFACE, 2, '#e0f7ff');
     ctx.save(); ctx.beginPath(); ctx.rect(0, SURFACE + 1, W, H); ctx.clip(); ctx.globalAlpha = .3;
     ctx.drawImage(bossImg, snap(boss.x - w / 2), snap(top), w, h); ctx.restore();
     // foam ring where he breaks the surface
     ctx.globalAlpha = .8;
     for (let i = 0; i < 9; i++) px(boss.x - w * .45 + i * w * .11 + Math.sin(t * 4 + i) * 1.2, SURFACE - .5, 3, .5, '#f8fafc');
     ctx.globalAlpha = 1;
-    if (boss.on) bob.x = boss.x - w * .36; // the line hangs at the cat's mouth
+    if (boss.on) bob.x = boss.x - w * .32; // the line hangs at the cat's mouth
   }
 
   function draw() {
@@ -2156,6 +2247,7 @@
     ctx.globalAlpha = 1;
     drawWeatherFront(dark);
     drawFx();
+    drawCine();
     drawPropLabel();
 
     // power meter
@@ -2661,7 +2753,7 @@
     if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'boss', 'summon'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: renderDex, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -2928,13 +3020,46 @@
   let autoCloseT = 0;
   $('catch').addEventListener('pointerdown', () => clearTimeout(autoCloseT)); // touching the card keeps it open
 
-  let dexTab = 'fish';
+  // Fischdex: one page per area (Steg, Hohe See, Glutgrotte) plus the Shinydex; dock fish that also bite at sea show up on both
+  const DEX_AREAS = {
+    steg: { icon: '🏝️', name: tr('Steg'), has: f => !f.map },
+    see: { icon: '⛵', name: tr('Hohe See'), has: f => f.map === 'see' || !!f.sea },
+    lava: { icon: '🌋', name: tr('Glutgrotte'), has: f => f.map === 'lava' },
+  };
+  let dexTab = 'steg';
+  const dexF = { q: '', show: 'all', r: '' };
+  function dexFilter(list, got) { // search only matches fish you already know, so it never gives away a name
+    const q = dexF.q.trim().toLocaleLowerCase(I18N.locale);
+    return list.filter(f => {
+      const e = save.dex[f.id];
+      if (dexF.r && f.r !== dexF.r) return false;
+      if (q && !(e && f.name.toLocaleLowerCase(I18N.locale).includes(q))) return false;
+      if (dexF.show === 'missing') return !got(f);
+      if (dexF.show === 'have') return !!got(f);
+      if (dexF.show === 'nogold') return !!e && (e.m || 0) < 3;
+      return true;
+    });
+  }
+  function dexEmpty() {
+    const p = document.createElement('p'); p.className = 'sub dex-empty';
+    p.textContent = tr('Keine Fische passen zu deiner Suche.');
+    return p;
+  }
+  function syncDexFilters() {
+    $('dex-filters').hidden = false;
+    const nogold = $('dex-show').querySelector('[value="nogold"]'); nogold.hidden = dexTab === 'shiny';
+    if (dexTab === 'shiny' && dexF.show === 'nogold') dexF.show = 'all';
+    $('dex-show').value = dexF.show; $('dex-rar').value = dexF.r;
+    if ($('dex-search').value !== dexF.q) $('dex-search').value = dexF.q;
+  }
   const SHINY_REWARDS = ['s1', 's5', 'sall'];
   function shinysFound() { return FISH.filter(f => save.dex[f.id] && save.dex[f.id].shiny).length; }
   function renderShinydex() {
     $('dex-count').textContent = tr('{a} von {b} Shinys gefunden · Chance pro Fang gerade {c} %', { a: shinysFound(), b: FISH.length, c: (shinyChance() * 100).toLocaleString(I18N.locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) });
     renderDexRewards();
-    $('dex-grid').replaceChildren(...FISH.map(f => {
+    const list = dexFilter(FISH, f => save.dex[f.id] && save.dex[f.id].shiny);
+    if (!list.length) return $('dex-grid').replaceChildren(dexEmpty());
+    $('dex-grid').replaceChildren(...list.map(f => {
       const e = save.dex[f.id], sh = e && e.shiny;
       const c = document.createElement('div');
       c.className = 'card ' + (sh ? 'b-' + f.r + ' shiny-card' : 'unknown');
@@ -2954,14 +3079,24 @@
     document.querySelectorAll('[data-dex-tab]').forEach(t => {
       const on = t.dataset.dexTab === dexTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
+    if (!DEX_AREAS[dexTab] && dexTab !== 'shiny') dexTab = 'steg';
+    for (const [id, a] of Object.entries(DEX_AREAS)) { // per-area progress right on the tab
+      const all = FISH.filter(a.has);
+      $('dex-n-' + id).textContent = `${all.filter(f => save.dex[f.id]).length}/${all.length}`;
+    }
+    syncDexFilters();
     $('dex-title').textContent = dexTab === 'shiny' ? tr('Shinydex') : tr('Fischdex');
     if (dexTab === 'shiny') return renderShinydex();
-    const got = FISH.filter(f => save.dex[f.id]).length;
+    const area = DEX_AREAS[dexTab], inArea = FISH.filter(area.has);
+    const got = FISH.filter(f => save.dex[f.id]).length, gotA = inArea.filter(f => save.dex[f.id]).length;
     const g = save.gamble || 0;
-    $('dex-count').textContent = tr('{a} von {b} entdeckt · {c} von {d} Mutationen · {e} Fänge insgesamt', { a: got, b: FISH.length, c: mutsFound().length, d: MUTATIONS.length, e: save.total })
+    $('dex-count').textContent = tr('{i} {n}: {a} von {b} entdeckt', { i: area.icon, n: area.name, a: gotA, b: inArea.length })
+      + tr(' · Gesamt {a} von {b} · {c} von {d} Mutationen · {e} Fänge insgesamt', { a: got, b: FISH.length, c: mutsFound().length, d: MUTATIONS.length, e: save.total })
       + tr(' · Meisterschaft: {g} 🥇 (+{p} % Taler)', { g: masteryCount(3), p: goldBonus() }) + (save.gamble !== undefined ? tr(' · Glücksspiel {n} Taler', { n: (g >= 0 ? '+' : '') + g }) : '');
     renderDexRewards();
-    $('dex-grid').replaceChildren(...FISH.map(f => {
+    const list = dexFilter(inArea, f => save.dex[f.id]);
+    if (!list.length) return $('dex-grid').replaceChildren(dexEmpty());
+    $('dex-grid').replaceChildren(...list.map(f => {
       const e = save.dex[f.id];
       const c = document.createElement('div');
       c.className = 'card ' + (e ? 'b-' + f.r : 'unknown');
@@ -2974,7 +3109,7 @@
       const info = document.createElement('small');
       info.textContent = e ? tr('{n}× · Rekord {b} cm', { n: e.n, b: e.best }) + (e.cls >= 2 ? ' ' + SIZE_CLASSES[e.cls].icon : '') : hintFor(f);
       if (e && e.cls >= 2) info.title = tr('Beste Größenklasse: {c}', { c: SIZE_CLASSES[e.cls].name });
-      if (e && f.sea) { info.textContent += ' ⛵'; info.title = (info.title ? info.title + ' · ' : '') + tr('Beißt auch auf Hoher See'); }
+      if (e && f.sea && dexTab === 'steg') { info.textContent += ' ⛵'; info.title = (info.title ? info.title + ' · ' : '') + tr('Beißt auch auf Hoher See'); }
       c.append(img, name, r, info);
       if (e) { // mastery: medal and the way to the next one
         const m = e.m || 0, need = masteryNeed(f), ms = document.createElement('small'); ms.className = 'mastery m' + m;
@@ -3045,6 +3180,12 @@
   }
   function updateDexBadge() { $('btn-dex').classList.toggle('ready', dexClaimable().length > 0); }
   document.querySelectorAll('[data-dex-tab]').forEach(t => t.addEventListener('click', () => { dexTab = t.dataset.dexTab; renderDex(); }));
+  $('dex-search').addEventListener('input', () => { dexF.q = $('dex-search').value; renderDex(); });
+  $('dex-show').addEventListener('change', () => { dexF.show = $('dex-show').value; renderDex(); });
+  $('dex-rar').addEventListener('change', () => { dexF.r = $('dex-rar').value; renderDex(); });
+  for (const r of ['common', 'uncommon', 'rare', 'wii', 'epic', 'legendary', 'junk']) {
+    const o = document.createElement('option'); o.value = r; o.textContent = RARITY[r].label; $('dex-rar').append(o);
+  }
   function renderDexRewards() {
     const claimed = save.dexClaimed || [];
     // the Shinydex tab shows only shiny rewards, the Fischdex tab the rest
@@ -3917,14 +4058,16 @@
   function rebirth() {
     if (save.lvl < rebirthLvl()) return;
     const gain = scalesFor();
-    if (!confirm(tr('Wiedergeburt?\n\nDu bekommst {n} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level und Aufträge werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.', { n: gain }))) return;
+    if (!confirm(tr('Wiedergeburt?\n\nDu bekommst {n} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level, Aufträge, Glutsteine und die Grotten-Tiefe werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.', { n: gain }))) return;
     const oldRank = rankOf(save.rebirthsTotal);
     save.rebirths++; save.rebirthsTotal++; save.scales += gain;
-    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], lavaRod: '', bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], lavaRod: '', glut: 0, caveDepth: 1, bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     const newRank = rankOf(save.rebirthsTotal), ms = MILESTONES.find(m => m.r === save.rebirths);
     if (newRank !== oldRank) setTimeout(() => toast(tr('🎖️ Neuer Rang: {r}!', { r: newRank.name })), 2400);
     if (ms) setTimeout(() => toast(tr('🔓 Neu freigeschaltet: {t}', { t: ms.t })), 4400);
     checkCosm();
+    // the cave starts again at depth 1: open Glimm jobs may ask for deeper fish, so only finished ones stay
+    save.glimmQ = (save.glimmQ || []).filter(q => q.p >= q.n); bgKey = ''; wx = currentWeather(); updateWeatherPill();
     fillQuests(); persist(); updateCoins(); updateGear(); updateLevel(); renderProg();
     const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
     [262, 330, 392, 523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .25, 'triangle', .08), i * 120));
@@ -3942,12 +4085,14 @@
   function prestige() {
     if (save.rebirths < PRESTIGE_REB) return;
     const gain = pearlsFor();
-    if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten (auch Lavaruten), Köder, Wiedergeburten, Schuppen, Talente und die Schmiede.\nFischdex, Medaillen, Rekorde, Kosmetik, Rang und Perlen-Talente bleiben.', { n: gain }))) return;
+    if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten (auch Lavaruten), Köder, Wiedergeburten, Schuppen, Talente, Glutsteine, die Grotten-Tiefe und die Schmiede.\nFischdex, Medaillen, Rekorde, Kosmetik, Rang und Perlen-Talente bleiben.', { n: gain }))) return;
     checkCosm(true); // keep the rebirth cosmetics earned so far
     save.rebHeir = (save.rebHeir || 0) + save.rebirths * .4; // the Erbe keeps 40 % of these rebirths in the Taler bonus
     save.prestige++; save.pearls += gain;
-    Object.assign(save, { rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: ['stock'], lavaRod: '', bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: ['stock'], lavaRod: '', glut: 0, caveDepth: 1, bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     if (save.map === 'see' && !seaOpen()) { save.map = 'steg'; bgKey = ''; boss.invite = null; $('btn-boss').hidden = true; updateMapUi(); }
+    // the cave starts again at depth 1: open Glimm jobs may ask for deeper fish, so only finished ones stay
+    save.glimmQ = (save.glimmQ || []).filter(q => q.p >= q.n); bgKey = ''; wx = currentWeather(); updateWeatherPill();
     fillQuests(); persist(); updateCoins(); updateGear(); updateLevel(); renderProg();
     const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
     [196, 262, 330, 392, 523, 659, 784, 1047, 1319].forEach((n, i) => setTimeout(() => tone(n, .3, 'triangle', .08), i * 110));
@@ -3961,7 +4106,40 @@
     save.pearls -= c; save.pperks[id] = l + 1; sfx.coin(); persist(); renderProg(); updateMapUi();
   }
 
+  function agoText(t) {
+    const m = Math.floor((Date.now() - t) / 60000);
+    if (m < 1) return tr('gerade eben');
+    if (m < 60) return tr('vor {n} Min.', { n: m });
+    if (m < 1440) return tr('vor {n} Std.', { n: Math.floor(m / 60) });
+    return tr('vor {n} Tagen', { n: Math.floor(m / 1440) });
+  }
+  function renderHistory() {
+    const box = $('prog-history');
+    $('hist-n').textContent = save.history.length;
+    if (!save.history.length) {
+      const p = document.createElement('p'); p.className = 'sub'; p.textContent = tr('Noch keine Fänge. Wirf die Angel aus!');
+      return box.replaceChildren(p);
+    }
+    const MAPI = { steg: '🏝️', see: '⛵', lava: '🌋' };
+    box.replaceChildren(...save.history.map(h => {
+      const f = FISH.find(x => x.id === h.id), mu = h.m && MUTATIONS.find(x => x.id === h.m), sc = SIZE_CLASSES[h.c] || SIZE_CLASSES[1];
+      const d = document.createElement('div'); d.className = 'hist b-' + f.r;
+      const img = document.createElement('img'); img.src = f.img; img.alt = ''; img.loading = 'lazy';
+      img.className = [f.pixel ? 'pixel' : '', f.photo ? 'photo' : '', h.sh ? 'shiny' : ''].join(' ').trim();
+      if (h.sh) img.style.setProperty('--shiny-hue', shinyHue(f.id) + 'deg');
+      const txt = document.createElement('div');
+      const b = document.createElement('b'); b.textContent = (h.sh ? '💫 ' : '') + (mu ? mu.icon + ' ' : '') + f.name;
+      const s = document.createElement('small');
+      s.textContent = [`${(MAPI[h.map] || '')} ${h.s.toLocaleString(I18N.locale)} cm`.trim(), h.c >= 2 && f.r !== 'junk' ? sc.icon + ' ' + sc.name : '', mu ? mu.name : '', agoText(h.t)].filter(Boolean).join(' · ');
+      txt.append(b, s);
+      const v = document.createElement('span'); v.className = 'hist-val'; v.textContent = '+' + h.v.toLocaleString(I18N.locale);
+      v.title = tr('{n} Taler', { n: h.v.toLocaleString(I18N.locale) });
+      d.append(img, txt, v);
+      return d;
+    }));
+  }
   function renderProg() {
+    renderHistory();
     updateLevel();
     const need = xpNeed(save.lvl);
     $('prog-level').textContent = save.lvl;
@@ -4046,7 +4224,7 @@
     }
     const req = rebirthLvl(), can = save.lvl >= req;
     $('reb-info').textContent = can
-      ? tr('Bereit! Du bekommst {n} Schuppen und dauerhaft +20 % Taler. Taler, Ruten, Köder und Level werden zurückgesetzt. Fischdex, Rekorde und Talente bleiben.', { n: scalesFor() })
+      ? tr('Bereit! Du bekommst {n} Schuppen und dauerhaft +20 % Taler. Taler, Ruten, Köder, Level, Glutsteine und die Grotten-Tiefe werden zurückgesetzt. Fischdex, Rekorde und Talente bleiben.', { n: scalesFor() })
       : tr('Ab Level {r} möglich (noch {d}). Je höher dein Level und je mehr Taler du verdienst, desto mehr Schuppen gibt es (aktuell {n}).', { r: req, d: req - save.lvl, n: scalesFor() });
     $('btn-rebirth').disabled = !can;
     const ms = MILESTONES.find(m => m.r > save.rebirths);
