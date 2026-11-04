@@ -138,6 +138,8 @@
     { id: 'limo',      name: 'Glitzerlimo',    icon: '✨', price: 8000, desc: 'Doppelte Shiny- und Mutationschance.' },
   ];
   trAll(SNACKS, ['name', 'desc']);
+  const priceScale = p => p ? Math.round(p * Math.sqrt(Math.max(1, coinMult())) / 5) * 5 : 0;
+  for (const it of [...BAITS, ...SNACKS, ...BOXES]) { const base = it.price; Object.defineProperty(it, 'price', { get: () => priceScale(base), enumerable: true }); }
   const SNACK_MS = 600000, SNACK_MAX = 1800000; // 10 minutes per snack, stacked up to 30
   function buffOn(id) { return !!(save.buffs && save.buffs[id] > Date.now()); }
   // every coin spent in the shop goes through here, so the "spent" leaderboard can count it
@@ -146,6 +148,13 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-3', date: '04.11.2026', items: [
+      '✦ Prestige lohnt sich jetzt: +100 % Taler pro Prestige statt +50 %, 40 % deiner Wiedergeburten zählen als Erbe weiter, und deine Talente bleiben. Nach dem Prestige verdienst du mehr als vorher.',
+      '🎖️ Rang, Seebären-Jacke und Fischgott-Krone zählen jetzt alle Wiedergeburten insgesamt – ein Prestige nimmt sie dir nicht mehr weg. Lavaruten bleiben bei Wiedergeburt und Prestige erhalten.',
+      '⚖️ Wirtschaft: Taler-Boni addieren sich innerhalb ihrer Gruppe (Weg, Talente, Sammlung) statt alle miteinander zu multiplizieren. Köder, Snacks und Boxen werden mit deinem Taler-Bonus etwas teurer. Neu: Schmiede bis +15, Sonnenkrone (500 000 Taler) und Galaxiemantel (1 Mio. Taler).',
+      '🌀 Wiedergeburt braucht pro Stufe nur noch 2 Level mehr statt 3. Alle 5 Level gibt es einen Meilenstein mit Schuppen, alle 10 Level eine Mysterybox.',
+      '📅 Neue Wochenziele: drei größere Ziele pro Woche, für alle gleich, mit Schuppen, Perlen und Glutsteinen. Im Fortschritt siehst du jetzt immer, was als Nächstes kommt.',
+    ] },
     { id: '2026-11-04-2', date: '04.11.2026', items: [
       '⚖️ Balance: Die Glutgrotte bringt weniger Taler. Grotten-Fische sind jetzt etwa halb so viel wert, der Hitzebonus liegt bei +20 %, jede Tiefe gibt +10 %, Glimms Vertrauen +3 % pro Stufe und das Glutnetz +5 % pro Stufe. Glimms Aufträge zahlen etwa die Hälfte. Glutsteine bleiben, wie sie sind.',
     ] },
@@ -276,6 +285,10 @@
   if (sigBroken || (DEBUG && !DEV_HOST)) save.tampered = true;
   if (sigBroken) setTimeout(() => toast(tr('⚠️ Dieser Spielstand wurde von Hand verändert. Du kannst weiterspielen, aber nicht mehr in die Bestenliste.')), 2500);
   save.prestige = save.prestige | 0; save.pearls = save.pearls | 0;
+  // all rebirths ever (ranks and rebirth cosmetics count these, so a prestige doesn't take them away)
+  if (typeof save.rebirthsTotal !== 'number') save.rebirthsTotal = (save.rebirths | 0) + save.prestige * 7;
+  // "Erbe": 40 % of the rebirths before each prestige keep counting for the Taler bonus
+  if (typeof save.rebHeir !== 'number') save.rebHeir = save.prestige * 7 * .4;
   if (!Array.isArray(save.glimmQ)) save.glimmQ = []; save.glimmDone = save.glimmDone | 0;
   if (!save.pperks || typeof save.pperks !== 'object') save.pperks = {};
   function load() {
@@ -313,7 +326,7 @@
     return s;
   }
   // Rutenschmiede: every forge level adds a little reel, luck, calm and cast to that rod
-  const FORGE_MAX = 10;
+  const FORGE_MAX = 15; // +11 to +15 are the late-game Taler sink
   const forgeLvl = id => Math.max(0, Math.min(FORGE_MAX, (save.forge && save.forge[id]) | 0));
   const forgeCost = (r, k) => Math.round(Math.max(60, r.price) * .3 * Math.pow(k + 1, 1.6) / 10) * 10;
   const forgedCache = new Map();
@@ -1379,6 +1392,8 @@
     { id: 'pose-kristall', slot: 'bob',  name: 'Kristallpose',       price: 10000, col: '#a5f3fc', desc: 'Klar wie Eis. Die Fische sehen sich darin.' },
     { id: 'jacke-kapitaen', slot: 'jacket', name: 'Kapitänsjacke',   price: 20000, col: ['#1e3a8a', '#172554', '#facc15'], desc: 'Dunkelblau mit Goldknöpfen. Für Leute mit eigenem Boot.' },
     { id: 'hut-diamant', slot: 'hat',    name: 'Diamanthut',         price: 40000, col: ['#a5f3fc', '#0891b2', '#ecfeff'], sparkle: true, desc: 'Funkelt. Ständig. Auch nachts.' },
+    { id: 'hut-sonne',   slot: 'hat',    name: 'Sonnenkrone',        price: 500000, pres: 1, col: ['#fbbf24', '#c2410c', '#fff7ed'], sparkle: true, desc: 'Strahlt heller als die Sonne über dem Steg. Ab 1× Prestige.' },
+    { id: 'jacke-galaxie', slot: 'jacket', name: 'Galaxiemantel',    price: 1000000, pres: 2, col: ['#312e81', '#0f0a2e', '#f0abfc'], desc: 'Voller Sterne. Ab 2× Prestige.' },
     { id: 'hut-krone',   slot: 'hat',    name: 'Kronen-Hut',         price: 100000, col: ['#fde047', '#a16207', '#ffffff'], sparkle: true, desc: 'Für Angler, die wirklich alles haben.' },
     // unlocked by achievements
     { id: 'hut-gold',    slot: 'hat',    name: 'Goldener Hut',       col: ['#facc15', '#b45309', '#fef08a'], desc: 'Für alle, die einen legendären Fisch gelandet haben.', ach: 'Fange einen legendären Fisch.', got: () => FISH.some(f => f.r === 'legendary' && save.dex[f.id]) },
@@ -1389,8 +1404,8 @@
     { id: 'jacke-gold',  slot: 'jacket', name: 'Goldjacke',          col: ['#facc15', '#a16207', '#fef9c3'], desc: 'Nur für Wiedergeborene.', ach: 'Werde einmal wiedergeboren.', got: () => save.rebirths >= 1 },
     { id: 'hut-odfisch', slot: 'hat',    name: 'Odfisch-Hut',        col: ['#a9bccd', '#6f86a0', '#e2ecf5'], desc: 'Silbergrau wie der Odfisch. Fih.', ach: 'Besiege den Odfisch.', got: () => (save.bossWins || 0) >= 1 },
     { id: 'jacke-sturm', slot: 'jacket', name: 'Sturmjacke',         col: ['#475569', '#1e293b', '#facc15'], desc: 'Gewittergrau mit Blitzkante. Hält dicht.', ach: 'Fange 10 Fische bei Gewitter.', got: () => cosmStat('sturm') >= 10 },
-    { id: 'jacke-seebaer', slot: 'jacket', name: 'Seebären-Jacke',   col: ['#0f766e', '#134e4a', '#fde68a'], desc: 'Hat schon jeden Sturm gesehen.', ach: 'Werde 8× wiedergeboren.', got: () => save.rebirths >= 8 },
-    { id: 'hut-fischgott', slot: 'hat',  name: 'Fischgott-Krone',    col: ['#f0abfc', '#7e22ce', '#fef9c3'], sparkle: true, desc: 'Die Fische verneigen sich. Fast.', ach: 'Werde 10× wiedergeboren.', got: () => save.rebirths >= 10 },
+    { id: 'jacke-seebaer', slot: 'jacket', name: 'Seebären-Jacke',   col: ['#0f766e', '#134e4a', '#fde68a'], desc: 'Hat schon jeden Sturm gesehen.', ach: 'Werde 8× wiedergeboren.', got: () => (save.rebirthsTotal | 0) >= 8 },
+    { id: 'hut-fischgott', slot: 'hat',  name: 'Fischgott-Krone',    col: ['#f0abfc', '#7e22ce', '#fef9c3'], sparkle: true, desc: 'Die Fische verneigen sich. Fast.', ach: 'Werde 10× wiedergeboren.', got: () => (save.rebirthsTotal | 0) >= 10 },
     { id: 'hut-perle',   slot: 'hat',    name: 'Perlenkrone',        col: ['#f5f3ff', '#a78bfa', '#ffffff'], sparkle: true, desc: 'Für alle, die ganz von vorn angefangen haben.', ach: 'Mach einmal Prestige.', got: () => save.prestige >= 1 },
     { id: 'pose-perle',  slot: 'bob',    name: 'Perlen-Pose',        col: '#ede9fe', desc: 'Schimmert wie Perlmutt.', ach: 'Mach 2× Prestige.', got: () => save.prestige >= 2 },
     { id: 'jacke-prestige', slot: 'jacket', name: 'Prestige-Mantel', col: ['#1e1b4b', '#0f0a2e', '#fbbf24'], desc: 'Nachtblau mit Goldsaum. Schon dreimal alles verloren und trotzdem hier.', ach: 'Mach 3× Prestige.', got: () => save.prestige >= 3 },
@@ -3130,9 +3145,10 @@
       id: c.id, name: c.name, desc: c.desc, stats: [],
       state: worn ? 'active' : owned ? 'owned' : '',
       owned: SLOT_NAMES[c.slot],
-      btnText: worn ? tr('Ablegen') : owned ? tr('Anziehen') : tr('{n} Taler', { n: c.price }),
-      disabled: !owned && save.coins < c.price,
+      btnText: worn ? tr('Ablegen') : owned ? tr('Anziehen') : (c.pres && save.prestige < c.pres ? tr('🔒 {n}× Prestige', { n: c.pres }) : tr('{n} Taler', { n: c.price.toLocaleString(I18N.locale) })),
+      disabled: !owned && (save.coins < c.price || (c.pres && save.prestige < c.pres)),
       onClick: () => {
+        if (!owned && c.pres && save.prestige < c.pres) return keeper(KEEPER.locked(tr('🔒 {n}× Prestige', { n: c.pres })));
         if (worn) { save.cosm[c.slot] = null; keeper(tr('Wieder ganz klassisch. Steht dir auch.')); }
         else if (owned) { save.cosm[c.slot] = c.id; keeper(tr('Schick, schick!')); }
         else {
@@ -3518,10 +3534,10 @@
   const xpNeed = l => Math.round(30 * Math.pow(l, 1.35));
   const DAILY_N = 10; // the first catches of each day give double XP
   let streak = 0;     // catches in a row without losing a fish (not saved)
-  const rebirthLvl = () => 12 + save.rebirths * 3 - pperk('preif');
+  const rebirthLvl = () => 12 + save.rebirths * 2 - pperk('preif');
   const RARITY_ORDER = ['junk', 'common', 'uncommon', 'rare', 'wii', 'epic', 'legendary'];
   const PERKS = [
-    { id: 'taler',  icon: '🪝', name: 'Goldener Haken', desc: l => tr('+{n} % Taler pro Fang', { n: l * 10 }) },
+    { id: 'taler',  icon: '🪝', name: 'Goldener Haken', desc: l => tr('+{n} % Taler pro Fang', { n: l * 8 }) },
     { id: 'glueck', icon: '🍀', name: 'Glückspilz',     desc: l => tr('+{n} % Glück für seltene Fische', { n: l * 8 }) },
     { id: 'biss',   icon: '⏱️', name: 'Lockruf',        desc: l => tr('Bisse kommen {n} % schneller', { n: l * 8 }) },
     { id: 'schnur', icon: '🧵', name: 'Starke Schnur',  desc: l => tr('{n} % weniger Spannung', { n: l * 6 }) },
@@ -3538,7 +3554,7 @@
   // the forge go too; in return Perlen for prestige talents and a bonus that never resets.
   const PRESTIGE_REB = 7;
   const PPERKS = [
-    { id: 'ptaler',    icon: '🦪', name: 'Perlenhaken',   max: 10, desc: l => tr('+{n} % Taler', { n: l * 15 }) },
+    { id: 'ptaler',    icon: '🦪', name: 'Perlenhaken',   max: 10, desc: l => tr('+{n} % Taler', { n: l * 10 }) },
     { id: 'pglueck',   icon: '🌟', name: 'Perlenglück',   max: 10, desc: l => tr('+{n} % Glück für seltene Fische', { n: l * 10 }) },
     { id: 'pschuppen', icon: '🐚', name: 'Schuppensegen', max: 10, desc: l => tr('+{n} % Schuppen bei jeder Wiedergeburt', { n: l * 20 }) },
     { id: 'preif',     icon: '⏩', name: 'Frühreif',      max: 5,  desc: l => tr('Wiedergeburt {n} Level früher', { n: l }) },
@@ -3584,7 +3600,14 @@
   trAll(MILESTONES, ['t']);
   const perkCost = l => 2 + l * 2;
   function perk(id) { return save.perks[id] || 0; }
-  function coinMult() { return (1 + .2 * save.rebirths) * (1 + .5 * save.prestige) * (1 + .15 * pperk('ptaler')) * (1 + .1 * perk('taler')) * (dexPerk('taler10') ? 1.1 : 1) * (1 + goldBonus() / 100); }
+  // Taler bonus in three groups: inside a group the boni add up, only the groups multiply
+  //   path (rebirths, Erbe, prestige) × talents (Goldener Haken, Perlenhaken) × collection (Fischdex, gold medals)
+  const pathMult = (reb = save.rebirths, heir = save.rebHeir || 0, pres = save.prestige) => 1 + .2 * (reb + heir) + pres;
+  const talentMult = () => 1 + .08 * perk('taler') + .1 * pperk('ptaler');
+  const collectMult = () => 1 + (dexPerk('taler10') ? .1 : 0) + goldBonus() / 100;
+  function coinMult() { return pathMult() * talentMult() * collectMult(); }
+  // what the bonus would be right after the next prestige (talents stay, Erbe grows)
+  function coinMultAfterPrestige() { return pathMult(0, (save.rebHeir || 0) + save.rebirths * .4, save.prestige + 1) * talentMult() * collectMult(); }
   function lockText(item) {
     if (item.pres && save.prestige < item.pres) return tr('🔒 {n}× Prestige', { n: item.pres });
     if (item.depth && caveDepth() < item.depth) return tr('🔒 Tiefe {n}', { n: item.depth });
@@ -3592,14 +3615,25 @@
     if (item.lvl && save.lvl < item.lvl) return tr('🔒 Level {n}', { n: item.lvl });
     return '';
   }
-  function scalesFor() { return Math.floor((Math.floor(save.lvl / 2) + Math.floor(Math.sqrt(save.lifeCoins / 40))) * (1 + .2 * pperk('pschuppen'))); }
+  // Schuppen: half the level plus a share for the Taler earned, capped so huge late-game incomes don't flood the talents
+  function scalesFor() { return Math.floor((Math.floor(save.lvl / 2) + Math.min(20 + 4 * save.rebirths, Math.floor(Math.sqrt(save.lifeCoins / 40)))) * (1 + .2 * pperk('pschuppen'))); }
 
   function gainXp(n, quiet) {
     const add = Math.round(n * (1 + .15 * perk('wissen')) * (1 + .25 * save.prestige));
     save.xp += add;
     const from = save.lvl;
     let reward = 0;
-    while (save.xp >= xpNeed(save.lvl)) { save.xp -= xpNeed(save.lvl); save.lvl++; reward += 20 * save.lvl; }
+    const ms = [];
+    while (save.xp >= xpNeed(save.lvl)) {
+      save.xp -= xpNeed(save.lvl); save.lvl++; reward += 20 * save.lvl;
+      if (save.lvl % 5 === 0) { // every 5 levels: a milestone with Schuppen, and every 10 a mystery box
+        const sc = 1 + Math.floor(save.lvl / 10); save.scales += sc;
+        let box = '';
+        if (save.lvl % 10 === 0) { const b = BOXES[Math.min(2, Math.floor(save.lvl / 20))]; save.boxes[b.id] = (save.boxes[b.id] || 0) + 1; box = b.name; }
+        ms.push(tr('🎁 Level-{l}-Meilenstein: +{s} 🐚', { l: save.lvl, s: sc }) + (box ? tr(' · eine {b} (im Laden öffnen)', { b: box }) : ''));
+      }
+    }
+    if (!quiet) ms.forEach((m, i) => setTimeout(() => toast(m), 1200 + i * 600));
     if (save.lvl > from && !quiet) {
       save.coins += reward; updateCoins();
       toast(tr('⭐ Level {l}! +{n} Taler', { l: save.lvl, n: reward }));
@@ -3614,7 +3648,7 @@
   function updateLevel() {
     $('lvl-num').textContent = save.lvl;
     $('lvl-bar').style.width = Math.min(100, save.xp / xpNeed(save.lvl) * 100) + '%';
-    $('lvl').title = tr('Level {l} · {x}/{n} EP', { l: save.lvl, x: save.xp, n: xpNeed(save.lvl) }) + (save.rebirths ? tr(' · {n}× wiedergeboren', { n: save.rebirths }) : '') + (save.prestige ? tr(' · {n}× Prestige', { n: save.prestige }) : '') + ' · ' + presMark(save.prestige) + rankOf(save.rebirths).name;
+    $('lvl').title = tr('Level {l} · {x}/{n} EP', { l: save.lvl, x: save.xp, n: xpNeed(save.lvl) }) + (save.rebirths ? tr(' · {n}× wiedergeboren', { n: save.rebirths }) : '') + (save.prestige ? tr(' · {n}× Prestige', { n: save.prestige }) : '') + ' · ' + presMark(save.prestige) + rankOf(save.rebirthsTotal).name;
     $('lvl-reb').textContent = (save.prestige ? '✦' + save.prestige : '') + (save.rebirths ? '🌀' + save.rebirths : '');
     $('btn-prog').classList.toggle('ready', save.lvl >= rebirthLvl() || save.rebirths >= PRESTIGE_REB || save.quests.some(q => q.p >= q.n) || (lavaOpen() && (save.glimmQ.some(q => q.p >= q.n) || canDig())));
   }
@@ -3648,6 +3682,40 @@
       case 'size': return tr('Fange einen Fang ab {n} cm', { n: q.cm });
       case 'coins': return tr('Verdiene {n} Taler mit Fängen', { n: q.n });
       case 'fish': return tr('Fange {n}× {f}', { n: q.n, f: FISH.find(f => f.id === q.id).name });
+    }
+  }
+  // Wochenziele: three bigger goals per week, the same for everyone (picked from the week number like the weather)
+  const WEEK_POOL = [
+    { k: 'count', n: 150, t: 'Fange {n} Fische' }, { k: 'rare', n: 30, t: 'Fange {n}× selten oder besser' },
+    { k: 'epic', n: 6, t: 'Fange {n}× episch oder besser' }, { k: 'legend', n: 2, t: 'Fange {n} legendäre Fische' },
+    { k: 'night', n: 40, t: 'Fange {n} Fische bei Nacht' }, { k: 'shiny', n: 1, t: 'Fange einen Shiny' },
+    { k: 'sea', n: 50, t: 'Fange {n} Fische auf Hoher See', need: () => seaOpen() }, { k: 'lava', n: 60, t: 'Fange {n} Fische in der Glutgrotte', need: () => lavaOpen() },
+  ];
+  const weekId = () => Math.floor((Date.now() / 864e5 + 3) / 7); // weeks start on Monday
+  function weekGoals() {
+    const id = weekId(), pool = WEEK_POOL.filter(g => !g.need || g.need()), out = [];
+    for (let i = 0; out.length < 3 && i < 50; i++) { const g = pool[Math.floor(slotHash(id * 7 + i, 0x7eec) * pool.length)]; if (!out.includes(g)) out.push(g); }
+    return out;
+  }
+  function weekState() {
+    if (!save.week || save.week.id !== weekId()) save.week = { id: weekId(), p: {}, done: {} };
+    return save.week;
+  }
+  function weekProgress(f, shiny) {
+    const w = weekState();
+    for (const g of weekGoals()) {
+      if (w.done[g.k]) continue;
+      const hit = { count: f.r !== 'junk', rare: ['rare', 'wii', 'epic', 'legendary'].includes(f.r), epic: ['epic', 'legendary'].includes(f.r), legend: f.r === 'legendary',
+        night: isNight() && f.r !== 'junk', shiny: !!shiny, sea: onSea() && f.r !== 'junk', lava: inLava() && f.r !== 'junk' }[g.k];
+      if (!hit) continue;
+      w.p[g.k] = (w.p[g.k] || 0) + 1;
+      if (w.p[g.k] >= g.n) {
+        w.done[g.k] = true;
+        const sc = 6, pearl = save.prestige ? 1 : 0, glut = lavaOpen() ? 40 : 0;
+        save.scales += sc; save.pearls += pearl; save.glut = (save.glut | 0) + glut;
+        setTimeout(() => toast(tr('📅 Wochenziel geschafft: {t}! +{s} 🐚', { t: tr(g.t, { n: g.n }), s: sc }) + (pearl ? ' · +1 🦪' : '') + (glut ? ` · +${glut} 🔥` : '')), 2200);
+        [523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .14, 'triangle', .07), 2200 + i * 90));
+      }
     }
   }
   function fillQuests() { while (save.quests.length < 3) save.quests.push(makeQuest()); if (lavaOpen()) while (save.glimmQ.length < 3) save.glimmQ.push(makeGlimmQuest()); }
@@ -3748,6 +3816,7 @@
     return tr(' (+{n} EP)', { n });
   }
   function progressCatch(f, size, val, first, mut, newMut, clean, shiny, newShiny) {
+    weekProgress(f, shiny);
     const c = catchXp(f, size, first, mut, newMut, clean, shiny, newShiny);
     const gain = { xp: gainXp(Math.round(c.n * nightMult())), tags: c.tags };
     for (const q of save.quests) {
@@ -3796,14 +3865,16 @@
   }
 
   // ---- rebirth
+  // lava rods belong to the Glutgrotte progress (Glutsteine, depth, workshop) and survive rebirth and prestige
+  const keepLavaRods = () => ['stock', ...save.rods.filter(id => (RODS.find(r => r.id === id) || {}).lava)];
   function rebirth() {
     if (save.lvl < rebirthLvl()) return;
     const gain = scalesFor();
     if (!confirm(tr('Wiedergeburt?\n\nDu bekommst {n} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level und Aufträge werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.', { n: gain }))) return;
-    const oldRank = rankOf(save.rebirths);
-    save.rebirths++; save.scales += gain;
-    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], lavaRod: '', bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
-    const newRank = rankOf(save.rebirths), ms = MILESTONES.find(m => m.r === save.rebirths);
+    const oldRank = rankOf(save.rebirthsTotal);
+    save.rebirths++; save.rebirthsTotal++; save.scales += gain;
+    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: keepLavaRods(), bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    const newRank = rankOf(save.rebirthsTotal), ms = MILESTONES.find(m => m.r === save.rebirths);
     if (newRank !== oldRank) setTimeout(() => toast(tr('🎖️ Neuer Rang: {r}!', { r: newRank.name })), 2400);
     if (ms) setTimeout(() => toast(tr('🔓 Neu freigeschaltet: {t}', { t: ms.t })), 4400);
     checkCosm();
@@ -3823,10 +3894,11 @@
   function prestige() {
     if (save.rebirths < PRESTIGE_REB) return;
     const gain = pearlsFor();
-    if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen und dauerhaft +50 % Taler und +25 % EP.\nZurückgesetzt wird alles wie bei der Wiedergeburt und dazu Wiedergeburten, Rang, Schuppen, Talente und geschmiedete Ruten.\nFischdex, Medaillen, Rekorde, Kosmetik und Perlen-Talente bleiben.', { n: gain }))) return;
+    if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten, Köder, Wiedergeburten, Schuppen und die Schmiede.\nTalente, Fischdex, Medaillen, Rekorde, Kosmetik, Rang, Lavaruten und Perlen-Talente bleiben.', { n: gain }))) return;
     checkCosm(true); // keep the rebirth cosmetics earned so far
+    save.rebHeir = (save.rebHeir || 0) + save.rebirths * .4; // the Erbe keeps 40 % of these rebirths in the Taler bonus
     save.prestige++; save.pearls += gain;
-    Object.assign(save, { rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: ['stock'], lavaRod: '', bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { rebirths: 0, scales: 0, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: keepLavaRods(), bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     if (save.map === 'see' && !seaOpen()) { save.map = 'steg'; bgKey = ''; boss.invite = null; $('btn-boss').hidden = true; updateMapUi(); }
     fillQuests(); persist(); updateCoins(); updateGear(); updateLevel(); renderProg();
     const st = $('stage'); st.classList.remove('reborn'); void st.offsetWidth; st.classList.add('reborn');
@@ -3847,7 +3919,7 @@
     $('prog-level').textContent = save.lvl;
     $('prog-xp').textContent = tr('{x} / {n} EP', { x: save.xp, n: need });
     $('prog-xpbar').style.width = Math.min(100, save.xp / need * 100) + '%';
-    const rk = rankOf(save.rebirths), nrk = RANKS.find(k => k.r > save.rebirths);
+    const rk = rankOf(save.rebirthsTotal), nrk = RANKS.find(k => k.r > save.rebirthsTotal);
     $('prog-rank').textContent = tr('🎖️ Rang: {r}', { r: presMark(save.prestige) + rk.name }) + (nrk ? tr(' · nächster Rang: {r} bei {n}× Wiedergeburt', { r: nrk.name, n: nrk.r }) : tr(' · höchster Rang erreicht'));
     $('prog-stats').textContent = tr('{a} Fänge · {b} Aufträge · {c}× wiedergeboren · Taler-Bonus +{p} %', { a: save.total, b: save.questsDone, c: save.rebirths, p: Math.round((coinMult() - 1) * 100) }) + (save.prestige ? tr(' · {n}× Prestige (+{t} % EP)', { n: save.prestige, t: save.prestige * 25 }) : '');
     const left = dailyLeft();
@@ -3873,6 +3945,28 @@
     const doneN = save.quests.filter(q => q.p >= q.n).length + (lavaOpen() ? save.glimmQ.filter(q => q.p >= q.n).length : 0);
     $('claim-all').hidden = doneN < 2;
     $('claim-all').textContent = tr('📜 Alle abholen ({n})', { n: doneN });
+    { // Wochenziele
+      const w = weekState(), left = Math.ceil((weekId() + 1) * 7 - 3 - Date.now() / 864e5);
+      $('week-left').textContent = tr('noch {n} Tage', { n: Math.max(1, left) });
+      $('week-goals').replaceChildren(...weekGoals().map(g => {
+        const p = Math.min(g.n, w.p[g.k] || 0), done = !!w.done[g.k], d = document.createElement('div');
+        d.className = 'quest' + (done ? ' done' : '');
+        const txt = document.createElement('div');
+        const b = document.createElement('b'); b.textContent = (done ? '✅ ' : '') + tr(g.t, { n: g.n });
+        const bar = document.createElement('div'); bar.className = 'qbar';
+        const fill = document.createElement('i'); fill.style.width = p / g.n * 100 + '%'; bar.append(fill);
+        const sm = document.createElement('small'); sm.textContent = tr('{a} / {b} · Belohnung 6 🐚', { a: p, b: g.n }) + (save.prestige ? tr(', 1 Perle') : '') + (lavaOpen() ? ', 40 🔥' : '');
+        txt.append(b, bar, sm); d.append(txt); return d;
+      }));
+    }
+    { // the next goals at a glance
+      const parts = [], rl = rebirthLvl(), cd = caveDepth(), nx = CAVE_DEPTHS[cd];
+      parts.push(save.lvl >= rl ? tr('🌀 Wiedergeburt bereit') : tr('🌀 Wiedergeburt in {n} Level', { n: rl - save.lvl }));
+      parts.push(save.rebirths >= PRESTIGE_REB ? tr('✦ Prestige bereit') : tr('✦ Prestige in {n} Wiedergeburten', { n: PRESTIGE_REB - save.rebirths }));
+      if (lavaOpen() && nx) parts.push(save.glut >= nx.cost ? tr('⛏️ Tiefe {n} bereit', { n: nx.n }) : tr('⛏️ Tiefe {n} in {c} 🔥', { n: nx.n, c: nx.cost - save.glut }));
+      const lvlNext = Math.ceil((save.lvl + 1) / 5) * 5; parts.push(tr('🎁 Meilenstein bei Level {n}', { n: lvlNext }));
+      $('prog-next').textContent = parts.join(' · ');
+    }
     $('prog-quests').replaceChildren(...save.quests.map((q, i) => questRow(q, questText(q), 10 + save.lvl * 2, () => claimQuest(i), () => rerollQuest(i))));
     $('glimm-sec').hidden = !lavaOpen();
     if (lavaOpen()) {
@@ -3928,8 +4022,8 @@
     }));
     const pcan = save.rebirths >= PRESTIGE_REB;
     $('pres-info').textContent = pcan
-      ? tr('Bereit! Du bekommst {n} Perlen und dauerhaft +50 % Taler und +25 % EP. Wiedergeburten, Rang, Schuppen und Talente fangen wieder bei null an. Jede Wiedergeburt über {r} gibt 2 Perlen mehr.', { n: pearlsFor(), r: PRESTIGE_REB })
-      : tr('Ab {r}× Wiedergeburt möglich (noch {d}). Fängt alles von vorn an, auch die Wiedergeburten – dafür gibt es Perlen und dauerhaft +50 % Taler und +25 % EP pro Prestige.', { r: PRESTIGE_REB, d: PRESTIGE_REB - save.rebirths });
+      ? tr('Bereit! Du bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP – und {e} deiner {w} Wiedergeburten zählen als Erbe weiter. Taler-Bonus danach: +{a} % statt jetzt +{b} %.', { n: pearlsFor(), e: (save.rebirths * .4).toLocaleString(I18N.locale, { maximumFractionDigits: 1 }), w: save.rebirths, a: Math.round((coinMultAfterPrestige() - 1) * 100), b: Math.round((coinMult() - 1) * 100) })
+      : tr('Ab {r}× Wiedergeburt möglich (noch {d}). Fängt vieles von vorn an (Talente bleiben) – dafür gibt es Perlen, dauerhaft +100 % Taler und +25 % EP pro Prestige, und 40 % deiner Wiedergeburten zählen als Erbe weiter.', { r: PRESTIGE_REB, d: PRESTIGE_REB - save.rebirths });
     $('btn-prestige').disabled = !pcan;
     $('prog-pearls').textContent = save.pearls;
     $('prog-pperks').replaceChildren(...PPERKS.map(p => {
@@ -4082,7 +4176,7 @@
     return j;
   }
   function lobbyMe() {
-    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'boss'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: save.rebirths, pr: save.prestige };
+    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'boss'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: Math.min(99, save.rebirthsTotal | 0), pr: save.prestige };
   }
   async function lobbySync() {
     if (!save.lobby || LOBBY.busy || document.hidden) return;

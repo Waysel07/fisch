@@ -1017,3 +1017,4 @@ button#btn-boss:hover { background: #be123c; }
 .settings-sheet .set-row > span { min-width: 0; }
 .settings-sheet .code-line input { width: 0; }
 #shop-tabs[hidden] { display: none; }
+#prog-next { color: #fde68a; font-weight: 600; }
