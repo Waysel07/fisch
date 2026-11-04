@@ -88,6 +88,11 @@
     { id: 'kristallwels', name: 'Kristallwels',  img: 'img/lava-kristallwels.png', r: 'epic', min: 80, max: 160, val: 390, pixel: true, page: 'seiten/kristallwels.html', map: 'lava', far: .5, say: 'Mir wachsen Steine aus dem Rücken. Normal.', desc: 'Auf seinem Rücken wachsen leuchtende Kristalle. Lebt weit draußen im Glutsee.' },
     { id: 'lavadrache', name: 'Lavadrache',      img: 'img/lava-lavadrache.png', r: 'legendary', min: 300, max: 500, val: 1275, pixel: true, page: 'seiten/lavadrache.html', map: 'lava', bigSplash: true, say: 'Ich bin kein Fisch. Ich bin ein Vulkan mit Schwanz.', desc: 'Schlängelt sich durch die Glut. Seine Mähne brennt seit tausend Jahren.' },
     { id: 'phoenixfisch', name: 'Phönixfisch',   img: 'img/lava-phoenixfisch.png', r: 'legendary', min: 60, max: 110, val: 1500, pixel: true, page: 'seiten/phoenixfisch.html', map: 'lava', needs: { magmakarpfen: 10 }, bigSplash: true, hint: 'Zeigt sich erst, wenn du 10 Magmakarpfen gefangen hast', say: 'Ich war schon Asche. Zweimal.', desc: 'Steigt aus der Glut auf, wenn genug Magmakarpfen gefangen wurden. Brennt und wird nie kleiner.' },
+    // catch conditions (pickFish): bait = only on that bait, hours = only between those clock hours, crits = after that many
+    // defeated lava creatures, minRod = only on a lava rod of at least that depth
+    { id: 'russaal', name: 'Rußaal',              img: 'img/lava-russaal.png', r: 'rare', min: 50, max: 110, val: 165, pixel: true, page: 'seiten/russaal.html', map: 'lava', bait: 'glutkoeder', hint: 'Beißt nur auf Glutköder', say: 'Hust. Entschuldigung. Hust.', desc: 'Ein langer, rußschwarzer Aal. Wo er schwimmt, steigen kleine Rauchwolken auf. Mag nur Glutköder.' },
+    { id: 'mitternachtsfunke', name: 'Mitternachtsfunke', img: 'img/lava-mitternachtsfunke.png', r: 'epic', min: 25, max: 45, val: 420, pixel: true, page: 'seiten/mitternachtsfunke.html', map: 'lava', hours: [0, 3], hint: 'Beißt nur zwischen 0 und 3 Uhr', say: 'Pst. Alle anderen schlafen schon.', desc: 'Dunkelblau mit glühenden Funken wie Sterne. Kommt nur in den ersten Stunden nach Mitternacht nach oben.' },
+    { id: 'kraterwaechter', name: 'Kraterwächter', img: 'img/lava-kraterwaechter.png', r: 'legendary', min: 250, max: 420, val: 1650, pixel: true, page: 'seiten/kraterwaechter.html', map: 'lava', crits: 25, minRod: 4, bigSplash: true, hint: 'Zeigt sich erst nach 25 besiegten Lava-Kreaturen – und nur an einer Drachenknochenrute oder besser', say: 'Wer hat meine Kreaturen verhauen? Ach, du.', desc: 'Ein gepanzerter Riese aus Basalt mit einer Krone aus Kraterzacken. Bewacht die Kreaturen der Glutgrotte.' },
     // the boss of the open sea: never bites normally, only lands after winning the boss fight
     { id: 'odboss',   name: 'Odfisch',           img: 'img/odfisch-boss.png',     r: 'legendary', min: 260, max: 320, val: 900, pixel: true, page: 'seiten/odfisch.html', map: 'see', boss: true, say: 'Fih.', desc: 'Halb Fisch, halb Katze, ganz Boss. Der Herrscher der Hohen See lässt sich nur im Bossfight bezwingen – am besten zusammen mit der Lobby.' },
     { id: 'schummel', name: 'Ditto',    img: 'img/ditto-dance.gif', r: 'junk', min: 6, max: 14, val: 1, pixel: true, page: 'seiten/schummelfisch.html', fake: true, say: 'Das ist kein Fisch.', desc: '+1 Coin' },
@@ -108,10 +113,10 @@
     { id: 'krake',  name: 'Krakenrute',       price: 120000, reb: 6, cast: 1.0, reel: 3.4, tens: .3,   luck: 3.0, desc: 'Acht Arme Kraft in einer Rute. Nichts reißt.' },
     // Lavaruten: normal rods melt in the Glutgrotte, there only these work (and they only work there)
     { id: 'basalt',   name: 'Basaltrute',         price: 400,   pres: 1, lava: true, cast: .8,  reel: 1.5, tens: .7,  luck: 1.1, desc: 'Aus erkalteter Lava. Die erste Rute, die in der Glutgrotte nicht schmilzt.' },
-    { id: 'obsidian', name: 'Obsidianrute',       price: 4000,  pres: 1, depth: 2, lava: true, glut: 80, cast: .95, reel: 2.2, tens: .5,  luck: 1.6, desc: 'Schwarzes Vulkanglas, hart wie Stahl. Nur für die Glutgrotte.' },
-    { id: 'magma',    name: 'Magmarute',          price: 15000, pres: 1, depth: 3, lava: true, glut: 250, cast: 1.0, reel: 2.9, tens: .38, luck: 2.2, desc: 'In ihr fließt noch Magma. Wird nie kalt. Nur für die Glutgrotte.' },
-    { id: 'drachenknochen', name: 'Drachenknochenrute', price: 50000, pres: 1, depth: 4, lava: true, glut: 700, cast: 1.0, reel: 3.6, tens: .28, luck: 3.0, desc: 'Aus dem Knochen eines Lavadrachen. Hält jede Glut aus. Nur für die Glutgrotte.' },
-    { id: 'phoenixrute', name: 'Phönixfederrute', price: 250000, pres: 1, depth: 5, lava: true, glut: 1800, cast: 1.0, reel: 4.2, tens: .24, luck: 3.6, desc: 'Aus einer Feder des Phönixfischs. Brennt, ohne zu verbrennen. Nur für die Glutgrotte.' },
+    { id: 'obsidian', name: 'Obsidianrute',       price: 4000,  pres: 1, depth: 2, lava: true, kc: 2, glut: 80, cast: .95, reel: 2.2, tens: .5,  luck: 1.6, desc: 'Schwarzes Vulkanglas, hart wie Stahl. Nur für die Glutgrotte.' },
+    { id: 'magma',    name: 'Magmarute',          price: 15000, pres: 1, depth: 3, lava: true, kc: 3, glut: 250, cast: 1.0, reel: 2.9, tens: .38, luck: 2.2, desc: 'In ihr fließt noch Magma. Wird nie kalt. Nur für die Glutgrotte.' },
+    { id: 'drachenknochen', name: 'Drachenknochenrute', price: 50000, pres: 1, depth: 4, lava: true, kc: 4, glut: 700, cast: 1.0, reel: 3.6, tens: .28, luck: 3.0, desc: 'Aus dem Knochen eines Lavadrachen. Hält jede Glut aus. Nur für die Glutgrotte.' },
+    { id: 'phoenixrute', name: 'Phönixfederrute', price: 250000, pres: 1, depth: 5, lava: true, kc: 5, glut: 1800, cast: 1.0, reel: 4.2, tens: .24, luck: 3.6, desc: 'Aus einer Feder des Phönixfischs. Brennt, ohne zu verbrennen. Nur für die Glutgrotte.' },
   ];
   const BAITS = [
     { id: 'wurm',   name: 'Wurm',          price: 0,  pack: 0, luck: 1,   speed: 1,   desc: 'Unbegrenzt. Wurmig.' },
@@ -120,7 +125,8 @@
     { id: 'wiik',   name: 'Wii-Köder',     price: 30, pack: 5, lvl: 3, luck: 1.5, speed: 1.4, wii: 2, img: 'img/wii-bait.png', desc: '5 Stück. Zeigt auf die Wii-Fische. Die beißen doppelt so oft.' },
     { id: 'mond',   name: 'Mondköder',     price: 90, pack: 5, reb: 2, luck: 4.2, speed: 2,  desc: '5 Stück. Leuchtet. Legenden können nicht widerstehen.' },
     { id: 'abyss',  name: 'Abgrundköder',  price: 200, pack: 5, reb: 5, luck: 6, speed: 2.4, desc: '5 Stück. Leuchtet aus der Tiefe. Selbst Legenden werden neugierig.' },
-    { id: 'glutkoeder', name: 'Glutköder', price: 300, glut: 15, pack: 5, pres: 1, luck: 3, speed: 1.8, lava: true, desc: '5 Stück. Glüht wie Kohle. Wirkt nur in der Glutgrotte, dort aber richtig.' },
+    { id: 'glutkoeder', name: 'Glutköder', price: 300, glut: 15, pack: 5, pres: 1, luck: 3, speed: 1.8, lava: true, kc: 3, desc: '5 Stück. Glüht wie Kohle. Wirkt nur in der Glutgrotte, dort aber richtig.' },
+    { id: 'lockkoeder', name: 'Lockköder', price: 400, glut: 20, pack: 5, pres: 1, depth: 2, luck: 1.2, speed: 1.6, lava: true, kc: 10, desc: '5 Stück. Riecht nach Ärger. Lockt in der Glutgrotte viel öfter Lava-Kreaturen an.' },
     { id: 'odkoeder', name: 'Odköder',     price: 1500, pack: 1, reb: 3, luck: 1, speed: 1, boss: true, desc: '1 Stück. Nachts auf Hoher See ausgeworfen, ruft er den Odfisch.' },
   ];
   // Mysteryboxen: bought at the kiosk or found on the hook now and then. Opening one rolls a prize.
@@ -148,6 +154,12 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-11', date: '04.11.2026', items: [
+      '👹 Neu in der Glutgrotte: Lava-Kreaturen! Manchmal beißt statt eines Fisches eine Kreatur an – Glutschnecke, Aschekrabbe, Schlackwurm, Flammenqualle, Basaltgolem und der seltene Glutkraken, je nach Tiefe. Halten macht Schaden, loslassen, wenn sie tobt, und schlag sie, bevor die Zeit abläuft. Beute: Glutsteine, Taler, EP und manchmal ein Glutherz.',
+      '🎯 Neuer Wert Kreatur-Chance (Grundwert 5 %, höchstens 30 %): Lavaruten ab der Obsidianrute, der Glutköder, der neue Lockköder (Lava-Laden, ab Tiefe 2) und Glimms neues Werkstatt-Upgrade Lockruf erhöhen sie.',
+      '🐟 Drei neue Lavafische mit Fangbedingungen: der Rußaal beißt nur auf Glutköder, der Mitternachtsfunke nur zwischen 0 und 3 Uhr, und der Kraterwächter zeigt sich erst nach 25 besiegten Kreaturen an einer Drachenknochenrute oder besser.',
+      '📖 Der Fischdex zeigt in der Glutgrotte jetzt auch die Lava-Kreaturen, die du schon besiegt hast.',
+    ] },
     { id: '2026-11-04-10', date: '04.11.2026', items: [
       '📖 Der Fischdex hat jetzt eine Seite pro Gebiet: Steg, Hohe See und Glutgrotte, jeweils mit eigenem Zähler am Tab. Er öffnet sich dort, wo du gerade angelst. Fische, die auch auf Hoher See beißen, stehen auf beiden Seiten.',
       '🔎 Suche und Filter im Fischdex: nach Namen suchen, nur fehlende, nur gefangene oder Fische ohne Gold-Medaille anzeigen und nach Seltenheit filtern. Gilt auch im Shinydex.',
@@ -282,7 +294,7 @@
   ];
   trAll(Object.values(RARITY), ['label']); trAll(FISH, ['name', 'say', 'desc', 'hint']);
   // Glutgrotte: how deep you must have dug for each cave fish (see CAVE_DEPTHS)
-  const LAVA_DEPTH = { schlacke: 1, glutgrundel: 1, aschebarsch: 1, bimsfisch: 1, funkenforelle: 1, obsidianhecht: 2, schwefelkugel: 2, magmakarpfen: 3, salamanderfisch: 3, kristallwels: 3, lavadrache: 4, phoenixfisch: 5 };
+  const LAVA_DEPTH = { schlacke: 1, glutgrundel: 1, aschebarsch: 1, bimsfisch: 1, funkenforelle: 1, obsidianhecht: 2, schwefelkugel: 2, magmakarpfen: 3, salamanderfisch: 3, kristallwels: 3, lavadrache: 4, phoenixfisch: 5, russaal: 2, mitternachtsfunke: 3, kraterwaechter: 4 };
   for (const f of FISH) if (LAVA_DEPTH[f.id]) f.depth = LAVA_DEPTH[f.id]; trAll(RODS, ['name', 'desc']); trAll(BAITS, ['name', 'desc']);
 
   // ------------------------------------------------------------------ save
@@ -498,7 +510,7 @@
   }
   const weatherSlot = () => Math.floor(Date.now() / 1000 / WEATHER_LEN + weatherShift);
   // under the earth there is no weather: the cave has its own still "weather" without any bonus
-  const CAVE_WX = { id: 'glut', icon: '🌋', get name() { return tr('Tiefe {n} · {t}', { n: caveDepth(), t: CAVE_DEPTHS[caveDepth() - 1].name }); }, desc: tr('Unter der Erde gibt es kein Wetter, nur Hitze.') };
+  const CAVE_WX = { id: 'glut', icon: '🌋', get name() { return tr('Tiefe {n} · {t}', { n: caveDepth(), t: CAVE_DEPTHS[caveDepth() - 1].name }); }, get desc() { return tr('Unter der Erde gibt es kein Wetter, nur Hitze.') + ' ' + tr('Kreatur-Chance: {n} %', { n: critChance() }); } };
   function currentWeather() { if (inLava()) return CAVE_WX; return (weatherForce && WEATHER.find(w => w.id === weatherForce)) || weatherAt(weatherSlot()); }
   let wx = currentWeather();
   // the Wetterfrosch talent makes every weather bonus stronger
@@ -525,6 +537,7 @@
     { id: 'schild',   icon: '🛡️', name: 'Hitzeschild',  max: 5,  desc: l => tr('{n} % weniger Spannung in der Glutgrotte', { n: l * 5 }) },
     { id: 'licht',    icon: '✨', name: 'Funkenlicht',  max: 10, desc: l => tr('+{n} % Glück in der Glutgrotte', { n: l * 8 }) },
     { id: 'kristall', icon: '💎', name: 'Glutkristall', max: 10, desc: l => tr('+{n} % Glutsteine pro Fang', { n: l * 10 }) },
+    { id: 'lockruf',  icon: '👹', name: 'Lockruf',      max: 5,  desc: l => tr('+{n} % Kreatur-Chance', { n: l }) },
   ];
   trAll(GLUT_UPS, ['name']);
   save.glut = save.glut | 0;
@@ -571,7 +584,7 @@
   function rodTip() {
     const px = Math.round(player.x), d = player.dir;
     if (state === 'charge') return { x: px - d * 10, y: DOCK_Y - 26 };
-    if (state === 'reel' || state === 'boss') return { x: px + d * 14, y: DOCK_Y - 22 + Math.sin(t * 30) * reel.tension * 1.5 };
+    if (state === 'reel' || state === 'boss' || state === 'crit') return { x: px + d * 14, y: DOCK_Y - 22 + Math.sin(t * 30) * reel.tension * 1.5 };
     return { x: px + d * 15, y: DOCK_Y - 24 };
   }
 
@@ -618,7 +631,9 @@
     // the log keeps every upgrade noticeable while rare stays rare
     const luck = 1 + .45 * Math.log(Math.max(1, rawLuck));
     const fullHour = (time * 24) % 1 < 1 / 6; // the clock shows xx:00
-    const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.dayOff && !night) && !(f.fullHour && !fullHour)
+    const hour = Math.floor(time * 24) % 24;
+    const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.bait && f.bait !== b.id) && !(f.hours && (hour < f.hours[0] || hour >= f.hours[1]))
+      && !(f.crits && critsTotal() < f.crits) && !(f.minRod && (r.depth || 1) < f.minRod) && !(f.dayOff && !night) && !(f.fullHour && !fullHour)
       && !(f.needs && Object.entries(f.needs).some(([id, n]) => ((save.dex[id] || {}).n || 0) < n))
       && ((f.map || 'steg') === map || (f.sea && map === 'see')) && !(f.depth && f.depth > caveDepth()) && !f.boss && !(f.weather && f.weather !== wx.id));
     const weights = pool.map(f => {
@@ -659,6 +674,7 @@
       }
       persist(); updateGear();
     }
+    if (inLava() && Math.random() * 100 < critChance()) return startCrit();
     hooked = { f, ...rollSize(f), str: STRENGTH[f.r] };
     Object.assign(reel, { tension: .15, progress: .22, thrash: 0, thrashT: 1 + Math.random(), slack: 0, maxT: 0 });
     if (f.r === 'legendary' && !f.fake && Math.random() < RHYTHM_CHANCE) { sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff'); startRhythm(); return; }
@@ -1084,7 +1100,7 @@
     if (state !== 'idle') { toast(tr('Hol erst deine Angel ein.')); return; }
     enterBoss(boss.invite, false);
   });
-  $('boss-quit').addEventListener('click', () => { if (boss.on && confirm(tr('Den Kampf aufgeben?'))) bossEnd(tr('🏳️ Du hast den Kampf aufgegeben.')); });
+  $('boss-quit').addEventListener('click', () => { if (crit.on) { if (confirm(tr('Den Kampf aufgeben?'))) critEnd(tr('🏳️ Du hast den Kampf aufgegeben.')); return; } if (boss.on && confirm(tr('Den Kampf aufgeben?'))) bossEnd(tr('🏳️ Du hast den Kampf aufgegeben.')); });
   function bossLeave() {
     boss.on = false; boss.invite = null; holding = false;
     $('boss-hud').hidden = true; $('rhythm').hidden = true; $('reel').hidden = true; $('reel').classList.remove('boss');
@@ -1117,6 +1133,142 @@
       reel.maxT = 0; bob.x = boss.x - 20; state = 'reel';
       land_catch();
     });
+  }
+
+  // ------------------------------------------------------------------ lava creatures
+  // In the Glutgrotte a bite is sometimes not a fish but a creature (critChance()). A short solo fight like the
+  // Odfisch: hold to hurt it, let go while it thrashes, don't snap the line, and beat it before the time runs out.
+  const CREATURES = [
+    { id: 'glutschnecke', name: 'Glutschnecke', img: 'img/kreatur-glutschnecke.png', depth: 1, w: 10, hp: 60,  time: 25, str: .9,  glut: 4,   coins: 120,  say: 'Schleiiim … heiß!', desc: 'Kriecht langsam aus der Lava. Ihr Haus glüht wie eine Herdplatte.' },
+    { id: 'aschekrabbe',  name: 'Aschekrabbe',  img: 'img/kreatur-aschekrabbe.png',  depth: 1, w: 7,  hp: 90,  time: 25, str: 1.05, glut: 7,  coins: 240,  say: 'Zwick! Zwick!', desc: 'Grau wie Asche, mit glühenden Scheren. Seitwärts schneller als du denkst.' },
+    { id: 'schlackwurm',  name: 'Schlackwurm',  img: 'img/kreatur-schlackwurm.png',  depth: 2, w: 6,  hp: 150, time: 30, str: 1.2, glut: 12,  coins: 480,  say: 'Grrrmpf.', desc: 'Ein Wurm aus Schlacke, der sich aus der Glut reckt und nach allem schnappt.' },
+    { id: 'flammenqualle', name: 'Flammenqualle', img: 'img/kreatur-flammenqualle.png', depth: 3, w: 4, hp: 230, time: 30, str: 1.35, glut: 20, coins: 950, say: 'Blubb … fauch!', desc: 'Schwebt über der Lava. Ihre Tentakel brennen wie Wunderkerzen.' },
+    { id: 'basaltgolem',  name: 'Basaltgolem',  img: 'img/kreatur-basaltgolem.png',  depth: 4, w: 2.5, hp: 380, time: 35, str: 1.55, glut: 40, coins: 2000, say: 'WER. STÖRT.', desc: 'Ein Brocken aus Basalt mit glühenden Rissen. Langsam, aber zäh.' },
+    { id: 'glutkraken',   name: 'Glutkraken',   img: 'img/kreatur-glutkraken.png',   depth: 5, w: 1,  hp: 650, time: 40, str: 1.75, glut: 100, coins: 5000, say: 'Acht Arme. Alle heiß.', desc: 'Der Schrecken des Phönixnests. Selten, riesig und mit acht glühenden Armen.' },
+  ];
+  trAll(CREATURES, ['name', 'say', 'desc']);
+  if (!save.crit || typeof save.crit !== 'object' || Array.isArray(save.crit)) save.crit = {};
+  const critsTotal = () => Object.values(save.crit).reduce((a, n) => a + (n | 0), 0);
+  const CRIT_BASE = 5, CRIT_MAX = 30, CRIT_HEART = .08;
+  // Kreatur-Chance in %: base + lava rod + lava bait + Glimm's Lockruf
+  function critChance() {
+    const b = bait();
+    return Math.min(CRIT_MAX, CRIT_BASE + (rod().kc || 0) + (b.lava ? b.kc || 0 : 0) + glutUp('lockruf'));
+  }
+  const critImg = {};
+  for (const c of CREATURES) { critImg[c.id] = new Image(); critImg[c.id].src = c.img; }
+  const crit = { on: false, c: null, hp: 0, max: 0, ends: 0, x: 0, rise: 0, flash: 0, hitT: 0, out: 0, won: false, ly: SURFACE };
+  const BOSS_NAME = $('boss-name').textContent;
+  function startCrit() {
+    const pool = CREATURES.filter(c => c.depth <= caveDepth());
+    let roll = Math.random() * pool.reduce((a, c) => a + c.w, 0), c = pool[0];
+    for (const x of pool) { roll -= x.w; if (roll <= 0) { c = x; break; } }
+    if (approacher) { approacher.vx = 35 + Math.random() * 15; approacher = null; }
+    Object.assign(crit, { on: true, c, hp: c.hp, max: c.hp, ends: Date.now() + c.time * 1000, rise: 0, flash: 0, hitT: 0, out: 0, won: false,
+      x: Math.max(player.x + 70, Math.min(W - 40, bob.x + 10)) });
+    state = 'crit'; holding = false; hooked = null;
+    Object.assign(reel, { tension: .1, progress: 0, thrash: 0, thrashT: 1.6, slack: 0, maxT: 0 });
+    $('reel').hidden = false; $('reel').classList.add('boss');
+    $('boss-hud').classList.add('crit'); $('boss-hud').hidden = false; $('boss-name').textContent = '👹 ' + c.name.toLocaleUpperCase(I18N.locale);
+    bossHudKey = '';
+    sfx.bite(); splash(crit.x, SURFACE, 26, '#ffffff'); ripple(crit.x, 2);
+    [180, 150, 120].forEach((n, i) => setTimeout(() => tone(n, .25, 'sawtooth', .06), i * 140));
+    hint(tr('👹 Eine Lava-Kreatur! Halten = Schaden, loslassen, wenn sie tobt.'), 3);
+    floaters.push({ x: crit.x, y: SURFACE - 34, text: c.say, c: '#fdba74', life: 2.2 });
+    if (!save.crit[c.id]) toast(tr('👹 Neue Kreatur: {c}!', { c: c.name }));
+    updateCritHud();
+  }
+  function critLeave() {
+    holding = false;
+    $('boss-hud').hidden = true; $('boss-hud').classList.remove('crit'); $('boss-name').textContent = BOSS_NAME;
+    $('reel').hidden = true; $('reel').classList.remove('boss'); $('reel').classList.remove('thrash');
+  }
+  function critEnd(msg) {
+    if (!crit.on || crit.out) return;
+    critLeave(); crit.won = false; crit.out = 1.2;
+    splash(crit.x, SURFACE, 20, '#ffffff'); ripple(crit.x, 2);
+    hint(msg, 2.4); tone(220, .4, 'triangle', .06, -120);
+  }
+  function critWin() {
+    const c = crit.c;
+    critLeave(); crit.won = true; crit.out = 1.6;
+    const n = save.crit[c.id] = (save.crit[c.id] | 0) + 1;
+    const g = Math.round(c.glut * (1 + .1 * glutUp('kristall'))), heart = Math.random() < CRIT_HEART ? g * 3 : 0;
+    const coins = Math.round(c.coins * coinMult() * caveMult());
+    save.glut += g + heart; save.coins += coins; save.lifeCoins += coins; save.totalEarned += coins;
+    gainXp(20 + 15 * c.depth);
+    splash(crit.x, SURFACE, 40, '#fde047'); ripple(crit.x, 3);
+    [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, .2, 'square', .05), i * 110));
+    floaters.push({ x: crit.x, y: SURFACE - 40, text: tr('Besiegt!'), c: '#fde047', life: 1.8 });
+    floaters.push({ x: crit.x, y: SURFACE - 30, text: `+${g + heart} 🔥 · +${coins.toLocaleString(I18N.locale)}`, c: '#fdba74', life: 2.2 });
+    toast(tr('👹 {c} besiegt! +{g} 🔥 · +{n} Taler', { c: c.name, g: g + heart, n: coins.toLocaleString(I18N.locale) }) + (n === 1 ? tr(' · neu im Fischdex') : ''));
+    if (heart) setTimeout(() => toast(tr('💗 Seltener Fund: ein Glutherz! +{n} 🔥 extra', { n: heart })), 1600);
+    if (critsTotal() === 25) setTimeout(() => toast(tr('🗿 25 Kreaturen besiegt … tief unten regt sich der Kraterwächter.')), 3200);
+    persist(); updateCoins();
+  }
+  function updateCrit(dt) {
+    const c = crit.c, r = rod();
+    crit.rise = Math.min(1, crit.rise + dt * 1.6); crit.flash = Math.max(0, crit.flash - dt * 3);
+    if (crit.out) { // sinking back (escaped or beaten), then the line is free again
+      crit.out = Math.max(0, crit.out - dt);
+      if (!crit.out) { crit.on = false; state = 'idle'; hooked = null; }
+      return;
+    }
+    if (Date.now() >= crit.ends) return critEnd(tr('⏱ Zu langsam – {c} taucht ab.', { c: c.name }));
+    reel.thrashT -= dt;
+    if (reel.thrashT <= 0) {
+      if (reel.thrash) { reel.thrash = 0; reel.thrashT = (1.5 + Math.random() * 1.6) / c.str; }
+      else { reel.thrash = 1; reel.thrashT = .5 + Math.random() * .6 * c.str; sfx.bite(); splash(crit.x, SURFACE, 8, '#ffffff'); }
+    }
+    const pull = c.str * (reel.thrash ? 1.7 : .4);
+    if (holding) {
+      reel.tension += (.3 + pull * .55) * r.tens * (1 - .06 * perk('schnur')) * (1 - .05 * glutUp('schild')) * dt;
+      const dps = reel.thrash ? 3 : 12 + 8 * r.reel;
+      crit.hp = Math.max(0, crit.hp - dps * dt);
+      if (Math.random() < dt * 14) sfx.tick();
+      crit.hitT += dt;
+      if (crit.hitT > .45) {
+        crit.hitT = 0; crit.flash = Math.max(crit.flash, .4);
+        floaters.push({ x: crit.x - 8 + Math.random() * 16, y: SURFACE - 28 - Math.random() * 8, text: '−' + Math.round(dps * .45), c: reel.thrash ? '#94a3b8' : '#fde047', life: .9 });
+      }
+    } else reel.tension -= (.8 - pull * .15) * dt;
+    reel.tension = Math.max(0, reel.tension);
+    if (reel.thrash && Math.random() < dt * 12) splash(crit.x + (Math.random() - .5) * 20, SURFACE, 3, '#ffffff');
+    if (reel.tension >= 1) { sfx.snap(); return critEnd(tr('Schnur gerissen! {c} taucht ab.', { c: c.name })); }
+    if (crit.hp <= 0) return critWin();
+    $('tension').style.width = Math.min(100, reel.tension * 100) + '%';
+    $('reel').classList.toggle('thrash', !!reel.thrash);
+    updateCritHud();
+  }
+  function updateCritHud() {
+    const left = Math.max(0, Math.ceil((crit.ends - Date.now()) / 1000));
+    const key = ['c', Math.ceil(crit.hp), left, !!reel.thrash].join('|');
+    if (key === bossHudKey) return; bossHudKey = key;
+    $('boss-hp').style.width = Math.max(0, crit.hp / crit.max * 100) + '%';
+    $('boss-hp-num').textContent = `${Math.ceil(crit.hp)} / ${crit.max}`;
+    $('boss-phase').textContent = reel.thrash ? tr('Tobt – loslassen!') : tr('Tiefe {n} · Kurbeln!', { n: crit.c.depth });
+    $('boss-time').textContent = `⏱ 0:${String(left).padStart(2, '0')}`;
+    $('boss-info').textContent = tr('Kreatur-Chance {n} % · {k} besiegt', { n: critChance(), k: critsTotal() });
+  }
+  function drawCrit() {
+    if (!crit.on) return;
+    const img = critImg[crit.c.id];
+    if (!img.complete || !img.naturalWidth) return;
+    const w = img.naturalWidth / 2, h = img.naturalHeight / 2;
+    const sink = crit.out ? 1 - crit.out / (crit.won ? 1.6 : 1.2) : 0;
+    const x = crit.x + Math.sin(t * 1.3) * 4 + (reel.thrash && !crit.out ? Math.sin(t * 40) * 1.2 : 0);
+    const top = SURFACE - h * .8 * crit.rise + (1 - crit.rise) * 6 + Math.sin(t * 2) * 1 + sink * h + (crit.won && sink < .3 ? -Math.sin(sink / .3 * Math.PI) * 8 : 0);
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, SURFACE + 1); ctx.clip();
+    ctx.globalAlpha = .18 + .08 * Math.sin(t * 5); disc(x, SURFACE - 2, w * .45, '#f97316'); ctx.globalAlpha = 1;
+    const tilt = reel.thrash && !crit.out ? Math.sin(t * 30) * .07 : 0;
+    ctx.translate(x, top + h / 2); ctx.rotate(tilt); ctx.translate(-x, -(top + h / 2));
+    ctx.drawImage(img, snap(x - w / 2), snap(top), w, h);
+    if (crit.flash > 0) { ctx.globalAlpha = Math.min(.6, crit.flash); ctx.globalCompositeOperation = 'lighter'; ctx.drawImage(img, snap(x - w / 2), snap(top), w, h); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; }
+    ctx.restore();
+    ctx.globalAlpha = .85;
+    for (let i = 0; i < 6; i++) px(x - w * .4 + i * w * .16 + Math.sin(t * 4 + i), SURFACE - .5, 3, .5, i % 2 ? '#fde047' : '#fb923c');
+    ctx.globalAlpha = 1;
+    bob.x = x - w * .25; crit.ly = Math.min(SURFACE, top + h * .45);
   }
 
   // ------------------------------------------------------------------ mutations
@@ -1379,6 +1531,9 @@
         break;
       case 'boss':
         updateBoss(dt);
+        break;
+      case 'crit':
+        updateCrit(dt);
         break;
       case 'reel':
         if (!approacher) approacher = fishes.reduce((a, b) => Math.abs(b.x - bob.x) < Math.abs(a.x - bob.x) ? b : a);
@@ -2234,6 +2389,7 @@
 
     drawBealin(dark);
     drawBoss(dark);
+    drawCrit();
     if (onSea()) drawBoat(dark);
     else if (cave) { drawLedge(dark); if (Math.random() < .25) particles.push({ x: Math.random() * W, y: SURFACE + Math.random() * 30, vx: (Math.random() - .5) * 6, vy: -12 - Math.random() * 14, life: .9, c: Math.random() < .5 ? '#fb923c' : '#fde047' }); }
     else { drawDock(dark); drawNpc(); drawKiosk(dark); }
@@ -2611,10 +2767,10 @@
   }
 
   function drawLine() {
-    if (!['fly', 'wait', 'bite', 'reel', 'boss', 'summon'].includes(state) || (state === 'boss' && boss.stun > 0)) return;
+    if (!['fly', 'wait', 'bite', 'reel', 'boss', 'summon', 'crit'].includes(state) || (state === 'boss' && boss.stun > 0) || (state === 'crit' && crit.out)) return;
     const tip = rodTip();
-    const by = state === 'fly' ? bob.y : state === 'boss' ? SURFACE - 8 : SURFACE + bob.dunk * .4;
-    const tight = state === 'reel' || state === 'boss' ? reel.tension : 0;
+    const by = state === 'fly' ? bob.y : state === 'boss' ? SURFACE - 8 : state === 'crit' ? crit.ly : SURFACE + bob.dunk * .4;
+    const tight = state === 'reel' || state === 'boss' || state === 'crit' ? reel.tension : 0;
     const sag = state === 'fly' ? 0 : (1 - tight) * 18;
     ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = .5;
     ctx.beginPath(); ctx.moveTo(tip.x, tip.y);
@@ -2623,7 +2779,7 @@
     // bobber: red cap, white belly, antenna, outline
     const bx = snap(bob.x) - 2, byy = snap(by) - 3;
     const cap = bobColor(save.cosm.bob);
-    if (state === 'boss') return;
+    if (state === 'boss' || state === 'crit') return;
     if (state === 'reel' || state === 'bite') { px(bx + .5, byy + 1.5, 3, 2, '#1b1f2e'); px(bx + 1, byy + 2, 2, 1.5, cap); return; }
     px(bx - .5, byy - .5, 5, 5, '#1b1f2e');
     px(bx, byy, 4, 2, cap); px(bx, byy, 1, 1, 'rgba(255,255,255,.45)');
@@ -2750,7 +2906,7 @@
   $('patch-more').addEventListener('click', () => { const y = $('patch-list').parentElement.scrollTop; renderPatch(patchShown + 5); $('patch-list').parentElement.scrollTop = y; });
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
-    if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'boss', 'summon'].includes(state)) return;
+    if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'boss', 'summon', 'crit'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
     if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings })[id](); $(id).hidden = false; }
@@ -3093,7 +3249,7 @@
     $('dex-count').textContent = tr('{i} {n}: {a} von {b} entdeckt', { i: area.icon, n: area.name, a: gotA, b: inArea.length })
       + tr(' · Gesamt {a} von {b} · {c} von {d} Mutationen · {e} Fänge insgesamt', { a: got, b: FISH.length, c: mutsFound().length, d: MUTATIONS.length, e: save.total })
       + tr(' · Meisterschaft: {g} 🥇 (+{p} % Taler)', { g: masteryCount(3), p: goldBonus() }) + (save.gamble !== undefined ? tr(' · Glücksspiel {n} Taler', { n: (g >= 0 ? '+' : '') + g }) : '');
-    renderDexRewards();
+    renderDexRewards(); renderCrits();
     const list = dexFilter(inArea, f => save.dex[f.id]);
     if (!list.length) return $('dex-grid').replaceChildren(dexEmpty());
     $('dex-grid').replaceChildren(...list.map(f => {
@@ -3204,7 +3360,29 @@
     }));
   }
 
+  // the lava creatures you have beaten, below the cave fish in the Glutgrotte tab
+  function renderCrits() {
+    const box = $('dex-crits'); box.hidden = dexTab !== 'lava';
+    if (box.hidden) return;
+    const h = document.createElement('h3');
+    h.textContent = tr('👹 Lava-Kreaturen · {a} von {b} besiegt · Kreatur-Chance {n} %', { a: CREATURES.filter(c => save.crit[c.id]).length, b: CREATURES.length, n: inLava() ? critChance() : Math.min(CRIT_MAX, CRIT_BASE + glutUp('lockruf')) });
+    const grid = document.createElement('div'); grid.className = 'grid';
+    grid.append(...CREATURES.map(c => {
+      const n = save.crit[c.id] | 0, d = document.createElement('div');
+      d.className = 'card ' + (n ? 'b-epic' : 'unknown');
+      const img = document.createElement('img'); img.className = 'pixel'; img.src = c.img; img.alt = n ? c.name : tr('Unbekannt'); img.loading = 'lazy';
+      if (!n) img.style.filter = 'brightness(0)';
+      const b = document.createElement('b'); b.textContent = n ? c.name : '???';
+      const r = document.createElement('small'); r.textContent = tr('Tiefe {n} · {h} HP', { n: c.depth, h: c.hp });
+      const i = document.createElement('small'); i.textContent = n ? tr('{n}× besiegt', { n }) : c.depth > caveDepth() ? tr('Glutgrotte, ab Tiefe {n}', { n: c.depth }) : tr('Noch nicht besiegt');
+      d.append(img, b, r, i);
+      if (n) { const q = document.createElement('q'); q.textContent = c.say; d.append(q); d.title = c.desc; }
+      return d;
+    }));
+    box.replaceChildren(h, grid);
+  }
   function hintFor(f) {
+    if (f.depth && f.depth > caveDepth()) return tr('Glutgrotte, ab Tiefe {n}', { n: f.depth });
     if (f.hint) return f.hint;
     if (f.boss) return tr('Besiege ihn nachts auf Hoher See (Odköder)');
     if (f.map === 'see' && f.weather) return tr('Hohe See, nur bei Gewitter');
@@ -3278,6 +3456,8 @@
     { k: '#0b0f19', A: '#0e7490', a: '#22d3ee', W: '#ecfeff' }];
   BAIT_ART.glutkoeder = [['......kk........', '.....kOOk.......', '....kOyyOk......', '...kOyWWyOk.....', '...kRyWWyRk.....', '....kRyyRk......', '.....kRRk.......', '......kk........', '......k.........', '......k..k......', '.......kk.......'],
     { k: '#1b1f2e', O: '#f97316', y: '#facc15', W: '#fef9c3', R: '#b91c1c' }];
+  BAIT_ART.lockkoeder = [['......kk........', '.....kGGk.......', '....kGggGk......', '...kGgRRgGk.....', '...kGgRRgGk.....', '....kGggGk......', '.....kGGk.......', '......kk........', '......k.........', '......k..k......', '.......kk.......'],
+    { k: '#1b1f2e', G: '#57534e', g: '#a8a29e', R: '#ef4444' }];
   BAIT_ART.odkoeder = [['................', '....kkkkkk......', '..kkWWWWwwkk....', '.kWWkkWWwwwwk...', 'kWWkRkWwwwwwkk.k', 'kWWWkkWwwwwwwkkk', '.kWWWWwwwwwwkk.k', '..kkwwwwwwkk....', '....kkkkkk......', '......k.........', '......k..k......', '.......kk.......'],
     { k: '#0b0f19', W: '#f8fafc', w: '#94a3b8', R: '#ef4444' }];
   for (const b of BAITS) ICONS[b.id] = iconCanvas(p => {
@@ -3537,7 +3717,7 @@
       const owned = save.rods.includes(r0.id), active = save.lavaRod === r0.id, lock = !owned && lockText(r0), r = owned ? forged(r0) : r0;
       const w = ware({
         id: r.id, name: '🌋 ' + r.name, desc: r.desc,
-        stats: [statBar(tr('Wurf'), r.cast, 1), statBar(tr('Kurbel'), r.reel, 4.2), statBar(tr('Glück'), r.luck, 3.6), statBar(tr('Ruhe'), 1.1 - r.tens, .8)],
+        stats: [statBar(tr('Wurf'), r.cast, 1), statBar(tr('Kurbel'), r.reel, 4.2), statBar(tr('Glück'), r.luck, 3.6), statBar(tr('Ruhe'), 1.1 - r.tens, .8), statBar(tr('Kreaturen'), r.kc || 0, 10)],
         state: active ? 'active' : lock ? 'locked' : owned ? 'owned' : '',
         // the first lava rod (no glut price) is paid in Taler, so you can get started without Glutsteine
         btnText: active ? tr('In der Hand') : owned ? tr('Nehmen') : lock || (r0.glut ? `${r0.glut} 🔥` : tr('{n} Taler', { n: r0.price })),
@@ -3559,7 +3739,7 @@
       const n = save.baits[b.id] || 0, active = save.bait === b.id, lock = lockText(b);
       return ware({
         id: b.id, name: b.name, desc: b.desc,
-        stats: [statBar(tr('Glück'), b.luck, 4.2), statBar(tr('Tempo'), b.speed, 2)],
+        stats: [statBar(tr('Glück'), b.luck, 4.2), statBar(tr('Tempo'), b.speed, 2), statBar(tr('Kreaturen'), b.kc || 0, 10)],
         state: active ? 'active' : lock ? 'locked' : '',
         owned: n ? tr('{n} im Beutel', { n }) : '',
         btnText: lock || tr('+{a} für {b} 🔥', { a: b.pack, b: b.glut }),
@@ -4402,7 +4582,7 @@
     return j;
   }
   function lobbyMe() {
-    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'boss'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: Math.min(99, save.rebirthsTotal | 0), pr: save.prestige };
+    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'boss', 'crit'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: Math.min(99, save.rebirthsTotal | 0), pr: save.prestige };
   }
   async function lobbySync() {
     if (!save.lobby || LOBBY.busy || document.hidden) return;
@@ -4673,7 +4853,7 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  if (DEBUG) window.__fischen = { save, gainXp, rebirth, prestige, dig: () => digDeeper(), buyGlutUp: id => buyGlutUp(id), claimGlimm: i => claimGlimm(i), caveMult: () => caveMult(), glimm: () => talkGlimm(), MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
+  if (DEBUG) window.__fischen = { save, crit: () => startCrit(), get critState() { return { ...crit, c: crit.c && crit.c.id }; }, critChance: () => critChance(), gainXp, rebirth, prestige, dig: () => digDeeper(), buyGlutUp: id => buyGlutUp(id), claimGlimm: i => claimGlimm(i), caveMult: () => caveMult(), glimm: () => talkGlimm(), MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); },
     rhythm: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; reel.maxT = 0; startRhythm(); },
     get notes() { return rhythm.notes; },

@@ -49,6 +49,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   | `show` | Fangkarte |
   | `summon` | Boss erscheint |
   | `boss` | Bossfight |
+| `crit` | Kampf gegen eine Lava-Kreatur |
 
   `update(dt)` schaltet diese Zustände um, `draw()` zeichnet sie. Modals sperren je nach Zustand (`toggleModal`).
 - **Welt und Zeichnen:**
@@ -58,7 +59,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
     - `bake()` erzeugt Sprites aus Zeichen-Rastern;
     - `iconCanvas()` erzeugt 16×16-Icons für den Laden (`ICONS[id]`).
   - Requisiten am Steg, auf See und in der Glutgrotte stehen in `PROPS` (Feld `map`: `steg`, `see`, `lava` oder `all`; Filter `propOn`).
-  - Maps: `steg`, `see` (ab 3× Wiedergeburt, `seaOpen()`) und `lava` (Glutgrotte ab 1× Prestige, `lavaOpen()`, `inLava()`). In der Grotte gibt es kein Wetter (`CAVE_WX`), und nur Ruten mit `lava: true` funktionieren dort (`save.lavaRod`). Fortschritt dort: Glutsteine (`save.glut`) und Tiefen (`CAVE_DEPTHS`, `caveDepth()`; beide fallen bei Wiedergeburt und Prestige zurück, Feld `depth` an Fischen und Ruten), Glimms Werkstatt (`GLUT_UPS`, `glutUp()`) und Glimms Aufträge (`save.glimmQ`); der Taler-Bonus läuft über `caveMult()`. Der Lava-Laden (`lavaWares()`, Shop-Modus `lava`) gibt es nur in der Grotte (Stand `lavashop`, dort öffnet auch L den Lava-Laden, ohne Tabs). Er verkauft alles mit Feld `glut` nur gegen Glutsteine, Ruten ohne `glut` (Basaltrute) gegen Taler; Glutsteine werden nie in Taler getauscht.
+  - Maps: `steg`, `see` (ab 3× Wiedergeburt, `seaOpen()`) und `lava` (Glutgrotte ab 1× Prestige, `lavaOpen()`, `inLava()`). In der Grotte gibt es kein Wetter (`CAVE_WX`), und nur Ruten mit `lava: true` funktionieren dort (`save.lavaRod`). Fortschritt dort: Glutsteine (`save.glut`) und Tiefen (`CAVE_DEPTHS`, `caveDepth()`; beide fallen bei Wiedergeburt und Prestige zurück, Feld `depth` an Fischen und Ruten), Glimms Werkstatt (`GLUT_UPS`, `glutUp()`) und Glimms Aufträge (`save.glimmQ`); der Taler-Bonus läuft über `caveMult()`. Der Lava-Laden (`lavaWares()`, Shop-Modus `lava`) gibt es nur in der Grotte (Stand `lavashop`, dort öffnet auch L den Lava-Laden, ohne Tabs). Er verkauft alles mit Feld `glut` nur gegen Glutsteine, Ruten ohne `glut` (Basaltrute) gegen Taler; Glutsteine werden nie in Taler getauscht. Lava-Kreaturen (`CREATURES`, `save.crit`): Beim Anbiss in der Grotte würfelt `hook()` mit `critChance()` (Feld `kc` an Lavaruten und Lava-Ködern, Werkstatt `lockruf`) und startet dann statt eines Fisches einen Kampf im Zustand `crit` (`startCrit`/`updateCrit`/`critWin`; nutzt `#boss-hud` mit Klasse `crit`).
 - **Fang-Ablauf:**
   - `pickFish()` wählt nach Gewichten, Glück, Wurfweite, Nacht, Wetter und Map.
   - `hook()` würfelt die Größe (`rollSize`/`sizeIn`).
@@ -80,7 +81,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   - `save` direkt ändern;
   - fangen: `landCls(id, klasse)`, `pick()`;
   - Welt: `setTime(0–1)`, `setWeather(id)`, `travel('see')`;
-  - Boss: `bossSolo()`, `bossHit(n)`;
+  - Boss: `bossSolo()`, `bossHit(n)`; Lava-Kreatur: `crit()`, `critState`, `critChance()`;
   - erzwingen: `forceShiny`, `forceMut`, `forceSlot = ['odfisch', 'odfisch', 'odfisch']`.
 
 ## Server (`api/`)
@@ -103,7 +104,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
 
 - **Neuer Fisch:**
   1. Sprite nach `img/` (eigene Pixelgrafik oder ein Bild des Nutzers).
-  2. `FISH`-Eintrag (`id`, `name`, `img`, `r`, `min`/`max`, `val`, `say`, `desc`, `page`, optional `pixel`/`photo`/`map`/`weather`/`night`/`far`/`needs`).
+  2. `FISH`-Eintrag (`id`, `name`, `img`, `r`, `min`/`max`, `val`, `say`, `desc`, `page`, optional `pixel`/`photo`/`map`/`weather`/`night`/`far`/`needs`, Fangbedingungen `bait`/`hours`/`crits`/`minRod`).
   3. `seiten/<name>.html` anlegen.
   4. EN-Texte für `name`, `say` und `desc`.
   5. Falls sinnvoll: Dex-Hinweis, Patch Notes, README.

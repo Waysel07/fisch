@@ -2,6 +2,13 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-11`
+
+- 👹 New in the Ember Cave: lava creatures! Sometimes a creature bites instead of a fish – Ember Snail, Ash Crab, Slag Worm, Flame Jelly, Basalt Golem and the rare Ember Kraken, depending on the depth. Holding deals damage, let go while it rages, and beat it before the time runs out. Loot: ember stones, coins, XP and sometimes an ember heart.
+- 🎯 New stat creature chance (base 5 %, at most 30 %): lava rods from the Obsidian rod on, the Ember bait, the new Lure bait (lava shop, from depth 2) and Glimm’s new workshop upgrade Lure Call raise it.
+- 🐟 Three new lava fish with catch conditions: the Soot Eel only bites on Ember bait, the Midnight Spark only between 0:00 and 3:00, and the Crater Warden only shows up after 25 defeated creatures, on a Dragon bone rod or better.
+- 📖 In the Ember Cave the Fishdex now also shows the lava creatures you have beaten.
+
 ## 04.11.2026 · `2026-11-04-10`
 
 - 📖 The Fishdex now has one page per area: Dock, High Seas and Ember Cave, each with its own counter on the tab. It opens where you are fishing right now. Fish that also bite on the high seas appear on both pages.
