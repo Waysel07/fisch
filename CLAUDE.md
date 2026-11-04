@@ -142,7 +142,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
 
 ## Inhalte und Recht
 
-- Keine Nachbauten fremder Marken, Logos, Spielfiguren oder Spiele. Markennahe Ideen werden als eigene Sprites ohne Logo umgesetzt (z. B. der eingeschweißte „Kaufland-Fisch“ und die Dose „Monster-Energy-Fisch“).
+- Werke anderer sind erlaubt: Marken, Logos, Spielfiguren, Spiele, Bilder und Namen dürfen auf der Seite und im Spiel vorkommen.
 - Bilder, GIFs und Namen, die der Nutzer selbst liefert, sind seine Entscheidung.
 
 ## Testen
