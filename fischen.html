@@ -25,6 +25,7 @@
         <span class="pill" id="glut-pill" hidden>🔥 <b id="glut">0</b></span>
         <button class="pill lvl" id="lvl" title="Level">⭐ <b id="lvl-num">1</b><span class="xpbar"><i id="lvl-bar"></i></span><span id="lvl-reb"></span></button>
         <span class="pill" id="clock" title="Tageszeit">☀️ Tag</span>
+        <span class="pill" id="playtime" title="Spielzeit">⏱</span>
         <button class="pill" id="weather" title="Wetter">☀️ <span class="lbl" id="weather-name">Sonnig</span></button>
         <button class="pill" id="buffs" title="Aktive Snacks" hidden></button>
         <span class="pill saved" id="saved" title="Spielstand wird in deinem Browser gespeichert">💾 <span class="lbl">Gespeichert</span></span>
@@ -175,6 +176,20 @@
       </div>
     </div>
 
+    <!-- Magische Miesmuschel (after the first catch, on the rock next to the dock) -->
+    <div class="modal" id="muschel" hidden>
+      <div class="sheet muschel-sheet" role="dialog" aria-modal="true" aria-labelledby="muschel-title">
+        <h2 id="muschel-title">🐚 Magische Miesmuschel</h2>
+        <img id="muschel-img" src="img/miesmuschel.png" alt="Rosa Pixel-Muschel mit Zugschnur" title="An der Schnur ziehen">
+        <p class="muschel-answer" id="muschel-answer" aria-live="polite"></p>
+        <form class="muschel-form" id="muschel-form">
+          <input type="text" id="muschel-q" maxlength="120" autocomplete="off" placeholder="Deine Frage …" aria-label="Deine Frage an die Muschel">
+          <button class="btn" type="submit">🪢 An der Schnur ziehen</button>
+        </form>
+        <div class="catch-actions"><button class="btn ghost" data-close>Zurück</button></div>
+      </div>
+    </div>
+
     <!-- Settings -->
     <div class="modal" id="settings" hidden>
       <div class="sheet patch-sheet settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
@@ -186,6 +201,7 @@
         <label class="set-row"><input type="checkbox" id="set-short"> <span><b>Kurze Zahlen</b><small>Taler oben als 1,2 Mio. statt 1234567</small></span></label>
         <label class="set-row"><input type="checkbox" id="set-autoclose"> <span><b>Fangkarte schließt selbst</b><small>Nach 2,5 Sekunden – nicht bei neuen Fischen, Legendären und Shinys. Antippen hält sie offen.</small></span></label>
         <label class="set-row"><input type="checkbox" id="set-autobait"> <span><b>Köder nachkaufen</b><small>Ist der Köder leer, kauft das Spiel eine neue Packung (Taler oder Glutsteine).</small></span></label>
+        <label class="set-row"><input type="checkbox" id="set-play"> <span><b>Spielzeit anzeigen</b><small>Zeigt oben in der Leiste, wie lange du schon spielst.</small></span></label>
         <div class="set-row set-code"><span><b>Code einlösen</b><span class="code-line"><input type="text" id="set-code" maxlength="32" autocomplete="off" spellcheck="false" placeholder="XXXX-XXXX-XXXX" aria-label="Code"><button class="btn" id="set-code-btn">Einlösen</button></span><small id="set-code-msg" aria-live="polite"></small></span></div>
         <p class="sub warn" id="set-tamper" hidden>⚠️ Dieser Spielstand wurde von Hand verändert und kann nicht in die Bestenliste.</p>
         <div class="catch-actions"><button class="btn" data-close>Fertig</button></div>

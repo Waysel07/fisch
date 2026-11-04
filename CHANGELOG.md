@@ -2,6 +2,18 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-14`
+
+- 🐚 New at the dock: the Magic Conch (epic, also on the high seas). When you catch it, it tells you an answer right away. After that it sits on a rock next to the dock: click it, ask a question and pull the string. With sound on it answers in a deep voice.
+
+## 04.11.2026 · `2026-11-04-13`
+
+- 🛥️ New boat skin for the high seas: “David Hasselhoff” (30,000 coins in the shop under cosmetics, from 3 rebirths). Instead of Bealin’s boat, a giant pixel Hoff with curly hair and red swim trunks swims on his belly through the sea, and you fish from his back. The wardrobe has a new “Boat” slot for it.
+
+## 04.11.2026 · `2026-11-04-12`
+
+- ⏱ New: your play time. The top bar shows how long you have been fishing (tap or hover to see the current session too), and Progress lists it with your stats. It only counts while the game is open and visible. You can hide it from the top bar in the settings.
+
 ## 04.11.2026 · `2026-11-04-11`
 
 - 👹 New in the Ember Cave: lava creatures! Sometimes a creature bites instead of a fish – Ember Snail, Ash Crab, Slag Worm, Flame Jelly, Basalt Golem and the rare Ember Kraken, depending on the depth. Holding deals damage, let go while it rages, and beat it before the time runs out. Loot: ember stones, coins, XP and sometimes an ember heart.

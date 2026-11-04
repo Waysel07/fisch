@@ -51,6 +51,7 @@
     { id: 'lippe',   name: 'Lippenfisch',       img: 'img/lippenfisch-spin.gif', r: 'epic',      min: 30, max: 60,  val: 120, photo: true, say: 'Also … wo fange ich an?', desc: 'Er möchte reden. Er hat viel zu sagen.', night: 2.5 },
     { id: 'travis',  name: 'Travis',            img: 'img/twawis.jpg',           r: 'epic',      min: 35, max: 65,  val: 140, photo: true, say: 'Jetzt bin ich da.', desc: 'Jetzt kommt Travis.', far: .4, sound: 'sounds/jetzt-kommt-travis.mp3' },
     { id: 'blob',    name: 'Blobfisch',         img: 'img/blobfisch.gif',        r: 'epic',      min: 25, max: 40,  val: 130, photo: true, page: 'seiten/blobfisch.html', say: 'Hier oben ist mir der Druck zu wenig.', desc: 'Lebt eigentlich tief unten. Nur weit draußen und am liebsten nachts.', far: .5, night: 2, sea: true },
+    { id: 'muschel', name: 'Magische Miesmuschel', img: 'img/miesmuschel.png', r: 'epic', min: 12, max: 20, val: 150, pixel: true, page: 'seiten/miesmuschel.html', sea: true, say: 'Frag mich etwas.', desc: 'Liegt still im Sand und weiß alles. Zieh an der Schnur, dann antwortet sie. Meistens mit Nein.', hint: 'Wer sie fängt, kann ihr am Steg Fragen stellen' },
     { id: 'spee',    name: 'Spee Zierfisch',    img: 'img/spee-zierfisch.png',   r: 'epic',      min: 6,  max: 9,   val: 110, clip: [12.63, 13.9], say: 'Riech mal. Frühlingsfrisch!', desc: 'Ein Zierfisch, frisch gewaschen. Duftet nach Spee.', night: 1.5 },
     { id: 'spees',   name: 'Spezifische Spee Zierfische', img: 'img/spee-zierfische.png', r: 'epic', min: 12, max: 18, val: 160, clip: [13.9, 16.43], say: 'Wir bleiben zusammen!', desc: 'Zwei auf einmal. Spezifischer geht es kaum.', far: .5 },
     { id: 'fischer', name: 'Spezifischfischer', img: 'img/spezifischfischer-cut.png', r: 'legendary', min: 175, max: 190, val: 400, clip: [16.43, null], say: 'Moment … ich bin doch der Fischer!', desc: 'Der spezifische Spezifischfischer fischt spezifische Spezifische. Jetzt hast du ihn gefischt.', far: .45, hint: 'Steht am Steg. Fischt man ihn auch?' },
@@ -154,6 +155,15 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-14', date: '04.11.2026', items: [
+      '🐚 Neu am Steg: die Magische Miesmuschel (episch, auch auf Hoher See). Beim Fang verrät sie dir gleich eine Antwort. Danach liegt sie auf einem Stein neben dem Steg: Klick sie an, stell eine Frage und zieh an der Schnur. Mit Ton an antwortet sie mit tiefer Stimme.',
+    ] },
+    { id: '2026-11-04-13', date: '04.11.2026', items: [
+      '🛥️ Neuer Boot-Skin für die Hohe See: „David Hasselhoff“ (30 000 Taler im Laden unter Kosmetik, ab 3× Wiedergeburt). Statt Bealins Boot schwimmt dann ein riesiger Pixel-Hoff mit Locken und roter Badehose auf dem Bauch durchs Meer, und du angelst von seinem Rücken aus. Im Kleiderschrank gibt es dafür den neuen Platz „Boot“.',
+    ] },
+    { id: '2026-11-04-12', date: '04.11.2026', items: [
+      '⏱ Neu: deine Spielzeit. Oben in der Leiste steht, wie lange du schon fischst (Tippen oder Hovern zeigt auch die aktuelle Sitzung), und im Fortschritt steht sie bei deinen Werten. Gezählt wird nur, solange das Spiel offen und sichtbar ist. In den Einstellungen kannst du die Anzeige oben ausblenden.',
+    ] },
     { id: '2026-11-04-11', date: '04.11.2026', items: [
       '👹 Neu in der Glutgrotte: Lava-Kreaturen! Manchmal beißt statt eines Fisches eine Kreatur an – Glutschnecke, Aschekrabbe, Schlackwurm, Flammenqualle, Basaltgolem und der seltene Glutkraken, je nach Tiefe. Halten macht Schaden, loslassen, wenn sie tobt, und schlag sie, bevor die Zeit abläuft. Beute: Glutsteine, Taler, EP und manchmal ein Glutherz.',
       '🎯 Neuer Wert Kreatur-Chance (Grundwert 5 %, höchstens 30 %): Lavaruten ab der Obsidianrute, der Glutköder, der neue Lockköder (Lava-Laden, ab Tiefe 2) und Glimms neues Werkstatt-Upgrade Lockruf erhöhen sie.',
@@ -541,6 +551,15 @@
   ];
   trAll(GLUT_UPS, ['name']);
   save.glut = save.glut | 0;
+  // Spielzeit: seconds the game was open and visible (the frame loop pauses in hidden tabs), never reset
+  save.playTime = Math.max(0, +save.playTime || 0);
+  let sessionTime = 0;
+  function fmtPlay(sec) {
+    const m = Math.floor(sec / 60), h = Math.floor(m / 60);
+    if (h < 1) return tr('{m} Min', { m });
+    if (h < 100) return tr('{h} Std {m} Min', { h, m: m % 60 });
+    return tr('{h} Std', { h: h.toLocaleString(I18N.locale) });
+  }
   if (!save.glutUps || typeof save.glutUps !== 'object') save.glutUps = {};
   function glutUp(id) { return (save.glutUps[id] | 0); }
   const glutUpCost = l => (l + 1) * 20;
@@ -1675,6 +1694,8 @@
     { id: 'hut-diamant', slot: 'hat',    name: 'Diamanthut',         price: 40000, col: ['#a5f3fc', '#0891b2', '#ecfeff'], sparkle: true, desc: 'Funkelt. Ständig. Auch nachts.' },
     { id: 'hut-sonne',   slot: 'hat',    name: 'Sonnenkrone',        price: 500000, pres: 1, col: ['#fbbf24', '#c2410c', '#fff7ed'], sparkle: true, desc: 'Strahlt heller als die Sonne über dem Steg. Ab 1× Prestige.' },
     { id: 'jacke-galaxie', slot: 'jacket', name: 'Galaxiemantel',    price: 1000000, pres: 2, col: ['#312e81', '#0f0a2e', '#f0abfc'], desc: 'Voller Sterne. Ab 2× Prestige.' },
+    // boat skins: replace Bealin's boat on the open sea (drawBoat)
+    { id: 'boot-hoff',   slot: 'boat',   name: 'David Hasselhoff',   price: 30000, reb: 3, desc: 'Der Mann, die Locken, das Boot. Schwimmt auf dem Bauch durchs Meer und trägt dich auf dem Rücken über die Hohe See.' },
     { id: 'hut-krone',   slot: 'hat',    name: 'Kronen-Hut',         price: 100000, col: ['#fde047', '#a16207', '#ffffff'], sparkle: true, desc: 'Für Angler, die wirklich alles haben.' },
     // unlocked by achievements
     { id: 'hut-gold',    slot: 'hat',    name: 'Goldener Hut',       col: ['#facc15', '#b45309', '#fef08a'], desc: 'Für alle, die einen legendären Fisch gelandet haben.', ach: 'Fange einen legendären Fisch.', got: () => FISH.some(f => f.r === 'legendary' && save.dex[f.id]) },
@@ -1706,7 +1727,7 @@
   ];
   trAll(COSMETICS, ['name', 'desc', 'ach']);
   const COSM = Object.fromEntries(COSMETICS.map(c => [c.id, c]));
-  const SLOT_NAMES = { hat: tr('Hut'), jacket: tr('Jacke'), bob: tr('Pose') };
+  const SLOT_NAMES = { hat: tr('Hut'), jacket: tr('Jacke'), bob: tr('Pose'), boat: tr('Boot') };
   if (!save.cosm || typeof save.cosm !== 'object') save.cosm = { owned: [] };
   if (!Array.isArray(save.cosm.owned)) save.cosm.owned = [];
   if (!save.cosm.st || typeof save.cosm.st !== 'object') save.cosm.st = {};
@@ -2096,7 +2117,33 @@
   }
 
   // ------------------------------------------------------------------ the open sea: Bealin's boat
+  // boat skin „David Hasselhoff“: a giant pixel man swimming on his belly, you stand on his back
+  const hoffImg = new Image(); hoffImg.src = 'img/boot-hoff.png';
+  let hoffNight = null, hoffWet = null;
+  function drawHoffBoat(dark) {
+    if (!hoffImg.complete || !hoffImg.naturalWidth) return false;
+    const w = hoffImg.naturalWidth / 2, h = hoffImg.naturalHeight / 2;
+    if (!hoffNight) { // a darker copy for the night, blended in with the darkness
+      hoffNight = document.createElement('canvas'); hoffNight.width = hoffImg.naturalWidth; hoffNight.height = hoffImg.naturalHeight;
+      const x = hoffNight.getContext('2d'); x.drawImage(hoffImg, 0, 0);
+      x.globalCompositeOperation = 'source-atop'; x.fillStyle = 'rgba(10, 16, 40, .65)'; x.fillRect(0, 0, hoffNight.width, hoffNight.height);
+      hoffWet = document.createElement('canvas'); hoffWet.width = hoffNight.width; hoffWet.height = hoffNight.height;
+      const y = hoffWet.getContext('2d'); y.drawImage(hoffImg, 0, 0);
+      y.globalCompositeOperation = 'source-atop'; y.fillStyle = '#1e3a5f'; y.fillRect(0, 0, hoffWet.width, hoffWet.height);
+    }
+    ctx.drawImage(hoffImg, -2, 62, w, h);
+    if (dark > .02) { ctx.globalAlpha = Math.min(1, dark); ctx.drawImage(hoffNight, -2, 62, w, h); ctx.globalAlpha = 1; }
+    // the part under the waterline looks wet, with foam along the body
+    ctx.save(); ctx.beginPath(); ctx.rect(-2, SURFACE + .5, w, h); ctx.clip();
+    ctx.globalAlpha = .45; ctx.drawImage(hoffWet, -2, 62, w, h); ctx.restore(); ctx.globalAlpha = .7;
+    for (let i = 0; i < 18; i++) px(2 + i * 8 + Math.sin(t * 3 + i) * 1.5, SURFACE - .5 + (i % 2) * .5, 2.5, .5, '#f8fafc');
+    ctx.globalAlpha = 1;
+    // his feet kick up a little spray now and then
+    if (Math.random() < .08) particles.push({ x: 2 + Math.random() * 10, y: SURFACE - 1, vx: (Math.random() - .5) * 20, vy: -20 - Math.random() * 25, life: .6, c: '#f8fafc' });
+    return true;
+  }
   function drawBoat(dark) {
+    if (save.cosm.boat === 'boot-hoff' && drawHoffBoat(dark)) return;
     const k = '#1b1f2e', bowX = DOCK_END + 14, bottom = SURFACE + 7;
     const hull = mix([38, 72, 124], [16, 26, 46], dark), hullL = mix([84, 124, 176], [28, 42, 66], dark), hullD = mix([24, 46, 84], [10, 16, 30], dark);
     const red = mix([190, 40, 40], [72, 22, 28], dark), white = mix([226, 232, 240], [84, 92, 112], dark);
@@ -2592,10 +2639,11 @@
     { id: 'lavashop', map: 'lava', label: tr('🌋 Glutflosses Lava-Laden'), x: KIOSK.x - 3, y: DOCK_Y - 30, w: KIOSK.w + 6, h: 30, draw: drawLavaStall, open: () => toggleModal('shop') },
     { id: 'ladder', map: 'lava', label: tr('🪜 Zurück zum Steg'), x: 4, y: DOCK_Y - 28, w: 12, h: 28, draw: drawLadder, open: () => travel('steg') },
     { id: 'wheel',  map: 'see', label: tr('⚓ Zurück zum Steg'), x: 5, y: DOCK_Y - 22, w: 15, h: 22, draw: drawWheel, open: () => travel('steg') },
+    { id: 'muschel', label: tr('🐚 Magische Miesmuschel'), x: 121, y: SURFACE - 13, w: 13, h: 14, draw: drawMuschelRock, open: () => toggleModal('muschel'), show: () => !!(save.dex.muschel && save.dex.muschel.n) },
     { id: 'npc',    label: 'Spezifischfischer', x: NPC.x - 1, y: DOCK_Y - NPC.h - 2, w: NPC.w + 2, h: NPC.h + 2, open: () => talkNpc() },
   ];
   let hoverProp = null;
-  const propOn = p => (p.map || 'steg') === 'all' || (p.map || 'steg') === save.map;
+  const propOn = p => ((p.map || 'steg') === 'all' || (p.map || 'steg') === save.map) && (!p.show || p.show());
   function propAt(wx, wy) { return PROPS.find(p => propOn(p) && wx > p.x - 1.5 && wx < p.x + p.w + 1.5 && wy > p.y - 1.5 && wy < p.y + p.h + 1.5) || null; }
   function drawProps(dark) {
     for (const p of PROPS) if (p.draw && propOn(p)) p.draw(dark);
@@ -2614,6 +2662,65 @@
     px(lx - .5, ly - .5, w + 1, 9, '#fde68a'); px(lx, ly, w, 8, '#0f172a');
     ctx.fillStyle = '#fffbeb'; ctx.textBaseline = 'top'; ctx.fillText(p.label, lx + 2, ly + 1); ctx.textBaseline = 'alphabetic';
   }
+
+  // The Magische Miesmuschel on a little rock in the water next to the dock (after the first catch)
+  const muschelImg = new Image(); muschelImg.src = 'img/miesmuschel.png';
+  let muschelNight = null;
+  function drawMuschelRock(dark) {
+    const k = '#1b1f2e', x0 = 120, y = SURFACE;
+    const rock = mix([100, 116, 139], [40, 48, 66], dark), rockL = mix([148, 163, 184], [60, 70, 92], dark), rockD = mix([71, 85, 105], [30, 36, 52], dark);
+    px(x0 + 1, y - 3.5, 13, 4, k); px(x0 + 1.5, y - 3, 12, 3.5, rock); px(x0 + 2, y - 3, 6, .75, rockL); px(x0 + 9, y - 1, 4, 1, rockD);
+    ctx.globalAlpha = .7; px(x0 + .5 + Math.sin(t * 2) * .5, y + .5, 14, .5, '#e0f2fe'); ctx.globalAlpha = 1;
+    if (!muschelImg.complete || !muschelImg.naturalWidth) return;
+    const lift = muschelPull > 0 ? Math.sin(muschelPull * Math.PI) * 1.5 : 0;
+    muschelPull = Math.max(0, muschelPull - .04);
+    ctx.drawImage(muschelImg, x0 + 1.5, y - 13.5 + lift, 12, 10);
+    if (dark > .02) {
+      if (!muschelNight) {
+        muschelNight = document.createElement('canvas'); muschelNight.width = muschelImg.naturalWidth; muschelNight.height = muschelImg.naturalHeight;
+        const c = muschelNight.getContext('2d'); c.drawImage(muschelImg, 0, 0); c.globalCompositeOperation = 'source-atop'; c.fillStyle = 'rgba(10,16,40,.65)'; c.fillRect(0, 0, muschelNight.width, muschelNight.height);
+      }
+      ctx.globalAlpha = Math.min(1, dark); ctx.drawImage(muschelNight, x0 + 1.5, y - 13.5 + lift, 12, 10); ctx.globalAlpha = 1;
+    }
+  }
+  const MUSCHEL_ANSWERS = ['Nein.', 'Nein.', 'Ja.', 'Vielleicht eines Tages.', 'Ich glaube nicht.', 'Frag später noch einmal.', 'Auf keinen Fall.', 'Gar nichts.',
+    'Versuch es noch einmal.', 'Ganz bestimmt.', 'Nur wenn du einen Odfisch fängst.', 'Frag Käpt’n Bealin.', 'Wirf noch einmal aus.'].map(a => tr(a));
+  let muschelLast = -1, muschelPull = 0, muschelTimer = 0;
+  function muschelAnswer() {
+    let i;
+    do { i = Math.floor(Math.random() * MUSCHEL_ANSWERS.length); } while (i === muschelLast);
+    muschelLast = i;
+    return MUSCHEL_ANSWERS[i];
+  }
+  // Deep voice from the browser's speech synthesis; only on-device voices, so nothing leaves the browser
+  function muschelSpeak(text) {
+    const synth = window.speechSynthesis;
+    if (!save.sound || !synth || !window.SpeechSynthesisUtterance) return;
+    const lang = I18N.lang === 'en' ? 'en' : 'de';
+    const voices = synth.getVoices().filter(v => v.localService && v.lang.toLowerCase().startsWith(lang));
+    if (!voices.length) return;
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.voice = voices[0]; u.lang = voices[0].lang; u.pitch = .1; u.rate = .75; u.volume = vol();
+    synth.speak(u);
+  }
+  function renderMuschel() {
+    $('muschel-answer').textContent = tr('Stell eine Frage und zieh an der Schnur.');
+    $('muschel-answer').classList.remove('said');
+    $('muschel-q').value = '';
+  }
+  function pullMuschel() {
+    const q = $('muschel-q').value.trim();
+    const a = q ? muschelAnswer() : tr('Du musst mir schon eine Frage stellen.');
+    clearTimeout(muschelTimer);
+    const img = $('muschel-img'), out = $('muschel-answer');
+    img.classList.remove('pull'); void img.offsetWidth; img.classList.add('pull');
+    out.textContent = '…'; out.classList.remove('said');
+    muschelPull = 1; sfx.plip();
+    muschelTimer = setTimeout(() => { out.textContent = a; out.classList.add('said'); muschelSpeak(a); }, 600);
+  }
+  $('muschel-form').addEventListener('submit', e => { e.preventDefault(); pullMuschel(); });
+  $('muschel-img').addEventListener('click', pullMuschel);
 
   // Glutflosse's stall in the Glutgrotte: basalt counter, glowing roof, a fin peeking out and a LAVA sign
   function drawLavaStall() {
@@ -2825,7 +2932,7 @@
     $('set-vol-val').textContent = Math.round(vol() * 100) + ' %';
     $('set-calm').checked = reduceMotion; $('set-calm').disabled = motionPref; $('set-short').checked = !!save.short;
     $('set-tamper').hidden = !save.tampered;
-    $('set-autoclose').checked = !!save.autoClose; $('set-autobait').checked = !!save.autoBait;
+    $('set-autoclose').checked = !!save.autoClose; $('set-autobait').checked = !!save.autoBait; $('set-play').checked = save.showPlay !== false;
   }
   function updateCoins() {
     $('coins').textContent = save.short ? shortN(save.coins) : save.coins; $('shop-coins').textContent = save.coins; $('casino-coins').textContent = save.coins;
@@ -2858,6 +2965,15 @@
     }));
   }
   let lastClock = '';
+  let lastPlay = '';
+  function updatePlayPill() {
+    const show = save.showPlay !== false, s = show ? '⏱ ' + fmtPlay(save.playTime) : '';
+    $('playtime').hidden = !show;
+    const key = s + '|' + Math.floor(sessionTime / 60);
+    if (key === lastPlay) return; lastPlay = key;
+    $('playtime').textContent = s;
+    $('playtime').title = tr('Spielzeit insgesamt: {a} · diese Sitzung: {b}', { a: fmtPlay(save.playTime), b: fmtPlay(sessionTime) });
+  }
   function updateClock() {
     const h = Math.floor(time * 24), m = Math.floor((time * 24 % 1) * 60 / 10) * 10;
     const s = `${isNight() ? '🌙' : '☀️'} ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
@@ -2882,7 +2998,8 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel']) $(id).hidden = true;
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
   }
   function unreadPatches() { // how many entries are new since the last read (at least the newest 3 when nothing is new)
     const i = PATCH_NOTES.findIndex(p => p.id === save.patchSeen);
@@ -2909,7 +3026,7 @@
     if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'boss', 'summon', 'crit'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings, muschel: renderMuschel })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -2939,6 +3056,7 @@
   $('set-code-btn').addEventListener('click', redeemCode);
   $('set-autoclose').addEventListener('change', () => { save.autoClose = $('set-autoclose').checked; persist(); });
   $('set-autobait').addEventListener('change', () => { save.autoBait = $('set-autobait').checked; persist(); });
+  $('set-play').addEventListener('change', () => { save.showPlay = $('set-play').checked; lastPlay = '-'; updatePlayPill(); persist(); });
   $('set-code').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); redeemCode(); } });
   $('set-short').addEventListener('change', () => { save.short = $('set-short').checked; persist(); updateCoins(); });
   $('start').addEventListener('click', () => {
@@ -3137,7 +3255,9 @@
     if (mut) { mb.textContent = `${mut.icon} ${mut.name} · ` + tr('×{n} Wert', { n: mut.val }) + (newMut ? tr(' · neue Mutation!') : ''); mb.style.setProperty('--mc', mut.c); }
     $('catch-desc').textContent = f.desc;
     $('catch-xp').textContent = gain ? [tr('+{n} EP', { n: gain.xp }), ...gain.tags].join(' · ') : '';
-    $('catch-say').textContent = I18N.lang === 'en' ? `“${f.say}”` : `„${f.say}“`;
+    const say = f.id === 'muschel' ? muschelAnswer() : f.say;
+    $('catch-say').textContent = I18N.lang === 'en' ? `“${say}”` : `„${say}“`;
+    if (f.id === 'muschel') setTimeout(() => muschelSpeak(say), 700);
     const sheet = $('catch').querySelector('.sheet');
     sheet.classList.remove('fx-rare', 'fx-wii', 'fx-epic', 'fx-legendary');
     void sheet.offsetWidth; // restart the CSS animations
@@ -3500,6 +3620,15 @@
       for (let yy = 3; yy <= 13; yy++) for (let x = 3; x <= 12; x++) p(x, yy, x === 3 || x === 12 || yy === 13 ? k : x === 7 ? y : x > 9 ? C : cc);
       for (let x = 5; x <= 10; x++) p(x, 2, k); p(6, 3, '#f2c9a0'); p(7, 3, '#f2c9a0'); p(8, 3, '#f2c9a0'); p(9, 3, '#f2c9a0');
       for (let yy = 5; yy <= 11; yy++) { p(1, yy, k); p(2, yy, cc); p(13, yy, C); p(14, yy, k); }
+    } else if (c.slot === 'boat') { // a tiny Hoff: curly hair, blue eyes, a smirk
+      const H = '#4a2a12', S = '#c98552';
+      for (let y = 2; y <= 13; y++) for (let x = 2; x <= 13; x++) {
+        const r = (x - 7.5) ** 2 + (y - 8) ** 2;
+        if (r <= 34) p(x, y, r > 26 ? k : y < 6 || ((x < 4 || x > 11) && y < 10) ? H : S);
+      }
+      for (const x of [4, 5, 10, 11]) p(x, 6, H); p(5, 8, '#f8fafc'); p(4, 8, '#3b6fa0'); p(10, 8, '#f8fafc'); p(11, 8, '#3b6fa0'); p(7, 9, '#9c5f31'); p(7, 10, '#9c5f31');
+      for (let x = 5; x <= 10; x++) p(x, 11, '#7a4524'); p(11, 10, '#7a4524');
+      p(4, 1, H); p(7, 1, H); p(10, 1, H);
     } else {
       const rb = ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#a855f7'];
       for (let x = 4; x <= 11; x++) for (let y = 3; y <= 12; y++) {
@@ -3510,15 +3639,15 @@
     }
   });
   function cosmWare(c) {
-    const owned = save.cosm.owned.includes(c.id), worn = save.cosm[c.slot] === c.id;
+    const owned = save.cosm.owned.includes(c.id), worn = save.cosm[c.slot] === c.id, lock = !owned && lockText(c);
     return ware({
       id: c.id, name: c.name, desc: c.desc, stats: [],
-      state: worn ? 'active' : owned ? 'owned' : '',
+      state: worn ? 'active' : owned ? 'owned' : lock ? 'locked' : '',
       owned: SLOT_NAMES[c.slot],
-      btnText: worn ? tr('Ablegen') : owned ? tr('Anziehen') : (c.pres && save.prestige < c.pres ? tr('🔒 {n}× Prestige', { n: c.pres }) : tr('{n} Taler', { n: c.price.toLocaleString(I18N.locale) })),
-      disabled: !owned && (save.coins < c.price || (c.pres && save.prestige < c.pres)),
+      btnText: worn ? tr('Ablegen') : owned ? tr('Anziehen') : lock || tr('{n} Taler', { n: c.price.toLocaleString(I18N.locale) }),
+      disabled: !owned && (save.coins < c.price || !!lock),
       onClick: () => {
-        if (!owned && c.pres && save.prestige < c.pres) return keeper(KEEPER.locked(tr('🔒 {n}× Prestige', { n: c.pres })));
+        if (lock) return keeper(KEEPER.locked(lock));
         if (worn) { save.cosm[c.slot] = null; keeper(tr('Wieder ganz klassisch. Steht dir auch.')); }
         else if (owned) { save.cosm[c.slot] = c.id; keeper(tr('Schick, schick!')); }
         else {
@@ -3564,7 +3693,7 @@
         b.append(im, n, s); b.addEventListener('click', onClick); return b;
       };
       const worn = save.cosm[slot];
-      grid.append(tile(slot === 'bob' ? ICONS['pose-std'] : slot === 'hat' ? ICONS['hut-std'] : ICONS['jacke-std'], tr('Standard'), slot === 'hat' ? tr('Hutfarbe nach Wiedergeburten') : tr('Klassisch'),
+      grid.append(tile(slot === 'bob' ? ICONS['pose-std'] : slot === 'hat' ? ICONS['hut-std'] : slot === 'boat' ? ICONS['boot-std'] : ICONS['jacke-std'], tr('Standard'), slot === 'hat' ? tr('Hutfarbe nach Wiedergeburten') : slot === 'boat' ? tr('Käpt’n Bealins Boot') : tr('Klassisch'),
         worn ? '' : 'on', () => { save.cosm[slot] = null; persist(); renderWardrobe(); }));
       for (const c of COSMETICS.filter(c => c.slot === slot)) {
         const owned = save.cosm.owned.includes(c.id);
@@ -3582,6 +3711,7 @@
   }
   ICONS['hut-std'] = iconCanvas(p => { const [h, H, l] = HATS[Math.min(HATS.length - 1, save.rebirths)]; for (let x = 5; x <= 10; x++) p(x, 4, '#1b1f2e'); for (let x = 4; x <= 11; x++) for (let y = 5; y <= 8; y++) p(x, y, x === 4 || x === 11 ? '#1b1f2e' : y === 5 ? l : h); for (let x = 1; x <= 14; x++) { p(x, 9, '#1b1f2e'); p(x, 10, H); p(x, 11, '#1b1f2e'); } });
   ICONS['jacke-std'] = iconCanvas(p => { for (let yy = 3; yy <= 13; yy++) for (let x = 3; x <= 12; x++) p(x, yy, x === 3 || x === 12 || yy === 13 ? '#1b1f2e' : x === 7 ? '#fcd34d' : x > 9 ? '#c2410c' : '#f59e0b'); });
+  ICONS['boot-std'] = iconCanvas(p => { const k = '#1b1f2e'; for (let x = 1; x <= 14; x++) for (let y = 9; y <= 12; y++) if (x - 1 >= y - 9 || y < 11) p(x, y, x === 1 || x === 14 || y === 12 || y === 9 ? k : y === 11 ? '#be2828' : '#26487c'); for (let y = 2; y <= 9; y++) p(8, y, '#a87040'); for (let y = 3; y <= 6; y++) for (let x = 4; x <= 7; x++) p(x, y, '#e2e8f0'); });
   ICONS['pose-std'] = iconCanvas(p => { for (let x = 4; x <= 11; x++) for (let y = 3; y <= 12; y++) p(x, y, x === 4 || x === 11 || y === 3 || y === 12 ? '#1b1f2e' : y < 8 ? '#ef4444' : y === 8 ? '#1b1f2e' : '#f8fafc'); });
   function ware({ id, name, desc, stats, state, btnText, disabled, onClick, owned }) {
     const c = document.createElement('div'); c.className = 'ware' + (state ? ' ' + state : '');
@@ -4327,7 +4457,7 @@
     $('prog-xpbar').style.width = Math.min(100, save.xp / need * 100) + '%';
     const rk = rankOf(save.rebirthsTotal), nrk = RANKS.find(k => k.r > save.rebirthsTotal);
     $('prog-rank').textContent = tr('🎖️ Rang: {r}', { r: presMark(save.prestige) + rk.name }) + (nrk ? tr(' · nächster Rang: {r} bei {n}× Wiedergeburt', { r: nrk.name, n: nrk.r }) : tr(' · höchster Rang erreicht'));
-    $('prog-stats').textContent = tr('{a} Fänge · {b} Aufträge · {c}× wiedergeboren · Taler-Bonus +{p} %', { a: save.total, b: save.questsDone, c: save.rebirths, p: Math.round((coinMult() - 1) * 100) }) + (save.prestige ? tr(' · {n}× Prestige (+{t} % EP)', { n: save.prestige, t: save.prestige * 25 }) : '');
+    $('prog-stats').textContent = tr('{a} Fänge · {b} Aufträge · {c}× wiedergeboren · Taler-Bonus +{p} %', { a: save.total, b: save.questsDone, c: save.rebirths, p: Math.round((coinMult() - 1) * 100) }) + tr(' · ⏱ Spielzeit {t}', { t: fmtPlay(save.playTime) }) + (save.prestige ? tr(' · {n}× Prestige (+{t} % EP)', { n: save.prestige, t: save.prestige * 25 }) : '');
     const left = dailyLeft();
     $('prog-bonus').textContent = (left ? tr('☀️ Tagesbonus: noch {n} Fänge mit doppelten EP', { n: left }) : tr('☀️ Tagesbonus für heute aufgebraucht – morgen wieder')) +
       tr(' · 🔥 Serie {n} (Rekord {r})', { n: streak, r: save.bestStreak || 0 });
@@ -4848,6 +4978,7 @@
   function frame(now) {
     const dt = Math.min(.05, (now - last) / 1000); last = now;
     update(dt); draw(); updateClock();
+    if ($('title').hidden) { save.playTime += dt; sessionTime += dt; updatePlayPill(); }
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
