@@ -2,6 +2,11 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-1`
+
+- 🌋 Glutflosse’s lava store is now its own stall down in the Ember Cave – no longer in the kiosk at the dock.
+- 🎣 The basalt rod now costs 400 coins instead of ember stones, so you can get your first lava rod without having any ember stones yet.
+
 ## 03.11.2026 · `2026-11-03-16`
 
 - ⏩ New settings: the catch card can close by itself after 2.5 seconds (not for new fish, legendaries and shinies), and empty bait can be rebought automatically.
