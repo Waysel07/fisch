@@ -1,15 +1,380 @@
 # Fisch!
 
-Static site, no build step. Layout: `index.html`, `fischen.html` and `datenschutz.html` at the top level; images in `img/`, sounds in `sounds/`, fonts in `fonts/`, stylesheets in `css/`, scripts in `js/`, all other pages in `seiten/`, serverless functions in `api/`. `vercel.json` redirects the old top-level addresses (e.g. `/stinkfisch.html` → `/seiten/stinkfisch.html`) so existing links keep working. Deploy on Vercel: import this repo, Framework Preset "Other", leave build/output settings empty. `index.html` is served at `/`.
+The source of [fisch.ing](https://www.fisch.ing): a small, silly fish website and **Fischen!**, the pixel-art fishing game that grew out of it. It runs in the browser, with no accounts and no install.
 
-`seiten/fish5.html` (Fisch 5!) has Text to Fisch: the Lippenfisch reads out what you type with the browser's own speech synthesis (only an on-device German voice, pitched down, so the text never leaves the browser; the words appear in the speech bubble as they are spoken). „Fischisch“ keeps the old fish language made of slices of `sounds/fish.mp3`, which is also the fallback on devices without a German voice. Below it is the magische Miesmuschel (an original pixel shell, `img/miesmuschel.png`): ask a question, pull the string and it answers in a deep voice with one of a few fixed answers.
+**[Play Fischen!](https://www.fisch.ing/fischen.html)** · [Changelog](CHANGELOG.md) · [Project rules (German)](CLAUDE.md)
 
-## Fischen!
+**Contents**
 
-`fischen.html` is a small browser fishing game (canvas + `js/fischen.js`/`css/fischen.css`). Every catch is one of the site's GIFs/PNGs (incl. cut-outs from the Spezifischfischer page, whose catches speak their line from `sounds/spezifischfischer.mp3`). Catches give XP toward angler levels, which unlock gear; XP bonuses add up (not multiply) for catch streaks, clean catches (tension under 70 %), mutations, night fishing and the first 10 catches each day, and lost fish, Fischdex rewards and quests give XP too; three rotating quests pay out Taler and XP; from level 12 you can rebirth for Schuppen (permanent talents) and a lasting +20 % Taler bonus, with new rods, bait and hat colours per rebirth. A separate "Wii" rarity (between rare and epic, light blue fanfare) holds six fish cut from a user-supplied image (`img/wii-*.png`), each with its own page (`seiten/wii-*.html`). The Wii-Köder bait (icon `img/wii-bait.png`, from level 3) makes Wii fish bite twice as often. About 1 % of catches are shiny (recoloured, sparkling, triple value) and are collected in the Shinydex, a tab of the Fischdex with its own rewards. The Fischdex has one page per area (Steg, Hohe See, Glutgrotte, with a counter on each tab; dock fish with `sea: true` appear on both Steg and Hohe See) and opens on the area you are in; a search box (only matches fish you already caught) and filters (all, missing, caught, without gold medal; by rarity) work on every page including the Shinydex. The progress board has a Fang-Verlauf with the last 20 catches (saved as `history`: fish, size, size class, mutation, shiny, map, Taler, time). Menus are things on the dock instead of buttons: the slot machine (stake is pickable: − / + in growing steps, typed in, or quick picks ½, ×2, 1000, 10 000, Max; from 50 up to 2000, raised with each rebirth to 5000, 10 000, 25 000 and 50 000; 2 % of every stake feeds a jackpot pot (saved as `jackpot`, starts at 1000) that three Odfische win on top of ×150), the book on the crate (Fischdex/Shinydex), the trophy on the kiosk roof (leaderboard), the notice board (progress) and the kiosk (shop); the old buttons stay hidden for keyboard and screen readers. Catches can come out mutated (giant, tiny, albino, glowing, shadowy, golden, rainbow) for more Taler, and Fischdex milestones pay out Taler, Schuppen and permanent bonuses. An opt-in leaderboard (🏆) sends nickname and scores (taler, rebirths, Fischdex, biggest catch, and smallest non-junk catch, where lower ranks higher) to `api/leaderboard.js`, a Vercel Function backed by Upstash Redis (env `KV_REST_API_URL`/`KV_REST_API_TOKEN` or `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN`; optional `ADMIN_TOKEN` to delete entries via `DELETE /api/leaderboard {id, admin}`). A secret key (☁️) stores an optional cloud copy of the save via `api/save.js` (same Redis, keyed by the key's SHA-256, 180-day TTL) so it can be loaded on another device. An admin can gift play time to a cloud save: `POST /api/save {action: 'gift', key, hours, admin}` (`ADMIN_TOKEN`, up to 1000 h) stores the seconds under `sv:gift:<hash>`, and the player's game picks them up with its next sync (`put` with `claim: true`, answered with `gift: {playTime}`) and adds them to the local save. One-time gifts by player name are listed in `NAME_GIFTS` in `js/fischen.js` (matched against the leaderboard and lobby name, case-insensitive; arrived ones are saved in `gifts`). The shop is run by Herr Zylinderwels, an original pixel-art catfish in a top hat at a kiosk on the dock (click it); the shop window shows `img/tophat-fish-fish.gif` and gives every rod and bait its own pixel icon. Three dirty fish (Stinkfisch, Schlammfisch, Ölfisch) the pencil-scribbled Kritzelfisch and the floppy Platschkarpfen are original pixel sprites with their own pages. User-supplied fish GIFs (Gesprächsfisch, Zackenbarsch, Beinfisch, Blobfisch, and the legendary Katzenfisch and UhrZeitFisch, which only bites on the full in-game hour) have their own pages too. The Fischstäbchen (an original pixel fish stick, uncommon) has its own page too. The Schummelfisch (an original pixel fish in joke glasses, junk) fakes a legendary catch: full legendary fanfare and a made-up giant size, then the card reveals him, a "Got you!" toast and a sad trombone. The legendary Drachenkarpfen (an original jade-and-gold pixel dragon carp, after the old Dragon Gate legend) only bites once you have caught 14.5 Karpador (so in practice 15) and lands with an extra big splash. Käpt'n Bealin (an original pixel angler in a rowboat) always greets you with the same line; every second chat he drops a vague hint about a secret wish (a big or tiny fish, a mutation, a night catch, junk, a lost fish, a slot win, a clean catch, an epic+ fish, a fish starting with a certain letter, a night visit, lots of chatting) and pays Taler and XP when you happen to fulfil it (saved as `bealin` in the save). Mystery boxes (wooden 120, silver 450 from level 4, golden 1500 from level 8) are sold in a third shop tab and now and then hang on the hook after a catch; opening one shakes the box and reveals Taler, bait, XP, an old sock or a 5× jackpot (unopened boxes are saved as `boxes`). When a new version is deployed, every open game notices it within two minutes (HEAD requests comparing the ETags of `fischen.html`, `js/fischen.js`, `js/fischen-i18n.js` and `css/fischen.css`), saves and reloads at the next calm moment. After every update a new issue of the Steg-Zeitung (a newspaper bundle at the end of the dock, with a „!“ while unread) holds the patch notes (`PATCH_NOTES` in `js/fischen.js`, newest first; also 📰 or N; which ones were read is saved as `patchSeen`; an „Ältere Ausgaben“ button at the bottom shows five older issues per click). The first catch of each fish gets its own reveal: silhouette, flash, colour, a burst ring and a „Neu im Fischdex!“ stamp, and the fish then flies into the Fischdex book on the dock. Legendary bites have a 30 % chance to become a Taktdrill instead of normal reeling: a rhythm minigame where 12 numbered circles pop up with shrinking rings and have to be tapped on the beat osu!-style: aim with the mouse and hit with any mouse button or Z/X while the pointer is on the next circle (a ring cursor follows the mouse), tap on touch screens, or Space without aiming; 55 % accuracy lands the fish, 90 % counts as a clean catch. The time of day is derived from the real clock (one in-game day every 300 s since the Unix epoch), so it is the same for every player. Cosmetics (hat colours, rain jackets, bobber colours): a few are sold in a fourth shop tab, the special ones are unlocked by achievements (a legendary, a shiny, 25 night catches, 10 lobby catches, a won Taktdrill, a rebirth, level 10, 20 fish discovered). The wardrobe (click your angler or K) shows a preview, offers free skin-tone and hair/beard-colour swatches, puts on what you own and tells you how to get the rest. Saved as `cosm`, shown to others in a lobby; without a hat cosmetic the hat keeps its rebirth colour. In a lobby there is a chat (Enter/T or 💬): messages ride along with the next sync, show as speech bubbles above the angler and in a fading log; the server keeps the last 30 per lobby and stars out words from the name blocklist. Multiplayer lobbies (👥 or O): up to 8 anglers share a 4-letter code (or a `?lobby=CODE` link); everyone sees the others standing on the dock with name tags, a feed of catches (toasts for rare and better) and a lobby scoreboard of Taler fished since joining. There are no sockets: `api/lobby.js` (same Upstash Redis) is polled every 3 s while the tab is visible; players vanish after 20 s without a sync, are removed after 90 s and lobbies expire 2 h after the last activity. The current lobby is saved as `lobby` so a reload rejoins. Size classes: every catch rolls Mini (~12 %), Normal, Groß (~16 %), Kapital (~5 %, up to 1.15× the fish's max size) or Monster (~0.7 %, 1.15–1.35× max), which multiplies the value (×0.7 to ×4); the best class per fish is saved in the Fischdex (`dex[id].cls`) and Monster catches are counted (`monsters`). Weather is derived from the real clock like the time of day (a new weather every 300 s, i.e. every in-game day, picked by a hash of the slot number, so everyone shares it): sunny, rain (faster bites), fog (more rare/epic), thunderstorm (more legendaries, more tension, lightning and thunder) and a rainbow that can only follow rain (double shiny and mutation chance), wind (counts as a longer cast), snow (+25 % Taler, slower bites), heatwave (less tension, slower bites) and shooting stars (more legendaries and shinies, meteors at night); the weather pill in the top bar shows it and the forecast. Four weather fish (Pfützenspringer, Nebelgeist, Blitzwels, Regenbogenforelle) only bite in their weather; the Kaufland-Fisch (a shrink-wrapped fish in a tray with a price tag, no logo) is a rare catch at the dock. The second map, Hohe See (open sea), unlocks with the 3rd rebirth: the buoy next to Bealin takes you out onto his boat (the steering wheel takes you back; saved as `map`); every cast there counts as far out and it has its own fish (Hering, Makrele, Thunfisch, Schwertfisch, Seeteufel, Riesenkalmar, Sturmhai in thunderstorms, Flaschenpost with the odd Taler, the Schiff (the Fisch GIF turned 180°, `img/schiff.gif`, own page `seiten/schiff.html`), a few dock fish that also bite out there (`sea: true`: Fisch, Poisson, Fisch 2, Ölfisch, Zackenbarsch, Blobfisch, Absolute Odfisch), and two deep-sea fish: the user-supplied dancing Gangnam-Fisch (`img/gangnam-fish.gif`) and the Monster-Energy-Fisch, an original pixel drink can with fins and no brand logo that gives faster bites for 60 s after you catch it). The Odköder (rebirth 3, 1500 Taler), cast at night on the open sea, summons the Odfisch, a big silver pixel fish with a cat's head ("FIH!"): a 3-minute fight with a health bar where reeling inside the safe tension deals damage, phase 2 adds Taktdrill salvos and phase 3 is a rage with harder pulls; a snapped line stuns for 3 s. Cutscenes (`startCine`/`drawCine`, the fight pauses meanwhile and the solo clock is extended): an intro with cinema bars, quake and title card, a leap out of the water with a title at each phase change (glowing eyes in phase 3), and a victory or escape scene; hits flash the Odfisch and show damage numbers. Winning lands the Odfisch (at least Kapital size), 10 Schuppen, Taler by damage share and the Odfisch hat. In a lobby everyone on the open sea fights the same Odfisch: `api/lobby.js` keeps a shared boss record (HP 1000 per angler on the sea) and adds each player's damage per sync (capped, `HINCRBY`); the summon is checked against the server's clock (night only). More endgame: the Tiefseerute (rebirth 4), the talents Maßband (better size classes) and Wetterfrosch (stronger weather bonuses), hat colours up to the 10th rebirth, new Fischdex goals (first Monster, all weather fish, all sea fish, Odfisch beaten), new cosmetics and two new leaderboards (Monster catches, Odfisch wins). More ways to spend Taler: kiosk snacks in a shop tab (coffee: faster bites, fish roll: +25 % Taler, clover cookie: more rare/epic/legendary bites, glitter lemonade: double shiny and mutation chance; 10 minutes each, stackable to 30, shown as a pill in the top bar, saved as `buffs`), luxury cosmetics from 10 000 to 100 000 Taler (the two hats glint), and a leaderboard of Taler spent in the shop (`spent`). More progression: Fisch-Meisterschaft (bronze, silver and gold medals per fish for many catches, thresholds by rarity; each medal gives XP and Schuppen, each gold fish a permanent +1 % Taler up to +40 %; saved as `dex[id].m`, older saves get their medals added once), the Rutenschmiede (forge the rod in hand up to +10 in the shop for growing Taler costs, +3 % reel and luck, −2 % tension per level; saved as `forge`, reset on rebirth), talents up to level 10 from the 5th rebirth plus two new ones (Nachtangler, Bossjäger), ranks by rebirths from Lehrling to Fischgott (shown in progress, lobby name tags via `rk` and the rebirth leaderboard) and new unlocks at rebirth 5 (Abgrundköder), 6 (Krakenrute), 8 (Seebären-Jacke) and 10 (Fischgott-Krone). Prestige (from the 7th rebirth) resets everything a rebirth does plus rebirths, Schuppen, talents and the forge (rank and rebirth cosmetics stay: ranks count `rebirthsTotal`; lava rods reset like the other rods); each prestige gives a permanent +100 % Taler and +25 % XP, and 40 % of the rebirths before it stay in the Taler bonus as an Erbe (`rebHeir`). The Taler bonus is three groups that multiply, with the boni inside each group added: path (rebirths + Erbe × 20 %, +100 % per prestige), talents (Goldener Haken 8 %/level, Perlenhaken 10 %/level) and collection (Fischdex 10 %, gold medals up to 40 %). Bait, snacks and mystery boxes cost their base price × √(Taler bonus); late Taler sinks are the forge up to +15 and the Sonnenkrone (500 000, prestige 1) and Galaxiemantel (1 000 000, prestige 2). Each rebirth needs 2 more levels (12, 14, 16 …); every 5 levels a milestone gives Schuppen, every 10 a mystery box. Wochenziele: three bigger goals per week, the same for everyone (picked from the week number, saved as `week`), each worth 6 Schuppen, a pearl after prestige and 40 Glutsteine with the cave; the progress board shows the next goals in one line. the slot cap stays at the top, and Perlen (3, plus 2 for every rebirth above 7) buy prestige talents that never reset: Perlenhaken (+15 % Taler/level), Perlenglück (+10 % luck/level), Schuppensegen (+20 % Schuppen/level), Frühreif (rebirth one level earlier, up to 5) and Seekarte (open sea and Odköder without rebirths). Saved as `prestige`, `pearls`, `pperks`; shown as ✦ before the rank (lobby field `pr`), with its own leaderboard (`prestige`) and cosmetics at 1, 2 and 3 prestiges (Perlenkrone, Perlen-Pose, Prestige-Mantel). World 2, the Glutgrotte (lava cave, `map: 'lava'`), opens after the 1st prestige: Glimm, an original pixel mole in a miner's helmet standing on a glowing rock in the water in front of the dock, takes you down when you click him (in the cave he and a ladder take you back up); it has a rock ceiling with stalactites, a lake of lava, no weather (its own neutral weather `glut`) and twelve fish of its own with original pixel sprites (`img/lava-*.png`) and pages (Schlackebrocken with melted-in Taler, Glutgrundel, Aschebarsch, Bimssteinfisch, Funkenforelle, Obsidianhecht, Schwefel-Kugelfisch, Magmakarpfen, Salamanderfisch at night, Kristallwels far out, the legendary Lavadrache and the Phönixfisch after 10 Magmakarpfen). Normal rods melt there: only the Lavaruten (Basalt-, Obsidian-, Magma- and Drachenknochenrute, `lava: true`, from prestige 1 or 2) fish in the cave, held in their own slot (`lavaRod`, reset on rebirth and prestige like the other rods). Plus the Glutköder (only works in the cave), a Fischdex goal for all cave fish and the Lavamantel. The cave pays a little more than the sea: every catch there gets a heat bonus (`caveMult()`). Glimm has three jobs of his own down there (`glimmQ`: catch N fish in the cave, N of one cave fish, epic or better, earn N Taler there) with big Taler/XP rewards and a pearl for the epic one; every three jobs done (`glimmDone`) raise Glimm's trust by one level, +3 % Taler in the cave each, up to 10 levels. Jobs and trust survive rebirth and prestige; clicking Glimm in the cave opens them. The cave has its own currency, Glutsteine 🔥 (`glut`): every cave catch drops some by rarity (junk 0–1, common 1, uncommon 2, rare 5, epic 12, legendary 40; ×2 for Kapital/Monster, ×3 for shinies, more with the Glutkristall upgrade) and Glimm's jobs give some too. Glutsteine and the depth are reset on rebirth and prestige (the workshop, Glimm's trust and jobs stay). They dig deeper (`CAVE_DEPTHS`, `caveDepth`): Glutkammer (start), Aschehalle (60), Magmaschlund (250), Drachenhort (800) and Phönixnest (2000); each depth unlocks its cave fish (`depth` per fish) and lava rods (`depth` per rod, with the new Phönixfederrute at depth 5) and gives +10 % Taler in the cave, and the cave grows redder and hotter (crystals from depth 3). Balance (2026-11-04): cave fish are worth about 1.5× the original values (Glutgrundel 21 … Phönixfisch 1500) and `caveBonus()` = 1.2 × (1 + 0.1 per depth above 1) × (1 + 0.03 per trust level) × (1 + 0.05 per Glutnetz level), at most about ×3.3; Glimm's jobs pay 1200 × tier × (1 + 0.25 per depth) × `coinMult()`. Glimm's workshop (`GLUT_UPS`, saved as `glutUps`) sells permanent cave upgrades for Glutsteine: Glutnetz (+5 % Taler), Hitzeschild (−5 % tension), Funkenlicht (+8 % luck) and Glutkristall (+10 % Glutsteine). The Lavamantel is the reward for depth 5. Down in the cave Glutflosse has his own stall, the Lava-Laden (a prop on the basalt ledge; the shop key/button opens it there, and the kiosk at the dock never shows it). The Basaltrute costs 400 Taler so you can start without Glutsteine; everything else there costs Glutsteine and never Taler: the other lava rods (Obsidian 80, Magma 250, Drachenknochen 700, Phönixfeder 1800 🔥; still gated by depth, the forge stays in Taler), the Glutköder (5 for 15 🔥) and lava cosmetics (Glut-Pose 80, Aschejacke 150, Magmahelm 200, Obsidiankrone 1500 🔥). Glutsteine cannot be turned into Taler. The Lava-Laden has its own dealer, Glutflosse (a user-supplied image of a shark dancing in flames, `img/lava-haendler.jpg`), shown instead of Herr Zylinderwels while that tab is open. Lava creatures (`CREATURES`, saved as `crit` with the number beaten per creature, kept on rebirth and prestige): in the cave a bite is sometimes a creature instead of a fish (Glutschnecke, Aschekrabbe, Schlackwurm, Flammenqualle, Basaltgolem, Glutkraken, by depth; original pixel sprites `img/kreatur-*.png`); a short solo fight in state `crit` that reuses the boss HUD and tension bar (hold to deal damage, let go while it thrashes, beat it within 25–40 s) and gives Glutsteine, Taler, XP and an 8 % chance of a Glutherz (+3× Glutsteine). The creature chance (`critChance()`, 5 % base, at most 30 %) rises with the lava rods (`kc`, Obsidian +2 … Phönixfeder +5), the Glutköder (+3), the Lockköder (+10, 5 for 20 🔥, depth 2) and Glimm's workshop upgrade Lockruf (+1 % per level, 5 levels). The Fischdex's Glutgrotte page lists the creatures. Catch conditions on fish (`pickFish`): `bait` (only on that bait), `hours` (only in those clock hours), `crits` (after that many creatures) and `minRod` (lava rod of at least that depth); three new cave fish use them: Rußaal (only on Glutköder), Mitternachtsfunke (0–3 o'clock) and Kraterwächter (after 25 creatures, Drachenknochenrute or better). Older saves get Glutsteine for cave fish already caught and start at the depth those fish live at (up to 3). Balance (2026-11-04, from a simulation of every stage): luck from rod × bait × talents counts with diminishing returns (`1 + 0.45 · ln(luck)`), so on the high seas about 15–20 % of catches are epic and 4–5 % legendary; casts on the lava lake count as far out like at sea, so from depth 3 the cave pays more Taler and the sea more XP; Sternenrute 15 000, Tiefseerute 40 000, Krakenrute 120 000 Taler. Boat skins (cosmetic slot `boat`, saved as `cosm.boat`, shown in the wardrobe under „Boot“): „David Hasselhoff“ (`boot-hoff`, 30 000 Taler, from rebirth 3; original pixel sprite `img/boot-hoff.png`) replaces Bealin's boat on the open sea with a giant pixel man swimming on his belly (curly hair, red trunks, spray at the bow, kicking feet) and you stand on his back; `drawHoffBoat` tints it for the night and wets the part under the waterline. The Magische Miesmuschel (epic, dock and sea, own pixel sprite `img/miesmuschel.png`, page `seiten/miesmuschel.html`) shows a random answer on its catch card; once caught it sits on a rock in the water next to the dock (prop `muschel`, only shown with `dex.muschel`), and clicking it opens a modal where you ask a question and pull the string for one of a few fixed answers, spoken in a deep voice by the browser's speech synthesis when sound is on (only on-device voices in the game's language, nothing is sent anywhere). Play time (`playTime`, seconds the game was open and visible, never reset) shows as a ⏱ pill in the top bar (tooltip with the current session; hidden with the setting `showPlay`) and in the progress stats. A bait hotbar (bottom left, keys 1–9) switches between owned baits while idle. The UI uses a game-style skin: self-hosted pixel font Silkscreen (`fonts/silkscreen-*.woff2`, SIL OFL, licence in `fonts/silkscreen-OFL.txt`) only for short display text (titles, rarity banner, hints); everything people read (buttons, toasts, speech bubbles, card and quest titles, numbers) uses Poppins and square pixel-bordered panels, buttons and meters. The game can be played in German or English: a DE/EN switch on the title screen and in the top bar stores the choice in `localStorage` (key `fischen-lang`) and reloads; English texts live in `js/fischen-i18n.js`, keyed by the German original (without a saved choice the browser language decides). Progress is saved only in the browser's `localStorage` (key `fischen-save-v1`), see `datenschutz.html` section 5. Settings (⚙️ or E): sound, volume (`vol`, a master gain for all sounds), less motion (`calm`, no screen shake) and short numbers (`short`, 1.2 M in the top bar), a catch card that closes itself after 2.5 s except for new fish, legendaries, shinies and new mutations (`autoClose`) and automatic rebuying of empty bait for Taler or Glutsteine (`autoBait`); the progress board has a „Alle abholen“ button for all finished quests and Glimm's jobs. The settings also redeem codes (`CODES` keyed by a checksum of the normalised code, redeemed ones saved as `codes`); the first one unlocks the beta set (Beta-Kappe, Beta-Jacke, Beta-Pose). Anti-cheat (it only makes cheating harder): every save carries a checksum (`sig`, with `fischen-sig` remembering that this device writes signed saves); a save edited by hand is marked `tampered` and can't join or update the leaderboard. The test hooks `window.__fischen` only exist on localhost; with `?debug` elsewhere they work but mark the save as tampered. The original pixel sprites are drawn as code in `img/pxl/` for the pxl tool: `fisch.px.js` renders the PNGs in `img/`, and `code.px.js` renders the player, NPCs, dock props, baits and snacks, which are inlined as char rows in `js/fischen.js` (`ART`, `PLAYER_BODY`, `PLAYER_LEGS`). The game never loads these two files.
+- [The website](#the-website)
+- [The game](#the-game)
+- [Progression](#progression)
+- [Fishing systems](#fishing-systems)
+- [Areas](#areas)
+- [Multiplayer and online features](#multiplayer-and-online-features)
+- [Interface](#interface)
+- [Development](#development)
 
-Twelve user-supplied catches (`img/hundsfisch.png`, `img/blauer-hummer.png` and others, unchanged from the originals) are in `FISH` as `photo: true, whole: true` (shown uncropped) with their own pages. The Blauer Hummer plays `sounds/blauer-hummer.mp3` when caught.
+## The website
 
-The fish are spread across three areas: the Steg has 47, the Hohe See 35 (11 of them shared with the Steg) and the Glutgrotte 25. Fish that moved to a harder area are worth more Taler there, in line with the other fish of that area and rarity. Caught fish stay in the Fischdex, because it is keyed by fish id.
+A static site with no build step. `index.html` is the home page, and `seiten/` holds one page per fish plus a few extras:
 
-The worlds are painted images on their own canvas layer above the sky: `img/welt-steg.png`, `img/welt-see.png` and `img/welt-lava-1.png` to `-5.png` (one per cave depth), plus `img/welt-lava-fels.png` (the ledge) and `img/welt-qualle.png`, all drawn in `img/pxl/welt.px.js`, which the game doesn't load. `renderBg` tints them for the time of day; waves, light shafts, kelp, bubbles, jellyfish, the whale, lavafalls and other moving parts are drawn on top in `drawWorldFx`. Swimming shadows come from colour masks in `img/welt-schatten.png` (14 shapes with 4 frames each, plus the whale) and are recoloured per world in `shadowSheet()`.
+- **`seiten/fish5.html`** has Text to Fisch: the Lippenfisch reads out what you type with the browser's speech synthesis. It uses only an on-device German voice, so the text never leaves the browser. „Fischisch“ is the older fish language made of slices of `sounds/fish.mp3`, and also the fallback on devices without a German voice. The same page has the magische Miesmuschel: ask a question, pull the string, get one of a few fixed answers.
+- **`seiten/snake.html`** is a Snake game.
+
+## The game
+
+`fischen.html` is a canvas game. You cast, wait for a bite, keep the line tension in the safe range while you reel, and sell what you land for Taler. The catches are the site's own GIFs and PNGs, plus original pixel sprites and user-supplied images.
+
+Menus are objects on the dock. The old buttons stay hidden for keyboard and screen-reader users.
+
+| On the dock | Opens | Key |
+|---|---|---|
+| Kiosk, run by Herr Zylinderwels | Shop | L |
+| Book on the crate | Fischdex and Shinydex | F |
+| Slot machine | Fischautomat | C |
+| Notice board | Progress | P |
+| Trophy on the kiosk roof | Leaderboard | B |
+| Newspaper bundle | Steg-Zeitung (patch notes) | N |
+| Your angler | Wardrobe | K |
+| Buoy (Hohe See) and Glimm (Glutgrotte) | Travel to another area | |
+
+Other keys: **O** lobby, **E** settings, **M** sound, **1–9** bait hotbar, **Enter** or **T** lobby chat.
+
+## Progression
+
+### Currencies
+
+| Currency | Earned from | Spent on | Reset by |
+|---|---|---|---|
+| Taler | Catches, quests, the slot machine | Gear, snacks, boxes, cosmetics, the forge | Rebirth, prestige |
+| Schuppen 🐚 | Rebirths, medals, weekly goals, Fischdex rewards, the Odfisch | Talents | Prestige |
+| Perlen 🦪 | Prestige (3, plus 2 for every rebirth above 7), weekly goals, one of Glimm's jobs | Prestige talents | Never |
+| Glutsteine 🔥 | Cave catches and creatures, Glimm's jobs, weekly goals | Cave depths, Glimm's workshop, the Lava-Laden | Rebirth, prestige |
+
+Glutsteine can't be turned into Taler.
+
+### Levels, rebirth and prestige
+
+Catches, lost fish, quests and Fischdex rewards give XP toward angler levels, which unlock gear. Catch bonuses add up rather than multiply: catch streaks, clean catches (tension under 70 %), mutations, shinies, night fishing and the first catches of each day. Every 5 levels a milestone gives Schuppen, and every 10 levels a mystery box.
+
+- **Rebirth** is available from level 12, and each one needs 2 more levels. It gives Schuppen and a permanent +20 % Taler, and resets level, Taler, rods, bait, quests, the forge, Glutsteine and the cave depth. The Fischdex, records and talents stay.
+- **Prestige** is available from the 7th rebirth and also resets rebirths, Schuppen and talents. It gives Perlen, a permanent +100 % Taler and +25 % XP. 40 % of the rebirths before it stay in the Taler bonus as an Erbe (`rebHeir`). Ranks count `rebirthsTotal`, so ranks and rebirth cosmetics stay.
+
+| Rebirth | Unlocks |
+|---|---|
+| 1 | Regenbogenrute |
+| 2 | Mondköder |
+| 3 | Sternenrute, Hohe See, Odköder |
+| 4 | Tiefseerute |
+| 5 | Abgrundköder, talents up to level 10, Nachtangler and Bossjäger |
+| 6 | Krakenrute |
+| 8 | Seebären-Jacke |
+| 10 | Fischgott-Krone |
+
+**Ranks** follow total rebirths, from Lehrling to Fischgott. They show in progress, on lobby name tags and on the rebirth leaderboard.
+
+### Talents
+
+| Bought with | Talents |
+|---|---|
+| Schuppen | Goldener Haken (Taler), Glückspilz (luck), Lockruf (bite speed), Starke Schnur (tension), Anglerwissen (XP), Erbstück (starting Taler), Maßband (size classes), Wetterfrosch (weather bonuses), Nachtangler, Bossjäger |
+| Perlen | Perlenhaken (+10 % Taler per level), Perlenglück (+10 % luck per level), Schuppensegen (+20 % Schuppen per level), Frühreif (rebirth one level earlier, up to 5), Seekarte (Hohe See and Odköder without rebirths) |
+
+### Taler bonus
+
+`coinMult()` multiplies three groups, and the boni inside each group are added:
+
+| Group | Contains |
+|---|---|
+| Path | Rebirths and Erbe × 20 %, +100 % per prestige |
+| Talents | Goldener Haken 8 % per level, Perlenhaken 10 % per level |
+| Collection | Fischdex 10 %, gold medals up to 40 % |
+
+Bait, snacks and mystery boxes cost their base price × √(Taler bonus), so prices keep up with income.
+
+### Goals
+
+- **Quests:** three rotating quests pay Taler and XP.
+- **Wochenziele:** three bigger goals per week, the same for everyone (`week`). Each gives 6 Schuppen, a pearl after a prestige, and 40 Glutsteine once the cave is open.
+- **Fisch-Meisterschaft:** bronze, silver and gold medals per fish for repeat catches, with thresholds by rarity (`dex[id].m`). Medals give XP and Schuppen. Each gold fish adds a permanent +1 % Taler, up to +40 %.
+- **Fischdex rewards:** milestones pay Taler, Schuppen and permanent bonuses.
+- **Käpt'n Bealin:** every second chat drops a vague hint about a secret wish, which pays Taler and XP when you happen to fulfil it (`bealin`).
+
+### Spending Taler
+
+- **Rods** (`RODS`):
+
+  | Rod | Taler | Needs |
+  |---|---|---|
+  | Stock mit Schnur | Free | |
+  | Bambusrute | 60 | Level 2 |
+  | Carbonrute | 260 | Level 5 |
+  | Goldene Rute | 900 | Level 9 |
+  | Regenbogenrute | 2 500 | Rebirth 1 |
+  | Sternenrute | 15 000 | Rebirth 3 |
+  | Tiefseerute | 40 000 | Rebirth 4 |
+  | Krakenrute | 120 000 | Rebirth 6 |
+
+- **Rutenschmiede:** forges the rod in hand up to +15 for growing costs (`forge`). Each level adds +3 % reel and luck and −2 % tension.
+- **Bait** (`BAITS`): Spezi-Köder, Glitzerköder, Wii-Köder (Wii fish bite twice as often), Mondköder, Abgrundköder, Odköder. Worms are free and unlimited. Baits come with extra bite speed, and the setting `autoBait` rebuys them when they run out.
+- **Snacks** (`SNACKS`): 10 minutes each, stackable to 30, saved as `buffs`.
+
+  | Snack | Effect |
+  |---|---|
+  | Kaffee | Bites come 30 % faster |
+  | Fischbrötchen | +25 % Taler |
+  | Kleeblatt-Keks | Rare, epic and legendary fish bite 30 % more often |
+  | Glitzerlimo | Double shiny and mutation chance |
+
+- **Mystery boxes** (`BOXES`): wooden 120, silver 450 (level 4), golden 1 500 (level 8). They are also found on the hook now and then (`boxes`). A box holds Taler, bait, XP, an old sock or a 5× jackpot.
+- **Fischautomat:** stakes run from 50 to 2 000, and the cap rises with each rebirth to 5 000, 10 000, 25 000 and 50 000. 2 % of every stake feeds a jackpot (`jackpot`, starts at 1 000) that three Odfische win on top of ×150.
+- **Cosmetics** (`COSMETICS`, saved as `cosm`): hats, jackets, bobbers and boat skins. Some are sold, some come from achievements, and luxury items are late-game Taler sinks, up to the Sonnenkrone (500 000, prestige 1) and the Galaxiemantel (1 000 000, prestige 2). The wardrobe previews them and offers free skin and hair colours. The boat skin „David Hasselhoff“ (`boot-hoff`, 30 000 Taler, rebirth 3) replaces the boat on the open sea with a giant swimming pixel man.
+- **Codes:** the settings redeem codes (`CODES`, keyed by a checksum, redeemed ones saved as `codes`).
+
+## Fishing systems
+
+### What bites
+
+`pickFish()` chooses by weight, luck, cast distance, time, weather and area. Luck from rod × bait × talents has diminishing returns (`1 + 0.45 · ln(luck)`).
+
+Rarities are junk, common, uncommon, rare, Wii, epic and legendary. Wii sits between rare and epic and holds six fish cut from a user-supplied image.
+
+Fish can have conditions (`FISH`): `night`, `far`, `weather`, `needs` (earlier catches), `bait`, `hours`, `crits` (creatures beaten) and `minRod` (lava rod depth). For example, the UhrZeitFisch only bites on the full in-game hour, and Gyarados only after 14.5 Karpador, so in practice 15.
+
+A few catches do something extra:
+
+- **Ditto** fakes a legendary catch with the full fanfare and a made-up giant size, then the card reveals it.
+- **Monster-Energy-Fisch** gives faster bites for 60 s.
+- **Magische Miesmuschel** shows a random answer on its catch card. Once caught, it sits on a rock next to the dock, where you can ask it questions. Answers are spoken with on-device voices only.
+- **Spezifischfischer cut-outs** speak their line from `sounds/spezifischfischer.mp3`.
+
+### Size classes and modifiers
+
+| Class | Chance | Value |
+|---|---|---|
+| Mini | ~12 % | ×0.7 |
+| Normal | The rest | ×1 |
+| Groß | ~16 % | ×1.4 |
+| Kapital (up to 1.15× max size) | ~5 % | ×2 |
+| Monster (1.15–1.35× max size) | ~0.7 % | ×4 |
+
+The best class per fish is saved in `dex[id].cls`, and Monster catches are counted in `monsters`.
+
+| Mutation | Value |
+|---|---|
+| Winzig | ×1.6 |
+| Riesig | ×2 |
+| Albino | ×3 |
+| Leuchtend | ×3.5 |
+| Schattenhaft (night only) | ×4 |
+| Golden | ×6 |
+| Regenbogen | ×12 |
+
+About 1 % of catches are **shiny**: recoloured, sparkling and worth triple. They fill the Shinydex.
+
+### Taktdrill
+
+A legendary bite has a 30 % chance to become a rhythm minigame instead of normal reeling. 12 numbered circles appear with shrinking rings:
+
+- **With a mouse:** aim at the next circle, then hit with any mouse button or Z/X.
+- **On a touch screen:** tap the circle.
+- **Without aiming:** press Space.
+
+55 % accuracy lands the fish, and 90 % counts as a clean catch.
+
+### Time and weather
+
+Both come from the real clock, so every player sees the same world without a server (`worldTime`, `weatherAt`). An in-game day and a weather slot each last 300 s. The pill in the top bar shows the current weather and the forecast.
+
+| Weather | Effect |
+|---|---|
+| Sonnig | None |
+| Regen | Faster bites |
+| Nebel | More rare and epic fish |
+| Gewitter | More legendaries, more tension |
+| Regenbogen (only after rain) | Double shiny and mutation chance |
+| Wind | Short casts count as further out |
+| Schnee | +25 % Taler, slower bites |
+| Hitzewelle | Less tension, slower bites |
+| Sternschnuppen | More legendaries and shinies |
+
+Four weather fish only bite in their weather: Pfützenspringer, Nebelgeist, Blitzwels and Regenbogenforelle.
+
+### Fischdex
+
+The Fischdex has one page per area and opens on the area you're in. Dock fish with `sea: true` appear on both Steg and Hohe See. Search (only matches fish you've caught) and filters (all, missing, caught, without gold medal, by rarity) work on every page, including the Shinydex.
+
+The first catch of each fish gets its own reveal, then flies into the book on the dock. The progress board keeps a Fang-Verlauf of the last 20 catches (`history`).
+
+## Areas
+
+The current area is saved as `map`.
+
+| Area | `map` | Fish | Opens |
+|---|---|---|---|
+| Steg | `steg` | 47 | From the start |
+| Hohe See | `see` | 35, of which 11 are shared with the Steg | 3rd rebirth, or Seekarte |
+| Glutgrotte | `lava` | 25 | 1st prestige |
+
+Fish that moved to a harder area are worth more Taler there, in line with the other fish of that area and rarity. Caught fish stay in the Fischdex because it's keyed by fish id.
+
+### Hohe See
+
+The buoy next to Bealin takes you onto the boat, and the steering wheel takes you back. Every cast out here counts as far out.
+
+**The Odfisch** is the boss. The Odköder (rebirth 3, 1 500 Taler), cast at night on the open sea, summons it for a 3-minute fight with a health bar:
+
+- Reeling inside the safe tension deals damage, and a snapped line stuns for 3 s.
+- Phase 2 adds Taktdrill salvos, and phase 3 is a rage with harder pulls.
+- Cutscenes (`startCine`, `drawCine`) cover the intro, the phase changes and the ending. The fight pauses meanwhile and the solo clock is extended.
+- Winning lands the Odfisch (at least Kapital size), 10 Schuppen, Taler by damage share and the Odfisch hat.
+
+In a lobby, everyone on the open sea fights the same Odfisch. `api/lobby.js` keeps a shared record with 1 000 HP per angler, adds each player's capped damage per sync (`HINCRBY`), and checks the summon against the server's clock.
+
+### Glutgrotte
+
+Glimm, a pixel mole in a miner's helmet, stands on a glowing rock in front of the dock and takes you down. The cave has its own neutral weather (`glut`), and every catch there gets a heat bonus: `caveBonus()` = 1.2 × (1 + 0.1 per depth above 1) × (1 + 0.03 per trust level) × (1 + 0.05 per Glutnetz level).
+
+**Lava rods.** Normal rods melt here. Only rods with `lava: true` work, held in their own slot (`lavaRod`), and they work nowhere else. Apart from the Basaltrute, they cost Glutsteine and need a depth:
+
+| Rod | Price | Depth |
+|---|---|---|
+| Basaltrute | 400 Taler | 1 |
+| Obsidianrute | 80 🔥 | 2 |
+| Magmarute | 250 🔥 | 3 |
+| Drachenknochenrute | 700 🔥 | 4 |
+| Phönixfederrute | 1 800 🔥 | 5 |
+
+**Depths** (`CAVE_DEPTHS`, `caveDepth`) cost Glutsteine. Each one unlocks cave fish and lava rods, and adds +10 % Taler in the cave:
+
+| Depth | Name | Cost |
+|---|---|---|
+| 1 | Glutkammer | Start |
+| 2 | Aschehalle | 60 🔥 |
+| 3 | Magmaschlund | 250 🔥 |
+| 4 | Drachenhort | 800 🔥 |
+| 5 | Phönixnest | 2 000 🔥 |
+
+Depth 5 also earns the Lavamantel.
+
+**Glutsteine** (`glut`) drop per cave catch by rarity: junk 0–1, common 1, uncommon 2, rare and Wii 5, epic 12, legendary 40. Kapital and Monster catches drop double and shinies triple.
+
+**Glimm's jobs** (`glimmQ`) ask you to catch N fish in the cave, N of one cave fish or an epic or better, or to earn N Taler there. They pay 1 200 × tier × (1 + 0.25 per depth) × `coinMult()`, and the epic job also pays a pearl. Every three finished jobs (`glimmDone`) raise Glimm's trust by one level, up to 10, for +3 % Taler in the cave each. Trust and the workshop survive rebirth and prestige, and of the open jobs only finished ones do.
+
+**Glimm's workshop** (`GLUT_UPS`, `glutUps`) sells permanent cave upgrades:
+
+| Upgrade | Per level | Max level |
+|---|---|---|
+| Glutnetz | +5 % Taler | 10 |
+| Hitzeschild | −5 % tension | 5 |
+| Funkenlicht | +8 % luck | 10 |
+| Glutkristall | +10 % Glutsteine | 10 |
+| Lockruf | +1 % creature chance | 5 |
+
+**The Lava-Laden** is Glutflosse's stall on the basalt ledge, and the kiosk on the dock never shows it. It sells the lava rods, the Glutköder (5 for 15 🔥, works only in the cave), the Lockköder (5 for 20 🔥, depth 2) and lava cosmetics: Glut-Pose 80, Aschejacke 150, Magmahelm 200 and Obsidiankrone 1 500 🔥.
+
+**Lava creatures** (`CREATURES`, `crit`) sometimes bite instead of a fish: Glutschnecke, Aschekrabbe, Schlackwurm, Flammenqualle, Basaltgolem and Glutkraken, by depth. Each is a short solo fight in state `crit`: hold to deal damage, let go while it thrashes, and win within 25–40 s. A win gives Glutsteine, Taler, XP and an 8 % chance of a Glutherz.
+
+`critChance()` starts at 5 % and rises to at most 30 % with the lava rods (`kc`, Obsidian +2 to Phönixfeder +5), the Glutköder (+3), the Lockköder (+10) and Lockruf.
+
+## Multiplayer and online features
+
+All of these are opt-in. Without them, progress stays in the browser's `localStorage` (`fischen-save-v1`, see `datenschutz.html`, section 5).
+
+- **Leaderboard** (🏆): sends a nickname and scores to `api/leaderboard.js`. The boards are Taler, rebirths, Fischdex, biggest catch, smallest non-junk catch, Monster catches, Odfisch wins, prestige and Taler spent.
+- **Cloud save** (☁️): a secret key stores a copy of the save, so it can be loaded on another device. It's stored under the key's SHA-256 with a 180-day TTL.
+- **Lobbies** (👥): up to 8 anglers share a 4-letter code or a `?lobby=CODE` link. Everyone sees the others on the dock, a feed of catches and a scoreboard of Taler fished since joining. Chat messages ride along with each sync and appear as speech bubbles. The server keeps the last 30 per lobby and stars out words from the name blocklist.
+
+Lobbies use polling, not sockets. Clients sync every 3 s while the tab is visible, or every 1.5 s in a boss fight. Players disappear after 20 s without a sync and are removed after 90 s, and lobbies expire 2 h after the last activity. The current lobby is saved as `lobby`, so a reload rejoins it.
+
+## Interface
+
+- **Languages:** German and English. A DE/EN switch stores the choice in `localStorage` (`fischen-lang`), and without one the browser language decides.
+- **Fonts:** self-hosted. Silkscreen (SIL OFL, licence in `fonts/silkscreen-OFL.txt`) is only for short display text, and everything people read uses Poppins.
+- **Settings** (⚙️ or E): sound, volume (`vol`), less motion (`calm`), short numbers (`short`), a catch card that closes itself (`autoClose`), automatic bait rebuying (`autoBait`) and the play-time display (`showPlay`).
+- **Play time** (`playTime`): seconds the game was open and visible, shown as a ⏱ pill. It never resets.
+- **Patch notes:** every update adds an issue of the Steg-Zeitung, marked with „!“ while unread (`PATCH_NOTES`, `patchSeen`).
+- **Automatic updates:** open games compare the ETags of `fischen.html`, `js/fischen.js`, `js/fischen-i18n.js` and `css/fischen.css` every two minutes, then save and reload at the next calm moment.
+
+## Development
+
+### Project layout
+
+| Path | Contents |
+|---|---|
+| `index.html`, `fischen.html`, `datenschutz.html` | Top-level pages |
+| `seiten/` | All other pages, one per fish |
+| `js/fischen.js` | The game, one large IIFE |
+| `js/fischen-i18n.js` | English texts, keyed by the German original |
+| `css/`, `fonts/`, `sounds/` | Stylesheets, fonts, sounds |
+| `img/` | Images |
+| `img/pxl/` | Pixel-art sources, not loaded by the game |
+| `api/` | Vercel Functions |
+| `vercel.json` | Redirects from old top-level addresses, e.g. `/stinkfisch.html` → `/seiten/stinkfisch.html` |
+| `CLAUDE.md` | Project rules, code map and recipes (German) |
+
+### Running locally
+
+There is no build step and there are no npm packages. Serve the folder with any static server:
+
+```sh
+python -m http.server 8000
+```
+
+Then open <http://localhost:8000/fischen.html>. The test hooks in `window.__fischen` only exist on localhost. Elsewhere, `?debug` enables them but marks the save as tampered.
+
+A static server doesn't run `api/`, so the leaderboard, cloud save and lobbies need the Vercel runtime and the environment variables below, or a mock of the Redis pipeline as described in `CLAUDE.md`.
+
+Syntax check:
+
+```sh
+node --check js/fischen.js js/fischen-i18n.js api/*.js
+```
+
+### Deployment
+
+Import the repo on Vercel with Framework Preset "Other" and leave the build and output settings empty. `index.html` is served at `/`.
+
+| Environment variable | Purpose |
+|---|---|
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Upstash Redis connection |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | The same connection under the alternative names |
+| `ADMIN_TOKEN` | Optional, enables the admin actions below |
+
+### API
+
+All functions use Upstash Redis through its REST pipeline.
+
+| Endpoint | Purpose |
+|---|---|
+| `api/leaderboard.js` | Scores with plausibility limits per board. `DELETE {id, admin}` removes an entry. |
+| `api/save.js` | Cloud saves. `POST {action: 'gift', key, hours, admin}` gifts up to 1 000 h of play time, stored under `sv:gift:<hash>`. The game claims it on its next sync (`put` with `claim: true`). |
+| `api/lobby.js` | Lobbies, chat, catch feed and the shared boss fight |
+| `api/_names.js` | Name filter for the leaderboard and lobbies |
+
+One-time gifts by player name are listed in `NAME_GIFTS` in `js/fischen.js` and matched against the leaderboard and lobby name. Arrived ones are saved in `gifts`.
+
+### Anti-cheat
+
+It only makes cheating harder. Every save carries a checksum (`sig`, with `fischen-sig` remembering that this device writes signed saves). A save edited by hand is marked `tampered` and can't join or update the leaderboard.
+
+### Art
+
+- **Sprites:** the original pixel sprites are drawn as code in `img/pxl/` for the pxl tool.
+  - `fisch.px.js` renders the PNGs in `img/`.
+  - `code.px.js` renders the player, NPCs, dock props, baits and snacks, which are inlined as character rows in `js/fischen.js` (`ART`, `PLAYER_BODY`, `PLAYER_LEGS`).
+  - `welt.px.js` renders the worlds.
+- **User-supplied images:** twelve catches, such as `img/hundsfisch.png` and `img/blauer-hummer.png`, are unchanged originals, marked `photo: true, whole: true` in `FISH` so they're shown uncropped. The Blauer Hummer plays `sounds/blauer-hummer.mp3` when caught.
+- **Worlds:** painted images on their own canvas layer above the sky: `img/welt-steg.png`, `img/welt-see.png` and `img/welt-lava-1.png` to `-5.png` (one per cave depth), plus `img/welt-lava-fels.png` and `img/welt-qualle.png`. `renderBg` tints them for the time of day, and `drawWorldFx` draws the moving parts on top: waves, light shafts, kelp, bubbles, jellyfish, the whale and lavafalls.
+- **Shadows:** swimming shadows come from colour masks in `img/welt-schatten.png` (14 shapes with 4 frames each, plus the whale) and are recoloured per world in `shadowSheet()`.
+
+### Contributing
+
+`CLAUDE.md` is the source of truth. The rules that matter most:
+
+- Every new fish needs its own page in `seiten/`.
+- Game text is written in German, wrapped in `tr('…')`, and gets an English entry in `js/fischen-i18n.js`.
+- Every update players can notice gets a `PATCH_NOTES` entry and a `CHANGELOG.md` entry.
+- New save or server fields must be mentioned in `datenschutz.html`.
+- No secrets in the repo, and no copies of other people's brands, logos, characters or games.
