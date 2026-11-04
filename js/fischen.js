@@ -553,6 +553,20 @@
   save.glut = save.glut | 0;
   // Spielzeit: seconds the game was open and visible (the frame loop pauses in hidden tabs), never reset
   save.playTime = Math.max(0, +save.playTime || 0);
+  // One-time gifts, matched by the player's name (leaderboard or lobby, case-insensitive);
+  // `gifts` remembers which ones already arrived. Checked at start and with every autosave.
+  const NAME_GIFTS = [{ id: 'katie-20h', name: 'katie', playTime: 20 * 3600 }];
+  if (!Array.isArray(save.gifts)) save.gifts = [];
+  function nameGifts() {
+    const names = [save.lb && save.lb.name, save.lobbyName, save.lobby && save.lobby.name]
+      .filter(n => typeof n === 'string').map(n => n.trim().toLowerCase());
+    for (const g of NAME_GIFTS) {
+      if (save.gifts.includes(g.id) || !names.includes(g.name)) continue;
+      save.gifts.push(g.id);
+      save.playTime += g.playTime;
+      setTimeout(() => toast(tr('🎁 Geschenk: +{n} Std Spielzeit!', { n: g.playTime / 3600 })), 2500);
+    }
+  }
   let sessionTime = 0;
   function fmtPlay(sec) {
     const m = Math.floor(sec / 60), h = Math.floor(m / 60);
@@ -3970,7 +3984,8 @@
   }
   // autosave: every few seconds if something changed, and when the tab is hidden or closed
   { const d = saveData(); delete d.saved; lastJson = JSON.stringify(d); }
-  setInterval(persist, 5000);
+  nameGifts();
+  setInterval(() => { nameGifts(); persist(); }, 5000);
   document.addEventListener('visibilitychange', () => { if (document.hidden) persist(); else if (stale) location.reload(); });
   window.addEventListener('pagehide', persist);
   // ask the browser not to clear the save on its own (e.g. Safari after a week without visits)
