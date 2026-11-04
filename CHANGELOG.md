@@ -2,6 +2,12 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-17`
+
+- 🌊 All worlds have been repainted: the dock gets a proper island with a lighthouse, kelp and sunbeams in the water. The high seas now go deep, with a sea mount, a wreck, jellyfish and a passing whale.
+- 🌋 Every depth of the Glutgrotte looks different: ash dunes, crystals, a dragon skeleton on its gold, the phoenix nest with its egg, plus lavafalls.
+- 🐟 New shadows in the water: 14 shapes, from schools of minnows to sharks, swim with beating tails. When something is on the hook, its shadow roughly gives away what it is.
+
 ## 04.11.2026 · `2026-11-04-16`
 
 - 🦞 12 new catches at the dock, including the Blue Lobster (legendary, with its own sound), the Giga Shark, Comrade Catfish and the Dogfish. Three of them also bite on the high seas.
