@@ -4918,7 +4918,18 @@
     const data = cloudPayload(), sum = JSON.stringify(data).length + ':' + save.total + ':' + save.coins;
     if (!force && sum === save.cloudSum) return;
     cloudBusy = true;
-    try { await cloudCall({ action: 'put', key: save.cloudKey, data }, keepalive); save.cloudT = Date.now(); save.cloudSum = sum; cloudErr = ''; persist(); }
+    try {
+      // claim: a gift from the admin (play time) comes back with the answer; not on pagehide, where nobody reads it
+      const j = await cloudCall({ action: 'put', key: save.cloudKey, data, claim: !keepalive }, keepalive);
+      save.cloudT = Date.now(); save.cloudSum = sum; cloudErr = '';
+      const g = j.gift && Math.min(3600000, Math.max(0, j.gift.playTime | 0));
+      if (g) {
+        save.playTime = (save.playTime || 0) + g;
+        toast(tr('🎁 Geschenk: +{n} Std Spielzeit!', { n: +(g / 3600).toFixed(1) }));
+        updatePlayPill();
+      }
+      persist();
+    }
     catch (e) { cloudErr = e.message; }
     cloudBusy = false;
     if (!$('cloud').hidden) renderCloud();

@@ -198,6 +198,7 @@
     'Wii-Rotling': 'Wii Redling', 'Ich bin nicht rot, ich bin aufgeregt.': 'I’m not red, I’m excited.', 'Leuchtend rot mit dunklen Flecken. Immer ein bisschen aufgeregt.': 'Bright red with dark spots. Always a little excited.',
     'Lippenfisch': 'Lip Fish', 'Also … wo fange ich an?': 'So … where do I start?', 'Er möchte reden. Er hat viel zu sagen.': 'He wants to talk. He has a lot to say.',
     'Jetzt bin ich da.': 'Now I’m here.', 'Jetzt kommt Travis.': 'Here comes Travis.',
+    '🎁 Geschenk: +{n} Std Spielzeit!': '🎁 Gift: +{n} h of play time!', 'Nicht erlaubt.': 'Not allowed.', 'Ungültige Stundenzahl.': 'Invalid number of hours.',
     'Magische Miesmuschel': 'Magic Conch', 'Frag mich etwas.': 'Ask me something.', 'Liegt still im Sand und weiß alles. Zieh an der Schnur, dann antwortet sie. Meistens mit Nein.': 'Lies quietly in the sand and knows everything. Pull the string and it answers. Usually with no.', 'Wer sie fängt, kann ihr am Steg Fragen stellen': 'Catch it and you can ask it questions at the dock',
     '🐚 Magische Miesmuschel': '🐚 Magic Conch', 'Stell eine Frage und zieh an der Schnur.': 'Ask a question and pull the string.', 'Du musst mir schon eine Frage stellen.': 'You have to ask me a question first.',
     'Rosa Pixel-Muschel mit Zugschnur': 'Pink pixel shell with a pull string', 'An der Schnur ziehen': 'Pull the string', '🪢 An der Schnur ziehen': '🪢 Pull the string', 'Deine Frage …': 'Your question …', 'Deine Frage an die Muschel': 'Your question for the conch',

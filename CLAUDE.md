@@ -96,7 +96,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   - `cleanMe()` ist eine Whitelist. Jedes neue Feld aus `lobbyMe()` muss dort mit Grenzen eingetragen werden, sonst kommt es nicht an.
   - Boss-Schlüssel: `lobby:CODE:boss` (Meta) und `lobby:CODE:boss:<id>` (Hash mit `HINCRBY`). Pro Sync gelten höchstens 400 Schaden.
   - Gerufen werden darf der Boss nur nachts nach der Server-Uhr und auf See.
-- **`save.js`:** Cloud-Spielstand unter dem SHA-256 des geheimen Schlüssels, 180 Tage TTL.
+- **`save.js`:** Cloud-Spielstand unter dem SHA-256 des geheimen Schlüssels, 180 Tage TTL. Admin-Aktion `gift` (mit `ADMIN_TOKEN`) legt geschenkte Spielzeit unter `sv:gift:<hash>` ab; der Client holt sie beim nächsten `put` mit `claim: true` ab (`GETDEL`) und rechnet sie lokal ein. Den Cloud-Stand selbst nie direkt ändern: Das Spiel überschreibt ihn alle 3 Minuten mit dem lokalen Stand.
 - **`_names.js`:** Namensfilter für Bestenliste und Lobby.
 - **Fehlertexte** vom Server sind deutsch und werden im Client mit `tr(j.error)` übersetzt. Sie gehören also auch ins Wörterbuch.
 
