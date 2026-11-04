@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 04.11.2026 · `2026-11-04-4`
+
+- 🎯 Rhythm reel like osu!: aim at the circle with the mouse and hit with a left or right click (or Z/X) – it only counts while the pointer is on the circle. On phones you tap the circles as before, and Space still works without aiming.
+
 ## 04.11.2026 · `2026-11-04-3`
 
 - 🏆 Leaderboard: “Rebirths” now shows your current rebirths and drops to 0 on prestige, just like in the game. New rebirths show up right away.

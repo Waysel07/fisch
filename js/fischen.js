@@ -148,6 +148,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-04-4', date: '04.11.2026', items: [
+      '🎯 Taktdrill wie in osu!: Mit der Maus auf den Kreis zielen und mit Links- oder Rechtsklick (oder Z/X) irgendwo treffen – es zählt nur, wenn der Zeiger auf dem Kreis ist. Am Handy tippst du die Kreise wie bisher an, die Leertaste geht weiter ohne Zielen.',
+    ] },
     { id: '2026-11-04-3', date: '04.11.2026', items: [
       '🏆 Bestenliste: „Wiedergeburten“ zeigt jetzt deine aktuellen Wiedergeburten und fällt beim Prestige wie im Spiel auf 0. Neue Wiedergeburten erscheinen sofort.',
       '✦ Prestige lohnt sich mehr: +100 % Taler pro Prestige statt +50 %, und 40 % deiner Wiedergeburten zählen als Erbe weiter. Talente werden beim Prestige weiter zurückgesetzt.',
@@ -770,7 +773,6 @@
       el.style.left = x * 100 + '%'; el.style.top = y * 100 + '%';
       el.innerHTML = `<span class="ring"></span>${i + 1}`;
       const n = { el, x, y, at: start + RHYTHM_APPROACH + i * RHYTHM_GAP, done: false };
-      el.addEventListener('pointerdown', e => { e.preventDefault(); judgeNote(n, performance.now()); });
       field.append(el); rhythm.notes.push(n);
     }
     updateRhythmHud();
@@ -795,9 +797,30 @@
     updateRhythmHud();
     if (rhythm.judged === rhythm.notes.length) rhythm.end = now + 450;
   }
-  function rhythmHit() { // keyboard: hits the next circle in line
+  function rhythmHit() { // Space: hits the next circle in line (no aiming, for keyboard-only play)
     const n = rhythm.notes.find(n => !n.done);
     if (n) judgeNote(n, performance.now());
+  }
+  // osu!-style: aim with the mouse (or finger) and hit with a mouse button or Z/X anywhere –
+  // it only counts while the cursor is on the next circle in line
+  const rcursor = { x: -1, y: -1 };
+  function overNext() {
+    const n = rhythm.notes.find(n => !n.done); if (!n || n.el.hidden) return null;
+    const r = n.el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    return Math.hypot(rcursor.x - cx, rcursor.y - cy) <= r.width * .62 ? n : null;
+  }
+  function rhythmAimHit() {
+    if (state !== 'rhythm') return;
+    const n = overNext();
+    if (n) judgeNote(n, performance.now());
+    else { const c = $('rhythm-cursor'); c.classList.remove('nope'); void c.offsetWidth; c.classList.add('nope'); } // missed the circle: the cursor shakes, nothing is judged
+  }
+  {
+    const field = $('rhythm-field'), cur = $('rhythm-cursor');
+    const move = e => { rcursor.x = e.clientX; rcursor.y = e.clientY; const r = field.getBoundingClientRect(); cur.style.left = (e.clientX - r.left) + 'px'; cur.style.top = (e.clientY - r.top) + 'px'; cur.hidden = e.pointerType !== 'mouse'; cur.classList.toggle('on', !!overNext()); };
+    field.addEventListener('pointermove', move);
+    field.addEventListener('pointerdown', e => { e.preventDefault(); move(e); rhythmAimHit(); }); // left, right or middle button, or a finger
+    field.addEventListener('contextmenu', e => e.preventDefault());
   }
   function rhythmTick(now) {
     if (state !== 'rhythm') return;
@@ -1150,7 +1173,7 @@
     const k = e.key.toLowerCase();
     if (k === 'escape') { closeModals(); return; }
     if (e.target.closest && e.target.closest('input, textarea')) return;
-    if (state === 'rhythm') { if ((k === ' ' || k === 'z' || k === 'x') && !e.repeat) { e.preventDefault(); rhythmHit(); } return; }
+    if (state === 'rhythm') { if (!e.repeat && k === ' ') { e.preventDefault(); rhythmHit(); } else if (!e.repeat && (k === 'z' || k === 'x')) { e.preventDefault(); rhythmAimHit(); } return; }
     if (!$('title').hidden) { if (k === ' ' || k === 'enter') { e.preventDefault(); $('start').click(); } return; }
     if (!$('catch').hidden) { if (k === ' ' || k === 'enter') { e.preventDefault(); $('catch-ok').click(); } return; }
     if (k === 'f') { toggleModal('dex'); return; }
