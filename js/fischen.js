@@ -93,6 +93,13 @@
     { id: 'ankerbarsch', name: 'Ankerbarsch', img: 'img/ankerbarsch.png', r: 'uncommon', min: 40, max: 75, val: 19, pixel: true, page: 'seiten/ankerbarsch.html', map: 'see', say: 'Ich bleib noch ein bisschen.', desc: 'Hängt an einem rostigen Anker und denkt nicht daran, loszulassen.' },
     { id: 'rettungsrochen', name: 'Rettungsrochen', img: 'img/rettungsrochen.png', r: 'rare', min: 80, max: 140, val: 62, pixel: true, page: 'seiten/rettungsrochen.html', map: 'see', say: 'Keine Panik. Ich bin ausgebildet.', desc: 'Rot-weiß wie ein Rettungsring und immer im Dienst. Gerettet hat er noch niemanden.' },
     { id: 'gummistiefel', name: 'Alter Gummistiefel', img: 'img/gummistiefel.png', r: 'junk', min: 28, max: 34, val: 2, pixel: true, page: 'seiten/gummistiefel.html', map: 'see', say: 'Den linken findest du nie.', desc: 'Vollgelaufen und voller Algen. Irgendwo da draußen läuft jemand barfuß.' },
+    { id: 'beilfisch', name: 'Beilfisch', img: 'img/beilfisch.png', r: 'common', min: 4, max: 8, val: 10, pixel: true, page: 'seiten/beilfisch.html', map: 'see', say: 'Ich sehe aus wie ein Werkzeug. Bin aber keins.', desc: 'Silbrig, flach und vorne hoch wie eine Axt. Am Bauch leuchten kleine blaue Punkte.' },
+    { id: 'taucherhelm', name: 'Alter Taucherhelm', img: 'img/taucherhelm.png', r: 'junk', min: 35, max: 45, val: 2, pixel: true, page: 'seiten/taucherhelm.html', map: 'see', say: 'Hallo? Ist hier jemand drin? … Nein.', desc: 'Aus Messing und voller Wasser. Der Taucher dazu ist wohl lieber geschwommen.' },
+    { id: 'riesenassel', name: 'Riesenassel', img: 'img/riesenassel.png', r: 'uncommon', min: 25, max: 45, val: 19, pixel: true, page: 'seiten/riesenassel.html', map: 'see', say: 'Ich hab vierzehn Beine und keine Eile.', desc: 'Eine Kellerassel in groß. Lebt am Meeresgrund und frisst, was herunterfällt.' },
+    { id: 'leuchtqualle', name: 'Leuchtqualle', img: 'img/leuchtqualle.png', r: 'uncommon', min: 15, max: 35, val: 20, pixel: true, page: 'seiten/leuchtqualle.html', map: 'see', night: 2, say: 'Blink. Blink. Hallo.', desc: 'Leuchtet türkis und pink. Steigt nachts aus der Tiefe auf.' },
+    { id: 'fangzahn', name: 'Fangzahnfisch', img: 'img/fangzahn.png', r: 'rare', min: 12, max: 18, val: 66, pixel: true, page: 'seiten/fangzahn.html', map: 'see', far: .4, say: 'Ich kann den Mund nicht zumachen. Frag nicht.', desc: 'Klein, aber mit den längsten Zähnen im ganzen Meer. Beißt nur weit draußen.' },
+    { id: 'pelikanaal', name: 'Pelikanaal', img: 'img/pelikanaal.png', r: 'epic', min: 60, max: 100, val: 185, pixel: true, page: 'seiten/pelikanaal.html', map: 'see', night: 2, say: 'Mein Maul ist größer als ich.', desc: 'Ein Maul wie ein Sack und ein Schwanz wie eine Peitsche. Die leuchtende Spitze lockt nachts Beute an.' },
+    { id: 'megalodon', name: 'Megalodon', img: 'img/megalodon.png', r: 'legendary', min: 350, max: 500, val: 700, pixel: true, page: 'seiten/megalodon.html', map: 'see', far: .6, bigSplash: true, say: 'Ausgestorben? Ich? Süß.', desc: 'Ein Urzeithai, so lang wie ein Bus. Eigentlich seit Millionen Jahren weg. Beißt nur ganz weit draußen.' },
     // Glutgrotte (map: 'lava'): the lava cave under the dock, opens after the 1st prestige. Only its own fish bite there.
     { id: 'schlacke',  name: 'Schlackebrocken',  img: 'img/lava-schlacke.png',  r: 'junk',  min: 15, max: 30, val: 4, pixel: true, page: 'seiten/schlackebrocken.html', map: 'lava', post: 'slag', say: 'Ich glühe noch ein bisschen nach.', desc: 'Ein Klumpen erkalteter Lava. Manchmal stecken geschmolzene Taler drin.' },
     { id: 'glutgrundel', name: 'Glutgrundel',    img: 'img/lava-glutgrundel.png', r: 'common', min: 10, max: 20, val: 21, pixel: true, page: 'seiten/glutgrundel.html', map: 'lava', say: 'Heiß hier, oder? Ich find’s gemütlich.', desc: 'Klein, rund und glühend wie ein Stück Kohle.' },
@@ -116,6 +123,12 @@
     { id: 'bratfisch', name: 'Bratfisch', img: 'img/lava-bratfisch.png', r: 'uncommon', min: 25, max: 50, val: 46, pixel: true, page: 'seiten/bratfisch.html', map: 'lava', say: 'Von beiden Seiten. Danke.', desc: 'Knusprig, mit Grillstreifen und noch am Dampfen. Schwimmt trotzdem weiter.' },
     { id: 'basaltbutt', name: 'Basaltbutt', img: 'img/lava-basaltbutt.png', r: 'rare', min: 70, max: 130, val: 145, pixel: true, page: 'seiten/basaltbutt.html', map: 'lava', say: 'Ich bin nicht platt. Ich bin eine Platte.', desc: 'Flach wie eine Steinplatte, mit glühendem Rand. Beide Augen oben, beide genervt.' },
     { id: 'verkohlteangel', name: 'Verkohlte Angel', img: 'img/lava-verkohlte-angel.png', r: 'junk', min: 90, max: 150, val: 4, pixel: true, page: 'seiten/verkohlte-angel.html', map: 'lava', say: 'Ich war mal eine gute Rute.', desc: 'Verbrannt und durchgebrochen. Jemand hat es hier unten ohne Lavarute versucht.' },
+    { id: 'schmelzente', name: 'Schmelzente', img: 'img/lava-schmelzente.png', r: 'junk', min: 8, max: 14, val: 4, pixel: true, page: 'seiten/schmelzente.html', map: 'lava', say: 'Quiek … quieeeek … quk.', desc: 'Eine Quietscheente, die zu nah an die Lava geschwommen ist. Quietscht nur noch halb.' },
+    { id: 'lavalampe', name: 'Lavalampenfisch', img: 'img/lava-lavalampe.png', r: 'uncommon', min: 20, max: 40, val: 47, pixel: true, page: 'seiten/lavalampe.html', map: 'lava', say: 'Ich bin total retro.', desc: 'Ein Glasbauch voller wabernder Blasen. Leuchtet von innen, seit 1968.' },
+    { id: 'feuerkoi', name: 'Feuerkoi', img: 'img/lava-feuerkoi.png', r: 'rare', min: 40, max: 80, val: 150, pixel: true, page: 'seiten/feuerkoi.html', map: 'lava', say: 'Ich bringe Glück. Und Verbrennungen.', desc: 'Weiß mit flammenden roten Flecken. Ein Glücksbringer, den man besser nicht streichelt.' },
+    { id: 'hortbarsch', name: 'Hortbarsch', img: 'img/lava-hortbarsch.png', r: 'epic', min: 50, max: 90, val: 430, pixel: true, page: 'seiten/hortbarsch.html', map: 'lava', say: 'Das ist alles meins. Alles.', desc: 'Lebt im Drachenhort und frisst nur Gold. Seine Schuppen sind Münzen, die Krone hat er geklaut.' },
+    { id: 'phoenixkueken', name: 'Phönixküken', img: 'img/lava-phoenixkueken.png', r: 'epic', min: 15, max: 30, val: 470, pixel: true, page: 'seiten/phoenixkueken.html', map: 'lava', say: 'Piep! … Fauch!', desc: 'Gerade erst im Phönixnest geschlüpft. Ein Stück Eierschale klebt noch am Bauch.' },
+    { id: 'glutwal', name: 'Glutwal', img: 'img/lava-glutwal.png', r: 'legendary', min: 320, max: 480, val: 1800, pixel: true, page: 'seiten/glutwal.html', map: 'lava', far: .5, bigSplash: true, say: 'Ich puste nicht. Ich breche aus.', desc: 'Ein Wal aus Basalt, fast so groß wie die Grotte. Aus seinem Blasloch spritzt Lava. Nur weit draußen im Phönixnest.' },
     // the boss of the open sea: never bites normally, only lands after winning the boss fight
     { id: 'odboss',   name: 'Odfisch',           img: 'img/odfisch-boss.png',     r: 'legendary', min: 260, max: 320, val: 900, pixel: true, page: 'seiten/odfisch.html', map: 'see', boss: true, say: 'Fih.', desc: 'Halb Fisch, halb Katze, ganz Boss. Der Herrscher der Hohen See lässt sich nur im Bossfight bezwingen – am besten zusammen mit der Lobby.' },
     { id: 'schummel', name: 'Ditto',    img: 'img/ditto-dance.gif', r: 'junk', min: 6, max: 14, val: 1, pixel: true, page: 'seiten/schummelfisch.html', fake: true, say: 'Das ist kein Fisch.', desc: '+1 Coin' },
@@ -194,6 +207,11 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-05-3', date: '05.11.2026', items: [
+      '🌋 6 neue Fänge in der Glutgrotte, vor allem in den tiefen Ebenen: die Schmelzente, der Lavalampenfisch, der Feuerkoi, der Hortbarsch im Drachenhort und im Phönixnest das Phönixküken und der legendäre Glutwal.',
+      '🌊 7 neue Fänge aus der Tiefsee auf Hoher See: Beilfisch, Alter Taucherhelm, Riesenassel, Leuchtqualle (nachts), Fangzahnfisch (weit draußen), Pelikanaal (nachts) und der legendäre Megalodon ganz weit draußen.',
+      '💫 Shinydex: Jede Karte zeigt jetzt, mit welchen Mutationen du diesen Fisch als Shiny gefangen hast, mit Anzahl. Gezählt wird ab diesem Update.',
+    ] },
     { id: '2026-11-05-2', date: '05.11.2026', items: [
       '🧬 Shinydex mit Mutationen: Oben siehst du jetzt alle 7 Mutationen – welche du schon gefangen hast und welche davon auch als Shiny. Jede Karte zeigt die Mutationen des Fischs, als Shiny gefangene mit Goldrahmen. Dazu zwei neue Shiny-Belohnungen.',
       '✦ Prestige geht schneller: Jedes Prestige braucht eine Wiedergeburt weniger als das letzte – erst 7, dann 6, dann 5, danach immer 4.',
@@ -380,7 +398,7 @@
   ];
   trAll(Object.values(RARITY), ['label']); trAll(FISH, ['name', 'say', 'desc', 'hint']);
   // Glutgrotte: how deep you must have dug for each cave fish (see CAVE_DEPTHS)
-  const LAVA_DEPTH = { schlacke: 1, glutgrundel: 1, aschebarsch: 1, bimsfisch: 1, funkenforelle: 1, obsidianhecht: 2, schwefelkugel: 2, magmakarpfen: 3, salamanderfisch: 3, kristallwels: 3, lavadrache: 4, phoenixfisch: 5, russaal: 2, mitternachtsfunke: 3, kraterwaechter: 4, hundsfisch: 1, fuckingfisch: 1, staebchen: 1, genosse: 2, keptwaiting: 3, kohlestint: 1, streichholz: 1, bratfisch: 1, basaltbutt: 2, verkohlteangel: 1 };
+  const LAVA_DEPTH = { schlacke: 1, glutgrundel: 1, aschebarsch: 1, bimsfisch: 1, funkenforelle: 1, obsidianhecht: 2, schwefelkugel: 2, magmakarpfen: 3, salamanderfisch: 3, kristallwels: 3, lavadrache: 4, phoenixfisch: 5, russaal: 2, mitternachtsfunke: 3, kraterwaechter: 4, hundsfisch: 1, fuckingfisch: 1, staebchen: 1, genosse: 2, keptwaiting: 3, kohlestint: 1, streichholz: 1, bratfisch: 1, basaltbutt: 2, verkohlteangel: 1, schmelzente: 2, lavalampe: 2, feuerkoi: 3, hortbarsch: 4, phoenixkueken: 5, glutwal: 5 };
   for (const f of FISH) if (LAVA_DEPTH[f.id]) f.depth = LAVA_DEPTH[f.id]; trAll(RODS, ['name', 'desc']); trAll(BAITS, ['name', 'desc']);
 
   // ------------------------------------------------------------------ save
@@ -2795,7 +2813,8 @@
   function hookedShadow(h) {
     const f = h.f, m = f.max || 30;
     if (f.r === 'junk') return 'boot';
-    if (f.id === 'kalmar') return 'squid';
+    if (f.id === 'kalmar' || f.id === 'leuchtqualle') return 'squid';
+    if (f.id === 'pelikanaal') return 'eel';
     if (inLava()) return m >= 150 ? 'wyrm' : m >= 60 ? 'eel' : 'panzer';
     if (onSea()) return m >= 300 ? 'shark' : m >= 150 ? 'tuna' : m >= 60 ? 'pike' : 'perch';
     return m >= 200 ? 'shark' : m >= 100 ? 'catfish' : m >= 60 ? 'pike' : m >= 30 ? 'carp' : 'perch';
@@ -3606,6 +3625,17 @@
     }
     return m;
   }
+  // Shinydex card: only the mutations this fish came out with as a shiny, with how often
+  function shinyMutRow(e) {
+    const m = document.createElement('div'); m.className = 'muts smuts';
+    for (const mu of MUTATIONS) if (e.smuts && e.smuts[mu.id]) {
+      const sp = document.createElement('span'), n = e.smuts[mu.id];
+      sp.textContent = mu.icon; sp.className = 'sm'; sp.title = tr('{m} · {n}× als Shiny', { m: mu.name, n });
+      if (n > 1) { const k = document.createElement('i'); k.textContent = '×' + n; sp.append(k); }
+      m.append(sp);
+    }
+    return m.childElementCount ? m : null;
+  }
   // Shinydex: all mutations at a glance, caught normal and as shiny
   function renderMutStrip() {
     const box = $('dex-muts'); box.hidden = dexTab !== 'shiny';
@@ -3644,7 +3674,7 @@
       const info = document.createElement('small');
       info.textContent = sh ? tr('{n}× shiny gefangen', { n: e.shiny }) : e ? tr('Noch kein Shiny') : tr('Erst normal fangen');
       c.append(img, name, r, info);
-      if (e && e.muts) c.append(mutRow(e));
+      const sm = sh && shinyMutRow(e); if (sm) c.append(sm);
       return c;
     }));
   }

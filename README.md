@@ -208,7 +208,7 @@ Four weather fish only bite in their weather: Pfützenspringer, Nebelgeist, Blit
 
 ### Fischdex
 
-The Fischdex has one page per area and opens on the area you're in. Dock fish with `sea: true` appear on both Steg and Hohe See. Search (only matches fish you've caught) and filters (all, missing, caught, without gold medal, by rarity) work on every page, including the Shinydex.
+The Fischdex has one page per area and opens on the area you're in. Dock fish with `sea: true` appear on both Steg and Hohe See. On Shinydex cards, the icons show which mutations that fish came out with as a shiny (`smuts`), with a count. Search (only matches fish you've caught) and filters (all, missing, caught, without gold medal, by rarity) work on every page, including the Shinydex.
 
 The first catch of each fish gets its own reveal, then flies into the book on the dock. The progress board keeps a Fang-Verlauf of the last 20 catches (`history`).
 
@@ -219,14 +219,16 @@ The current area is saved as `map`.
 | Area | `map` | Fish | Opens |
 |---|---|---|---|
 | Steg | `steg` | 47 | From the start |
-| Hohe See | `see` | 35, of which 11 are shared with the Steg | 3rd rebirth, or Seekarte |
-| Glutgrotte | `lava` | 25 | 1st prestige |
+| Hohe See | `see` | 42, of which 11 are shared with the Steg | 3rd rebirth, or Seekarte |
+| Glutgrotte | `lava` | 31 | 1st prestige |
 
 Fish that moved to a harder area are worth more Taler there, in line with the other fish of that area and rarity. Caught fish stay in the Fischdex because it's keyed by fish id.
 
 ### Hohe See
 
 The buoy next to Bealin takes you onto the boat, and the steering wheel takes you back. Every cast out here counts as far out.
+
+Deep-sea catches (since `2026-11-05-3`): Beilfisch, Alter Taucherhelm (junk), Riesenassel, Leuchtqualle (night), Fangzahnfisch (far), Pelikanaal (night) and the legendary Megalodon (very far).
 
 **The Odfisch** is the boss. The Odköder (rebirth 3, 1 500 Taler), cast at night on the open sea, summons it for a 3-minute fight with a health bar:
 
@@ -263,6 +265,8 @@ Glimm, a pixel mole in a miner's helmet, stands on a glowing rock in front of th
 | 5 | Phönixnest | 2 000 🔥 |
 
 Depth 5 also earns the Lavamantel.
+
+Deep cave catches (since `2026-11-05-3`): Schmelzente (junk) and Lavalampenfisch at depth 2, Feuerkoi at depth 3, Hortbarsch at depth 4, and Phönixküken and the legendary Glutwal (far) at depth 5.
 
 **Glutsteine** (`glut`) drop per cave catch by rarity: junk 0–1, common 1, uncommon 2, rare and Wii 5, epic 12, legendary 40. Kapital and Monster catches drop double and shinies triple.
 

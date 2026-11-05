@@ -2,6 +2,12 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 05.11.2026 · `2026-11-05-3`
+
+- 🌋 6 new catches in the Ember Grotto, mostly in the deep levels: the Melted Duck, the Lava Lamp Fish, the Fire Koi, the Hoard Perch in the Dragon Hoard, and in the Phoenix Nest the Phoenix Chick and the legendary Ember Whale.
+- 🌊 7 new deep-sea catches on the High Seas: Hatchetfish, Old Diving Helmet, Giant Isopod, Glow Jelly (at night), Fangtooth (far out), Gulper Eel (at night) and the legendary Megalodon, very far out.
+- 💫 Shinydex: Every card now shows which mutations you caught that fish with as a shiny, with a count. Counting starts with this update.
+
 ## 05.11.2026 · `2026-11-05-2`
 
 - 🧬 Shinydex with mutations: at the top you now see all 7 mutations – which ones you have caught and which of them also as a shiny. Every card shows the fish’s mutations, shiny ones with a gold frame. Plus two new shiny rewards.
