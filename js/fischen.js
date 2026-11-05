@@ -207,6 +207,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-05-5', date: '05.11.2026', items: [
+      '🐚 Die Magische Miesmuschel spricht wieder: Sie wartet jetzt, bis der Browser seine Stimmen geladen hat, und funktioniert auch auf iPhone und iPad. Hat dein Gerät keine eingebaute Stimme, sagt das Spiel Bescheid.',
+    ] },
     { id: '2026-11-05-4', date: '05.11.2026', items: [
       '📜 Aufträge neu ausbalanciert: Die Taler-Belohnung wächst jetzt mit deinem Taler-Bonus, die EP mit deinem Level. Aufträge verlangen nur noch Fische, die du gerade fangen kannst, und Größen, die dort auch vorkommen.',
       '📅 Wochenziele neu ausbalanciert: Wie viel du schaffen musst, hängt von deinem Fortschritt ab (Anfang, ab 3× Wiedergeburt, ab Prestige). Jedes Ziel gibt jetzt auch Taler und mehr Schuppen, alle drei zusammen eine Goldkiste. Neu sind „Fische mit Mutation“ und „Aufträge erledigen“.',
@@ -2996,17 +2999,40 @@
     muschelLast = i;
     return MUSCHEL_ANSWERS[i];
   }
-  // Deep voice from the browser's speech synthesis; only on-device voices, so nothing leaves the browser
-  function muschelSpeak(text) {
-    const synth = window.speechSynthesis;
-    if (!save.sound || !synth || !window.SpeechSynthesisUtterance) return;
-    const lang = I18N.lang === 'en' ? 'en' : 'de';
-    const voices = synth.getVoices().filter(v => v.localService && v.lang.toLowerCase().startsWith(lang));
-    if (!voices.length) return;
+  // Deep voice from the browser's speech synthesis; only on-device voices, so nothing leaves the browser.
+  // Browsers load their voices late (voiceschanged) and iOS only talks after a first speak() inside a tap, so both are handled here.
+  const synth = window.speechSynthesis && window.SpeechSynthesisUtterance ? window.speechSynthesis : null;
+  let voiceList = [], speechUnlocked = false, noVoiceToast = false;
+  function loadVoices() { try { voiceList = synth.getVoices() || []; } catch (e) { voiceList = []; } }
+  if (synth) {
+    loadVoices();
+    if (synth.addEventListener) synth.addEventListener('voiceschanged', loadVoices); else synth.onvoiceschanged = loadVoices;
+    const unlock = () => { // a silent utterance inside the first tap opens speech on iOS/Safari
+      if (speechUnlocked) return;
+      speechUnlocked = true;
+      try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; synth.speak(u); } catch (e) { /* no speech */ }
+    };
+    addEventListener('pointerdown', unlock, { once: true, capture: true });
+    addEventListener('keydown', unlock, { once: true, capture: true });
+  }
+  function pickVoice(lang) {
+    const own = voiceList.filter(v => v.localService !== false && (v.lang || '').toLowerCase().replace('_', '-').startsWith(lang));
+    return own.find(v => v.default) || own[0] || null;
+  }
+  function muschelSpeak(text, tries = 0) {
+    if (!save.sound || !synth || !text) return;
+    if (!voiceList.length) loadVoices();
+    if (!voiceList.length && tries < 8) { setTimeout(() => muschelSpeak(text, tries + 1), 250); return; } // voices still loading
+    const v = pickVoice(I18N.lang === 'en' ? 'en' : 'de');
+    if (!v) {
+      if (!noVoiceToast) { noVoiceToast = true; toast(tr('Dein Gerät hat keine eingebaute Stimme in dieser Sprache – die Muschel bleibt stumm.')); }
+      return;
+    }
     synth.cancel();
+    if (synth.paused) synth.resume();
     const u = new SpeechSynthesisUtterance(text);
-    u.voice = voices[0]; u.lang = voices[0].lang; u.pitch = .1; u.rate = .75; u.volume = vol();
-    synth.speak(u);
+    u.voice = v; u.lang = v.lang; u.pitch = .1; u.rate = .75; u.volume = vol();
+    setTimeout(() => synth.speak(u), 30); // Chrome drops a speak() that follows cancel() in the same tick
   }
   function renderMuschel() {
     $('muschel-answer').textContent = tr('Stell eine Frage und zieh an der Schnur.');
