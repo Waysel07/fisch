@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 05.11.2026 · `2026-11-05-5`
+
+- 🏆 Leaderboard fixed: with more than 99 fish in the Fishdex your entry was rejected and none of your lists updated anymore. All your scores get through again now.
+
 ## 05.11.2026 · `2026-11-05-4`
 
 - 📜 Quests rebalanced: the coin reward now grows with your coin bonus, the XP with your level. Quests only ask for fish you can catch right now, and for sizes that actually occur there.

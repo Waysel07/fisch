@@ -207,6 +207,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-05-5', date: '05.11.2026', items: [
+      '🏆 Bestenliste repariert: Mit mehr als 99 Fischen im Fischdex wurde dein Eintrag abgelehnt und keine Liste mehr aktualisiert. Jetzt kommen alle Werte wieder an.',
+    ] },
     { id: '2026-11-05-4', date: '05.11.2026', items: [
       '📜 Aufträge neu ausbalanciert: Die Taler-Belohnung wächst jetzt mit deinem Taler-Bonus, die EP mit deinem Level. Aufträge verlangen nur noch Fische, die du gerade fangen kannst, und Größen, die dort auch vorkommen.',
       '📅 Wochenziele neu ausbalanciert: Wie viel du schaffen musst, hängt von deinem Fortschritt ab (Anfang, ab 3× Wiedergeburt, ab Prestige). Jedes Ziel gibt jetzt auch Taler und mehr Schuppen, alle drei zusammen eine Goldkiste. Neu sind „Fische mit Mutation“ und „Aufträge erledigen“.',
