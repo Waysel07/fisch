@@ -67,6 +67,29 @@
     { id: 'affenfisch', name: 'Affenfisch', img: 'img/affenfisch.png', r: 'rare', min: 50, max: 100, val: 48, photo: true, whole: true, page: 'seiten/affenfisch.html', say: 'Uh uh. Blubb.', desc: 'Schaut dich an, als hättest du seine Banane.' },
     { id: 'talerfisch', name: 'Talerfisch', img: 'img/talerfisch.png', r: 'rare', min: 30, max: 55, val: 90, pixel: true, page: 'seiten/talerfisch.html', sea: true, say: 'Wallah, Digga, ich bin echt Gold. Bruder, was guckst du?', desc: 'Golden wie ein Taler, aber im schwarzen Trainingsanzug: gegelte Haare, ein Strich in der Augenbraue, Schnauzer, Goldkette mit Taler, die Bauchtasche quer über der Brust und immer eine Vape im Mundwinkel. Zahlt besser als die meisten.' },
     { id: 'elfbar', name: 'Elfbar', img: 'img/elfbar.png', r: 'junk', min: 10, max: 12, val: 1, pixel: true, page: 'seiten/elfbar.html', sea: true, say: 'Noch zwei Züge. Vielleicht. Ganz sicher nicht.', desc: 'Eine leere Einweg-Vape, Geschmack „Blue Razz Ice“. Gehört bestimmt dem Talerfisch. Akkus gehören übrigens nicht ins Wasser, sondern in die Sammelbox.' },
+    // Sonneninsel (ab 3× Prestige): Bucht 1–5 öffnen sich mit Stempeln
+    { id: 'kokosnussfisch', name: 'Kokosnussfisch', img: 'img/kokosnussfisch.png', r: 'common', min: 15, max: 30, val: 26, pixel: true, page: 'seiten/kokosnussfisch.html', map: 'insel', bay: 1, say: 'Ich bin hart von außen. Und von innen eigentlich auch.', desc: 'Trägt eine halbe Kokosnuss als Panzer und fällt manchmal einfach von Palmen ins Wasser.' },
+    { id: 'papageifisch', name: 'Papageifisch', img: 'img/papageifisch.png', r: 'common', min: 20, max: 45, val: 28, pixel: true, page: 'seiten/papageifisch.html', map: 'insel', bay: 1, say: 'Ich knabbere Korallen und mache daraus Sand. Gern geschehen.', desc: 'Türkis mit pinken Schuppen und einem Schnabel aus Zähnen. Ein großer Teil vom weißen Strand war mal sein Mittagessen.' },
+    { id: 'badelatsche', name: 'Badelatsche', img: 'img/badelatsche.png', r: 'junk', min: 24, max: 28, val: 3, pixel: true, page: 'seiten/badelatsche.html', map: 'insel', bay: 1, say: 'Flipp. Flopp.', desc: 'Ein einzelner Flip-Flop. Irgendwo am Strand hüpft gerade jemand auf einem Bein.' },
+    { id: 'sonnencreme', name: 'Sonnencreme-Flasche', img: 'img/sonnencreme.png', r: 'junk', min: 15, max: 18, val: 3, pixel: true, page: 'seiten/sonnencreme.html', map: 'insel', bay: 1, say: 'Eincremen nicht vergessen!', desc: 'LSF 50, halb leer. Die Fische hier haben trotzdem alle Sonnenbrand.' },
+    { id: 'strandballkugelfisch', name: 'Strandball-Kugelfisch', img: 'img/strandballkugelfisch.png', r: 'uncommon', min: 25, max: 45, val: 64, pixel: true, page: 'seiten/strandballkugelfisch.html', map: 'insel', bay: 1, say: 'Nicht aufpumpen! Ich bin schon voll!', desc: 'Bläst sich zu einem bunten Wasserball auf, sobald jemand „Volleyball“ sagt.' },
+    { id: 'flamingofisch', name: 'Flamingofisch', img: 'img/flamingofisch.png', r: 'uncommon', min: 40, max: 70, val: 66, pixel: true, page: 'seiten/flamingofisch.html', map: 'insel', bay: 1, say: 'Ein Bein reicht. Das andere ist für Notfälle.', desc: 'Rosa, eitel und erstaunlich gut im Gleichgewicht. Steht stundenlang auf einem Bein im flachen Wasser.' },
+    { id: 'ananasbarsch', name: 'Ananasbarsch', img: 'img/ananasbarsch.png', r: 'rare', min: 30, max: 55, val: 175, pixel: true, page: 'seiten/ananasbarsch.html', map: 'insel', bay: 1, say: 'Pizza? Mit mir? Wage es nicht.', desc: 'Gelbes Rautenmuster und eine grüne Blätterkrone. Riecht süß und ist trotzdem ziemlich stachelig.' },
+    { id: 'schnorchelfisch', name: 'Schnorchelfisch', img: 'img/schnorchelfisch.png', r: 'common', min: 18, max: 35, val: 30, pixel: true, page: 'seiten/schnorchelfisch.html', map: 'insel', bay: 2, say: 'Blubb … Moment … *schnorchel* … blubb.', desc: 'Trägt Taucherbrille und Schnorchel, obwohl er ein Fisch ist. Sicher ist sicher.' },
+    { id: 'pingpongkugelfisch', name: 'Tischtennis-Kugelfisch', img: 'img/pingpongkugelfisch.png', r: 'uncommon', min: 8, max: 14, val: 70, pixel: true, page: 'seiten/pingpongkugelfisch.html', map: 'insel', bay: 2, say: 'Pling. Plong. Pling. Plong.', desc: 'Klein, weiß und hüpft wie ein Tischtennisball über die Wellen. Hat seinen eigenen Schläger dabei.' },
+    { id: 'frisbeerochen', name: 'Frisbee-Rochen', img: 'img/frisbeerochen.png', r: 'rare', min: 40, max: 80, val: 190, pixel: true, page: 'seiten/frisbeerochen.html', map: 'insel', bay: 2, say: 'Wirf mich! Nein, warte, nicht so weit!', desc: 'Rund, flach und orange. Gleitet so gut durch die Luft, dass ihn Coach Pelle manchmal mit der Scheibe verwechselt.' },
+    { id: 'meeresschildkroete', name: 'Meeresschildkröte', img: 'img/meeresschildkroete.png', r: 'rare', min: 60, max: 120, val: 200, pixel: true, page: 'seiten/meeresschildkroete.html', map: 'insel', bay: 2, say: 'Langsam. Ganz. Langsam.', desc: 'Kein Fisch, aber das sagt ihr keiner ins Gesicht. Schwimmt seit hundert Jahren um die Insel.' },
+    { id: 'bowlingkugelfisch', name: 'Bowlingkugelfisch', img: 'img/bowlingkugelfisch.png', r: 'uncommon', min: 20, max: 24, val: 78, pixel: true, page: 'seiten/bowlingkugelfisch.html', map: 'insel', bay: 3, say: 'Strike! … Ach nein, ich bin ja im Wasser.', desc: 'Schwer, glänzend und mit drei Löchern auf dem Rücken. Rollt lieber, als zu schwimmen.' },
+    { id: 'wasserskimakrele', name: 'Wasserski-Makrele', img: 'img/wasserskimakrele.png', r: 'rare', min: 35, max: 60, val: 210, pixel: true, page: 'seiten/wasserskimakrele.html', map: 'insel', bay: 3, say: 'Schneller! Zieh schneller!', desc: 'Steht auf zwei Skiern und lässt sich vom Jetski über die Sportbucht ziehen. Fällt nie hin, sagt sie.' },
+    { id: 'bogenschuetzenfisch', name: 'Bogenschützenfisch', img: 'img/bogenschuetzenfisch.png', r: 'rare', min: 20, max: 35, val: 220, pixel: true, page: 'seiten/bogenschuetzenfisch.html', map: 'insel', bay: 3, far: 0.3, say: 'Ich treffe alles. Außer die Mitte.', desc: 'Schießt mit einem Wasserstrahl Insekten von den Blättern, genau wie ein Pfeil. Übt heimlich an Pelles Zielscheiben.' },
+    { id: 'fechterfisch', name: 'Fechter-Schwertfisch', img: 'img/fechterfisch.png', r: 'epic', min: 120, max: 220, val: 520, pixel: true, page: 'seiten/fechterfisch.html', map: 'insel', bay: 3, say: 'En garde! Touché! … Wo ist mein Gegner?', desc: 'Trägt eine Fechtmaske und eine Startnummer. Sein Schwert ist echt, sein Gegner leider nicht.' },
+    { id: 'golfballfisch', name: 'Golfballfisch', img: 'img/golfballfisch.png', r: 'uncommon', min: 4, max: 6, val: 80, pixel: true, page: 'seiten/golfballfisch.html', map: 'insel', bay: 4, say: 'Fore!', desc: 'Klein, weiß und voller Dellen. Landet ständig im Wasser, obwohl er eigentlich aufs Grün wollte.' },
+    { id: 'basketballbarsch', name: 'Basketball-Barsch', img: 'img/basketballbarsch.png', r: 'rare', min: 24, max: 30, val: 230, pixel: true, page: 'seiten/basketballbarsch.html', map: 'insel', bay: 4, say: 'Ich trippel nicht, ich schwimme. Mit Stil.', desc: 'Orange mit schwarzen Nähten und einem Schweißband am Schwanz. Springt aus dem Wasser, als wäre da ein Korb.' },
+    { id: 'kanuhecht', name: 'Kanu-Hecht', img: 'img/kanuhecht.png', r: 'epic', min: 100, max: 180, val: 540, pixel: true, page: 'seiten/kanuhecht.html', map: 'insel', bay: 4, say: 'Links, rechts, links, rechts. Nicht im Kreis!', desc: 'Lang wie ein Kanu, mit Holzmuster auf dem Rücken. Hält das Paddel im Maul und fährt trotzdem im Kreis.' },
+    { id: 'hulafisch', name: 'Hula-Fisch', img: 'img/hulafisch.png', r: 'epic', min: 30, max: 55, val: 500, pixel: true, page: 'seiten/hulafisch.html', map: 'insel', bay: 4, night: 3, say: 'Hüfte links, Hüfte rechts. Ach, ich hab ja keine Hüfte.', desc: 'Tanzt nachts in der Lagune im Bastrock und mit Blumenkranz. Tagsüber schläft er unter dem Wasserfall.' },
+    { id: 'sternenfisch', name: 'Sternenfisch', img: 'img/sternenfisch.png', r: 'epic', min: 40, max: 70, val: 560, pixel: true, page: 'seiten/sternenfisch.html', map: 'insel', bay: 5, night: 3, say: 'Ich bin nicht gefallen. Ich bin gelandet.', desc: 'Nachtblau mit leuchtenden Sternen auf der Haut. Nur in klaren Nächten in der Pokalbucht zu sehen.' },
+    { id: 'pokalfisch', name: 'Goldener Pokalfisch', img: 'img/pokalfisch.png', r: 'legendary', min: 60, max: 110, val: 1700, pixel: true, page: 'seiten/pokalfisch.html', map: 'insel', bay: 5, say: 'Ich bin der Preis. Du bist nur der Gewinner.', desc: 'Ein Fisch, der selbst ein Pokal ist, mit Henkeln, Sockel und kleiner Krone. Kapitän Kraul sucht ihn seit Jahren.' },
+    { id: 'mantarochen', name: 'Riesen-Mantarochen', img: 'img/mantarochen.png', r: 'legendary', min: 350, max: 500, val: 1900, pixel: true, page: 'seiten/mantarochen.html', map: 'insel', bay: 5, far: 0.6, bigSplash: true, say: 'Wuuusch.', desc: 'Schwingen breiter als der Steg. Gleitet lautlos durch die Pokalbucht und springt manchmal einfach so aus dem Wasser.' },
     { id: 'grinsehai', name: 'Grinsehai', img: 'img/grinsehai.png', r: 'rare', min: 110, max: 220, val: 55, photo: true, whole: true, page: 'seiten/grinsehai.html', sea: true, say: 'Schöne Zähne, oder?', desc: 'Geht zweimal im Jahr zum Zahnarzt. Der Zahnarzt nur einmal.' },
     { id: 'gesichtshai', name: 'Gesichtshai', img: 'img/gesichtshai.png', r: 'epic', min: 120, max: 240, val: 185, photo: true, whole: true, page: 'seiten/gesichtshai.html', map: 'see', say: 'Was guckst du so?', desc: 'Hat ein Gesicht, das man nicht vergisst. Leider.' },
     { id: 'gigahai', name: 'Giga-Hai', img: 'img/giga-hai.png', r: 'epic', min: 200, max: 350, val: 170, photo: true, whole: true, page: 'seiten/giga-hai.html', sea: true, say: 'Kein Bein-Tag ausgelassen.', desc: 'Sein Kinn kommt zwei Sekunden vor ihm an.' },
@@ -170,6 +193,7 @@
     { id: 'wiik',   name: 'Wii-Köder',     price: 30, pack: 5, lvl: 3, luck: 1.5, speed: 1.4, wii: 2, img: 'img/wii-bait.png', desc: '5 Stück. Zeigt auf die Wii-Fische. Die beißen doppelt so oft.' },
     { id: 'mond',   name: 'Mondköder',     price: 90, pack: 5, reb: 2, luck: 4.2, speed: 2,  desc: '5 Stück. Leuchtet. Legenden können nicht widerstehen.' },
     { id: 'abyss',  name: 'Abgrundköder',  price: 200, pack: 5, reb: 5, luck: 6, speed: 2.4, desc: '5 Stück. Leuchtet aus der Tiefe. Selbst Legenden werden neugierig.' },
+    { id: 'mango',  name: 'Mango-Köder',   price: 260, pack: 5, pres: 3, insel: true, luck: 6.5, speed: 2.4, desc: '5 Stück. Nur auf der Sonneninsel stark: süß, reif und unwiderstehlich für Inselfische. Anderswo nur ein Stück Obst.' },
     { id: 'glutkoeder', name: 'Glutköder', price: 300, glut: 15, pack: 5, pres: 1, luck: 3, speed: 1.8, lava: true, kc: 3, desc: '5 Stück. Glüht wie Kohle. Wirkt nur in der Glutgrotte, dort aber richtig.' },
     { id: 'lockkoeder', name: 'Lockköder', price: 400, glut: 20, pack: 5, pres: 1, depth: 2, luck: 1.2, speed: 1.6, lava: true, kc: 10, desc: '5 Stück. Riecht nach Ärger. Lockt in der Glutgrotte viel öfter Lava-Kreaturen an.' },
     { id: 'odkoeder', name: 'Odköder',     price: 1500, pack: 1, reb: 3, luck: 1, speed: 1, boss: true, desc: '1 Stück. Nachts auf Hoher See ausgeworfen, ruft er den Odfisch.' },
@@ -633,9 +657,10 @@
   const onInsel = () => save.map === 'insel';
   // the bays open with stamps from the sport stations (see SPORTS)
   const INSEL_BAYS = [
-    { n: 1, name: 'Palmenstrand', st: 0 }, { n: 2, name: 'Korallenriff', st: 3 }, { n: 3, name: 'Sportbucht', st: 8 },
-    { n: 4, name: 'Wasserfall-Lagune', st: 14 }, { n: 5, name: 'Pokalbucht', st: 20 },
+    { n: 1, name: 'Palmenstrand', st: 0 }, { n: 2, name: 'Korallenriff', st: 4 }, { n: 3, name: 'Sportbucht', st: 10 },
+    { n: 4, name: 'Wasserfall-Lagune', st: 18 }, { n: 5, name: 'Pokalbucht', st: 26 },
   ];
+  const STAMP_ALL = 40, CHAMP_ST = 26; // 8 stations × 5 stamps; the champion duels open with the 5th bay
   trAll(INSEL_BAYS, ['name']);
   if (!save.sport || typeof save.sport !== 'object') save.sport = {};
   if (!Array.isArray(save.stamps)) save.stamps = [];
@@ -646,7 +671,7 @@
   const stampCount = () => save.stamps.length;
   // what the island gives back to the fishing everywhere: +2 % per Profi (skill 1000), +3 % per champion trophy, +5 % for all 30 stamps
   function profis() { return Object.values(save.sport).filter(r => r && (r.lv | 0) >= 1000).length; }
-  function sportBonus() { return .02 * profis() + .03 * save.trophies.length + (stampCount() >= 30 ? .05 : 0); }
+  function sportBonus() { return .02 * profis() + .03 * save.trophies.length + (stampCount() >= STAMP_ALL ? .05 : 0); }
   // Taler bonus while fishing on the island: +30 %, and +10 % more for every further bay that is open
   function inselMult() { return onInsel() ? 1.3 * (1 + .1 * (inselBay() - 1)) : 1; }
   function inselBay() { let b = 1; for (const x of INSEL_BAYS) if (stampCount() >= x.st) b = x.n; return b; }
@@ -789,7 +814,7 @@
   function pickFish() {
     // out on the open sea and on the lava lake every cast counts as far out
     const d = Math.min(1, ((onSea() || inLava()) ? Math.max(.7, castDistance()) : castDistance()) + (wx.far ? wx.far * (1 + .1 * perk('wetter')) : 0)), night = isNight(), b = bait(), r = rod(), map = save.map;
-    const rawLuck = (b.lava && map !== 'lava' ? 1 : b.luck) * (map === 'lava' ? 1 + .08 * glutUp('licht') : 1) * r.luck * (1 + .08 * perk('glueck')) * (1 + .1 * pperk('pglueck')) * (dexPerk('luck10') ? 1.1 : 1) * (hasT('kompass') ? 1.05 : 1);
+    const rawLuck = ((b.lava && map !== 'lava') || (b.insel && map !== 'insel') ? 1 : b.luck) * (map === 'lava' ? 1 + .08 * glutUp('licht') : 1) * r.luck * (1 + .08 * perk('glueck')) * (1 + .1 * pperk('pglueck')) * (dexPerk('luck10') ? 1.1 : 1) * (hasT('kompass') ? 1.05 : 1);
     // diminishing returns: rod × bait × talents multiply up to 30+ late, which made legendaries an everyday catch;
     // the log keeps every upgrade noticeable while rare stays rare
     const luck = 1 + .45 * Math.log(Math.max(1, rawLuck));
@@ -1951,6 +1976,14 @@
     { id: 'jacke-beta',  slot: 'jacket', name: 'Beta-Jacke',         col: ['#7c3aed', '#3b0764', '#22d3ee'], desc: 'Lila mit Türkis. Steht „BETA“ drauf, man sieht es nur nicht.', ach: 'Löse den Beta-Code in den Einstellungen ein.', got: () => (save.codes || []).includes('beta') },
     { id: 'pose-beta',   slot: 'bob',    name: 'Beta-Pose',          col: '#22d3ee', desc: 'Leuchtet türkis wie ein Testbildschirm.', ach: 'Löse den Beta-Code in den Einstellungen ein.', got: () => (save.codes || []).includes('beta') },
     // Lava-Laden: only for Glutsteine
+    // Sonneninsel: in the shop after 3× prestige, and rewards for stamps, view points and champions
+    { id: 'jacke-hawaii', slot: 'jacket', name: 'Hawaiihemd',       price: 250000, pres: 3, col: ['#f43f5e', '#9f1239', '#fde047'], desc: 'Rot mit gelben Blüten. Ab 3× Prestige, passend zur Sonneninsel.' },
+    { id: 'hut-stroh',   slot: 'hat',    name: 'Strohhut',           price: 180000, pres: 3, col: ['#e9c77b', '#a16207', '#ef4444'], desc: 'Breite Krempe, rotes Band. Ab 3× Prestige.' },
+    { id: 'pose-kokos',  slot: 'bob',    name: 'Kokos-Pose',         price: 90000, pres: 3, col: '#a16207', desc: 'Eine kleine Kokosnuss als Pose. Ab 3× Prestige.' },
+    { id: 'hut-stirnband', slot: 'hat',  name: 'Sport-Stirnband',    col: ['#f8fafc', '#ef4444', '#3b82f6'], desc: 'Weiß mit rotem und blauem Streifen, wie bei Coach Pelle.', ach: 'Sammle 10 Stempel auf der Sonneninsel.', got: () => (save.stamps || []).length >= 10 },
+    { id: 'hut-flieger', slot: 'hat',    name: 'Fliegerkappe',       col: ['#78350f', '#451a03', '#7dd3fc'], desc: 'Lederkappe mit Brille, für Rundflüge über die Insel.', ach: 'Finde 20 Aussichtspunkte beim Rundflug.', got: () => (save.ipoints || []).filter(i => i < 30).length >= 20 },
+    { id: 'jacke-trainer', slot: 'jacket', name: 'Trainingsjacke',   col: ['#1d4ed8', '#1e3a8a', '#f8fafc'], desc: 'Blau mit weißen Streifen, wie bei Kapitän Kraul. Nur für Leute, die ihn geschlagen haben.', ach: 'Besiege Kapitän Kraul in einem Champion-Duell.', got: () => (save.trophies || []).length >= 1 },
+    { id: 'hut-pokal',   slot: 'hat',    name: 'Pokal-Hut',          col: ['#facc15', '#a16207', '#ffffff'], sparkle: true, desc: 'Ein kleiner goldener Pokal als Hut.', ach: 'Sammle alle 40 Stempel auf der Sonneninsel.', got: () => (save.stamps || []).length >= 40 },
     { id: 'hut-magma',   slot: 'hat',    name: 'Magmahelm',          glut: 200, col: ['#ea580c', '#7c2d12', '#fde047'], desc: 'Ein Grubenhelm wie der von Glimm, nur heißer.' },
     { id: 'jacke-asche', slot: 'jacket', name: 'Aschejacke',         glut: 150, col: ['#57534e', '#292524', '#f97316'], desc: 'Grau wie Asche, mit glühenden Nähten.' },
     { id: 'pose-glut',   slot: 'bob',    name: 'Glut-Pose',          glut: 80,  col: '#f97316', desc: 'Glüht auf der Lava wie ein Stück Kohle.' },
@@ -3072,7 +3105,7 @@
   const hasStamp = id => save.stamps.includes(id);
   const sportOpen = s => inselOpen() && stampCount() >= s.st;
   // Champion: from skill 1500 and with 20 stamps (bay 5)
-  const champOpen = s => sportRec(s.id).lv >= 1500 && stampCount() >= 20;
+  const champOpen = s => sportRec(s.id).lv >= 1500 && stampCount() >= CHAMP_ST;
   function sportReady() { return SPORTS.some(s => sportOpen(s) && !sportRec(s.id).runs) || SPORTS.some(s => champOpen(s) && !save.trophies.includes(s.id)); }
   // sport canvas painter
   const scv = $('sport-cv'), sx = scv.getContext('2d'); sx.imageSmoothingEnabled = false;
@@ -3190,7 +3223,7 @@
         if (g.cool > 0) stext(tr('Boost in {s}', { s: Math.ceil(g.cool) }), 376, 14, '#94a3b8', 7, 'right'); else stext(tr('Tippen = Boost'), 376, 14, '#86efac', 7, 'right');
       },
       score: g => g.pts },
-    { id: 'jetski', icon: '🚤', name: 'Jetski', st: 3, modes: ['Slalom', 'Ringjagd'],
+    { id: 'jetski', icon: '🚤', name: 'Jetski', st: 4, modes: ['Slalom', 'Ringjagd'],
       info: 'Lenk durch die Tore aus Bojen. Tippen = über eine Welle springen.',
       exp: [lv => 120 + lv * .12, lv => 120 + lv * .1], med: [[150, 280, 400], [150, 250, 350]], champ: [470, 400],
       stamps: [['j1', '10 Tore in einer Runde', g => g.passed >= 10], ['j2', 'Slalom ohne verpasstes Tor (mind. 15)', g => g.mode === 0 && g.miss === 0 && g.passed >= 15],
@@ -3239,7 +3272,7 @@
         stext(g.mode ? tr('Ringe: {n}', { n: g.rings }) : tr('Tore: {n} · verpasst: {m}', { n: g.passed, m: g.miss }), 192, 26, '#fde047', 7);
       },
       score: g => g.pts },
-    { id: 'bogen', icon: '🏹', name: 'Bogenschießen', st: 8, modes: ['Scheiben', 'Ballons'],
+    { id: 'bogen', icon: '🏹', name: 'Bogenschießen', st: 10, modes: ['Scheiben', 'Ballons'],
       info: 'Zielen, halten zum ruhig Atmen, loslassen zum Schießen. Achte auf den Wind.',
       exp: [lv => 24 + lv * .012, lv => 10 + lv * .01], med: [[25, 38, 50], [14, 22, 30]], champ: [55, 36],
       stamps: [['b1', 'Ein Volltreffer (10)', g => g.bulls > 0], ['b2', '3 Volltreffer in einer Runde', g => g.bulls >= 3], ['b3', 'Scheiben: 50 Punkte', g => g.mode === 0 && g.pts >= 50],
@@ -3288,7 +3321,7 @@
         if (g.pop && g.fly > 0) stext(g.pop, 192, 40, '#fde047', 10);
       },
       score: g => g.pts },
-    { id: 'tt', icon: '🏓', name: 'Tischtennis', st: 14, modes: ['Match', 'Ballwechsel'],
+    { id: 'tt', icon: '🏓', name: 'Tischtennis', st: 18, modes: ['Match', 'Ballwechsel'],
       info: 'Der Schläger folgt deinem Finger. Wo der Ball den Schläger trifft, bestimmt den Winkel.',
       exp: [lv => 40 + lv * .03, lv => 10 + lv * .012], med: [[50, 100, 120], [15, 30, 50]], champ: [100, 45],
       stamps: [['t1', 'Ersten Punkt gemacht', g => g.me > 0], ['t2', 'Ein Match gewonnen', g => g.mode === 0 && g.me >= 7], ['t3', 'Ein Match auf Profi gewonnen', g => g.mode === 0 && g.me >= 7 && g.lvl >= 2],
@@ -3327,7 +3360,173 @@
         if (!g.mode) stext(tr('Erster bis 7'), 64, 122, '#78350f', 7);
       },
       score: g => g.mode ? g.best : g.me * 10 + (g.me >= 7 ? 30 + (7 - g.op) * 5 : 0) },
+    { id: 'surf', icon: '🏄', name: 'Surfen', st: 6, modes: ['Wellenritt', 'Trickjagd'],
+      info: 'Zieh hoch und runter auf der Welle: oben gibt es mehr Punkte, über der Kante stürzt du. Tippen, wenn der Kamm glitzert = Trick. Zu tief holt dich das Weißwasser.',
+      exp: [lv => 70 + lv * .09, lv => 90 + lv * .1], med: [[80, 160, 260], [100, 200, 320]], champ: [330, 380],
+      stamps: [['s1', 'Ersten Trick gestanden', g => g.tricks > 0], ['s2', '5 Tricks in einer Kombo', g => g.maxCombo >= 5], ['s3', 'Wellenritt ohne Sturz', g => g.mode === 0 && g.falls === 0 && g.time <= 0],
+        ['s4', 'Wellenritt: 250 Punkte', g => g.mode === 0 && g.pts >= 250], ['s5', 'Trickjagd: 10 Treffer in Folge', g => g.mode === 1 && g.bestChain >= 10]],
+      start(g) { Object.assign(g, { y: 130, time: g.mode ? 40 : 45, pts: 0, combo: 0, maxCombo: 0, tricks: 0, falls: 0, stun: 0, air: 0, foam: 20, cue: 0, nextCue: 2, chain: 0, bestChain: 0, scroll: 0, used: false, last: 0, pop: '', popT: 0 }); },
+      update(g, dt, I) {
+        g.time -= dt; if (g.time <= 0) { g.time = 0; g.over = true; return; }
+        g.scroll += dt * 60; g.popT -= dt; g.air -= dt; g.last += dt;
+        const lip = 74 + Math.sin(g.scroll * .03) * 4, crest = Math.sin(g.scroll * .03 + 1.2) > .3;
+        if (!crest) g.used = false;
+        const wipe = () => { g.falls++; g.combo = 0; g.chain = 0; g.stun = 1.4; g.foam = 30; g.air = 0; g.pop = tr('Sturz!'); g.popT = 1.2; sfx.splash(); };
+        if (g.stun > 0) { g.stun -= dt; g.y += (155 - g.y) * Math.min(1, dt * 4); return; }
+        let ty = g.y; if (I.down || I.moved > 0) ty = I.y; if (I.keys.arrowup) ty = g.y - 60; if (I.keys.arrowdown) ty = g.y + 60;
+        g.y = clamp(g.y + clamp(ty - g.y, -110 * dt, 110 * dt), 64, 175);
+        if (g.air <= 0) g.pts += dt * Math.max(0, (175 - g.y) / 105) * 6 * (1 + Math.min(g.combo, 6) * .05);
+        g.foam = clamp(g.foam + dt * (g.y > 140 ? 30 + g.d * 30 : -25), 0, 120);
+        if (g.foam >= 104 || (g.y < lip - 2 && g.air <= 0)) { wipe(); return; }
+        if (g.last > 4) g.combo = 0;
+        const high = g.y < lip + 24;
+        if (g.mode === 1) {
+          if (g.cue > 0) { g.cue -= dt; if (g.cue <= 0) { g.chain = 0; g.pop = tr('verpasst'); g.popT = .8; } }
+          else if ((g.nextCue -= dt) <= 0) { g.cue = 1.1 - g.d * .5; g.nextCue = 2.4 - g.d * .8; sfx.tick(); }
+        }
+        if (I.tap && g.air <= 0) {
+          if (g.mode === 0 && high && crest && !g.used) { g.used = true; g.air = .9; g.tricks++; g.combo++; g.last = 0; const p = 8 + 3 * Math.min(g.combo, 6); g.pts += p; g.pop = '+' + p; g.popT = 1; sfx.whoosh(); }
+          else if (g.mode === 1 && g.cue > 0 && high) { g.cue = 0; g.air = .9; g.tricks++; g.chain++; g.combo++; g.last = 0; g.bestChain = Math.max(g.bestChain, g.chain); const p = 10 + 3 * Math.min(g.chain, 10); g.pts += p; g.pop = '+' + p; g.popT = 1; sfx.whoosh(); }
+          else if (g.mode === 1) { g.chain = 0; g.pop = tr('zu früh'); g.popT = .7; }
+        }
+        g.maxCombo = Math.max(g.maxCombo, g.combo);
+      },
+      draw(g) {
+        skySea(56);
+        const lipAt = x => 70 + Math.sin(x * .02 + g.scroll * .03 - 2.6) * 5 + Math.max(0, 120 - x) * .12;
+        for (let x = 0; x < W; x += 2) {
+          const top = lipAt(x);
+          for (let i = 0; i < 6; i++) { const a = top + i * (180 - top) / 6; sq(x, a, 2, (180 - top) / 6 + .5, mix([120, 232, 220], [14, 116, 144], i / 5)); }
+          sq(x, top - 1, 2, 2, '#f8fafc');
+          if (Math.sin(x * .4 + g.scroll * .2) > .7) sq(x, top + 4 + (x % 9), 2, .5, '#e0fffa');
+        }
+        sq(0, 180, W, 36, '#0e7490');
+        for (let x = 0; x < g.foam + 10; x += 2) { const h = (Math.sin(x * 1.7 + g.scroll) + 1) * 4; sq(x, lipAt(x) - h, 2, 180 - lipAt(x) + h, x > g.foam ? '#cffafe' : '#f8fafc'); }
+        const crest = Math.sin(g.scroll * .03 + 1.2) > .3;
+        if (g.mode === 0 && crest && !g.used) for (let i = 0; i < 3; i++) sq(118 + i * 8, lipAt(126) - 4 - (i % 2) * 2, 1.5, 1.5, '#fde047');
+        if (g.mode === 1 && g.cue > 0) { stext(tr('JETZT!'), 192, 44, '#fde047', 14); for (let a = 0; a < 6.3; a += .35) sq(130 + Math.cos(a) * 14, lipAt(130) + 10 + Math.sin(a) * 6, 1.5, 1.5, '#fde047'); }
+        const jy = g.air > 0 ? Math.sin(Math.max(0, g.air) / .9 * Math.PI) * 12 : 0, x = 130, y = g.y - jy;
+        if (g.stun > 0) { sq(x - 8, y + 2, 16, 2, '#f97316'); sdisc(x + 6, y + 6, 2, '#fcd34d'); }
+        else {
+          sq(x - 9, y, 18, 2.5, '#1b1f2e'); sq(x - 8.5, y + .5, 17, 1.5, '#f97316'); sq(x - 3, y + .5, 6, 1.5, '#fde68a');
+          sq(x - 2, y - 9, 4, 9, '#1b1f2e'); sq(x - 1.5, y - 8.5, 3, 8, '#0ea5e9'); sdisc(x, y - 11, 2.2, '#fcd34d');
+          sq(x - 6, y - 7, 4, 1, '#fcd34d'); sq(x + 2, y - 8, 4, 1, '#fcd34d');
+        }
+        if (g.popT > 0) stext(g.pop, x, y - 18, '#fde047', 9);
+        stext(tr('⏱ {s} s · {p} Punkte', { s: Math.ceil(g.time), p: Math.round(g.pts) }), 192, 14, '#fff', 8);
+        stext(g.mode ? tr('Serie: {n}', { n: g.chain }) : tr('Kombo: {n}', { n: g.combo }), 192, 26, '#fde047', 7);
+      },
+      score: g => g.pts },
+    { id: 'volley', icon: '🏐', name: 'Beachvolleyball', st: 14, modes: ['Match', 'Aufschlag-Serie'],
+      info: 'Lauf unter den Ball (Ring im Sand) und tippe, wenn er tief genug ist. Ganz tief getroffen wird ein Schmetterball.',
+      exp: [lv => 40 + lv * .03, lv => 12 + lv * .012], med: [[50, 100, 120], [15, 28, 40]], champ: [100, 44],
+      stamps: [['v1', 'Ersten Punkt gemacht', g => g.me > 0], ['v2', 'Ein Match gewonnen', g => g.mode === 0 && g.me >= 7], ['v3', '5 Schmetterbälle in einem Match', g => g.mode === 0 && g.spikes >= 5],
+        ['v4', 'Aufschlag-Serie: 30 Punkte', g => g.mode === 1 && g.pts >= 30], ['v5', 'Ein Match zu null gewonnen', g => g.mode === 0 && g.me >= 7 && g.op === 0]],
+      start(g) { Object.assign(g, { me: 0, op: 0, px: 90, ox: 290, ball: null, serve: 1, wait: 1, spikes: 0, pts: 0, n: 0, pow: 0, ang: 0, pop: '', popT: 0, mark: null }); },
+      update(g, dt, I) {
+        const G = 160, champ = g.lvl === 3;
+        let tx = g.px; if (I.down || I.moved > 0) tx = I.x; if (I.keys.arrowleft) tx = g.px - 80; if (I.keys.arrowright) tx = g.px + 80;
+        g.px = clamp(g.px + clamp(tx - g.px, -150 * dt, 150 * dt), 16, 180);
+        g.popT -= dt;
+        const launch = (x, h, tx2, T) => ({ x, h, vx: (tx2 - x) / T, vh: (-h + .5 * G * T * T) / T, side: tx2 > 192 ? 1 : -1, hit: 0 });
+        if (g.mode === 1) { // serve series: 10 serves into zones on Pelle's side, hold for power, release when the aim fits
+          if (!g.ball) {
+            if (g.n >= 10) { g.over = true; return; }
+            g.ang = .5 + .5 * Math.sin(g.t * (2 + g.d * 2.5));
+            if (I.down) g.pow = Math.min(1, g.pow + dt * .9);
+            if (I.rel && g.pow > .05) { const land = 200 + g.pow * 190; g.ball = launch(g.px, 30, land, 1.1 - g.ang * .4); g.ball.serve = 1; g.pow = 0; sfx.whoosh(); }
+            return;
+          }
+          const b = g.ball; b.x += b.vx * dt; b.h += b.vh * dt; b.vh -= G * dt;
+          if (b.h <= 0) { const x = b.x, p = x < 192 || x > 376 ? 0 : x > 330 ? 5 : x > 260 ? 3 : 1; g.pts += p; g.n++; g.mark = { x, p }; g.pop = p ? '+' + p : tr('aus'); g.popT = 1; g.ball = null; p ? sfx.coin() : sfx.splash(); }
+          return;
+        }
+        if (!g.ball) {
+          if ((g.wait -= dt) > 0) return;
+          if (g.serve > 0) { if (I.tap) { g.ball = launch(g.px, 30, rnd(240, 360), 1.4); sfx.tick(); } return; }
+          g.ball = launch(g.ox, 30, rnd(30, 170), 1.5 - g.d * .3); sfx.tick(); return;
+        }
+        const b = g.ball; b.x += b.vx * dt; b.h += b.vh * dt; b.vh -= G * dt;
+        if (b.side < 0 && Math.abs(b.x - 192) < 3 && b.h < 14 && !b.netDone) b.netDone = true;
+        const land = b.x + b.vx * ((b.vh + Math.sqrt(Math.max(0, b.vh * b.vh + 2 * G * b.h))) / G);
+        if (b.vx > 0) { // flying to Pelle: Pelle runs to where it will land
+          const sp = (60 + g.d * 110) * (b.spike ? .45 : 1) * (champ ? 1.35 : 1);
+          g.ox = clamp(g.ox + clamp(land - g.ox, -sp * dt, sp * dt), 204, 370);
+          if (b.x > 196 && b.h < 26 && b.h > 6 && Math.abs(b.x - g.ox) < 14) { g.ball = launch(b.x, b.h, rnd(24, 176), 1.35 - g.d * .35 - (champ ? .15 : 0)); sfx.tick(); return; }
+        } else {
+          g.ox += (290 - g.ox) * Math.min(1, dt);
+          if (I.tap && b.x < 188 && b.h < 40 && b.h > 4 && Math.abs(b.x - g.px) < 16) {
+            const spike = b.h < 20; if (spike) g.spikes++;
+            g.ball = launch(b.x, Math.max(b.h, 14), rnd(230, 372), spike ? .75 : 1.3); g.ball.spike = spike;
+            g.pop = spike ? tr('Schmetterball!') : tr('Bagger!'); g.popT = .8; sfx.whoosh(); return;
+          }
+        }
+        if (b.h <= 0) {
+          const meWon = b.x > 192 ? b.x <= 380 : b.x < 8; // out behind your own line counts for you
+          if (meWon) { g.me++; sfx.coin(); } else { g.op++; sfx.splash(); }
+          g.mark = { x: b.x, p: meWon ? 1 : 0 }; g.ball = null; g.wait = .9; g.serve = meWon ? 1 : -1;
+          if (g.me >= 7 || g.op >= 7) g.over = true;
+        }
+      },
+      draw(g) {
+        skySea(110); sq(0, 150, W, 66, '#f2dfa8'); sq(0, 150, W, 1.5, '#fde68a');
+        for (let i = 0; i < 50; i++) sq((i * 71) % W, 152 + (i * 13) % 60, 1, .5, '#d4b97a');
+        sq(8, 176, 368, 1, '#f8fafc'); sq(191, 108, 2, 70, '#64748b'); for (let y = 110; y < 134; y += 3) sq(186, y, 12, 1, '#e2e8f0'); sq(186, 108, 12, 2, '#f8fafc');
+        if (g.mode === 1) for (const [a, b2, p, c] of [[192, 260, 1, '#fde68a'], [260, 330, 3, '#fcd34d'], [330, 376, 5, '#fbbf24']]) { sq(a, 174, b2 - a, 3, c); stext(String(p), (a + b2) / 2, 190, '#78350f', 8); }
+        const fig = (x, col) => { sq(x - 3, 160, 6, 14, '#1b1f2e'); sq(x - 2.5, 160.5, 5, 13, col); sdisc(x, 157, 3, '#fcd34d'); };
+        fig(g.px, '#ef4444');
+        if (g.mode === 0) { if (g.lvl === 3) drawKraul(sq, g.ox, 176, true); else drawPelle(sq, g.ox, 176, 0, true); }
+        if (g.ball) {
+          const b = g.ball, land = b.x + b.vx * ((b.vh + Math.sqrt(Math.max(0, b.vh * b.vh + 320 * b.h))) / 160);
+          if (b.vx < 0 && land < 192) { for (let a = 0; a < 6.3; a += .4) sq(land + Math.cos(a) * 7, 176 + Math.sin(a) * 2, 1, 1, '#ef4444'); }
+          sx.globalAlpha = .3; sdisc(b.x, 176, 3, '#0b1030'); sx.globalAlpha = 1;
+          sdisc(b.x, 172 - b.h, 3.2, '#facc15'); sq(b.x - 2, 171 - b.h, 4, 1, '#3b82f6');
+        }
+        if (g.mode === 1 && !g.ball && g.n < 10) { const a = g.ang; for (let i = 0; i < 8; i++) sq(g.px + 4 + i * 3, 150 - i * 3 * (.4 + a), 1, 1, '#facc15'); sq(g.px - 12, 120, 5, 24, '#1b1f2e'); sq(g.px - 11, 121 + 22 * (1 - g.pow), 3, 22 * g.pow, '#22c55e'); }
+        if (g.mark && g.popT > 0) stext(g.pop || (g.mark.p ? '✓' : '✗'), g.mark.x, 166, '#fde047', 8);
+        else if (g.popT > 0) stext(g.pop, g.px, 140, '#fde047', 8);
+        stext(g.mode ? tr('Aufschlag {a}/10 · {p} Punkte', { a: Math.min(10, g.n + 1), p: g.pts }) : `${g.me} : ${g.op}`, 192, 16, '#fff', 10);
+        if (!g.mode && !g.ball && g.serve > 0 && g.wait <= 0) stext(tr('Tippen = Aufschlag'), 192, 30, '#fde047', 7);
+      },
+      score: g => g.mode ? g.pts : g.me * 10 + (g.me >= 7 ? 30 + (7 - g.op) * 5 : 0) },
+    { id: 'bowling', icon: '🎳', name: 'Strand-Bowling', st: 22, modes: ['10 Frames', 'Pyramide'],
+      info: 'Erstes Tippen hält die Richtung fest, zweites den Drall. Der Ball rollt, die Pins fallen.',
+      exp: [lv => 80 + lv * .06, lv => 8 + lv * .004], med: [[90, 150, 200], [10, 15, 19]], champ: [220, 20],
+      stamps: [['w1', 'Ersten Strike geworfen', g => g.strikes > 0], ['w2', 'Einen Spare geworfen', g => g.spares > 0], ['w3', '3 Strikes in Folge', g => g.maxRow >= 3],
+        ['w4', '10 Frames: 200 Punkte', g => g.mode === 0 && g.pts >= 200], ['w5', 'Pyramide: alle 21 Pins', g => g.mode === 1 && g.pts >= 21]],
+      start(g) { Object.assign(g, { rolls: [], frame: 0, inFrame: 0, pts: 0, strikes: 0, spares: 0, row: 0, maxRow: 0, throws: 0, ph: 'aim', aim: 0, spin: 0, ball: null, pins: [], simT: 0, pop: '', popT: 0, standBefore: 0 }); bowlRack(g); },
+      update(g, dt, I) {
+        g.popT -= dt;
+        if (g.ph === 'aim') { g.aim = Math.sin(g.t * (1.6 + g.d * 2.4)) * .16; if (I.tap) { g.ph = 'spin'; g.t0 = g.t; sfx.tick(); } return; }
+        if (g.ph === 'spin') { g.spin = Math.sin((g.t - g.t0) * (2.2 + g.d * 3)); if (I.tap) { g.ph = 'roll'; g.ball = { x: 192, y: 196, vx: Math.sin(g.aim) * 250, vy: -Math.cos(g.aim) * 250, gut: false }; g.simT = 0; g.standBefore = g.pins.filter(p => !p.down).length; sfx.whoosh(); } return; }
+        if (g.ph !== 'roll') { if ((g.simT -= dt) <= 0) bowlNext(g); return; }
+        g.simT += dt;
+        for (let k = 0; k < 4; k++) bowlStep(g, dt / 4);
+        const b = g.ball, still = g.pins.every(p => Math.hypot(p.vx, p.vy) < 4);
+        if ((b.y < -10 && still) || g.simT > 4) bowlScore(g);
+      },
+      draw(g) {
+        sq(0, 0, W, H, '#f2dfa8'); for (let i = 0; i < 70; i++) sq((i * 71) % W, (i * 37) % H, 1, .5, '#d4b97a');
+        for (const [x, h] of [[40, 70], [344, 80], [80, 50], [300, 55]]) { sq(x, 216 - h, 3, h, '#a16207'); for (let i = 0; i < 6; i++) sq(x - 12 + i * 4, 216 - h - 2 + Math.abs(i - 2.5) * 2, 6, 2, '#16a34a'); }
+        sq(146, 0, 92, H, '#78350f'); sq(150, 0, 84, H, '#d6a35c'); for (let x = 154; x < 232; x += 6) sq(x, 0, .5, H, '#c08a46');
+        sq(146, 0, 6, H, '#57301a'); sq(232, 0, 6, H, '#57301a'); sq(150, 186, 84, 1, '#ef4444');
+        for (let i = -2; i <= 2; i++) sq(192 + i * 10 - 1, 150 - Math.abs(i) * 4, 2, 4, '#7c2d12');
+        for (const p of g.pins) {
+          if (p.gone) continue;
+          if (p.down) { sx.globalAlpha = .55; sq(p.x - 3, p.y - 1, 6, 2.5, '#e2e8f0'); sx.globalAlpha = 1; continue; }
+          sdisc(p.x, p.y, 3, '#f8fafc'); sq(p.x - 2.5, p.y - .5, 5, 1, '#ef4444'); sq(p.x - 1, p.y - 2, 1, 1, '#ffffff');
+        }
+        if (g.ball) { const b = g.ball; sdisc(b.x, b.y, 5.5, '#1e3a8a'); sdisc(b.x - 1, b.y - 1.5, 2, '#3b82f6'); sq(b.x + 1, b.y - 2, 1, 1, '#0f172a'); sq(b.x + 2.5, b.y, 1, 1, '#0f172a'); }
+        else { sdisc(192, 196, 5.5, '#1e3a8a'); sdisc(191, 194.5, 2, '#3b82f6'); }
+        if (g.ph === 'aim' || g.ph === 'spin') { for (let i = 1; i < 12; i++) sq(192 + Math.sin(g.aim) * i * 7 - .5, 196 - Math.cos(g.aim) * i * 7, 1.5, 1.5, '#facc15'); }
+        if (g.ph === 'spin') { sq(252, 170, 70, 6, '#1b1f2e'); sq(286.5, 169, 1, 8, '#f8fafc'); sq(287 + g.spin * 33 - 1.5, 168, 3, 10, '#ef4444'); stext(tr('Drall'), 287, 164, '#78350f', 7); }
+        if (g.ph === 'aim') stext(tr('Tippen = Richtung'), 287, 164, '#78350f', 7);
+        if (g.popT > 0) stext(g.pop, 192, 100, '#fde047', 14);
+        stext(g.mode ? tr('Wurf {a}/3 · {p} Pins', { a: Math.min(3, g.throws + 1), p: g.pts }) : tr('Frame {a}/10 · {p} Punkte', { a: Math.min(10, g.frame + 1), p: bowlTotal(g.rolls) }), 8, 14, '#1b1f2e', 8, 'left');
+      },
+      score: g => g.pts },
   ];
+  SPORTS.sort((a, b) => a.st - b.st);
   trAll(SPORTS, ['name', 'info']);
   SPORTS.forEach(s => { s.modes = s.modes.map(m => tr(m)); s.stamps = s.stamps.map(([id, txt, ok]) => ({ id, txt: tr(txt), ok })); });
   const ALL_STAMPS = SPORTS.reduce((n, s) => n + s.stamps.length, 0);
@@ -3375,6 +3574,68 @@
     return c;
   }
 
+  // Strand-Bowling: pins, a tiny physics step and the usual frame scoring
+  function bowlRack(g) {
+    const rows = g.mode ? 6 : 4; g.pins = [];
+    for (let r = 0; r < rows; r++) for (let i = 0; i <= r; i++) g.pins.push({ x: 192 + (i - r / 2) * 12, y: 60 - r * 10, vx: 0, vy: 0, down: false, gone: false });
+  }
+  function bowlStep(g, dt) {
+    const b = g.ball;
+    if (!b.gut && b.y < 150) b.vx += g.spin * 120 * dt;
+    b.x += b.vx * dt; b.y += b.vy * dt;
+    if (!b.gut && (b.x < 152 || b.x > 232)) { b.gut = true; b.x = b.x < 192 ? 149 : 235; b.vx = 0; }
+    for (const p of g.pins) {
+      if (p.gone) continue;
+      if (!b.gut) { const dx = p.x - b.x, dy = p.y - b.y, d = Math.hypot(dx, dy); if (d < 8.5 && d > 0) { const sp = Math.hypot(b.vx, b.vy) * .6; p.vx = dx / d * sp + b.vx * .3; p.vy = dy / d * sp + b.vy * .3; p.x = b.x + dx / d * 8.6; p.y = b.y + dy / d * 8.6; p.down = true; b.vx = b.vx * .9 - dx / d * sp * .25; b.vy *= .9; } }
+      p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= Math.pow(.1, dt); p.vy *= Math.pow(.1, dt);
+      if (p.x < 151 || p.x > 233 || p.y < -6) { p.down = true; p.gone = true; }
+    }
+    for (let i = 0; i < g.pins.length; i++) for (let j = i + 1; j < g.pins.length; j++) {
+      const a = g.pins[i], c = g.pins[j]; if (a.gone || c.gone) continue;
+      const dx = c.x - a.x, dy = c.y - a.y, d = Math.hypot(dx, dy); if (d >= 6 || d === 0) continue;
+      const nx = dx / d, ny = dy / d, rel = (a.vx - c.vx) * nx + (a.vy - c.vy) * ny;
+      if (rel > 0) { const k = rel * .55; c.vx += nx * k; c.vy += ny * k; a.vx -= nx * k * .4; a.vy -= ny * k * .4; if (k > 14) { a.down = a.down || Math.hypot(a.vx, a.vy) > 8; c.down = true; } }
+      const push = (6 - d) / 2; a.x -= nx * push; a.y -= ny * push; c.x += nx * push; c.y += ny * push;
+    }
+  }
+  function bowlTotal(rolls) {
+    let s = 0, i = 0;
+    for (let f = 0; f < 10 && i < rolls.length; f++) {
+      if (rolls[i] === 10) { s += 10 + (rolls[i + 1] || 0) + (rolls[i + 2] || 0); i++; }
+      else { const two = rolls[i] + (rolls[i + 1] || 0); s += two + (two === 10 ? rolls[i + 2] || 0 : 0); i += 2; }
+    }
+    return s;
+  }
+  function bowlScore(g) {
+    const n = g.standBefore - g.pins.filter(p => !p.down).length;
+    g.ph = 'show'; g.simT = 1.1; g.ball = null; g.throws++;
+    if (g.mode) { g.pts += n; g.pop = tr('{n} Pins', { n }); g.popT = 1.1; g.nextRack = false; return; }
+    g.rolls.push(n);
+    const tenth = g.frame === 9, first = g.inFrame === 0;
+    const clear = g.pins.every(p => p.down);
+    if (clear && (first || (tenth && g.inFrame === 1 && g.rolls[g.rolls.length - 2] === 10) || (tenth && g.inFrame === 2))) { g.strikes++; g.row++; g.pop = tr('STRIKE!'); sfx.coin(); setTimeout(() => sfx.coin(), 150); }
+    else if (clear) { g.spares++; g.row = 0; g.pop = tr('Spare!'); sfx.coin(); }
+    else { g.row = 0; g.pop = n ? tr('{n} Pins', { n }) : tr('Rinne'); }
+    g.maxRow = Math.max(g.maxRow, g.row); g.popT = 1.1;
+    // what comes next: same frame (pins stay) or a fresh rack
+    let next = 'rack';
+    if (!tenth) { if (first && !clear) next = 'same'; else { g.frame++; g.inFrame = 0; } }
+    else {
+      g.inFrame++;
+      const r = g.rolls.slice(-g.inFrame), bonus = r[0] === 10 || (r.length >= 2 && r[0] + r[1] === 10);
+      if (g.inFrame >= 3 || (g.inFrame === 2 && !bonus)) { g.frame = 10; next = 'end'; }
+      else if (!clear) next = 'same';
+    }
+    g.nextRack = next;
+    g.pts = bowlTotal(g.rolls);
+  }
+  function bowlNext(g) {
+    if (g.mode) { if (g.throws >= 3 || g.pins.every(p => p.down)) { g.over = true; return; } for (const p of g.pins) if (p.down) p.gone = true; }
+    else if (g.nextRack === 'end') { g.over = true; return; }
+    else if (g.nextRack === 'rack') bowlRack(g);
+    else for (const p of g.pins) if (p.down) p.gone = true;
+    g.ph = 'aim';
+  }
   // --- running a station ----------------------------------------------------------
   let sp = null, spView = { id: null };
   const SIN = { x: 192, y: 108, down: false, tap: false, rel: false, moved: 0, keys: {} };
@@ -3402,6 +3663,7 @@
     sp = { id, s, mode, lvl, t: 0, cd: 2.4, phase: 'count', g: { mode, lvl, t: 0, d: sportDiff(s, lvl) } };
     s.start(sp.g); Object.assign(SIN, { down: false, tap: false, rel: false, moved: 0, keys: {} });
     $('sport-hub').hidden = true; $('sport-play').hidden = false; $('sport-result').hidden = true; $('sport-play').classList.remove('done');
+    $('sport').hidden = false;
     $('sport-title').textContent = `${s.icon} ${s.name} · ${s.modes[mode]}`;
     $('sport-sub').textContent = lvl === 3 ? tr('Champion-Duell gegen Kapitän Kraul: schlag {n} Punkte!', { n: s.champ[mode] }) : `${SP_LV[lvl]} · ${s.info}`;
   }
@@ -3449,7 +3711,7 @@
     save.coins += coins; save.lifeCoins += coins; save.totalEarned += coins; save.scales += scales;
     const xpGot = gainXp(xp, true);
     if (r.lv >= 1000 && before < 1000) lines.push(tr('🏅 Profi im {s}! Ab jetzt +2 % Taler überall.', { s: s.name }));
-    if (r.lv >= 1500 && before < 1500) lines.push(tr('👑 Kapitän Kraul fordert dich heraus! (Champion-Duell ab 20 Stempeln)'));
+    if (r.lv >= 1500 && before < 1500) lines.push(tr('👑 Kapitän Kraul fordert dich heraus! (Champion-Duell ab {n} Stempeln)', { n: CHAMP_ST }));
     if (champWin) lines.push(tr('🏆 Du hast Kapitän Kraul besiegt! Pokal für den Steg, +1 Perle und +3 % Taler überall.'));
     else if (lvl === 3) lines.push(score >= s.champ[mode] ? tr('🏆 Wieder gegen Kraul gewonnen!') : tr('Kraul war diesmal besser. Ziel: {n} Punkte.', { n: s.champ[mode] }));
     const prevBay = INSEL_BAYS.filter(b => stampCount() - newSt.length >= b.st).length, nowBay = inselBay();
@@ -3561,7 +3823,7 @@
       if (champOpen(s)) row.append(mk((save.trophies.includes(s.id) ? '🏆 ' : '👑 ') + tr('Kraul'), mOpen, () => startSport(s.id, m, 3), 'btn ghost'));
       hub.append(row);
     }
-    if (!champOpen(s)) { const c = document.createElement('p'); c.className = 'sub'; c.textContent = tr('👑 Champion-Duell gegen Kapitän Kraul: ab Können 1500 und 20 Stempeln.'); hub.append(c); }
+    if (!champOpen(s)) { const c = document.createElement('p'); c.className = 'sub'; c.textContent = tr('👑 Champion-Duell gegen Kapitän Kraul: ab Können 1500 und {n} Stempeln.', { n: CHAMP_ST }); hub.append(c); }
     const card = document.createElement('ul'); card.className = 'sport-stamps';
     for (const st of s.stamps) { const li = document.createElement('li'); li.textContent = (hasStamp(st.id) ? '🔖 ' : '▫️ ') + st.txt; if (hasStamp(st.id)) li.className = 'got'; card.append(li); }
     hub.append(card);
@@ -4255,6 +4517,7 @@
     steg: { icon: '🏝️', name: tr('Steg'), has: f => !f.map },
     see: { icon: '⛵', name: tr('Hohe See'), has: f => f.map === 'see' || !!f.sea },
     lava: { icon: '🌋', name: tr('Glutgrotte'), has: f => f.map === 'lava' },
+    insel: { icon: '🌴', name: tr('Sonneninsel'), has: f => f.map === 'insel' },
   };
   let dexTab = 'steg';
   const dexF = { q: '', show: 'all', r: '' };
@@ -4421,6 +4684,9 @@
     { id: 'mon1', name: 'Erstes Monster',      need: () => [FISH.some(f => (save.dex[f.id] || {}).cls === 4) ? 1 : 0, 1], coins: 1000, scales: 3 },
     { id: 'wall', name: 'Alle Wetterfische',   need: () => [FISH.filter(f => f.weather && f.map !== 'see' && save.dex[f.id]).length, FISH.filter(f => f.weather && f.map !== 'see').length], coins: 2000, scales: 4 },
     { id: 'lavaall', name: 'Alle Fische der Glutgrotte', need: () => [FISH.filter(f => f.map === 'lava' && save.dex[f.id]).length, FISH.filter(f => f.map === 'lava').length], coins: 15000, scales: 15 },
+    { id: 'inselall', name: 'Alle Fische der Sonneninsel', need: () => [FISH.filter(f => f.map === 'insel' && save.dex[f.id]).length, FISH.filter(f => f.map === 'insel').length], coins: 25000, scales: 20 },
+    { id: 'inselst', name: 'Alle 40 Stempel der Sonneninsel', title: 'Inselchampion', need: () => [(save.stamps || []).length, 40], coins: 60000, scales: 30 },
+    { id: 'inselpt', name: 'Alle 30 Aussichtspunkte', title: 'Inselkenner', need: () => [(save.ipoints || []).filter(i => i < 30).length, 30], coins: 20000, scales: 12 },
     { id: 'seeall', name: 'Alle Fische der Hohen See', need: () => [FISH.filter(f => f.map === 'see' && !f.boss && save.dex[f.id]).length, FISH.filter(f => f.map === 'see' && !f.boss).length], coins: 5000, scales: 8 },
     { id: 'odboss', name: 'Odfisch besiegt',   need: () => [save.bossWins || 0, 1], coins: 3000, scales: 5 },
     { id: 'ma10', name: '10× Bronze-Meister',  need: () => [masteryCount(1), 10], coins: 1500, scales: 3 },
@@ -4445,6 +4711,7 @@
       ['set-wetter', 'Sammlung: Alle Wetter',     f => !!f.weather, 'Wettergott', 12000, 10],
       ['set-schrott', 'Sammlung: Schrottplatz',   f => !!f.magnet, 'Schrottkönig', 20000, 12],
       ['set-feuer',  'Sammlung: Feuerfest',       f => f.map === 'lava' && f.r === 'legendary', 'Feuerfest', 30000, 15],
+      ['set-pokal',  'Sammlung: Siegerpodest',    f => ['pokalfisch', 'mantarochen', 'sternenfisch', 'fechterfisch', 'kanuhecht', 'hulafisch'].includes(f.id), 'Inselheld', 40000, 18],
     ].map(([id, name, has, title, coins, scales]) => ({ id, name, title, coins, scales, need: () => { const all = FISH.filter(has); return [all.filter(f => save.dex[f.id]).length, all.length]; } })),
     { id: 'set-monster', name: 'Sammlung: 10 verschiedene Monster', title: 'Monsterjäger', coins: 15000, scales: 10, need: () => [FISH.filter(f => (save.dex[f.id] || {}).cls === 4).length, 10] },
     { id: 'set-od50', name: '50 Odfisch-Siege', title: 'Odfisch-Bezwinger', coins: 50000, scales: 25, need: () => [save.bossWins || 0, 50] },
@@ -4523,6 +4790,7 @@
     if (f.weather) return tr(WEATHER_HINT[f.weather]);
     if (f.map === 'see') return f.night ? tr('Hohe See, lieber nachts') : tr('Nur auf Hoher See');
     if (f.depth && f.depth > caveDepth()) return tr('Glutgrotte, ab Tiefe {n}', { n: f.depth });
+    if (f.map === 'insel') { const b = INSEL_BAYS[(f.bay || 1) - 1]; return f.bay > inselBay() ? tr('Sonneninsel, {b} (ab {n} Stempeln)', { b: b.name, n: b.st }) : f.night ? tr('Sonneninsel, {b}, lieber nachts', { b: b.name }) : f.far ? tr('Sonneninsel, {b}, weit draußen', { b: b.name }) : tr('Sonneninsel, {b}', { b: b.name }); }
     if (f.map === 'lava') return f.night ? tr('Glutgrotte, lieber nachts') : f.far ? tr('Glutgrotte, weit draußen') : tr('Nur in der Glutgrotte');
     if (f.dayOff) return tr('Nur nachts, weit draußen');
     if (f.far) return tr('Weit draußen');
@@ -4587,6 +4855,10 @@
   const artIcon = ([rows, pal]) => iconCanvas(p => rows.forEach((row, y) => [...row].forEach((ch, x) => { if (ch !== '.') p(x, y, pal[ch]); })));
   for (const b of BAITS) ICONS[b.id] = artIcon(BAIT_ART[b.id] || BAIT_ART.wurm);
   for (const b of BAITS) if (b.img) ICONS[b.id] = b.img;
+  ICONS.mango = iconCanvas(p => { // a ripe mango with a leaf
+    for (let y = 4; y < 14; y++) for (let x = 3; x < 13; x++) { const dx = (x - 8) / 5, dy = (y - 9) / 5.2; if (dx * dx + dy * dy <= 1) p(x, y, dy < -.3 && dx < .2 ? '#fde047' : dx > .35 || dy > .55 ? '#ea580c' : '#f59e0b'); }
+    p(5, 6, '#fef9c3'); p(8, 3, '#78350f'); p(9, 2, '#16a34a'); p(10, 2, '#22c55e'); p(11, 3, '#16a34a');
+  });
   for (const b of BOXES) ICONS[b.id] = iconCanvas(p => {
     const [m, d, g] = b.col, k = '#1b1f2e';
     for (let x = 2; x < 14; x++) { p(x, 2, k); p(x, 14, k); }
@@ -5006,10 +5278,10 @@
       const lava = shopTab === 'lava', ph = $('keeper-photo');
       ph.src = lava ? 'img/lava-haendler.jpg' : 'img/tophat-fish-fish.gif';
       ph.alt = lava ? tr('Glutflosse, ein tanzender Hai vor Flammen') : tr('Herr Zylinderwels, ein Wels mit Zylinder');
-      $('shop-title').textContent = lava ? tr('Glutflosses Lava-Laden') : tr('Zylinderwels & Söhne');
+      $('shop-title').textContent = lava ? tr('Glutflosses Lava-Laden') : onInsel() ? tr('Zylinderwels’ Strandbude') : tr('Zylinderwels & Söhne');
       $('keeper-name').textContent = lava ? tr('Glutflosse, Lava-Händler') : tr('Herr Zylinderwels, Inhaber');
     }
-    if (greet !== false) keeper(shopTab === 'lava' ? tr('Hey! Die Basaltrute gibt’s für Taler, alles andere nur für Glutsteine.') : pick(KEEPER.hello));
+    if (greet !== false) keeper(shopTab === 'lava' ? tr('Hey! Die Basaltrute gibt’s für Taler, alles andere nur für Glutsteine.') : onInsel() ? tr('Aloha! Neu hier: Mango-Köder. Nur auf der Insel richtig gut.') : pick(KEEPER.hello));
     document.querySelectorAll('[data-shop-tab]').forEach(t => {
       const on = t.dataset.shopTab === shopTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
@@ -5284,7 +5556,7 @@
   // fish a quest may ask for: in an area that is open and without special conditions
   function questPool() {
     return FISH.filter(f => !f.far && !f.boss && !f.item && !f.magnet && !f.weather && !f.bait && !f.hours && !f.needs && !f.crits && !f.minRod && !f.dayOff && !f.fullHour
-      && ({ steg: true, see: seaOpen(), lava: lavaOpen() && !(f.depth > caveDepth()) })[f.map || 'steg']);
+      && ({ steg: true, see: seaOpen(), lava: lavaOpen() && !(f.depth > caveDepth()), insel: inselOpen() && !(f.bay > inselBay()) })[f.map || 'steg']);
   }
   const rerollCost = () => Math.round((10 + save.lvl * 2) * Math.sqrt(coinMult()));
   function questText(q) {
@@ -5305,7 +5577,7 @@
     { k: 'mut', n: [4, 8, 12], t: 'Fange {n} Fische mit Mutation' }, { k: 'quest', n: [8, 12, 15], t: 'Erledige {n} Aufträge' },
     { k: 'sea', n: [40, 50, 80], t: 'Fange {n} Fische auf Hoher See', need: () => seaOpen() }, { k: 'lava', n: [40, 60, 100], t: 'Fange {n} Fische in der Glutgrotte', need: () => lavaOpen() },
     { k: 'insel', n: [40, 60, 90], t: 'Fange {n} Fische auf der Sonneninsel', need: () => inselOpen() },
-    { k: 'stamp', n: [1, 2, 3], t: 'Hol dir {n} neue Stempel auf der Sonneninsel', t1: 'Hol dir einen neuen Stempel auf der Sonneninsel', need: () => inselOpen() && stampCount() < 27 },
+    { k: 'stamp', n: [1, 2, 3], t: 'Hol dir {n} neue Stempel auf der Sonneninsel', t1: 'Hol dir einen neuen Stempel auf der Sonneninsel', need: () => inselOpen() && stampCount() < STAMP_ALL - 3 },
     { k: 'gold', n: [3, 5, 8], t: 'Hol {n} Goldmedaillen an den Sportstationen', need: () => inselOpen() },
   ];
   const weekStage = () => save.prestige ? 2 : (save.rebirthsTotal | 0) >= 3 ? 1 : 0;
@@ -5742,6 +6014,7 @@
     monster: { label: tr('👑 Monster-Fänge'), fmt: s => s + '×' },
     boss:   { label: tr('🐟 Odfisch-Siege'),  fmt: s => s + '×' },
     prestige: { label: tr('✦ Prestige'),      fmt: s => s + '×' },
+    sport:  { label: tr('🏅 Sportler'),       fmt: s => tr('{n} Können', { n: s.toLocaleString(I18N.locale) }), note: () => tr('Summe des Könnens an allen Sportstationen der Sonneninsel (je bis 2500).') },
     spent:  { label: tr('💸 Ausgegeben'),     fmt: s => tr('{n} Taler', { n: s.toLocaleString(I18N.locale) }) },
   };
   const LB = { boards: null, tab: 'taler', ranks: null, err: '', busy: false };
@@ -5758,6 +6031,7 @@
       boss: save.bossWins || 0,
       spent: Math.floor(save.spent || 0),
       prestige: save.prestige | 0,
+      sport: Object.values(save.sport).reduce((a, r) => a + Math.max(0, Math.min(2500, (r && r.lv) | 0)), 0),
     };
   }
   const hex = n => [...crypto.getRandomValues(new Uint8Array(n))].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -5861,7 +6135,7 @@
     return j;
   }
   function lobbyMe() {
-    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'boss', 'crit'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: Math.min(99, save.rebirthsTotal | 0), pr: save.prestige, ti: myTitle() ? save.title : '', bs: bossStage() };
+    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'boss', 'crit'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: Math.min(99, save.rebirthsTotal | 0), pr: save.prestige, ti: myTitle() ? save.title : '', bs: bossStage(), sp: profis() };
   }
   async function lobbySync() {
     if (!save.lobby || LOBBY.busy || document.hidden) return;
@@ -5998,10 +6272,11 @@
     $('lobby-players').replaceChildren(...ps.map((p, i) => {
       const li = document.createElement('li'); if (p.k === LOBBY.me) li.className = 'me';
       const pos = document.createElement('span'); pos.textContent = ['🥇', '🥈', '🥉'][i] || i + 1;
-      const n = document.createElement('b'); n.textContent = (p.m === 'see' ? '⛵ ' : p.m === 'lava' ? '🌋 ' : '') + p.name;
+      const n = document.createElement('b'); n.textContent = (p.m === 'see' ? '⛵ ' : p.m === 'lava' ? '🌋 ' : p.m === 'insel' ? '🌴 ' : '') + p.name;
       if (p.m === 'see') n.title = tr('Auf Hoher See');
       if (p.m === 'lava') n.title = tr('In der Glutgrotte');
-      if (p.rk !== undefined) { const rk = document.createElement('small'); rk.className = 'rank'; rk.textContent = ' ' + presMark(p.pr | 0) + rankOf(p.rk).name + (titleOf(p.ti) ? ` · „${titleOf(p.ti)}“` : ''); n.append(rk); }
+      if (p.m === 'insel') n.title = tr('Auf der Sonneninsel');
+      if (p.rk !== undefined) { const rk = document.createElement('small'); rk.className = 'rank'; rk.textContent = ' ' + presMark(p.pr | 0) + rankOf(p.rk).name + (p.sp ? ' · ' + '🏅'.repeat(Math.min(8, p.sp | 0)) : '') + (titleOf(p.ti) ? ` · „${titleOf(p.ti)}“` : ''); n.append(rk); }
       const sc = document.createElement('span'); sc.className = 'sc'; sc.textContent = tr('{n} Taler', { n: (p.sc || 0).toLocaleString(I18N.locale) });
       li.append(pos, n, sc);
       if (p.big) { const b = document.createElement('span'); b.className = 'big'; b.textContent = tr('Größter: {f} ({cm} cm)', { f: p.big.f, cm: p.big.cm }); li.append(b); }

@@ -87,6 +87,7 @@ function cleanMe(me) {
     pr: Math.round(num(me.pr, 0, 99)),                // Prestige, als ✦ vor dem Rang
     ti: typeof me.ti === 'string' && /^[a-z0-9-]{1,16}$/.test(me.ti) ? me.ti : '', // Titel am Namensschild (ID einer Sammlung)
     bs: Math.round(num(me.bs, 0, 3)),                 // Odfisch-Stufe, die dieser Spieler ruft (0–3)
+    sp: Math.round(num(me.sp, 0, 8)),                 // Sonneninsel: Sportarten auf Profi-Niveau (0–8)
   };
 }
 
