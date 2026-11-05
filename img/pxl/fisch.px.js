@@ -1456,3 +1456,44 @@ F('megalodon', 120, 56, {}, (c) => {
   c.rect(14, 22, 5, 4, INK); c.px(15, 22, '#ffffff'); c.line(12, 20, 20, 21, '#334155')
   for (const [x, y] of [[96, 50], [100, 54], [8, 8]]) drop(c, x, y)
 })
+
+// ---------------------------------------------------------------- Neu 2026-11-05: Talerfisch
+F('talerfisch', 66, 40, {}, (c) => {
+  // Talerfisch: goldener Fisch im schwarzen Tech-Trainingsanzug, gegelte Haare, Strich in der Braue,
+  // Goldkette mit Taler, Bauchtasche quer über der Brust
+  const p = P({ x0: 2, x1: 50, cy: 21, up: 14, dn: 14, peak: 0.34, hp: 0.55, tp: 1.0, end: 0.16 })
+  tail(c, 48, 21, 15, 12, 6, '#27272a', '#09090b')
+  fan(c, [24, 9], [[27, 3], [35, 3], [41, 9]], '#18181b', '#3f3f46')
+  fan(c, [28, 33], [[28, 37], [35, 37], [37, 32]], '#18181b', '#3f3f46')
+  paint(c, p, (u, v, x, y) => {
+    if (u < 0.3) return B(v, 0.18, '#fde047', 0.72, '#eab308', '#ca8a04')            // goldener Kopf
+    if (u > 0.47 && u < 0.78 && v > 0.32 && v < 0.62) return v < 0.36 ? '#71717a' : '#52525b' // Seitenpaneel
+    if (y % 3 === 0 && x % 2 === 0 && v > 0.15 && v < 0.85) return '#2f2f35'                  // Fleece-Steppung
+    return B(v, 0.1, '#3f3f46', 0.85, '#27272a', '#18181b')
+  })
+  c.vline(16, 10, 23, '#d4d4d8'); c.vline(17, 10, 23, '#18181b')                         // Reißverschluss-Kragen
+  for (let y = 11; y < 32; y += 2) c.px(16, y, '#a1a1aa')
+  c.line(34, 24, 36, 26, '#f4f4f5'); c.line(36, 26, 42, 21, '#f4f4f5')                   // weißer Haken auf der Seite
+  // gegelte Haare nach hinten, kurz rasierte Seite
+  c.poly([4, 10, 6, 6, 11, 3, 18, 4, 21, 7, 17, 8, 10, 8, 6, 10], '#0a0a0a')
+  c.line(7, 6, 17, 4, '#3f3f46'); c.line(8, 8, 19, 6, '#3f3f46'); c.line(9, 5, 13, 4, '#a1a1aa')
+  for (let x = 12; x < 18; x += 2) c.px(x, 9, '#78350f')
+  // Auge, Braue mit Strich, Schnauzer
+  eye(c, 5, 13, { size: 4 }); c.px(8, 13, '#0a0a0a')
+  c.line(4, 11, 10, 11, '#0a0a0a'); c.px(8, 11, '#eab308')
+  c.line(1, 21, 7, 20, '#3f2a14'); c.px(1, 22, '#3f2a14')
+  c.line(2, 24, 6, 24, '#a16207')
+  // Goldkette mit Taler
+  for (let i = 0; i <= 14; i++) {
+    const y = 10 + i * 1.4, x = 19 + Math.round(2.5 * Math.sin(i / 14 * Math.PI))
+    c.px(x, y, i % 2 ? '#a16207' : '#facc15')
+  }
+  c.circ(22, 31, 3, '#a16207'); c.circ(22, 31, 2, '#facc15')
+  c.hline(21, 30, 3, '#a16207'); c.vline(22, 30, 3, '#a16207')                            // T für Taler
+  // Bauchtasche: Riemen schräg, Tasche mit Muster und goldener Schnalle
+  for (let i = 0; i <= 22; i++) c.px(23 + i * 0.75, 8 + i, i % 3 === 1 ? '#b91c1c' : '#15803d')
+  c.rect(33, 25, 11, 7, '#a8835a'); c.hline(33, 25, 11, '#c9a77a'); c.hline(33, 31, 11, '#6b4f2e')
+  for (let y = 26; y < 31; y += 2) for (let x = 34 + (y % 4 === 0 ? 1 : 0); x < 43; x += 3) c.px(x, y, '#6b4f2e')
+  c.rect(37, 27, 3, 2, '#facc15'); c.px(37, 27, '#fef08a')
+  sprk(c, 24, 33)
+})

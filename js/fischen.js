@@ -65,6 +65,7 @@
     { id: 'nachricht', name: 'Sprecherfisch', img: 'img/nachrichtenfisch.png', r: 'uncommon', min: 20, max: 40, val: 20, photo: true, whole: true, page: 'seiten/nachrichtenfisch.html', map: 'see', say: 'Und nun das Wetter.', desc: 'Sendet live aus seinem Fernseher. Keiner weiß, wie er da reingekommen ist.' },
     { id: 'genosse', name: 'Genosse Wels', img: 'img/genosse-wels.png', r: 'rare', min: 60, max: 120, val: 145, photo: true, whole: true, page: 'seiten/genosse-wels.html', map: 'lava', say: 'Auf den Fang, Genosse.', desc: 'Pelzmütze, Flasche, kein Lächeln zu viel. Friert nie.' },
     { id: 'affenfisch', name: 'Affenfisch', img: 'img/affenfisch.png', r: 'rare', min: 50, max: 100, val: 48, photo: true, whole: true, page: 'seiten/affenfisch.html', say: 'Uh uh. Blubb.', desc: 'Schaut dich an, als hättest du seine Banane.' },
+    { id: 'talerfisch', name: 'Talerfisch', img: 'img/talerfisch.png', r: 'rare', min: 30, max: 55, val: 90, pixel: true, page: 'seiten/talerfisch.html', sea: true, say: 'Wallah, Digga, ich bin echt Gold. Bruder, was guckst du?', desc: 'Golden wie ein Taler, aber im schwarzen Trainingsanzug: gegelte Haare, ein Strich in der Augenbraue, Schnauzer, Goldkette mit Taler und die Bauchtasche quer über der Brust. Zahlt besser als die meisten.' },
     { id: 'grinsehai', name: 'Grinsehai', img: 'img/grinsehai.png', r: 'rare', min: 110, max: 220, val: 55, photo: true, whole: true, page: 'seiten/grinsehai.html', sea: true, say: 'Schöne Zähne, oder?', desc: 'Geht zweimal im Jahr zum Zahnarzt. Der Zahnarzt nur einmal.' },
     { id: 'gesichtshai', name: 'Gesichtshai', img: 'img/gesichtshai.png', r: 'epic', min: 120, max: 240, val: 185, photo: true, whole: true, page: 'seiten/gesichtshai.html', map: 'see', say: 'Was guckst du so?', desc: 'Hat ein Gesicht, das man nicht vergisst. Leider.' },
     { id: 'gigahai', name: 'Giga-Hai', img: 'img/giga-hai.png', r: 'epic', min: 200, max: 350, val: 170, photo: true, whole: true, page: 'seiten/giga-hai.html', sea: true, say: 'Kein Bein-Tag ausgelassen.', desc: 'Sein Kinn kommt zwei Sekunden vor ihm an.' },
@@ -208,6 +209,7 @@
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
     { id: '2026-11-05-5', date: '05.11.2026', items: [
+      '💰 Neuer Fisch: der Talerfisch – goldener Kopf, Trainingsanzug, Goldkette und Bauchtasche. Selten, am Steg und auf Hoher See, und er bringt richtig Taler.',
       '🐚 Die Magische Miesmuschel spricht wieder: Sie wartet jetzt, bis der Browser seine Stimmen geladen hat, und funktioniert auch auf iPhone und iPad. Hat dein Gerät keine eingebaute Stimme, sagt das Spiel Bescheid.',
     ] },
     { id: '2026-11-05-4', date: '05.11.2026', items: [

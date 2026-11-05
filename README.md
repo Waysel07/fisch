@@ -224,8 +224,8 @@ The current area is saved as `map`.
 
 | Area | `map` | Fish | Opens |
 |---|---|---|---|
-| Steg | `steg` | 47 | From the start |
-| Hohe See | `see` | 42, of which 11 are shared with the Steg | 3rd rebirth, or Seekarte |
+| Steg | `steg` | 48 | From the start |
+| Hohe See | `see` | 43, of which 12 are shared with the Steg | 3rd rebirth, or Seekarte |
 | Glutgrotte | `lava` | 31 | 1st prestige |
 
 Fish that moved to a harder area are worth more Taler there, in line with the other fish of that area and rarity. Caught fish stay in the Fischdex because it's keyed by fish id.
@@ -233,6 +233,8 @@ Fish that moved to a harder area are worth more Taler there, in line with the ot
 ### Hohe See
 
 The buoy next to Bealin takes you onto the boat, and the steering wheel takes you back. Every cast out here counts as far out.
+
+Talerfisch (since `2026-11-05-5`): rare, at the dock and on the High Seas, worth 90 Taler, a golden fish in a tracksuit with a gold chain and a crossbody bag.
 
 Deep-sea catches (since `2026-11-05-3`): Beilfisch, Alter Taucherhelm (junk), Riesenassel, Leuchtqualle (night), Fangzahnfisch (far), Pelikanaal (night) and the legendary Megalodon (very far).
 
