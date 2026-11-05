@@ -1133,3 +1133,4 @@ button#btn-boss:hover { background: #be123c; }
   .sport-medal { font-size: 2rem; }
 }
 .sport-medal.none { font-size: 1rem; font-family: "Silkscreen", monospace; color: #cbd5e1; }
+.sport-map { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; image-rendering: pixelated; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); margin: .4rem 0 .6rem; background: #0e7490; }

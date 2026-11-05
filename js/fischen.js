@@ -233,6 +233,15 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-05-7', date: '05.11.2026', items: [
+      '🌴 Neue Welt – die Sonneninsel: Ab 3× Prestige fliegt dich der Inselflieger (Wasserflugzeug am Steg) auf eine Vulkaninsel mit fünf Buchten. Alles, was du dort schaffst, bleibt für immer – auch nach Wiedergeburt und Prestige.',
+      '🏅 Neun Sportstationen bei Coach Pelle: Frisbee, Angelturnier, Rundflug, Jetski, Surfen, Bogenschießen, Beachvolleyball, Tischtennis und Strand-Bowling. Jede hat zwei Modi, drei Stufen und Medaillen in Bronze, Silber und Gold.',
+      '📈 Jede Station hat ein eigenes Können bis 2500: Ab 1000 bist du Profi (+2 % Taler überall), ab 1500 und 26 Stempeln fordert dich Kapitän Kraul zum Champion-Duell. Ein Sieg bringt einen Pokal für den Steg, eine Perle und +3 % Taler überall.',
+      '🔖 45 Stempel für besondere Leistungen öffnen nach und nach neue Buchten und Stationen. Mit allen gibt es den Titel „Inselchampion“ und +5 % Taler überall.',
+      '✈️ Beim Rundflug suchst du 30 Aussichtspunkte über der ganzen Insel, mit allen 30 öffnet sich der Nachtflug.',
+      '🐠 22 neue Inselfische, vom Kokosnussfisch bis zum Riesen-Mantarochen, mit eigenem Fischdex-Tab. Auf der Insel gibt es mehr Taler pro Fang, je weiter die Bucht, desto mehr.',
+      '🍹 Neu in Zylinderwels’ Strandbude: Mango-Köder, Hawaiihemd, Strohhut und Kokos-Pose. Dazu Stirnband, Fliegerkappe, Trainingsjacke und Pokal-Hut als Belohnungen, die Bestenliste „Sportler“ und neue Wochenziele.',
+    ] },
     { id: '2026-11-05-6', date: '05.11.2026', items: [
       '💰 Neuer Fisch: der Talerfisch – goldener Kopf, Trainingsanzug, Goldkette, Bauchtasche und Vape. Selten, am Steg und auf Hoher See, und er bringt richtig Taler.',
       '🗑️ Neuer Müll: die Elfbar, eine leere Einweg-Vape. Liegt am Steg und auf Hoher See im Wasser.',
@@ -663,7 +672,7 @@
     { n: 1, name: 'Palmenstrand', st: 0 }, { n: 2, name: 'Korallenriff', st: 4 }, { n: 3, name: 'Sportbucht', st: 10 },
     { n: 4, name: 'Wasserfall-Lagune', st: 18 }, { n: 5, name: 'Pokalbucht', st: 26 },
   ];
-  const STAMP_ALL = 40, CHAMP_ST = 26; // 8 stations × 5 stamps; the champion duels open with the 5th bay
+  const STAMP_ALL = 45, CHAMP_ST = 26; // 9 stations × 5 stamps; the champion duels open with the 5th bay
   trAll(INSEL_BAYS, ['name']);
   if (!save.sport || typeof save.sport !== 'object') save.sport = {};
   if (!Array.isArray(save.stamps)) save.stamps = [];
@@ -1986,7 +1995,7 @@
     { id: 'hut-stirnband', slot: 'hat',  name: 'Sport-Stirnband',    col: ['#f8fafc', '#ef4444', '#3b82f6'], desc: 'Weiß mit rotem und blauem Streifen, wie bei Coach Pelle.', ach: 'Sammle 10 Stempel auf der Sonneninsel.', got: () => (save.stamps || []).length >= 10 },
     { id: 'hut-flieger', slot: 'hat',    name: 'Fliegerkappe',       col: ['#78350f', '#451a03', '#7dd3fc'], desc: 'Lederkappe mit Brille, für Rundflüge über die Insel.', ach: 'Finde 20 Aussichtspunkte beim Rundflug.', got: () => (save.ipoints || []).filter(i => i < 30).length >= 20 },
     { id: 'jacke-trainer', slot: 'jacket', name: 'Trainingsjacke',   col: ['#1d4ed8', '#1e3a8a', '#f8fafc'], desc: 'Blau mit weißen Streifen, wie bei Kapitän Kraul. Nur für Leute, die ihn geschlagen haben.', ach: 'Besiege Kapitän Kraul in einem Champion-Duell.', got: () => (save.trophies || []).length >= 1 },
-    { id: 'hut-pokal',   slot: 'hat',    name: 'Pokal-Hut',          col: ['#facc15', '#a16207', '#ffffff'], sparkle: true, desc: 'Ein kleiner goldener Pokal als Hut.', ach: 'Sammle alle 40 Stempel auf der Sonneninsel.', got: () => (save.stamps || []).length >= 40 },
+    { id: 'hut-pokal',   slot: 'hat',    name: 'Pokal-Hut',          col: ['#facc15', '#a16207', '#ffffff'], sparkle: true, desc: 'Ein kleiner goldener Pokal als Hut.', ach: 'Sammle alle 45 Stempel auf der Sonneninsel.', got: () => (save.stamps || []).length >= 45 },
     { id: 'hut-magma',   slot: 'hat',    name: 'Magmahelm',          glut: 200, col: ['#ea580c', '#7c2d12', '#fde047'], desc: 'Ein Grubenhelm wie der von Glimm, nur heißer.' },
     { id: 'jacke-asche', slot: 'jacket', name: 'Aschejacke',         glut: 150, col: ['#57534e', '#292524', '#f97316'], desc: 'Grau wie Asche, mit glühenden Nähten.' },
     { id: 'pose-glut',   slot: 'bob',    name: 'Glut-Pose',          glut: 80,  col: '#f97316', desc: 'Glüht auf der Lava wie ein Stück Kohle.' },
@@ -3038,6 +3047,16 @@
     R(-2.5, -12.5, 1, 3.5, '#f8fafc'); R(1.5, -12.5, 1, 3.5, '#f8fafc');
     R(-5, -20, 10, 1.5, '#1d4ed8'); R(-3, -21.5, 6, 1.5, '#1d4ed8'); // cap
   }
+  // the trophy shelf at the Steg: one small gold cup per champion duel won on the island
+  function drawPokale(dark) {
+    const x0 = 79, y = DOCK_Y, k = '#1b1f2e', n = Math.min(10, save.trophies.length);
+    px(x0, y - 3, 21, 3, k); px(x0 + .5, y - 2.5, 20, 2, mix([161, 98, 7], [60, 40, 20], dark * .5));
+    for (let i = 0; i < n; i++) { // five cups per row, the second row stands on top of the first
+      const x = x0 + 1.5 + (i % 5) * 4, yy = y - 3 - Math.floor(i / 5) * 6.5;
+      px(x - .5, yy - 6, 3.5, 4, k); px(x, yy - 5.5, 2.5, 3, '#facc15'); px(x + .5, yy - 2, 1.5, 1.5, '#a16207'); px(x, yy - .5, 2.5, .5, '#a16207');
+      if (Math.sin(t * 3 + i) > .8) px(x + 1, yy - 6, .5, .5, '#ffffff');
+    }
+  }
   // the seaplane that flies between the Steg and the island
   function drawPlane(cx, wy, dark = 0) {
     const y = wy + Math.sin(t * 1.8) * .6, k = '#1b1f2e', d = c => mix(c, [40, 50, 70], dark * .6);
@@ -3201,6 +3220,7 @@
       draw(g) {
         const cxm = clamp(g.x - W / 2, 0, MAP_W - W), cym = clamp(g.y - H / 2, 0, MAP_H - H);
         sx.save(); sx.setTransform(2, 0, 0, 2, 0, 0); sx.drawImage(islandMap(), cxm, cym, W, H, 0, 0, W, H); sx.restore();
+        for (let i = 0; i < 6; i++) { const k = (t * .25 + i / 6) % 1; sx.globalAlpha = .5 * (1 - k); sdisc(MAP_W / 2 - cxm + Math.sin(t + i) * 4 + k * 20, MAP_H / 2 - 6 - cym - k * 50, 4 + k * 10, '#e2e8f0'); } sx.globalAlpha = 1;
         for (const p of IPOINTS) {
           if ((p.night ? 1 : 0) !== g.mode) continue;
           const X = p.x - cxm, Y = p.y - cym; if (X < -10 || X > W + 10 || Y < -10 || Y > H + 10) continue;
@@ -3537,43 +3557,79 @@
   const MAP_W = W * 3, MAP_H = H * 3;
   const BAY_ANG = [Math.PI / 2, 0, -Math.PI / 4, Math.PI, -Math.PI / 2]; // Palmenstrand south, Riff east, Sportbucht north-east, Lagune west, Pokalbucht north
   const isleR = a => 300 + 40 * Math.sin(a * 3 + 1) + 22 * Math.sin(a * 5 + 2) + 14 * Math.sin(a * 9) - BAY_ANG.reduce((s, b) => { let d = Math.abs(a - b); d = Math.min(d, Math.PI * 2 - d); return s + Math.max(0, 70 - d * 260); }, 0);
-  const IPOINTS = (() => {
-    const out = []; let s = 7;
-    const r = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
-    for (let b = 0; b < 5; b++) for (let j = 0; j < 6; j++) { const a = BAY_ANG[b] + (r() - .5) * 1.1, d = isleR(a) * (.35 + r() * .9); out.push({ i: out.length, bay: b + 1, x: MAP_W / 2 + Math.cos(a) * d * 1.2, y: MAP_H / 2 + Math.sin(a) * d * .8 }); }
-    for (let j = 0; j < 10; j++) { const a = r() * Math.PI * 2, d = isleR(a) * (.3 + r() * .9); out.push({ i: 30 + j, bay: 1, night: true, x: MAP_W / 2 + Math.cos(a) * d * 1.2, y: MAP_H / 2 + Math.sin(a) * d * .8 }); }
-    return out;
-  })();
+  // a spot on the island: angle offset from its bay and how far out (0 = summit, 1 = shore)
+  const isleAt = (bay, da, k) => { const a = BAY_ANG[bay - 1] + da, R = isleR(a) * k; return [MAP_W / 2 + Math.cos(a) * R * 1.2, MAP_H / 2 + Math.sin(a) * R * .8]; };
+  // the view points of the Rundflug sit at landmarks; every one has a name and tells you something about the island
+  const LANDMARKS = [
+    [1, 0, .97, 'Strandplatz'], [1, -.35, .92, 'Hüttendorf'], [1, .3, 1.08, 'Langer Steg'], [1, .55, .8, 'Frisbeewiese'], [1, -.6, .75, 'Turnierbühne'], [1, .12, .55, 'Palmenhain'],
+    [2, 0, 1.12, 'Korallenriff'], [2, .3, 1.02, 'Schnorchelplatz'], [2, -.3, 1.05, 'Jetski-Start'], [2, .5, .85, 'Surfstrand'], [2, -.12, .7, 'Schildkrötenbucht'], [2, .15, .45, 'Kaffeeplantage'],
+    [3, 0, 1.12, 'Bojenparcours'], [3, .35, .9, 'Bogenwiese'], [3, -.3, .9, 'Volleyballfeld'], [3, .1, 1.0, 'Bootshaus'], [3, -.1, .62, 'Sprungschanze'], [3, .25, .5, 'Aussichtsturm'],
+    [4, 0, .95, 'Wasserfall'], [4, .3, 1.02, 'Mangroven'], [4, -.32, .88, 'Tischtennis-Pavillon'], [4, .5, .72, 'Strandbowling'], [4, -.12, .6, 'Hängebrücke'], [4, .15, .38, 'Flussquelle'],
+    [5, 0, 1.25, 'Pokalinsel'], [5, .32, 1.0, 'Leuchtturm'], [5, -.3, .95, 'Siegertreppe'], [5, .12, .32, 'Kraterrand'], [5, -.12, .18, 'Kratersee'], [5, .5, .6, 'Lavafelder'],
+  ];
+  const NIGHT_MARKS = [[1, -.15, .9, 'Lagerfeuer am Strand'], [1, .45, .95, 'Leuchtquallen'], [2, .2, 1.1, 'Glühendes Riff'], [2, -.4, .8, 'Sternenstrand'], [3, -.05, .8, 'Nachtregatta'],
+    [3, .45, .7, 'Fackelweg'], [4, .05, .8, 'Mondwasserfall'], [4, -.4, .7, 'Glühwürmchen'], [5, .2, 1.08, 'Leuchtfeuer'], [5, 0, .08, 'Glut im Krater']];
+  const IPOINTS = [...LANDMARKS.map(([bay, da, k, name], i) => ({ i, bay, name, xy: isleAt(bay, da, k) })),
+    ...NIGHT_MARKS.map(([bay, da, k, name], j) => ({ i: 30 + j, bay: 1, night: true, name, xy: isleAt(bay, da, k) }))].map(p => ({ ...p, name: tr(p.name), x: p.xy[0], y: p.xy[1] }));
+  // where each station sits on the island (for the map in Pelle's hub)
+  const STATION_AT = { frisbee: 3, turnier: 4, flug: 2, jetski: 8, surf: 9, bogen: 13, volley: 14, tt: 20, bowling: 21 };
   function ipointText(p) {
+    if (p.night) return tr('🌙 {p}: Nur nachts zu sehen.', { p: p.name });
     const fish = FISH.filter(f => f.map === 'insel' && f.bay === p.bay), f = fish[p.i % Math.max(1, fish.length)];
-    return f ? tr('📍 {b}: Hier lebt der {f}.', { b: INSEL_BAYS[p.bay - 1].name, f: f.name }) : tr('📍 Aussichtspunkt in der {b}', { b: INSEL_BAYS[p.bay - 1].name });
+    return f ? tr('📍 {p} ({b}): Hier lebt der {f}.', { p: p.name, b: INSEL_BAYS[p.bay - 1].name, f: f.name }) : tr('📍 {p} ({b})', { p: p.name, b: INSEL_BAYS[p.bay - 1].name });
   }
   let islandCv = null;
   function islandMap() {
     if (islandCv) return islandCv;
     const c = islandCv = document.createElement('canvas'); c.width = MAP_W; c.height = MAP_H;
     const x = c.getContext('2d'), img = x.createImageData(MAP_W, MAP_H), d = img.data, cx = MAP_W / 2, cy = MAP_H / 2;
-    const n2 = (a, b) => Math.sin(a * 12.9898 + b * 78.233) * 43758.5453 % 1;
+    const n2 = (a, b) => { const v = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453; return v - Math.floor(v); };
+    // the river runs from the crater lake down to the lagoon in the west
+    const riverY = xx => cy + Math.sin((cx - xx) * .025) * 16 + (cx - xx) * .04;
     for (let yy = 0; yy < MAP_H; yy++) for (let xx = 0; xx < MAP_W; xx++) {
-      const dx = (xx - cx) / 1.2, dy = (yy - cy) / .8, a = Math.atan2(dy, dx), r = Math.hypot(dx, dy), R = isleR(a), e = R - r;
+      const dx = (xx - cx) / 1.2, dy = (yy - cy) / .8, a = Math.atan2(dy, dx), r = Math.hypot(dx, dy), R = isleR(a), e = R - r, h = r / R;
+      const nz = n2(Math.floor(xx / 3), Math.floor(yy / 3));
       let col;
-      if (e < -40) col = mix3([22, 120, 160], [16, 92, 136], Math.min(1, -e / 260));
-      else if (e < 0) col = mix3([110, 228, 214], [40, 170, 190], -e / 40);
-      else if (e < 10) col = [242, 223, 168];
-      else if (r < 70) col = r < 22 ? [148, 163, 184] : [100, 116, 139];
-      else col = Math.abs(n2(Math.floor(xx / 4), Math.floor(yy / 4))) > .55 ? [22, 163, 74] : [21, 128, 61];
+      if (e < -40) col = mix3([22, 120, 160], [14, 84, 128], Math.min(1, -e / 260));
+      else if (e < 0) col = mix3([120, 232, 218], [40, 170, 190], -e / 40);
+      else if (e < 9) col = nz > .7 ? [250, 232, 180] : [242, 223, 168];
+      else if (r < 18) col = r < 15 ? (nz > .6 ? [94, 234, 212] : [45, 212, 191]) : [87, 83, 78]; // crater lake
+      else if (r < 34) col = nz > .5 ? [120, 113, 108] : [87, 83, 78];                              // crater rim
+      else if (h < .22) col = nz > .55 ? [168, 162, 158] : [138, 130, 124];                        // bare rock up top
+      else if (h < .42) col = nz > .6 ? [101, 163, 13] : [77, 124, 15];                           // high meadows
+      else col = nz > .62 ? [22, 163, 74] : nz > .2 ? [21, 128, 61] : [20, 83, 45];                // jungle
+      if (xx < cx - 30 && e > 9 && Math.abs(yy - riverY(xx)) < 2 + (cx - xx) / 160) col = [125, 211, 252];
       const o = (yy * MAP_W + xx) * 4; d[o] = col[0]; d[o + 1] = col[1]; d[o + 2] = col[2]; d[o + 3] = 255;
     }
     x.putImageData(img, 0, 0);
-    const at = (b, k) => [cx + Math.cos(BAY_ANG[b]) * isleR(BAY_ANG[b]) * 1.2 * k, cy + Math.sin(BAY_ANG[b]) * isleR(BAY_ANG[b]) * .8 * k];
     const R = (X, Y, w, h, c) => { x.fillStyle = c; x.fillRect(Math.round(X), Math.round(Y), w, h); };
-    for (let i = 0; i < 40; i++) { const a = i / 40 * Math.PI * 2, k = .78 + (i % 3) * .05, X = cx + Math.cos(a) * isleR(a) * 1.2 * k, Y = cy + Math.sin(a) * isleR(a) * .8 * k; R(X - 3, Y - 3, 7, 5, '#16a34a'); R(X - 1, Y - 1, 3, 2, '#4ade80'); R(X, Y + 2, 1, 2, '#854d0e'); }
-    { const [X, Y] = at(0, .95); for (let i = 0; i < 4; i++) { R(X - 30 + i * 16, Y - 8, 10, 7, '#c79a4a'); R(X - 29 + i * 16, Y - 10, 8, 3, '#e9c77b'); } }
-    { const [X, Y] = at(1, 1.1); for (let i = 0; i < 60; i++) R(X + (n2(i, 1) * 60), Y + (n2(i, 2) * 70), 3, 3, ['#f472b6', '#fb923c', '#a78bfa', '#facc15'][i % 4]); }
-    { const [X, Y] = at(2, 1.15); for (let i = 0; i < 9; i++) R(X + i * 10 - 40, Y - i * 8 + 30, 3, 3, i % 2 ? '#ef4444' : '#facc15'); }
-    { const [X, Y] = at(3, .9); x.fillStyle = '#e0f2fe'; for (let i = 0; i < 70; i++) R(X + 50 - i * 1.2, Y - 3 + Math.sin(i * .3) * 2, 2, 3, '#e0f2fe'); R(X - 34, Y - 12, 30, 24, '#5eead4'); }
-    { const [X, Y] = at(4, .9); R(X - 4, Y - 4, 9, 9, '#f8fafc'); R(X - 2, Y - 2, 5, 5, '#14b8a6'); R(X + 20, Y + 4, 8, 8, '#eab308'); R(X + 22, Y + 2, 4, 3, '#fde047'); }
-    R(cx - 2, cy - 30, 4, 60, '#e0f2fe'); // river from the mountain
+    const L = i => IPOINTS[i];
+    // paths: a ring road around the island and a trail up to the crater
+    for (let i = 0; i < 360; i++) { const a = i / 360 * Math.PI * 2, k = .82, X = cx + Math.cos(a) * isleR(a) * 1.2 * k, Y = cy + Math.sin(a) * isleR(a) * .8 * k; R(X, Y, 2, 2, '#d6b97a'); }
+    for (let i = 0; i < 60; i++) { const k = .2 + i / 60 * .6, a = BAY_ANG[0] + Math.sin(i * .5) * .12, X = cx + Math.cos(a) * isleR(a) * 1.2 * k, Y = cy + Math.sin(a) * isleR(a) * .8 * k; R(X, Y, 1.5, 1.5, '#c4a46b'); }
+    // palms along the coast
+    for (let i = 0; i < 70; i++) { const a = i / 70 * Math.PI * 2, k = .88 + n2(i, 3) * .06, X = cx + Math.cos(a) * isleR(a) * 1.2 * k, Y = cy + Math.sin(a) * isleR(a) * .8 * k; R(X - 3, Y - 2, 7, 4, '#15803d'); R(X - 1, Y - 1, 3, 2, '#4ade80'); }
+    // landmarks
+    { const [X, Y] = L(0).xy; R(X - 14, Y - 6, 28, 12, '#fde68a'); R(X - 2, Y - 2, 4, 4, '#38bdf8'); } // plaza with a fountain
+    { const [X, Y] = L(1).xy; for (let i = 0; i < 5; i++) { R(X - 20 + i * 9, Y - 4 + (i % 2) * 3, 7, 6, '#a16207'); R(X - 21 + i * 9, Y - 6 + (i % 2) * 3, 9, 3, '#e9c77b'); } }
+    { const [X, Y] = L(2).xy; R(X - 2, Y - 20, 5, 34, '#92400e'); R(X - 1, Y - 20, 3, 34, '#b45309'); }
+    { const [X, Y] = L(3).xy; R(X - 12, Y - 7, 24, 14, '#4ade80'); R(X - 1, Y - 1, 3, 3, '#f97316'); }
+    { const [X, Y] = L(4).xy; R(X - 10, Y - 5, 20, 10, '#7c2d12'); R(X - 9, Y - 4, 18, 3, '#ef4444'); }
+    { const [X, Y] = L(6).xy; for (let i = 0; i < 70; i++) R(X - 30 + n2(i, 1) * 60, Y - 26 + n2(i, 2) * 52, 3, 2, ['#f472b6', '#fb923c', '#a78bfa', '#facc15'][i % 4]); }
+    { const [X, Y] = L(9).xy; for (let i = 0; i < 6; i++) R(X - 16 + i * 6, Y + 8 + (i % 2), 4, 1, '#f8fafc'); }
+    { const [X, Y] = L(12).xy; for (let i = 0; i < 10; i++) R(X - 40 + i * 9, Y + Math.sin(i) * 10, 3, 3, i % 2 ? '#ef4444' : '#facc15'); }
+    { const [X, Y] = L(13).xy; for (const r0 of [6, 4, 2]) R(X - r0, Y - r0, r0 * 2, r0 * 2, r0 === 6 ? '#f8fafc' : r0 === 4 ? '#3b82f6' : '#ef4444'); }
+    { const [X, Y] = L(14).xy; R(X - 12, Y - 7, 24, 14, '#fde68a'); R(X - .5, Y - 7, 1, 14, '#f8fafc'); }
+    { const [X, Y] = L(15).xy; R(X - 8, Y - 6, 16, 10, '#78350f'); R(X - 9, Y - 8, 18, 3, '#b91c1c'); }
+    { const [X, Y] = L(17).xy; R(X - 2, Y - 2, 5, 5, '#a16207'); R(X - 3, Y - 4, 7, 2, '#fde68a'); }
+    { const [X, Y] = L(18).xy; for (let i = 0; i < 26; i++) R(X - 2 + Math.sin(i) * 1.5, Y - 26 + i, 5, 1, i % 3 ? '#e0f2fe' : '#ffffff'); R(X - 20, Y, 34, 18, '#5eead4'); }
+    { const [X, Y] = L(20).xy; R(X - 8, Y - 6, 16, 12, '#f8fafc'); R(X - 6, Y - 4, 12, 8, '#0e7490'); R(X - .5, Y - 4, 1, 8, '#f8fafc'); }
+    { const [X, Y] = L(21).xy; R(X - 3, Y - 12, 6, 24, '#d6a35c'); for (let i = 0; i < 3; i++) R(X - 2 + i * 1.5, Y - 10, 1, 1, '#ffffff'); }
+    { const [X, Y] = L(22).xy; for (let i = 0; i < 12; i++) R(X - 14 + i * 2.5, Y + Math.sin(i / 11 * Math.PI) * 3, 2, 1, '#92400e'); }
+    { const [X, Y] = L(24).xy; R(X - 16, Y - 10, 32, 20, '#f2dfa8'); R(X - 3, Y - 9, 6, 6, '#eab308'); R(X - 2, Y - 12, 4, 3, '#fde047'); R(X - 4, Y - 3, 8, 3, '#a16207'); }
+    { const [X, Y] = L(25).xy; R(X - 3, Y - 3, 6, 6, '#f8fafc'); R(X - 2, Y - 2, 4, 4, '#ef4444'); R(X - 1, Y - 1, 2, 2, '#fde047'); }
+    { const [X, Y] = L(26).xy; for (const [dx, h0, c0] of [[-7, 4, '#94a3b8'], [0, 7, '#facc15'], [7, 2, '#b45309']]) R(X + dx - 3, Y - h0, 6, h0 + 2, c0); }
+    { const [X, Y] = L(29).xy; for (let i = 0; i < 30; i++) R(X - 18 + n2(i, 7) * 36, Y - 12 + n2(i, 8) * 24, 3, 2, i % 3 ? '#44403c' : '#ea580c'); }
     return c;
   }
 
@@ -3789,6 +3845,7 @@
     $('sport-title').textContent = tr('🏅 Sportstationen');
     $('sport-sub').textContent = tr('{a} von {b} Stempeln', { a: n, b: ALL_STAMPS }) + ' · ' + (next ? tr('Noch {k} bis {b}', { k: next.st - n, b: next.name }) : tr('Alle Buchten offen')) + ' · ' + tr('Insel-Bonus +{p} % Taler', { p: Math.round(sportBonus() * 100) });
     if (spView.id) return renderStation(hub, SPORTS.find(s => s.id === spView.id));
+    hub.append(sportMiniMap());
     const grid = document.createElement('div'); grid.className = 'sport-grid';
     for (const s of SPORTS) {
       const r = sportRec(s.id), open = sportOpen(s), b = document.createElement('button');
@@ -3808,6 +3865,17 @@
     const ladder = document.createElement('p'); ladder.className = 'sub';
     ladder.textContent = INSEL_BAYS.map(b => `${n >= b.st ? '✅' : '🔒'} ${b.name} (${b.st})`).join(' · ');
     hub.append(ladder);
+  }
+  // the island from above with a marker for every station; bays that are still closed lie under clouds
+  function sportMiniMap() {
+    const c = document.createElement('canvas'); c.className = 'sport-map'; c.width = 384; c.height = 216;
+    c.setAttribute('role', 'img'); c.setAttribute('aria-label', tr('Karte der Sonneninsel mit allen Sportstationen'));
+    const x = c.getContext('2d'); x.imageSmoothingEnabled = false; x.drawImage(islandMap(), 0, 0, 384, 216);
+    const n = stampCount();
+    for (const b of INSEL_BAYS) if (n < b.st) { const [X, Y] = isleAt(b.n, 0, .9); x.globalAlpha = .85; x.fillStyle = '#f1f5f9'; for (const [dx, dy, r] of [[-10, 0, 12], [8, -4, 14], [2, 6, 11], [-2, -8, 9]]) { x.beginPath(); x.arc(X / 3 + dx, Y / 3 + dy, r, 0, 7); x.fill(); } x.globalAlpha = 1; x.font = '700 9px Poppins, sans-serif'; x.textAlign = 'center'; x.fillStyle = '#334155'; x.fillText('🔒 ' + b.st, X / 3, Y / 3 + 3); }
+    x.font = '14px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    for (const st of SPORTS) { const p = IPOINTS[STATION_AT[st.id]]; if (!p || !sportOpen(st)) continue; x.fillStyle = 'rgba(15,23,42,.7)'; x.fillRect(p.x / 3 - 9, p.y / 3 - 9, 18, 18); x.fillText(st.icon, p.x / 3, p.y / 3 + 1); }
+    return c;
   }
   function renderStation(hub, s) {
     const r = sportRec(s.id);
@@ -3854,6 +3922,8 @@
     { id: 'heimflug', map: 'insel', label: tr('✈️ Zurück zum Steg'), x: 356, y: SURFACE - 13, w: 26, h: 14, draw: dark => drawPlane(369, SURFACE + 1, dark), open: () => travel('steg') },
     { id: 'pelle',  map: 'insel', label: tr('🏅 Coach Pelle · Sportstationen'), x: 18, y: DOCK_Y - 17, w: 12, h: 17, draw: () => drawPelle(px, 24, DOCK_Y, Math.sin(t * 2) > .7 ? 1 : 0), open: () => toggleModal('sport'), ready: () => sportReady() },
     { id: 'strandbude', map: 'insel', label: tr('🍹 Strandbude'), x: KIOSK.x - 3, y: DOCK_Y - 30, w: KIOSK.w + 6, h: 30, draw: drawBeachHut, open: () => toggleModal('shop') },
+    { id: 'pokale', get label() { return tr('🏆 Inselpokale ({n})', { n: save.trophies.length }); }, x: 79, y: DOCK_Y - 10, w: 21, h: 10, draw: drawPokale, show: () => save.trophies.length > 0,
+      open: () => toast(tr('🏆 Siege gegen Kapitän Kraul: {l}', { l: save.trophies.map(id => (SPORTS.find(s => s.id === id) || {}).name || id).join(', ') })) },
     { id: 'muschel', label: tr('🐚 Magische Miesmuschel'), x: 121, y: SURFACE - 13, w: 13, h: 14, draw: drawMuschelRock, open: () => toggleModal('muschel'), show: () => !!(save.dex.muschel && save.dex.muschel.n) },
     { id: 'npc',    label: 'Spezifischfischer', x: NPC.x - 1, y: DOCK_Y - NPC.h - 2, w: NPC.w + 2, h: NPC.h + 2, open: () => talkNpc() },
   ];
@@ -4162,6 +4232,7 @@
   }
   function updateGear() {
     $('gear').textContent = `${onSea() ? '⛵' : inLava() ? '🌋' : onInsel() ? '🌴' : '🎣'} ${rod().name}`;
+    updateTurnierPill();
     $('baitbar').replaceChildren(...ownedBaits().map((b, i) => {
       const n = save.baits[b.id], on = b.id === save.bait;
       const btn = document.createElement('button');
@@ -4688,7 +4759,7 @@
     { id: 'wall', name: 'Alle Wetterfische',   need: () => [FISH.filter(f => f.weather && f.map !== 'see' && save.dex[f.id]).length, FISH.filter(f => f.weather && f.map !== 'see').length], coins: 2000, scales: 4 },
     { id: 'lavaall', name: 'Alle Fische der Glutgrotte', need: () => [FISH.filter(f => f.map === 'lava' && save.dex[f.id]).length, FISH.filter(f => f.map === 'lava').length], coins: 15000, scales: 15 },
     { id: 'inselall', name: 'Alle Fische der Sonneninsel', need: () => [FISH.filter(f => f.map === 'insel' && save.dex[f.id]).length, FISH.filter(f => f.map === 'insel').length], coins: 25000, scales: 20 },
-    { id: 'inselst', name: 'Alle 40 Stempel der Sonneninsel', title: 'Inselchampion', need: () => [(save.stamps || []).length, 40], coins: 60000, scales: 30 },
+    { id: 'inselst', name: 'Alle 45 Stempel der Sonneninsel', title: 'Inselchampion', need: () => [(save.stamps || []).length, 45], coins: 60000, scales: 30 },
     { id: 'inselpt', name: 'Alle 30 Aussichtspunkte', title: 'Inselkenner', need: () => [(save.ipoints || []).filter(i => i < 30).length, 30], coins: 20000, scales: 12 },
     { id: 'seeall', name: 'Alle Fische der Hohen See', need: () => [FISH.filter(f => f.map === 'see' && !f.boss && save.dex[f.id]).length, FISH.filter(f => f.map === 'see' && !f.boss).length], coins: 5000, scales: 8 },
     { id: 'odboss', name: 'Odfisch besiegt',   need: () => [save.bossWins || 0, 1], coins: 3000, scales: 5 },
@@ -5781,7 +5852,7 @@
     if (!confirm(tr('Wiedergeburt?\n\nDu bekommst {n} Schuppen und dauerhaft +20 % Taler.\nTaler, Ruten, Köder, Level, Aufträge, Glutsteine und die Grotten-Tiefe werden zurückgesetzt.\nFischdex, Rekorde und Talente bleiben.', { n: gain }))) return;
     const oldRank = rankOf(save.rebirthsTotal);
     save.rebirths++; save.rebirthsTotal++; save.scales += gain;
-    Object.assign(save, { lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], lavaRod: '', glut: 0, caveDepth: 1, bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { turnier: null, lvl: 1, xp: 0, coins: perk('erbe') * 150, rod: 'stock', rods: ['stock'], lavaRod: '', glut: 0, caveDepth: 1, bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     const newRank = rankOf(save.rebirthsTotal), ms = MILESTONES.find(m => m.r === save.rebirths);
     if (newRank !== oldRank) setTimeout(() => toast(tr('🎖️ Neuer Rang: {r}!', { r: newRank.name })), 2400);
     if (ms) setTimeout(() => toast(tr('🔓 Neu freigeschaltet: {t}', { t: ms.t })), 4400);
@@ -5809,7 +5880,7 @@
     checkCosm(true); // keep the rebirth cosmetics earned so far
     save.rebHeir = (save.rebHeir || 0) + save.rebirths * .4; // the Erbe keeps 40 % of these rebirths in the Taler bonus
     save.prestige++; save.pearls += gain;
-    Object.assign(save, { rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: ['stock'], lavaRod: '', glut: 0, caveDepth: 1, bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
+    Object.assign(save, { turnier: null, rebirths: 0, scales: 0, perks: {}, lvl: 1, xp: 0, coins: 0, rod: 'stock', rods: ['stock'], lavaRod: '', glut: 0, caveDepth: 1, bait: 'wurm', baits: { wurm: Infinity }, lifeCoins: 0, quests: [], forge: {} });
     if (save.map === 'see' && !seaOpen()) { save.map = 'steg'; bgKey = ''; boss.invite = null; $('btn-boss').hidden = true; updateMapUi(); }
     // the cave starts again at depth 1: open Glimm jobs may ask for deeper fish, so only finished ones stay
     save.glimmQ = (save.glimmQ || []).filter(q => q.p >= q.n); bgKey = ''; wx = currentWeather(); updateWeatherPill();
@@ -6279,7 +6350,7 @@
       if (p.m === 'see') n.title = tr('Auf Hoher See');
       if (p.m === 'lava') n.title = tr('In der Glutgrotte');
       if (p.m === 'insel') n.title = tr('Auf der Sonneninsel');
-      if (p.rk !== undefined) { const rk = document.createElement('small'); rk.className = 'rank'; rk.textContent = ' ' + presMark(p.pr | 0) + rankOf(p.rk).name + (p.sp ? ' · ' + '🏅'.repeat(Math.min(8, p.sp | 0)) : '') + (titleOf(p.ti) ? ` · „${titleOf(p.ti)}“` : ''); n.append(rk); }
+      if (p.rk !== undefined) { const rk = document.createElement('small'); rk.className = 'rank'; rk.textContent = ' ' + presMark(p.pr | 0) + rankOf(p.rk).name + (p.sp ? ' · ' + '🏅'.repeat(Math.min(9, p.sp | 0)) : '') + (titleOf(p.ti) ? ` · „${titleOf(p.ti)}“` : ''); n.append(rk); }
       const sc = document.createElement('span'); sc.className = 'sc'; sc.textContent = tr('{n} Taler', { n: (p.sc || 0).toLocaleString(I18N.locale) });
       li.append(pos, n, sc);
       if (p.big) { const b = document.createElement('span'); b.className = 'big'; b.textContent = tr('Größter: {f} ({cm} cm)', { f: p.big.f, cm: p.big.cm }); li.append(b); }

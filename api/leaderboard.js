@@ -32,7 +32,7 @@ const BOARDS = {
   boss:   { max: 1e5,  step: (dt) => 2 + dt / 60 },         // besiegte Odfische
   spent:  { max: 1e10, step: (dt) => 200000 + dt * 20000 }, // im Laden ausgegebene Taler
   prestige: { max: 1000, step: (dt) => 1 + dt / 3600 },     // Prestige (das erste braucht 7 Wiedergeburten, danach weniger)
-  sport:  { max: 20000, step: (dt) => 300 + dt * 3 },       // Sonneninsel: Summe des Könnens an allen 8 Sportstationen (je 0–2500)
+  sport:  { max: 22500, step: (dt) => 300 + dt * 3 },       // Sonneninsel: Summe des Könnens an allen 9 Sportstationen (je 0–2500)
 };
 const WEEK_TTL = 21 * 86400; // Wochenlisten bleiben drei Wochen, dann löscht Redis sie
 const weekId = (t = Date.now()) => Math.floor((t / 864e5 + 3) / 7); // wie im Spiel: Wochen beginnen montags

@@ -37,7 +37,7 @@ Menus are objects on the dock. The old buttons stay hidden for keyboard and scre
 | Trophy on the kiosk roof | Leaderboard | B |
 | Newspaper bundle | Steg-Zeitung (patch notes) | N |
 | Your angler | Wardrobe | K |
-| Buoy (Hohe See) and Glimm (Glutgrotte) | Travel to another area | |
+| Buoy (Hohe See), Glimm (Glutgrotte) and the seaplane (Sonneninsel) | Travel to another area | |
 
 Other keys: **O** lobby, **E** settings, **M** sound, **1–9** bait hotbar, **Enter** or **T** lobby chat.
 
@@ -89,7 +89,7 @@ Catches, lost fish, quests and Fischdex rewards give XP toward angler levels, wh
 |---|---|
 | Path | Rebirths and Erbe × 20 %, +100 % per prestige |
 | Talents | Goldener Haken 8 % per level, Perlenhaken 10 % per level, Perlenschliff 2 % per level |
-| Collection | Fischdex 10 %, gold medals up to 40 %, diamond medals up to 40 %, Goldener Pokal 5 % |
+| Collection | Fischdex 10 %, gold medals up to 40 %, diamond medals up to 40 %, Goldener Pokal 5 %, Sonneninsel up to 50 % |
 
 Bait, snacks and mystery boxes cost their base price × √(Taler bonus), so prices keep up with income.
 
@@ -102,7 +102,7 @@ Bait, snacks and mystery boxes cost their base price × √(Taler bonus), so pri
 - **Wochenziele:** three bigger goals per week, picked the same for everyone (`week`). How many you need comes from `weekStage()`: start, from 3 rebirths, or from prestige.
   - Each goal gives `weekReward()`: 6 + 3 × stage Schuppen plus 1 per 2 rebirths (up to +12), (800 + 120 × level) × `coinMult()` Taler, a pearl after a prestige, and 40 + 20 × depth Glutsteine once the cave is open.
   - All three in one week add a Goldkiste.
-  - Goals: fish, rare, epic, legendary, night, shiny, fish with a mutation, finished quests, Hohe See and Glutgrotte (the last two only once they are open).
+  - Goals: fish, rare, epic, legendary, night, shiny, fish with a mutation, finished quests, Hohe See, Glutgrotte, island catches, new stamps and sport gold medals (the area goals only once the area is open).
 - **Fisch-Meisterschaft:** bronze, silver, gold and diamond medals per fish for repeat catches, with thresholds by rarity (`dex[id].m`, `MASTERY`). Medals give XP and Schuppen. Each gold fish adds a permanent +1 % Taler, up to +40 %, and each diamond fish another +1 %, up to +40 %. Ten diamonds unlock the Diamant-Zylinder.
 - **Fischdex rewards:** milestones pay Taler, Schuppen and permanent bonuses.
 - **Sammlungen:** themed sets in the Fischdex rewards (Alles Spezi, Haifischbecken, Nachtschicht, Alle Wetter, Schrottplatz, Feuerfest, 10 Monster, 50 Odfisch wins, Alles in Diamant). Each gives a title for the name tag, picked in the wardrobe (`save.title`) and shown in the lobby.
@@ -227,6 +227,7 @@ The current area is saved as `map`.
 | Steg | `steg` | 49 | From the start |
 | Hohe See | `see` | 44, of which 13 are shared with the Steg | 3rd rebirth, or Seekarte |
 | Glutgrotte | `lava` | 31 | 1st prestige |
+| Sonneninsel | `insel` | 22 | 3rd prestige |
 
 Fish that moved to a harder area are worth more Taler there, in line with the other fish of that area and rarity. Caught fish stay in the Fischdex because it's keyed by fish id.
 
@@ -234,9 +235,9 @@ Fish that moved to a harder area are worth more Taler there, in line with the ot
 
 The buoy next to Bealin takes you onto the boat, and the steering wheel takes you back. Every cast out here counts as far out.
 
-Elfbar (junk, since `2026-11-05-5`): an empty disposable vape at the dock and on the High Seas.
+Elfbar (junk, since `2026-11-05-6`): an empty disposable vape at the dock and on the High Seas.
 
-Talerfisch (since `2026-11-05-5`): rare, at the dock and on the High Seas, worth 90 Taler, a golden fish in a tracksuit with a gold chain, a crossbody bag and a vape.
+Talerfisch (since `2026-11-05-6`): rare, at the dock and on the High Seas, worth 90 Taler, a golden fish in a tracksuit with a gold chain, a crossbody bag and a vape.
 
 Deep-sea catches (since `2026-11-05-3`): Beilfisch, Alter Taucherhelm (junk), Riesenassel, Leuchtqualle (night), Fangzahnfisch (far), Pelikanaal (night) and the legendary Megalodon (very far).
 
@@ -298,11 +299,49 @@ Deep cave catches (since `2026-11-05-3`): Schmelzente (junk) and Lavalampenfisch
 
 `critChance()` starts at 5 % and rises to at most 30 % with the lava rods (`kc`, Obsidian +2 to Phönixfeder +5), the Glutköder (+3), the Lockköder (+10) and Lockruf.
 
+### Sonneninsel
+
+From the 3rd prestige the seaplane at the end of the dock (`flieger`) flies you to a volcano island (since `2026-11-05-7`). The first arrival plays a short intro (`inselSeen`): you jump out with a parachute and Coach Pelle, a pelican with a whistle, greets you. **Nothing on the island ever resets**, apart from a running Angelturnier.
+
+**Bays** (`INSEL_BAYS`, `inselBay()`) open with stamps. Each has its own painted world (`img/welt-insel-1..5.png`) and fish, and every catch on the island is worth `inselMult()` = 1.3 × (1 + 0.1 × (bay − 1)) more.
+
+| Stamps | Bay | Fish |
+|---|---|---|
+| 0 | Palmenstrand | Kokosnussfisch, Papageifisch, Badelatsche (junk), Sonnencreme-Flasche (junk), Strandball-Kugelfisch, Flamingofisch, Ananasbarsch |
+| 4 | Korallenriff | Schnorchelfisch, Tischtennis-Kugelfisch, Frisbee-Rochen, Meeresschildkröte |
+| 10 | Sportbucht | Bowlingkugelfisch, Wasserski-Makrele, Bogenschützenfisch (far), Fechter-Schwertfisch |
+| 18 | Wasserfall-Lagune | Golfballfisch, Basketball-Barsch, Kanu-Hecht, Hula-Fisch (night) |
+| 26 | Pokalbucht | Sternenfisch (night), Goldener Pokalfisch, Riesen-Mantarochen (far) |
+
+**Sport stations** (`SPORTS`, modal `#sport`, opened by Coach Pelle) run on their own 384×216 canvas (`#sport-cv`) with pointer, touch and keys. Each has two modes, the second from skill 300, and medals per mode (`med`).
+
+| Station | Opens at (stamps) | Modes |
+|---|---|---|
+| 🥏 Frisbee | 0 | Zielring, Weitwurf |
+| 🎣 Angelturnier | 0 | Fünf Fänge, Größter Fang (the next 5 island catches count, `turnier`) |
+| ✈️ Rundflug | 0 | Erkunden, Nachtflug (after all 30 viewpoints) |
+| 🚤 Jetski | 4 | Slalom, Ringjagd |
+| 🏄 Surfen | 6 | Wellenritt, Trickjagd |
+| 🏹 Bogenschießen | 10 | Scheiben, Ballons |
+| 🏐 Beachvolleyball | 14 | Match, Aufschlag-Serie |
+| 🏓 Tischtennis | 18 | Match, Ballwechsel |
+| 🎳 Strand-Bowling | 22 | 10 Frames, Pyramide |
+
+- **Skill** (`sport[id].lv`, 0–2500): after each round it moves by round(clamp((score / expected − 1) × 60, −30, 60) × level factor), and it never drops below the floor of the current class (Anfänger 0, Fortgeschritten 500, Profi 1000, Champion-Anwärter 1500, Legende 2500). Levels 2 and 3 open at 500 and 1000 and pay more.
+- **Profi** at 1000 gives +2 % Taler everywhere per station.
+- **Champion duel** against Kapitän Kraul, a walrus in a tracksuit, opens at skill 1500 and 26 stamps. A win gives a trophy (`trophies`, shown on a shelf at the dock), a pearl and +3 % Taler everywhere.
+- **Stamps** (`stamps`): 5 per station, 45 in total. Each pays Taler, XP and Schuppen. All 45 give the title Inselchampion and +5 % Taler everywhere.
+- **Rundflug** (`ipoints`): 30 named viewpoints over the island plus 10 at night. Found ones stay found.
+- **Daily cap** (`sportDay`): after 10 rounds per station per day, Taler and XP are halved. Skill and stamps are not capped.
+- `sportBonus()` (Profi, trophies, all stamps) goes into the collection group of `coinMult()`, up to +50 %.
+
+**Zylinderwels' Strandbude** sells the Mango-Köder (luck only on the island), the Hawaiihemd, the Strohhut and the Kokos-Pose. The Sport-Stirnband (10 stamps), the Fliegerkappe (20 viewpoints), the Trainingsjacke (a Kraul win) and the Pokal-Hut (45 stamps) are rewards.
+
 ## Multiplayer and online features
 
 All of these are opt-in. Without them, progress stays in the browser's `localStorage` (`fischen-save-v1`, see `datenschutz.html`, section 5).
 
-- **Leaderboard** (🏆): sends a nickname and scores to `api/leaderboard.js`. The boards are Taler, Fisch der Woche (biggest non-junk catch this week, its own key per week; last week's top 3 get the Wochensieger-Kappe), total rebirths, Fischdex, diamond medals, biggest catch, Monster catches, Odfisch wins, prestige and Taler spent. Names that fail the filter in `_names.js` are shown as ???.
+- **Leaderboard** (🏆): sends a nickname and scores to `api/leaderboard.js`. The boards are Taler, Fisch der Woche (biggest non-junk catch this week, its own key per week; last week's top 3 get the Wochensieger-Kappe), total rebirths, Fischdex, diamond medals, biggest catch, Monster catches, Odfisch wins, prestige, Sportler (sum of sport skill) and Taler spent. Names that fail the filter in `_names.js` are shown as ???.
 - **Cloud save** (☁️): a secret key stores a copy of the save, so it can be loaded on another device. It's stored under the key's SHA-256 with a 180-day TTL.
 - **Lobbies** (👥): up to 8 anglers share a 4-letter code or a `?lobby=CODE` link. Everyone sees the others on the dock, a feed of catches and a scoreboard of Taler fished since joining. Chat messages ride along with each sync and appear as speech bubbles. The server keeps the last 30 per lobby and stars out words from the name blocklist.
 
