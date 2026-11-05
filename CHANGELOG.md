@@ -4,7 +4,7 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 
 ## 05.11.2026 · `2026-11-05-1`
 
-- 🖤 New epic fish: the Playboi Carti Fish. Red cap, blue jersey with a 3, black dreads and sparkling chains, and he nods to the beat. Bites at the dock and on the high seas, best at night.
+- 🖤 New epic fish: the Playboi Carti Fish in a vamp look with a leather jacket, red-tipped dreads, big shades, vampire fangs and silver chains. It headbangs to the beat and bites at the dock and on the high seas, best at night.
 - 🧲 New at the kiosk from 1 prestige: the Magnet Rod (20,000 coins). It catches no fish, only things: everything from “No fish” is worth three times as much with it, and three finds only hang on it – Rusty Anchor, Old Bicycle and the legendary Treasure Chest.
 
 ## 04.11.2026 · `2026-11-04-19`

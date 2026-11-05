@@ -123,7 +123,7 @@
     { id: 'tisch',   name: 'Tisch',             img: 'img/tisch.gif',            r: 'junk',      min: 90, max: 140, val: 3,  photo: true, say: 'Ich bin ein Tisch.', desc: 'Ein Tisch. Kein Fisch. Aber fast.' },
     { id: 'flasche', name: 'Spezi-Flasche',     img: 'img/spezi-flasche.png',    r: 'junk',      min: 25, max: 33,  val: 4,  say: 'Pfand gibt’s keins.', desc: 'Leer. Gehört bestimmt dem Spezifischfischer.' },
     { id: 'pinguine', name: 'Rotierende Pinguine', img: 'img/rotierendepinguine.gif', r: 'junk', min: 60, max: 75, val: 25, photo: true, page: 'seiten/pinguine.html', say: 'Wir drehen uns, also sind wir.', desc: 'Vier Pinguine, rotierend. Selten. Wie kommen die hier rein?', rareJunk: true },
-    { id: 'carti',   name: 'Playboi-Carti-Fisch', img: 'img/carti-fisch.gif', r: 'epic', min: 40, max: 70, val: 180, pixel: true, page: 'seiten/carti-fisch.html', sea: true, night: 2, say: 'What? Ich schwimm nur nachts.', desc: 'Rote Cap, blaues Trikot mit der 3, schwarze Dreads und Ketten voller Glitzer. Kommt am liebsten nachts raus und nickt dabei im Takt.' },
+    { id: 'carti',   name: 'Playboi-Carti-Fisch', img: 'img/carti-fisch.gif', r: 'epic', min: 40, max: 70, val: 180, pixel: true, page: 'seiten/carti-fisch.html', sea: true, night: 2, say: 'What? Whole lotta Rot.', desc: 'Vamp-Look in Schwarz und Rot: Lederjacke mit Nieten, Dreads mit roten Spitzen, riesige Sonnenbrille, Vampirzähne und Silberketten. Kommt am liebsten nachts raus und headbangt im Takt.' },
     // Magnet-Funde: no fish, only the Magnet-Angel pulls these up (item: counts as „Kein Fisch“ for the magnet, mw: weight in its pool)
     { id: 'anker',   name: 'Rostiger Anker',  img: 'img/magnet-anker.png',   r: 'uncommon',  item: true, magnet: true, hint: 'Hängt nur an der Magnet-Angel', mw: .4,  min: 60, max: 110, val: 45,  pixel: true, page: 'seiten/rostiger-anker.html', sea: true, say: 'Klong.', desc: 'Hing mal an einem Schiff. Jetzt hängt er an deinem Magneten.' },
     { id: 'fahrrad', name: 'Altes Fahrrad',   img: 'img/magnet-fahrrad.png', r: 'rare',      item: true, magnet: true, hint: 'Hängt nur an der Magnet-Angel', mw: .35,  min: 150, max: 190, val: 140, pixel: true, page: 'seiten/altes-fahrrad.html', sea: true, say: 'Die Klingel geht noch.', desc: 'Lag jahrelang am Grund. Die Kette ist durch, die Klingel nicht.' },
@@ -185,7 +185,7 @@
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
     { id: '2026-11-05-1', date: '05.11.2026', items: [
-      '🖤 Neuer epischer Fisch: der Playboi-Carti-Fisch. Rote Cap, blaues Trikot mit der 3, schwarze Dreads und glitzernde Ketten, und er nickt im Takt. Beißt am Steg und auf Hoher See, am liebsten nachts.',
+      '🖤 Neuer epischer Fisch: der Playboi-Carti-Fisch im Vamp-Look mit Lederjacke, Dreads mit roten Spitzen, großer Sonnenbrille, Vampirzähnen und Silberketten. Er headbangt im Takt und beißt am Steg und auf Hoher See, am liebsten nachts.',
       '🧲 Neu im Kiosk ab 1× Prestige: die Magnet-Angel (20 000 Taler). Sie fängt keine Fische, nur Dinge: Alles aus „Kein Fisch“ ist damit dreimal so viel wert, und drei Funde hängen nur an ihr – Rostiger Anker, Altes Fahrrad und die legendäre Schatztruhe.',
     ] },
     { id: '2026-11-04-19', date: '04.11.2026', items: [
