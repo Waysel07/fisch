@@ -147,6 +147,8 @@ A few catches do something extra:
 - **Ditto** fakes a legendary catch with the full fanfare and a made-up giant size, then the card reveals it.
 - **Monster-Energy-Fisch** gives faster bites for 60 s.
 - **Magische Miesmuschel** shows a random answer on its catch card. Once caught, it sits on a rock next to the dock, where you can ask it questions. Answers are spoken with on-device voices only.
+- **Playboi-Carti-Fisch** (epic, dock and sea, best at night) is an original animated pixel GIF (`img/carti-fisch.gif`, 8 frames: head nod, swaying red spikes, wagging tail, sparkles).
+- **Magnet-Angel** (`magnet: true`, 20 000 Taler in the kiosk from the 1st prestige) catches only non-fish: while it is held, `pickFish` keeps only junk and `item: true` entries, and junk is worth ×3. Three finds hang only on it (`magnet: true`, pool weight `mw`): Rostiger Anker (uncommon), Altes Fahrrad (rare) and Schatztruhe (legendary). Its bobber is a red horseshoe magnet.
 - **Spezifischfischer cut-outs** speak their line from `sounds/spezifischfischer.mp3`.
 
 ### Size classes and modifiers

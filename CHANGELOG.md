@@ -2,6 +2,11 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 05.11.2026 · `2026-11-05-1`
+
+- 🖤 New epic fish: the Playboi Carti Fish. All black and red, with shades, a chain and red spikes, and he nods to the beat. Bites at the dock and on the high seas, best at night.
+- 🧲 New at the kiosk from 1 prestige: the Magnet Rod (20,000 coins). It catches no fish, only things: everything from “No fish” is worth three times as much with it, and three finds only hang on it – Rusty Anchor, Old Bicycle and the legendary Treasure Chest.
+
 ## 04.11.2026 · `2026-11-04-19`
 
 - 🐟 The shadow at your bait no longer changes shape: as it swims in, it already shows roughly what is about to bite.

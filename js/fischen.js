@@ -123,6 +123,11 @@
     { id: 'tisch',   name: 'Tisch',             img: 'img/tisch.gif',            r: 'junk',      min: 90, max: 140, val: 3,  photo: true, say: 'Ich bin ein Tisch.', desc: 'Ein Tisch. Kein Fisch. Aber fast.' },
     { id: 'flasche', name: 'Spezi-Flasche',     img: 'img/spezi-flasche.png',    r: 'junk',      min: 25, max: 33,  val: 4,  say: 'Pfand gibt’s keins.', desc: 'Leer. Gehört bestimmt dem Spezifischfischer.' },
     { id: 'pinguine', name: 'Rotierende Pinguine', img: 'img/rotierendepinguine.gif', r: 'junk', min: 60, max: 75, val: 25, photo: true, page: 'seiten/pinguine.html', say: 'Wir drehen uns, also sind wir.', desc: 'Vier Pinguine, rotierend. Selten. Wie kommen die hier rein?', rareJunk: true },
+    { id: 'carti',   name: 'Playboi-Carti-Fisch', img: 'img/carti-fisch.gif', r: 'epic', min: 40, max: 70, val: 180, pixel: true, page: 'seiten/carti-fisch.html', sea: true, night: 2, say: 'What? Ich schwimm nur nachts.', desc: 'Ganz in Schwarz und Rot, mit Sonnenbrille, Kette und roten Stacheln. Kommt am liebsten nachts raus und nickt dabei im Takt.' },
+    // Magnet-Funde: no fish, only the Magnet-Angel pulls these up (item: counts as „Kein Fisch“ for the magnet, mw: weight in its pool)
+    { id: 'anker',   name: 'Rostiger Anker',  img: 'img/magnet-anker.png',   r: 'uncommon',  item: true, magnet: true, hint: 'Hängt nur an der Magnet-Angel', mw: .4,  min: 60, max: 110, val: 45,  pixel: true, page: 'seiten/rostiger-anker.html', sea: true, say: 'Klong.', desc: 'Hing mal an einem Schiff. Jetzt hängt er an deinem Magneten.' },
+    { id: 'fahrrad', name: 'Altes Fahrrad',   img: 'img/magnet-fahrrad.png', r: 'rare',      item: true, magnet: true, hint: 'Hängt nur an der Magnet-Angel', mw: .35,  min: 150, max: 190, val: 140, pixel: true, page: 'seiten/altes-fahrrad.html', sea: true, say: 'Die Klingel geht noch.', desc: 'Lag jahrelang am Grund. Die Kette ist durch, die Klingel nicht.' },
+    { id: 'truhe',   name: 'Schatztruhe',     img: 'img/magnet-truhe.png',   r: 'legendary', item: true, magnet: true, hint: 'Hängt nur an der Magnet-Angel', mw: .35, min: 60, max: 90, val: 900, pixel: true, page: 'seiten/schatztruhe.html', sea: true, bigSplash: true, say: 'Klirr.', desc: 'Randvoll mit alten Talern. Ohne Magnet hätte sie niemand gefunden.' },
   ];
 
   const RODS = [
@@ -139,6 +144,8 @@
     { id: 'obsidian', name: 'Obsidianrute',       price: 4000,  pres: 1, depth: 2, lava: true, kc: 2, glut: 80, cast: .95, reel: 2.2, tens: .5,  luck: 1.6, desc: 'Schwarzes Vulkanglas, hart wie Stahl. Nur für die Glutgrotte.' },
     { id: 'magma',    name: 'Magmarute',          price: 15000, pres: 1, depth: 3, lava: true, kc: 3, glut: 250, cast: 1.0, reel: 2.9, tens: .38, luck: 2.2, desc: 'In ihr fließt noch Magma. Wird nie kalt. Nur für die Glutgrotte.' },
     { id: 'drachenknochen', name: 'Drachenknochenrute', price: 50000, pres: 1, depth: 4, lava: true, kc: 4, glut: 700, cast: 1.0, reel: 3.6, tens: .28, luck: 3.0, desc: 'Aus dem Knochen eines Lavadrachen. Hält jede Glut aus. Nur für die Glutgrotte.' },
+    // Magnet-Angel: from the 1st prestige (when the Glutgrotte opens), fishes only things that aren't fish
+    { id: 'magnet', name: 'Magnet-Angel', price: 20000, pres: 1, magnet: true, cast: 1.0, reel: 2.4, tens: .45, luck: 1, desc: 'Ein dicker Hufeisenmagnet statt Haken. Fängt keine Fische, nur Dinge – Kein-Fisch-Fänge sind damit dreimal so viel wert, und manches findet nur der Magnet.' },
     { id: 'phoenixrute', name: 'Phönixfederrute', price: 250000, pres: 1, depth: 5, lava: true, kc: 5, glut: 1800, cast: 1.0, reel: 4.2, tens: .24, luck: 3.6, desc: 'Aus einer Feder des Phönixfischs. Brennt, ohne zu verbrennen. Nur für die Glutgrotte.' },
   ];
   const BAITS = [
@@ -177,6 +184,10 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-05-1', date: '05.11.2026', items: [
+      '🖤 Neuer epischer Fisch: der Playboi-Carti-Fisch. Ganz in Schwarz und Rot, mit Sonnenbrille, Kette und roten Stacheln, und er nickt im Takt. Beißt am Steg und auf Hoher See, am liebsten nachts.',
+      '🧲 Neu im Kiosk ab 1× Prestige: die Magnet-Angel (20 000 Taler). Sie fängt keine Fische, nur Dinge: Alles aus „Kein Fisch“ ist damit dreimal so viel wert, und drei Funde hängen nur an ihr – Rostiger Anker, Altes Fahrrad und die legendäre Schatztruhe.',
+    ] },
     { id: '2026-11-04-19', date: '04.11.2026', items: [
       '🐟 Der Schatten am Köder verwandelt sich nicht mehr: Schon wenn er heranschwimmt, zeigt er ungefähr, was gleich anbeißt.',
     ] },
@@ -704,7 +715,7 @@
     const fullHour = (time * 24) % 1 < 1 / 6; // the clock shows xx:00
     const hour = Math.floor(time * 24) % 24;
     const pool = FISH.filter(f => !(f.far && d < f.far) && !(f.bait && f.bait !== b.id) && !(f.hours && (hour < f.hours[0] || hour >= f.hours[1]))
-      && !(f.crits && critsTotal() < f.crits) && !(f.minRod && (r.depth || 1) < f.minRod) && !(f.dayOff && !night) && !(f.fullHour && !fullHour)
+      && !(f.crits && critsTotal() < f.crits) && !(f.minRod && (r.depth || 1) < f.minRod) && (r.magnet ? (f.r === 'junk' || f.item) : !f.magnet) && !(f.dayOff && !night) && !(f.fullHour && !fullHour)
       && !(f.needs && Object.entries(f.needs).some(([id, n]) => ((save.dex[id] || {}).n || 0) < n))
       && ((f.map || 'steg') === map || (f.sea && map === 'see')) && !(f.depth && f.depth > caveDepth()) && !f.boss && !(f.weather && f.weather !== wx.id));
     const weights = pool.map(f => {
@@ -715,7 +726,8 @@
       if (f.r === 'wii') w *= (1 + d) * luck * (b.wii || 1);
       if (f.r === 'epic') w *= (1 + 2 * d) * luck * luck;
       if (f.r === 'legendary') w *= (1 + 3 * d) * luck * luck;
-      if (f.r === 'junk') w *= f.rareJunk ? .12 * luck : 1 / luck;
+      if (f.r === 'junk') w *= r.magnet ? 1 : f.rareJunk ? .12 * luck : 1 / luck;
+      if (f.mw) w *= f.mw;
       if (f.night) w *= night ? f.night : .5;
       if (wx.rare && ['rare', 'wii', 'epic'].includes(f.r)) w *= wBoost(wx.rare);
       if (wx.legend && f.r === 'legendary') w *= wBoost(wx.legend);
@@ -795,7 +807,7 @@
     }
     const cls = hooked.cls === undefined ? 1 : hooked.cls, sc = SIZE_CLASSES[cls];
     const base = Math.max(0, Math.min(1, (hooked.size - f.min) / (f.max - f.min || 1)));
-    const val = Math.max(1, Math.round(f.val * (.85 + .3 * base) * sc.val * coinMult() * caveMult() * nightMult() * (buffOn('broetchen') ? 1.25 : 1) * wBoost(wx.val) * (mut ? mut.val : 1) * (shiny ? SHINY_VAL : 1)));
+    const val = Math.max(1, Math.round(f.val * (.85 + .3 * base) * sc.val * coinMult() * caveMult() * nightMult() * (buffOn('broetchen') ? 1.25 : 1) * wBoost(wx.val) * (mut ? mut.val : 1) * (shiny ? SHINY_VAL : 1) * (rod().magnet && f.r === 'junk' ? 3 : 1)));
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
     e.n++; e.best = Math.max(e.best, size); if (f.r !== 'junk') e.small = Math.min(e.small || Infinity, size); save.dex[f.id] = e;
@@ -3068,6 +3080,12 @@
     const bx = snap(bob.x) - 2, byy = snap(by) - 3;
     const cap = bobColor(save.cosm.bob);
     if (state === 'boss' || state === 'crit') return;
+    if (rod().magnet) { // a red horseshoe magnet with silver tips instead of the bobber
+      const mx = snap(bob.x) - 2, my = snap(by) - 3 + (state === 'reel' || state === 'bite' ? 1.5 : 0);
+      px(mx - .5, my - .5, 5, 5.5, '#1b1f2e'); px(mx, my, 4, 1.5, '#dc2626'); px(mx, my, 1.5, 4.5, '#dc2626'); px(mx + 2.5, my, 1.5, 4.5, '#dc2626');
+      px(mx, my + 3.5, 1.5, 1, '#e5e7eb'); px(mx + 2.5, my + 3.5, 1.5, 1, '#e5e7eb');
+      return;
+    }
     if (state === 'reel' || state === 'bite') { px(bx + .5, byy + 1.5, 3, 2, '#1b1f2e'); px(bx + 1, byy + 2, 2, 1.5, cap); return; }
     px(bx - .5, byy - .5, 5, 5, '#1b1f2e');
     px(bx, byy, 4, 2, cap); px(bx, byy, 1, 1, 'rgba(255,255,255,.45)');
@@ -3736,6 +3754,7 @@
     magma: i => i % 2 === 0 ? '#fb923c' : '#7f1d1d',
     drachenknochen: i => i % 4 === 0 ? '#ef4444' : '#f5f0e1',
     phoenixrute: i => ['#fde047', '#f97316', '#dc2626'][i % 3],
+    magnet: i => i % 3 === 0 ? '#e5e7eb' : '#475569',
   };
   const ICONS = {};
   for (const r of RODS) ICONS[r.id] = iconCanvas(p => {
@@ -3746,7 +3765,8 @@
     for (const [a, b] of [[5, 12], [6, 12], [5, 13], [6, 13]]) p(a, b, '#64748b'); p(5, 12, '#cbd5e1'); // reel
     p(7, 13, '#94a3b8'); p(7, 14, '#f8fafc');                                                       // reel handle
     for (let y = 1; y < 9; y++) p(15, y, 'rgba(255,255,255,.7)');                                    // line
-    p(14, 9, '#ef4444'); p(15, 9, '#ef4444'); p(14, 10, '#f8fafc'); p(15, 10, '#f8fafc');           // bobber
+    if (r.id !== 'magnet') { p(14, 9, '#ef4444'); p(15, 9, '#ef4444'); p(14, 10, '#f8fafc'); p(15, 10, '#f8fafc'); } // bobber
+    if (r.id === 'magnet') { for (const [x, y] of [[12, 9], [12, 10], [12, 11], [13, 12], [14, 12], [15, 11], [15, 10], [15, 9]]) p(x, y, '#dc2626'); p(12, 9, '#e5e7eb'); p(15, 9, '#e5e7eb'); for (let y = 1; y < 9; y++) p(15, y, 'rgba(255,255,255,.7)'); }
     if (r.id === 'stern') { p(13, 2, '#fde68a'); p(12, 3, '#fde68a'); p(14, 3, '#fde68a'); p(13, 4, '#fde68a'); p(13, 3, '#fff'); }
   });
   const BAIT_ART = { wurm: ART.bait_wurm, spezi: ART.bait_spezi, glitzer: ART.bait_glitzer, mond: ART.bait_mond, abyss: ART.bait_abyss, glutkoeder: ART.bait_glutkoeder, lockkoeder: ART.bait_lockkoeder, odkoeder: ART.bait_odkoeder };
