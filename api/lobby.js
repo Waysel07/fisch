@@ -78,7 +78,7 @@ function cleanMe(me) {
     d: me.d < 0 ? -1 : 1,
     s: ['i', 'w', 'r'].includes(me.s) ? me.s : 'i', // idle, waiting for a bite, reeling
     hat: Math.round(num(me.hat, 0, 9)),
-    m: me.m === 'see' || me.m === 'lava' ? me.m : 'steg', // Steg, Hohe See oder Glutgrotte
+    m: ['see', 'lava', 'insel'].includes(me.m) ? me.m : 'steg', // Steg, Hohe See, Glutgrotte oder Sonneninsel
     ch: cosm(me.ch), cj: cosm(me.cj), cb: cosm(me.cb),  // Kosmetik: Hut, Jacke, Pose (IDs aus dem Laden)
     sk: cosm(me.sk), hr: cosm(me.hr),                   // Haut- und Haarfarbe
     sc: Math.round(num(me.sc, 0, 1e9)),               // Taler gefangen, seit man in der Lobby ist
@@ -87,6 +87,7 @@ function cleanMe(me) {
     pr: Math.round(num(me.pr, 0, 99)),                // Prestige, als ✦ vor dem Rang
     ti: typeof me.ti === 'string' && /^[a-z0-9-]{1,16}$/.test(me.ti) ? me.ti : '', // Titel am Namensschild (ID einer Sammlung)
     bs: Math.round(num(me.bs, 0, 3)),                 // Odfisch-Stufe, die dieser Spieler ruft (0–3)
+    sp: Math.round(num(me.sp, 0, 9)),                 // Sonneninsel: Sportarten auf Profi-Niveau (0–9)
   };
 }
 

@@ -465,3 +465,103 @@ art('welt-lava-fels', 234, 238, (f) => {
   for (let y = 14; y < 238; y++) { f.set(231, y, C('#fb923c')); f.set(232, y, y % 3 ? C('#ea580c') : C('#fbbf24')); f.set(230, y, y % 2 ? C('#9a3412') : C('#c2410c')) }
   f.rect(0, 232, 232, 6, C('#b23a10')); f.rect(0, 230, 232, 2, C('#7c2610'))
 })
+
+// ---------------------------------------------------------------- Die Sonneninsel: türkises Flachwasser, Palmen und Sport (5 Buchten)
+const INSEL_W = ['#4fd8cf', '#3ccbc8', '#2bb9c0', '#20a5b6', '#198fa8', '#147898', '#106385', '#0c5072', '#093f5f', '#07304c', '#05233a', '#03182a']
+// Palme: krummer Stamm mit Ringen, hängende Wedel, Kokosnüsse
+function palm(f, x, base, h, lean, seed = 1, shade = 0) {
+  const T = [C('#a16207'), C('#854d0e'), C('#713f12')].map(c => mixI(c, C('#2b4a5e'), shade)), Lf = [C('#4ade80'), C('#16a34a'), C('#166534')].map(c => mixI(c, C('#2b4a5e'), shade))
+  let tx = x, ty = base
+  for (let i = 0; i <= h; i++) { const k = i / h; tx = x + lean * k * k * h * .5; ty = base - i; f.rect(Math.round(tx) - 1, ty, 3, 1, i % 4 === 0 ? T[2] : T[0]); f.set(Math.round(tx) + 1, ty, T[1]) }
+  const cx = Math.round(tx), cy = Math.round(ty)
+  for (let j = 0; j < 7; j++) {
+    const a = -Math.PI + j / 6 * Math.PI + (hash(j, seed) - .5) * .3, len = h * (.45 + hash(j + 9, seed) * .25)
+    for (let s = 0; s <= len; s++) {
+      const k = s / len, X = cx + Math.cos(a) * s, Y = cy + Math.sin(a) * s * .55 + k * k * len * .55
+      f.set(X, Y, Lf[1]); f.set(X, Y - 1, k < .6 ? Lf[0] : Lf[1])
+      if (s % 2 === 0 && k > .15) { f.set(X, Y + 1 + Math.round(k * 2), Lf[2]); f.set(X + (Math.cos(a) > 0 ? -1 : 1), Y + 2 + Math.round(k * 2), Lf[2]) }
+    }
+  }
+  for (const [dx, dy] of [[-1, 2], [1, 2], [0, 3]]) { f.ell(cx + dx, cy + dy, 1, 1, mixI(C('#78350f'), C('#2b4a5e'), shade)) }
+}
+function hut(f, x, y, w = 22) { // Strandhütte mit Strohdach
+  f.rect(x + 3, y - 10, w - 6, 10, C('#d6a35c')); for (let i = 0; i < w - 6; i += 3) f.rect(x + 3 + i, y - 10, 1, 10, C('#b07d3a'))
+  f.rect(x + w / 2 - 2, y - 7, 4, 7, C('#5b3a1a'))
+  f.poly([[x - 2, y - 9], [x + w / 2, y - 20], [x + w + 2, y - 9]], (X, Y) => (X + Y) % 3 ? C('#e9c77b') : C('#c79a4a'))
+}
+function umbrella(f, x, y, a, b) { f.rect(x, y - 10, 1, 10, C('#e5e7eb')); for (let i = -6; i <= 6; i++) { const yy = y - 11 + Math.round(Math.abs(i) * .5); f.rect(x + i, yy - 1, 1, 2, Math.floor((i + 6) / 3) % 2 ? C(a) : C(b)) } }
+function islandHill(f, x0, x1, top, seed, shade = 0) {
+  const g = [C('#15803d'), C('#166534'), C('#22c55e')].map(c => mixI(c, C('#8fb7c9'), shade))
+  ridge(f, x0, x1, (x) => { const u = (x - x0) / (x1 - x0); return HZ - 2 - top * Math.pow(Math.sin(Math.PI * u), .7) * (.8 + .3 * fbm(x * .03, seed)) }, (x, y) => vn2(x * .2, y * .2, seed) > .6 ? g[2] : vn2(x * .1, y * .3, seed + 1) > .5 ? g[0] : g[1], HZ + 1, mixI(C('#4ade80'), C('#8fb7c9'), shade), 1)
+  f.rect(x0 + 4, HZ - 1, x1 - x0 - 8, 3, mixI(C('#fde68a'), C('#8fb7c9'), shade))
+}
+function coral(f, x, y, kind, s) {
+  const P = [['#f472b6', '#be185d'], ['#fb923c', '#c2410c'], ['#a78bfa', '#6d28d9'], ['#facc15', '#a16207'], ['#22d3ee', '#0e7490']][kind % 5]
+  if (s % 3 === 0) { f.ell(x, y - 6, 10, 7, (X, Y) => (X + Y * 2) % 4 ? C(P[0]) : C(P[1])) } // Hirnkoralle
+  else if (s % 3 === 1) { for (let i = 0; i < 6; i++) { const a = -Math.PI / 2 + (i - 2.5) * .35; for (let k = 0; k < 20; k++) f.set(x + Math.cos(a) * k, y + Math.sin(a) * k, k > 14 ? C(P[0]) : C(P[1])) } } // Fächer
+  else { for (let i = -2; i <= 2; i++) { const hh = 12 + hash(i, s) * 12; f.rect(x + i * 3, y - hh, 3, hh, C(P[1])); f.rect(x + i * 3, y - hh, 2, 2, C(P[0])) } } // Röhren
+}
+function inselBase(f, bay) {
+  const wat = atY(INSEL_W, SF, VH, .8)
+  // ferne Inseln am Horizont
+  for (const [a, b, h, s] of [[10, 150, 14, 3], [170, 250, 8, 4]]) islandHill(f, a, b, h, s, .55)
+  bands(f, HZ + 1, SF, ['#b5f5e8', '#8eeadf', '#6ddcd5', '#55cdcc', '#47c2c6'], 1, .25, 11 + bay)
+  for (let i = 0; i < 50; i++) { const y = HZ + 2 + Math.floor(hash(i, 171) * 20), x = hash(i, 172) * VW, n = 8 + hash(i, 173) * 18; f.rect(x, y, n, 1, C('#e0fbf6')) }
+  bands(f, SF, VH, INSEL_W, .8, 1.2, 19 + bay)
+  // Sonnenflecken im Flachwasser
+  for (let i = 0; i < 70; i++) { const y = SF + 3 + Math.pow(hash(i, 181), 1.6) * 70, x = hash(i, 182) * VW, n = 4 + hash(i, 183) * 16; f.rect(x, y, n, 1, mixI(wat(y), C('#d5fff7'), .35 - (y - SF) * .004)) }
+  // Sandgrund mit Rippeln
+  const floor = (x) => 396 + 9 * (fbm(x * .01, 190 + bay) - .5) + 3 * Math.sin(x * .03)
+  ridge(f, 0, VW, (x) => 300 + 40 * fbm(x * .006, 191 + bay), (x, y) => mixI(wat(y), C('#0a4a63'), .35), VH, (x, y) => mixI(wat(y), C('#3fb6b3'), .2), 1)
+  ridge(f, 0, VW, floor, (x, y) => { const d = y - floor(x); return d < 3 ? C('#e9d39a') : (x + Math.round(Math.sin(y) * 3)) % 9 === 0 ? C('#b89a5e') : d < 12 ? C('#d4b97a') : C('#a88e58') }, VH, C('#f7e7b5'), 1)
+  for (let i = 0; i < 12; i++) { const x = hash(i, 195 + bay) * VW, y = Math.round(floor(x)) + 4; if (i % 3 === 0) { f.set(x, y, C('#fb7185')); f.set(x - 1, y + 1, C('#fb7185')); f.set(x + 1, y + 1, C('#fb7185')); f.set(x, y + 2, C('#e11d48')) } else f.ell(x, y, 2, 1, C('#fef3c7')) }
+  return { wat, floor }
+}
+for (let bay = 1; bay <= 5; bay++) art(`welt-insel-${bay}`, VW, VH, (f) => {
+  // Himmel bleibt durchsichtig: Hauptinsel zuerst, damit die Wasserbänder sie unten sauber abschneiden
+  if (bay === 1) {
+    islandHill(f, 420, 768, 44, 201)
+    for (const [x, h, l] of [[452, 40, 1], [480, 52, -.6], [538, 46, .5], [610, 58, -.4], [672, 44, .7], [728, 50, -.8]]) palm(f, x, HZ - 1, h, l, x)
+    hut(f, 560, HZ - 1); hut(f, 640, HZ - 1, 18)
+    umbrella(f, 470, HZ, '#ef4444', '#f8fafc'); umbrella(f, 520, HZ, '#3b82f6', '#fde047'); umbrella(f, 700, HZ, '#f97316', '#f8fafc')
+  } else if (bay === 2) {
+    for (const [a, b, h, s] of [[330, 420, 16, 210], [520, 600, 12, 211], [650, 760, 22, 212]]) { islandHill(f, a, b, h, s); palm(f, (a + b) / 2 - 8, HZ - 1, 34, .6, s); palm(f, (a + b) / 2 + 12, HZ - 1, 28, -.5, s + 1) }
+  } else if (bay === 3) {
+    islandHill(f, 470, 768, 30, 220)
+    for (const [x, h, l] of [[700, 46, -.5], [740, 40, .6]]) palm(f, x, HZ - 1, h, l, x)
+    // Bootshaus auf Stelzen, Rampe, Fahnen
+    { const x = 520, y = HZ - 4; for (const s of [0, 10, 30, 40]) f.rect(x + s, y, 2, 10, C('#6b4423')); f.rect(x - 4, y - 2, 52, 3, C('#a16207')); f.rect(x, y - 18, 44, 16, C('#38bdf8')); for (let i = 0; i < 44; i += 4) f.rect(x + i, y - 18, 1, 16, C('#0ea5e9')); f.rect(x + 16, y - 12, 10, 10, C('#0c4a6e')); f.poly([[x - 4, y - 18], [x + 22, y - 30], [x + 48, y - 18]], C('#f43f5e')); f.rect(x - 4, y - 19, 52, 1, C('#be123c')) }
+    f.poly([[600, HZ + 3], [640, HZ - 8], [646, HZ - 8], [646, HZ + 3]], C('#eab308')); f.line(600, HZ + 3, 640, HZ - 8, C('#fde047'))
+    for (const [x, c] of [[660, '#ef4444'], [676, '#facc15'], [692, '#22c55e']]) { f.rect(x, HZ - 34, 1, 34, C('#e5e7eb')); f.poly([[x + 1, HZ - 34], [x + 12, HZ - 31], [x + 1, HZ - 28]], C(c)) }
+  } else if (bay === 4) {
+    // Felsklippe mit Wasserfall, Dschungel
+    ridge(f, 480, 768, (x) => HZ - 8 - 90 * Math.pow(Math.min(1, (x - 480) / 140), .8) * (.85 + .25 * fbm(x * .04, 230)), (x, y) => vn2(x * .15, y * .1, 231) > .55 ? C('#64748b') : C('#475569'), HZ + 1, C('#22c55e'), 3)
+    for (let i = 0; i < 18; i++) { const x = 500 + i * 15, y = HZ - 30 - 60 * Math.min(1, (x - 480) / 140) + hash(i, 232) * 10; f.ell(Math.round(x), Math.round(y), 9, 6, (X, Y) => vn2(X * .3, Y * .3, i) > .5 ? C('#16a34a') : C('#15803d')) }
+    for (let y = HZ - 92; y < HZ + 2; y++) { f.rect(586, y, 12, 1, C('#e0f2fe')); f.rect(588 + (y % 3), y, 3, 1, C('#7dd3fc')); f.rect(595 - (y % 4), y, 2, 1, C('#bae6fd')) }
+    f.ell(592, HZ + 2, 18, 3, C('#f0fdfa'))
+    palm(f, 450, HZ - 1, 40, .5, 4); islandHill(f, 380, 480, 12, 233)
+  } else {
+    // Pokalbucht: Landzunge mit Leuchtturm und goldener Pokal-Statue
+    islandHill(f, 380, 768, 50, 240)
+    { const x = 660, y = HZ - 40; for (let i = 0; i < 60; i++) f.rect(x - 7 + Math.round(i * .06), y - i, 14 - Math.round(i * .12), 1, Math.floor(i / 8) % 2 ? C('#14b8a6') : C('#f8fafc')); f.rect(x - 6, y - 70, 12, 10, C('#fde68a')); f.rect(x - 7, y - 72, 14, 2, C('#0f766e')); f.poly([[x - 7, y - 72], [x, y - 80], [x + 7, y - 72]], C('#0f766e')) }
+    { const x = 520, y = HZ - 44; f.rect(x - 12, y + 30, 24, 6, C('#94a3b8')); f.rect(x - 9, y + 24, 18, 6, C('#64748b')); f.rect(x - 3, y + 12, 6, 12, C('#ca8a04')); f.ell(x, y, 14, 12, (X, Y) => X < x - 4 ? C('#fde047') : X > x + 6 ? C('#a16207') : C('#eab308')); f.rect(x - 14, y - 12, 28, 6, C('#ca8a04')); f.line(x - 14, y - 4, x - 22, y + 2, C('#ca8a04'), 3); f.line(x + 14, y - 4, x + 22, y + 2, C('#ca8a04'), 3); f.set(x - 6, y - 4, C('#fffbeb')); f.set(x - 7, y - 3, C('#fffbeb')) }
+    for (const [x, h, l] of [[430, 44, .6], [600, 40, -.5], [740, 48, -.7]]) palm(f, x, HZ - 1, h, l, x)
+  }
+  const { wat, floor } = inselBase(f, bay)
+  // Riff-Felsen mit Korallen und Seegras
+  const RP = ['#5fb3b0', '#3b8d93', '#256a76', '#123f4d']
+  for (const [x, w, h] of [[120, 120, 46], [400, 80, 30], [640, 140, 56]]) {
+    const by = Math.round(floor(x)) + 6; rock(f, x, by, w, h, RP, x + bay, (c, y) => mixI(c, wat(y), .25))
+    for (let i = 0; i < 5; i++) { const cx = x - w * .35 + i * w * .18; coral(f, Math.round(cx), Math.round(by - h * (.55 + .4 * Math.sin(Math.PI * (i + .5) / 5))) + 2, i + x, i * 3 + bay) }
+  }
+  for (let i = 0; i < 40; i++) { const x = hash(i, 270 + bay) * VW, y = Math.round(floor(x)) + 1, hh = 6 + hash(i, 271) * 16; for (let k = 0; k < hh; k++) f.set(x + Math.sin(k * .4 + i) * 1.5, y - k, k % 3 ? C('#16a34a') : C('#4ade80')) }
+  // unter Wasser je nach Bucht
+  if (bay === 2) for (let i = 0; i < 26; i++) { const x = 20 + i * 29 + hash(i, 250) * 12; coral(f, x, Math.round(floor(x)) + 2, i, i * 7) }
+  else for (let i = 0; i < 8; i++) { const x = 40 + i * 95 + hash(i, 251 + bay) * 30; coral(f, x, Math.round(floor(x)) + 2, i + bay, i + bay) }
+  if (bay === 3) { for (const x of [220, 236, 480]) { f.ell(x, Math.round(floor(x)) - 2, 7, 4, C('#1f2937')); f.ell(x, Math.round(floor(x)) - 2, 3, 2, mixI(wat(380), C('#0a2b3c'), .4)) } // alte Reifen
+    f.poly([[600, 392], [640, 386], [656, 392], [640, 398], [604, 398]], C('#e11d48')); f.rect(616, 386, 10, 3, C('#f8fafc')) } // versunkener Jetski
+  if (bay === 4) for (let i = 0; i < 9; i++) { const x = 560 + i * 22; for (let k = 0; k < 90; k++) f.set(x + Math.sin(k * .1 + i) * 4, SF + k, mixI(C('#3f2e1c'), wat(SF + k), k / 140)) } // Mangrovenwurzeln
+  if (bay === 5) { for (const x of [200, 250, 300]) { const top = 340 + hash(x, 260) * 20; f.rect(x - 6, top, 12, VH - top, mixI(C('#cbd5e1'), wat(380), .45)); f.rect(x - 8, top - 3, 16, 3, mixI(C('#e2e8f0'), wat(380), .4)) }
+    for (const x of [420, 560]) { const y = Math.round(floor(x)); f.rect(x - 3, y - 4, 6, 4, C('#ca8a04')); f.ell(x, y - 8, 5, 4, C('#eab308')); f.set(x - 2, y - 9, C('#fef08a')) }
+    f.rect(470, Math.round(floor(470)) - 10, 22, 12, C('#78350f')); f.rect(470, Math.round(floor(470)) - 10, 22, 3, C('#a16207')); f.rect(479, Math.round(floor(470)) - 7, 4, 4, C('#facc15')) }
+})

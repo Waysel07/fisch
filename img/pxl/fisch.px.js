@@ -1456,3 +1456,265 @@ F('megalodon', 120, 56, {}, (c) => {
   c.rect(14, 22, 5, 4, INK); c.px(15, 22, '#ffffff'); c.line(12, 20, 20, 21, '#334155')
   for (const [x, y] of [[96, 50], [100, 54], [8, 8]]) drop(c, x, y)
 })
+
+// ---------------------------------------------------------------- Neu 2026-11-05: Talerfisch
+F('talerfisch', 74, 40, {}, (c0) => {
+  // alles 8 Pixel nach rechts, damit links Platz für die Vape und die Dampfwolke ist
+  const D = 8, c = {
+    px: (x, y, k) => c0.px(x + D, y, k), rect: (x, y, w, h, k) => c0.rect(x + D, y, w, h, k),
+    hline: (x, y, l, k) => c0.hline(x + D, y, l, k), vline: (x, y, l, k) => c0.vline(x + D, y, l, k),
+    line: (a, b, x, y, k) => c0.line(a + D, b, x + D, y, k), poly: (pts, k) => c0.poly(pts.map((v, i) => i % 2 ? v : v + D), k),
+    circ: (x, y, r, k) => c0.circ(x + D, y, r, k), ellipse: (x, y, rx, ry, k) => c0.ellipse(x + D, y, rx, ry, k),
+  }
+  // Talerfisch: goldener Fisch im schwarzen Tech-Trainingsanzug, gegelte Haare, Strich in der Braue,
+  // Goldkette mit Taler, Bauchtasche quer über der Brust
+  const p = P({ x0: 2, x1: 50, cy: 21, up: 14, dn: 14, peak: 0.34, hp: 0.55, tp: 1.0, end: 0.16 })
+  tail(c, 48, 21, 15, 12, 6, '#27272a', '#09090b')
+  fan(c, [24, 9], [[27, 3], [35, 3], [41, 9]], '#18181b', '#3f3f46')
+  fan(c, [28, 33], [[28, 37], [35, 37], [37, 32]], '#18181b', '#3f3f46')
+  paint(c, p, (u, v, x, y) => {
+    if (u < 0.3) return B(v, 0.18, '#fde047', 0.72, '#eab308', '#ca8a04')            // goldener Kopf
+    if (u > 0.47 && u < 0.78 && v > 0.32 && v < 0.62) return v < 0.36 ? '#71717a' : '#52525b' // Seitenpaneel
+    if (y % 3 === 0 && x % 2 === 0 && v > 0.15 && v < 0.85) return '#2f2f35'                  // Fleece-Steppung
+    return B(v, 0.1, '#3f3f46', 0.85, '#27272a', '#18181b')
+  })
+  c.vline(16, 10, 23, '#d4d4d8'); c.vline(17, 10, 23, '#18181b')                         // Reißverschluss-Kragen
+  for (let y = 11; y < 32; y += 2) c.px(16, y, '#a1a1aa')
+  c.line(34, 24, 36, 26, '#f4f4f5'); c.line(36, 26, 42, 21, '#f4f4f5')                   // weißer Haken auf der Seite
+  // gegelte Haare nach hinten, kurz rasierte Seite
+  c.poly([4, 10, 6, 6, 11, 3, 18, 4, 21, 7, 17, 8, 10, 8, 6, 10], '#0a0a0a')
+  c.line(7, 6, 17, 4, '#3f3f46'); c.line(8, 8, 19, 6, '#3f3f46'); c.line(9, 5, 13, 4, '#a1a1aa')
+  for (let x = 12; x < 18; x += 2) c.px(x, 9, '#78350f')
+  // Auge, Braue mit Strich, Schnauzer
+  eye(c, 5, 13, { size: 4 }); c.px(8, 13, '#0a0a0a')
+  c.line(4, 11, 10, 11, '#0a0a0a'); c.px(8, 11, '#eab308')
+  c.line(1, 21, 7, 20, '#3f2a14'); c.px(1, 22, '#3f2a14')
+  c.line(2, 24, 6, 24, '#a16207')
+  // Goldkette mit Taler
+  for (let i = 0; i <= 14; i++) {
+    const y = 10 + i * 1.4, x = 19 + Math.round(2.5 * Math.sin(i / 14 * Math.PI))
+    c.px(x, y, i % 2 ? '#a16207' : '#facc15')
+  }
+  c.circ(22, 31, 3, '#a16207'); c.circ(22, 31, 2, '#facc15')
+  c.hline(21, 30, 3, '#a16207'); c.vline(22, 30, 3, '#a16207')                            // T für Taler
+  // Bauchtasche: Riemen schräg, Tasche mit Muster und goldener Schnalle
+  for (let i = 0; i <= 22; i++) c.px(23 + i * 0.75, 8 + i, i % 3 === 1 ? '#b91c1c' : '#15803d')
+  c.rect(33, 25, 11, 7, '#a8835a'); c.hline(33, 25, 11, '#c9a77a'); c.hline(33, 31, 11, '#6b4f2e')
+  for (let y = 26; y < 31; y += 2) for (let x = 34 + (y % 4 === 0 ? 1 : 0); x < 43; x += 3) c.px(x, y, '#6b4f2e')
+  c.rect(37, 27, 3, 2, '#facc15'); c.px(37, 27, '#fef08a')
+  sprk(c, 24, 33)
+  // Vape im Mundwinkel, LED an, Dampfwolke nach oben
+  c.rect(-7, 22, 7, 3, '#7c3aed'); c.hline(-7, 22, 7, '#a78bfa'); c.hline(-7, 24, 7, '#5b21b6')
+  c.rect(0, 22, 3, 2, '#71717a'); c.hline(0, 22, 3, '#a1a1aa'); c.px(-6, 23, '#22d3ee')
+  c.circ(-4, 16, 3, '#cbd5e1'); c.circ(-2, 12, 3, '#e2e8f0'); c.circ(-6, 9, 2, '#f1f5f9'); c.circ(1, 8, 2, '#e2e8f0')
+  c.px(-3, 11, '#ffffff'); c.px(-6, 8, '#ffffff')
+})
+
+// ---------------------------------------------------------------- Neu 2026-11-05: Elfbar (Müll)
+F('elfbar', 44, 22, {}, (c) => {
+  // Leere Einweg-Vape, Verlauf Blau nach Pink, Mundstück links, ein Algenfaden und Wassertropfen
+  const G = ['#22d3ee', '#38bdf8', '#60a5fa', '#818cf8', '#a78bfa', '#c084fc', '#e879f9', '#f472b6', '#ec4899']
+  for (let x = 9; x <= 38; x++) {
+    const k = G[Math.min(G.length - 1, Math.floor((x - 9) / 30 * G.length))], r = x === 9 || x === 38 ? 1 : 0
+    c.vline(x, 4 + r, 11 - 2 * r, k)
+    c.px(x, 5 + r, '#f0f9ff')
+    c.px(x, 14 - r, '#1e1b4b')
+  }
+  c.rect(2, 6, 7, 7, '#18181b'); c.hline(2, 6, 7, '#52525b'); c.rect(1, 8, 1, 3, '#0a0a0a')   // Mundstück
+  c.rect(4, 9, 2, 1, '#3f3f46')
+  // Schriftzug: kleine weiße Blöcke
+  for (const [x, w] of [[15, 3], [19, 2], [22, 3], [27, 3], [31, 2]]) c.rect(x, 9, w, 2, '#ffffff')
+  c.rect(36, 8, 1, 3, '#fde047')                                                              // Lüftungsschlitz
+  // Algenfaden und Tropfen
+  for (let i = 0; i < 9; i++) c.px(28 + i, 16 + Math.round(Math.sin(i * 0.9) * 1.2), i % 2 ? '#15803d' : '#22c55e')
+  drop(c, 41, 3); drop(c, 6, 2)
+})
+
+// ---------------------------------------------------------------- Neu 2026-11-05: Sonneninsel (22 Fische, Bucht 1–5)
+// gemeinsamer Fisch-Grundkörper für die Insel: Profil, Schwanz, Flossen, Auge
+function iFish(c, { x1, cy, up, dn = up, tl = 10, sp = 8, body, fin = body, eyeAt, peak = 0.36, notch = 4 }) {
+  const p = P({ x0: 2, x1, cy, up, dn, peak, hp: 0.6, tp: 1.1, end: 0.16 })
+  tail(c, x1 - 2, cy, tl, sp, notch, fin)
+  paint(c, p, body)
+  if (eyeAt) eye(c, eyeAt[0], eyeAt[1], { size: eyeAt[2] || 3 })
+  return p
+}
+F('kokosnussfisch', 46, 30, {}, (c) => {
+  // Kokosnussfisch: halbe Kokosnuss als Panzer, weißes Fruchtfleisch am Bauch, drei Keimlöcher als Augen-Muster
+  const p = iFish(c, { x1: 34, cy: 15, up: 12, dn: 11, tl: 9, sp: 7, fin: '#78350f', body: (u, v, x, y) => v > 0.66 ? (v > 0.72 ? '#fefce8' : '#f5f5f4') : ((x * 3 + y * 5) % 7 === 0 ? '#57301a' : v < 0.15 ? '#5c3317' : '#7c4a24') })
+  for (let x = 4; x < 32; x += 3) c.px(x, Math.round(p.top(x)) + 2, '#a16207')
+  c.rect(13, 7, 2, 2, '#3b1d0c'); c.rect(18, 6, 2, 2, '#3b1d0c'); c.rect(15, 10, 2, 2, '#3b1d0c')
+  eye(c, 5, 11); c.line(1, 18, 4, 18, '#3b1d0c')
+  c.line(20, 1, 22, 5, '#16a34a'); c.line(24, 0, 23, 5, '#22c55e') // kleiner Spross
+})
+F('papageifisch', 50, 30, {}, (c) => {
+  // Papageifisch: türkis-grün mit pinken Schuppenrändern und einem Schnabel aus Zähnen
+  const p = iFish(c, { x1: 38, cy: 15, up: 11, dn: 11, tl: 10, sp: 9, fin: '#ec4899', eyeAt: [8, 10], body: (u, v, x, y) => scale(x, y, 4) && u > 0.25 ? '#f472b6' : B(v, 0.25, '#0d9488', 0.7, '#14b8a6', '#5eead4') })
+  fan(c, [16, Math.round(p.top(16)) + 1], [[19, 2], [27, 2], [31, Math.round(p.top(31)) + 1]], '#a855f7', '#7e22ce')
+  c.poly([0, 13, 5, 12, 5, 18, 0, 17], '#e2e8f0'); c.line(0, 15, 5, 15, '#94a3b8')
+  for (let i = 0; i < 4; i++) c.px(12 + i * 2, 20 + (i % 2), '#fde047')
+})
+F('badelatsche', 46, 26, {}, (c) => {
+  // Badelatsche: verlorener Flip-Flop von oben, Zehensteg vorne, Riemen als V, Sand in den Rillen
+  c.ellipse(12, 12, 9, 8, '#0ea5e9'); c.ellipse(30, 12, 12, 9, '#0ea5e9'); c.rect(12, 5, 18, 15, '#0ea5e9')
+  c.ellipse(12, 12, 8, 7, '#38bdf8'); c.ellipse(30, 12, 11, 8, '#38bdf8'); c.rect(12, 6, 18, 13, '#38bdf8')
+  for (let x = 6; x < 40; x += 3) for (let y = 7; y < 18; y += 4) c.px(x, y + (x % 2), '#7dd3fc')
+  c.line(9, 12, 24, 4, '#f97316'); c.line(9, 12, 24, 20, '#f97316'); c.line(10, 12, 25, 5, '#fb923c'); c.line(10, 12, 25, 19, '#ea580c')
+  c.circ(9, 12, 1, '#c2410c')
+  for (const [x, y] of [[16, 15], [34, 9], [38, 14], [20, 8]]) c.px(x, y, '#fde68a')
+  drop(c, 43, 3)
+})
+F('sonnencreme', 30, 40, {}, (c) => {
+  // Sonnencreme-Flasche: orange Tube, Deckel unten, Sonne vorne drauf, LSF 50
+  c.rect(6, 4, 17, 26, '#fb923c'); c.vline(6, 4, 26, '#fdba74'); c.vline(22, 4, 26, '#ea580c')
+  c.rect(5, 2, 19, 3, '#f97316'); c.rect(9, 30, 11, 6, '#e2e8f0'); c.hline(9, 35, 11, '#94a3b8')
+  c.circ(14, 14, 4, '#fde047'); for (const [x, y] of [[14, 8], [14, 20], [8, 14], [20, 14], [10, 10], [18, 10], [10, 18], [18, 18]]) c.px(x, y, '#facc15')
+  c.rect(9, 23, 11, 3, '#ffffff'); for (const x of [10, 12, 15, 17]) c.px(x, 24, '#ea580c')
+  drop(c, 26, 6); drop(c, 2, 20)
+})
+F('strandballkugelfisch', 40, 38, {}, (c) => {
+  // Strandball-Kugelfisch: aufgeblasen wie ein Wasserball, sechs bunte Segmente, kleine Stacheln
+  const col = ['#ef4444', '#f8fafc', '#facc15', '#f8fafc', '#3b82f6', '#f8fafc']
+  for (let y = -15; y <= 15; y++) for (let x = -15; x <= 15; x++) if (x * x + y * y <= 15.5 * 15.5) {
+    const a = Math.atan2(y, x + 6), k = Math.floor(((a + Math.PI) / (Math.PI * 2)) * 6) % 6
+    c.px(18 + x, 18 + y, x * x + y * y < 9 ? '#f8fafc' : col[k])
+  }
+  for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2; c.px(Math.round(18 + Math.cos(a) * 17), Math.round(18 + Math.sin(a) * 17), '#fde68a') }
+  c.circ(11, 12, 1, '#ffffff'); eye(c, 6, 13, { size: 4 }); c.ellipse(4, 22, 2, 1, '#be123c')
+  c.poly([33, 16, 37, 12, 37, 24, 33, 20], '#facc15')
+})
+F('flamingofisch', 52, 40, {}, (c) => {
+  // Flamingofisch: rosa Fisch auf einem dünnen Bein, langer gebogener Hals mit schwarzer Schnabelspitze
+  const p = P({ x0: 14, x1: 42, cy: 20, up: 8, dn: 8, peak: 0.4, hp: 0.6, tp: 1.1, end: 0.16 })
+  tail(c, 40, 20, 9, 7, 4, '#ec4899')
+  paint(c, p, (u, v, x, y) => scale(x, y, 4) ? '#f9a8d4' : B(v, 0.3, '#f472b6', 0.75, '#fb7185', '#fda4af'))
+  for (let i = 0; i <= 12; i++) { const x = 15 - i * 0.6, y = 18 - i; c.rect(Math.round(x), Math.round(y), 2, 1, '#f472b6') }
+  c.circ(8, 5, 3, '#f9a8d4'); c.poly([3, 5, 6, 4, 5, 9, 1, 10], '#fde68a'); c.poly([1, 9, 3, 8, 3, 11, 0, 12], INK)
+  eye(c, 8, 3, { size: 2 })
+  c.vline(26, 27, 11, '#f472b6'); c.line(26, 32, 29, 30, '#f472b6'); c.hline(24, 38, 5, '#f472b6')
+  fan(c, [24, 14], [[27, 9], [33, 9], [34, 14]], '#ec4899', '#db2777')
+})
+F('ananasbarsch', 52, 40, {}, (c) => {
+  // Ananasbarsch: Körper mit gelbem Rautenmuster, grüne Blätterkrone als Rückenflosse
+  const p = iFish(c, { x1: 40, cy: 24, up: 12, dn: 12, tl: 10, sp: 9, fin: '#65a30d', eyeAt: [7, 19], body: (u, v, x, y) => ((x + y) % 4 === 0 || (x - y + 40) % 4 === 0) ? '#b45309' : B(v, 0.3, '#facc15', 0.8, '#fbbf24', '#f59e0b') })
+  for (const [bx, tx, ty] of [[14, 10, 1], [18, 17, 0], [22, 24, 2], [26, 31, 5], [16, 13, 3]]) c.poly([bx - 2, Math.round(p.top(bx)) + 1, tx, ty, bx + 3, Math.round(p.top(bx + 3)) + 1], ty % 2 ? '#16a34a' : '#22c55e')
+  c.line(1, 26, 5, 26, '#92400e')
+})
+F('schnorchelfisch', 48, 30, {}, (c) => {
+  // Schnorchelfisch: blauer Fisch mit Taucherbrille und Schnorchel, der nach oben zeigt
+  const p = iFish(c, { x1: 36, cy: 17, up: 10, dn: 10, tl: 10, sp: 8, fin: '#2563eb', body: (u, v, x, y) => B(v, 0.25, '#1d4ed8', 0.7, '#3b82f6', '#bfdbfe') })
+  c.rect(4, 11, 9, 6, '#f97316'); c.rect(5, 12, 7, 4, '#a5f3fc'); c.px(6, 13, '#ffffff'); eye(c, 8, 13, { size: 2 })
+  c.hline(13, 13, 14, '#f97316')
+  c.vline(14, 1, 11, '#facc15'); c.vline(15, 1, 11, '#eab308'); c.rect(13, 0, 4, 2, '#f97316')
+  for (const [x, y] of [[20, 3], [22, 0]]) c.circ(x, y, 1, '#e0f2fe')
+})
+F('pingpongkugelfisch', 36, 34, {}, (c) => {
+  // Tischtennis-Kugelfisch: weiß und rund wie ein Ball, roter Schläger als Schwanzflosse
+  c.circ(15, 17, 13, '#f8fafc'); c.ellipse(15, 22, 11, 6, '#e2e8f0'); c.circ(10, 11, 2, '#ffffff')
+  for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; c.px(Math.round(15 + Math.cos(a) * 14), Math.round(17 + Math.sin(a) * 14), '#cbd5e1') }
+  eye(c, 5, 13, { size: 4 }); c.ellipse(4, 21, 2, 1, '#f97316')
+  c.circ(30, 12, 5, '#dc2626'); c.circ(29, 11, 3, '#ef4444'); c.rect(27, 16, 2, 7, '#a16207'); c.vline(27, 16, 7, '#ca8a04')
+})
+F('frisbeerochen', 60, 34, {}, (c) => {
+  // Frisbee-Rochen: flacher, runder Rochen in Orange mit Ringen wie eine Wurfscheibe, langer Schwanz
+  c.ellipse(24, 16, 22, 13, '#f97316'); c.ellipse(24, 16, 19, 10, '#fb923c'); c.ring(24, 16, 14, '#fdba74'); c.ring(24, 16, 8, '#ea580c')
+  c.ellipse(24, 16, 3, 2, '#fed7aa')
+  c.line(46, 16, 58, 18, '#c2410c'); c.line(50, 17, 58, 19, '#9a3412')
+  eye(c, 8, 11, { size: 2 }); eye(c, 8, 18, { size: 2 })
+  for (let x = 6; x < 42; x += 4) c.px(x, 28, '#fde68a')
+})
+F('meeresschildkroete', 64, 40, {}, (c) => {
+  // Meeresschildkröte: grüner Panzer mit Waben, Flossen, freundlicher Blick
+  c.poly([14, 30, 8, 38, 20, 36, 22, 30], '#65a30d'); c.poly([44, 30, 52, 38, 40, 36, 38, 30], '#65a30d')
+  c.poly([16, 10, 6, 2, 22, 6, 26, 10], '#65a30d'); c.poly([44, 10, 56, 4, 50, 12, 40, 12], '#65a30d')
+  c.ellipse(32, 20, 20, 12, '#3f6212'); c.ellipse(32, 19, 18, 10, '#4d7c0f')
+  for (const [x, y] of [[24, 15], [32, 13], [40, 15], [28, 22], [36, 22], [20, 21], [44, 21]]) { c.ring(x, y, 3, '#365314'); c.circ(x, y, 1, '#84cc16') }
+  c.ellipse(32, 30, 18, 2, '#d9f99d')
+  c.ellipse(8, 19, 7, 5, '#84cc16'); eye(c, 4, 16, { size: 3 }); c.line(1, 22, 5, 22, '#365314')
+  c.poly([52, 20, 62, 18, 52, 24], '#65a30d')
+})
+F('bowlingkugelfisch', 40, 36, {}, (c) => {
+  // Bowlingkugelfisch: glänzend schwarz-lila, drei Fingerlöcher, ein kleiner Kegel als Flosse
+  c.circ(17, 18, 15, '#312e81'); c.circ(15, 16, 13, '#4338ca'); c.circ(11, 11, 3, '#818cf8'); c.px(10, 10, '#ffffff')
+  for (const [x, y] of [[19, 10], [24, 12], [21, 16]]) { c.circ(x, y, 1, '#0f172a') }
+  eye(c, 4, 18, { size: 3 }); c.line(2, 25, 6, 25, '#1e1b4b')
+  c.ellipse(35, 18, 2, 6, '#f8fafc'); c.ellipse(35, 11, 1, 2, '#f8fafc'); c.hline(33, 15, 5, '#ef4444'); c.hline(33, 17, 5, '#ef4444')
+})
+F('wasserskimakrele', 58, 34, {}, (c) => {
+  // Wasserski-Makrele: gestreifte Makrele auf zwei Skiern, hält eine Zugleine im Maul
+  const p = iFish(c, { x1: 44, cy: 14, up: 8, dn: 8, tl: 11, sp: 8, fin: '#1e3a8a', eyeAt: [7, 10], body: (u, v, x, y) => v < 0.45 ? ((x + Math.round(y * 0.5)) % 5 < 2 ? '#1e3a8a' : '#2563eb') : v < 0.6 ? '#93c5fd' : '#e2e8f0' })
+  c.rect(4, 25, 44, 2, '#ef4444'); c.hline(4, 25, 44, '#fca5a5'); c.poly([2, 24, 6, 25, 2, 26], '#ef4444')
+  c.rect(8, 29, 44, 2, '#facc15'); c.hline(8, 29, 44, '#fef08a'); c.poly([6, 28, 10, 29, 6, 30], '#facc15')
+  c.vline(16, 21, 4, '#64748b'); c.vline(30, 21, 8, '#64748b')
+  c.line(1, 15, 0, 4, '#e2e8f0'); c.rect(0, 2, 4, 2, '#f97316')
+})
+F('bogenschuetzenfisch', 56, 32, {}, (c) => {
+  // Bogenschützenfisch: silbriger Schützenfisch mit schwarzen Bändern, schießt einen Wasserstrahl wie einen Pfeil
+  const p = iFish(c, { x1: 42, cy: 18, up: 10, dn: 9, tl: 10, sp: 8, fin: '#475569', eyeAt: [13, 12], peak: 0.45, body: (u, v, x, y) => [0.3, 0.5, 0.7].some(k => Math.abs(u - k) < 0.04) && v < 0.75 ? '#0f172a' : B(v, 0.3, '#cbd5e1', 0.75, '#e2e8f0', '#f8fafc') })
+  c.poly([0, 16, 8, 14, 8, 18], '#94a3b8')
+  for (let i = 0; i < 6; i++) drop(c, 1 + i * 2, 13 - i * 2)
+  c.line(14, 4, 26, 4, '#78350f'); c.poly([12, 4, 15, 2, 15, 6], '#94a3b8'); c.poly([26, 4, 29, 2, 29, 6], '#ef4444') // Pfeil über dem Kopf
+})
+F('fechterfisch', 72, 32, {}, (c) => {
+  // Fechter-Schwertfisch: weiße Fechtmaske, Degenspitze als Schwert, blaue Seite mit Startnummer
+  const p = iFish(c, { x1: 60, cy: 17, up: 10, dn: 9, tl: 12, sp: 10, fin: '#1e40af', body: (u, v, x, y) => B(v, 0.3, '#1e3a8a', 0.68, '#3b82f6', '#e0f2fe') })
+  fan(c, [26, Math.round(p.top(26)) + 1], [[28, 1], [33, 2], [40, Math.round(p.top(40)) + 1]], '#1e40af', '#1e3a8a')
+  c.line(0, 16, 14, 16, '#e2e8f0'); c.hline(0, 15, 6, '#ffffff'); c.rect(12, 14, 3, 5, '#facc15')
+  c.rect(14, 9, 10, 13, '#f8fafc'); for (let y = 10; y < 21; y += 2) for (let x = 15; x < 23; x += 2) c.px(x, y, '#94a3b8')
+  c.rect(34, 13, 9, 6, '#f8fafc'); c.rect(36, 14, 2, 4, '#dc2626'); c.rect(39, 14, 2, 4, '#dc2626')
+})
+F('golfballfisch', 34, 32, {}, (c) => {
+  // Golfballfisch: rund und weiß mit Dellen, ein kleines rotes Fähnchen als Rückenflosse
+  c.circ(15, 18, 12, '#f1f5f9'); c.ellipse(15, 23, 10, 5, '#e2e8f0')
+  for (let y = 9; y < 29; y += 3) for (let x = 6 + (y % 2) * 1; x < 26; x += 3) if ((x - 15) ** 2 + (y - 18) ** 2 < 120) c.px(x, y, '#cbd5e1')
+  eye(c, 5, 15, { size: 3 }); c.line(4, 23, 7, 23, '#94a3b8')
+  c.vline(20, 0, 7, '#475569'); c.poly([21, 0, 27, 2, 21, 4], '#ef4444')
+  c.poly([27, 18, 32, 14, 32, 23], '#cbd5e1')
+})
+F('basketballbarsch', 50, 38, {}, (c) => {
+  // Basketball-Barsch: orange mit schwarzen Nähten, ein Schweißband als Schwanzmanschette
+  const p = iFish(c, { x1: 38, cy: 19, up: 14, dn: 14, tl: 10, sp: 9, fin: '#c2410c', eyeAt: [7, 13, 4], peak: 0.45, body: (u, v, x, y) => (Math.abs(x - 22) < 1 || Math.abs(v - 0.5) < 0.04 || Math.abs(Math.hypot(x - 40, y - 19) - 18) < 0.7) ? '#1c1917' : B(v, 0.25, '#ea580c', 0.8, '#f97316', '#fb923c') })
+  c.rect(35, 13, 3, 12, '#f8fafc'); c.hline(35, 18, 3, '#ef4444')
+  c.line(1, 26, 6, 25, '#7c2d12')
+})
+F('kanuhecht', 74, 28, {}, (c) => {
+  // Kanu-Hecht: langer grüner Hecht, ein Paddel quer im Maul, Kanu-Holzmuster auf dem Rücken
+  const p = iFish(c, { x1: 62, cy: 15, up: 7, dn: 7, tl: 11, sp: 8, fin: '#365314', eyeAt: [10, 11], peak: 0.3, body: (u, v, x, y) => v < 0.3 ? ((x % 6) === 0 ? '#78350f' : '#a16207') : v < 0.7 ? (scale(x, y, 5) ? '#bef264' : '#4d7c0f') : '#d9f99d' })
+  c.poly([0, 14, 8, 13, 8, 17, 0, 16], '#4d7c0f')
+  c.line(4, 2, 12, 26, '#92400e'); c.line(5, 2, 13, 26, '#b45309'); c.ellipse(3, 2, 2, 3, '#f59e0b'); c.ellipse(13, 25, 2, 3, '#f59e0b')
+})
+F('hulafisch', 52, 42, {}, (c) => {
+  // Hula-Fisch: tanzt nachts im Bastrock, Blumenkranz um den Hals, Hula-Reifen um den Bauch
+  const p = iFish(c, { x1: 40, cy: 16, up: 10, dn: 10, tl: 10, sp: 8, fin: '#db2777', eyeAt: [7, 11], body: (u, v, x, y) => B(v, 0.3, '#7c3aed', 0.7, '#a855f7', '#e9d5ff') })
+  for (let x = 10; x < 36; x++) { const len = 6 + (x % 3); c.vline(x, Math.round(p.bot(x)) - 2, len, x % 2 ? '#a3e635' : '#65a30d') }
+  for (let i = 0; i < 6; i++) { const x = 13 + i * 3, y = 6 + Math.abs(i - 2.5); c.circ(x, Math.round(y), 1, ['#f43f5e', '#facc15', '#f8fafc'][i % 3]) }
+  c.ellipse(24, 22, 18, 3, null); for (let a = 0; a < 6.3; a += 0.18) c.px(Math.round(24 + Math.cos(a) * 18), Math.round(22 + Math.sin(a) * 3), a < 3.14 ? '#22d3ee' : '#06b6d4')
+  for (const [x, y] of [[44, 3], [48, 8]]) sprk(c, x, y, '#a5f3fc', '#ffffff')
+})
+F('sternenfisch', 48, 36, {}, (c) => {
+  // Sternenfisch: nachtblau mit leuchtenden Sternen auf der Haut, Schweif wie ein Komet
+  const p = iFish(c, { x1: 34, cy: 18, up: 11, dn: 11, tl: 12, sp: 12, fin: '#312e81', eyeAt: [7, 13], body: (u, v, x, y) => ((x * 7 + y * 13) % 23 === 0) ? '#fde047' : B(v, 0.35, '#1e1b4b', 0.75, '#312e81', '#4338ca') })
+  for (const [x, y] of [[16, 12], [24, 20], [20, 24]]) sprk(c, x, y)
+  for (let i = 0; i < 6; i++) c.px(38 + i, 18 + (i % 3) - 1, i % 2 ? '#fde047' : '#fef9c3')
+})
+F('pokalfisch', 56, 48, {}, (c) => {
+  // Goldener Pokalfisch: der Fisch ist selbst ein Pokal, mit zwei Henkeln als Brustflossen und einem Sockel
+  const p = iFish(c, { x1: 44, cy: 18, up: 13, dn: 12, tl: 11, sp: 10, fin: '#ca8a04', eyeAt: [8, 13, 4], body: (u, v, x, y) => (x + y) % 9 === 0 && v < 0.6 ? '#fef9c3' : B(v, 0.2, '#fde047', 0.7, '#facc15', '#ca8a04') })
+  c.ring(16, 22, 5, '#a16207'); c.ring(33, 22, 5, '#a16207')
+  c.rect(20, 30, 10, 5, '#ca8a04'); c.rect(16, 35, 18, 4, '#a16207'); c.rect(13, 39, 24, 6, '#78350f'); c.hline(13, 39, 24, '#a16207')
+  c.rect(19, 41, 12, 2, '#fde047')
+  for (const [x, y] of [[4, 4], [48, 3], [52, 30]]) sprk(c, x, y)
+  c.poly([20, 4, 24, 0, 28, 4, 26, 6, 22, 6], '#fde047') // kleine Krone
+})
+F('mantarochen', 96, 50, {}, (c) => {
+  // Riesen-Mantarochen: breite dunkle Schwingen, weißer Bauch, Kopflappen vorne, peitschenlanger Schwanz
+  c.poly([30, 25, 52, 2, 62, 4, 66, 25, 62, 46, 52, 48], '#1e293b')
+  c.poly([30, 25, 50, 6, 58, 8, 60, 25, 58, 42, 50, 44], '#334155')
+  c.ellipse(34, 25, 16, 9, '#1e293b'); c.ellipse(34, 25, 12, 6, '#475569')
+  for (const [x, y] of [[44, 14], [48, 34], [40, 20], [52, 24]]) c.circ(x, y, 1, '#e2e8f0')
+  c.poly([18, 18, 6, 14, 10, 20, 20, 22], '#1e293b'); c.poly([18, 32, 6, 36, 10, 30, 20, 28], '#1e293b')
+  c.line(66, 25, 94, 23, '#0f172a'); c.line(66, 26, 94, 24, '#334155')
+  eye(c, 21, 19, { size: 3 }); eye(c, 21, 28, { size: 3 })
+  c.hline(14, 25, 6, '#0f172a')
+  for (const [x, y] of [[4, 6], [86, 40], [80, 10]]) drop(c, x, y)
+})

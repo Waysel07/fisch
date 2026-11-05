@@ -51,6 +51,8 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   | `boss` | Bossfight |
 | `crit` | Kampf gegen eine Lava-Kreatur |
 
+  Die Sportstationen der Sonneninsel sind kein eigener `state`: Sie laufen im Modal `#sport` (`sportPlaying()`, `sportTick(dt)` aus `frame()`), das Angeln steht so lange still.
+
   `update(dt)` schaltet diese Zustände um, `draw()` zeichnet sie. Modals sperren je nach Zustand (`toggleModal`).
 - **Welt und Zeichnen:**
   - Leinwand 384×216 (`W`, `H`), wichtige Höhen sind `HORIZON`, `SURFACE` und `DOCK_Y`.
@@ -60,7 +62,12 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
     - `iconCanvas()` erzeugt 16×16-Icons für den Laden (`ICONS[id]`).
   - Die Welten sind gemalte Bilder (`img/welt-*.png`, Quelle `img/pxl/welt.px.js`, wird nicht vom Spiel geladen). `renderBg` tönt sie je nach Tageszeit, Bewegtes kommt aus `drawWorldFx`, die Schatten der Fische aus `drawShadows` (Masken in `img/welt-schatten.png`).
   - Requisiten am Steg, auf See und in der Glutgrotte stehen in `PROPS` (Feld `map`: `steg`, `see`, `lava` oder `all`; Filter `propOn`).
-  - Maps: `steg`, `see` (ab 3× Wiedergeburt, `seaOpen()`) und `lava` (Glutgrotte ab 1× Prestige, `lavaOpen()`, `inLava()`). In der Grotte gibt es kein Wetter (`CAVE_WX`), und nur Ruten mit `lava: true` funktionieren dort (`save.lavaRod`). Fortschritt dort: Glutsteine (`save.glut`) und Tiefen (`CAVE_DEPTHS`, `caveDepth()`; beide fallen bei Wiedergeburt und Prestige zurück, Feld `depth` an Fischen und Ruten), Glimms Werkstatt (`GLUT_UPS`, `glutUp()`) und Glimms Aufträge (`save.glimmQ`); der Taler-Bonus läuft über `caveMult()`. Der Lava-Laden (`lavaWares()`, Shop-Modus `lava`) gibt es nur in der Grotte (Stand `lavashop`, dort öffnet auch L den Lava-Laden, ohne Tabs). Er verkauft alles mit Feld `glut` nur gegen Glutsteine, Ruten ohne `glut` (Basaltrute) gegen Taler; Glutsteine werden nie in Taler getauscht. Lava-Kreaturen (`CREATURES`, `save.crit`): Beim Anbiss in der Grotte würfelt `hook()` mit `critChance()` (Feld `kc` an Lavaruten und Lava-Ködern, Werkstatt `lockruf`) und startet dann statt eines Fisches einen Kampf im Zustand `crit` (`startCrit`/`updateCrit`/`critWin`; nutzt `#boss-hud` mit Klasse `crit`).
+  - Maps: `steg`, `see` (ab 3× Wiedergeburt, `seaOpen()`), `lava` (Glutgrotte ab 1× Prestige, `lavaOpen()`, `inLava()`) und `insel` (Sonneninsel ab 3× Prestige, siehe unten). In der Grotte gibt es kein Wetter (`CAVE_WX`), und nur Ruten mit `lava: true` funktionieren dort (`save.lavaRod`). Fortschritt dort: Glutsteine (`save.glut`) und Tiefen (`CAVE_DEPTHS`, `caveDepth()`; beide fallen bei Wiedergeburt und Prestige zurück, Feld `depth` an Fischen und Ruten), Glimms Werkstatt (`GLUT_UPS`, `glutUp()`) und Glimms Aufträge (`save.glimmQ`); der Taler-Bonus läuft über `caveMult()`. Der Lava-Laden (`lavaWares()`, Shop-Modus `lava`) gibt es nur in der Grotte (Stand `lavashop`, dort öffnet auch L den Lava-Laden, ohne Tabs). Er verkauft alles mit Feld `glut` nur gegen Glutsteine, Ruten ohne `glut` (Basaltrute) gegen Taler; Glutsteine werden nie in Taler getauscht. Lava-Kreaturen (`CREATURES`, `save.crit`): Beim Anbiss in der Grotte würfelt `hook()` mit `critChance()` (Feld `kc` an Lavaruten und Lava-Ködern, Werkstatt `lockruf`) und startet dann statt eines Fisches einen Kampf im Zustand `crit` (`startCrit`/`updateCrit`/`critWin`; nutzt `#boss-hud` mit Klasse `crit`).
+- **Sonneninsel** (Map `insel`, ab 3× Prestige, `inselOpen()`, `onInsel()`; nichts davon wird je zurückgesetzt außer `save.turnier`):
+  - Buchten `INSEL_BAYS` öffnen mit Stempeln (`inselBay()`), Fische mit `map: 'insel', bay: n`; Taler-Bonus beim Fang über `inselMult()`.
+  - Sportstationen in `SPORTS`: `{ id, icon, name, st, modes, info, exp: [fn, fn], med: [[b, s, g], [b, s, g]], champ, stamps: [[id, text, ok]], start(g), update(g, dt, I), draw(g), score(g) }`, optional `fishing` (Angelturnier) und `mode2` (Nachtflug). Gezeichnet wird auf `#sport-cv` mit `sq`/`sdisc`/`stext`.
+  - Können `save.sport[id].lv` (0–2500, Klassen 0/500/1000/1500/2500, Stufen ab `SP_MIN`), Stempel `save.stamps` (`STAMP_ALL` = 45, Duell ab `CHAMP_ST`), Aussichtspunkte `save.ipoints` (`IPOINTS` aus `LANDMARKS`/`NIGHT_MARKS`), Pokale `save.trophies`, Tageslimit `save.sportDay`. Dauerhafte Boni über `sportBonus()` in `collectMult`.
+  - Eine neue Station braucht: `SPORTS`-Eintrag, `STATION_AT` (Ort auf der Karte), EN-Texte für Name, Info, Modi und Stempel, und `STAMP_ALL` anpassen.
 - **Fang-Ablauf:**
   - `pickFish()` wählt nach Gewichten, Glück, Wurfweite, Nacht, Wetter und Map.
   - `hook()` würfelt die Größe (`rollSize`/`sizeIn`).
@@ -85,6 +92,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   - fangen: `landCls(id, klasse)`, `pick()`;
   - Welt: `setTime(0–1)`, `setWeather(id)`, `travel('see')`;
   - Boss: `bossSolo()`, `bossHit(n)`; Lava-Kreatur: `crit()`, `critState`, `critChance()`;
+  - Sport: `sport(id, modus, stufe)`, `sportOver()`, `sportG`;
   - erzwingen: `forceShiny`, `forceMut`, `forceSlot = ['odfisch', 'odfisch', 'odfisch']`.
 
 ## Server (`api/`)
