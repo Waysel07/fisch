@@ -235,6 +235,7 @@
   const PATCH_NOTES = [
     { id: '2026-11-05-9', date: '05.11.2026', items: [
       '🎨 Die 22 Fische der Sonneninsel sind überarbeitet: Sie haben jetzt Glanz von oben, Schatten am Bauch und weichere Umrisse. Der Riesen-Mantarochen ist ganz neu gezeichnet und zeigt sich von oben mit weiten Schwingen.',
+      '🖌️ Noch mehr Feinschliff: Badelatsche, Frisbee-Rochen, Golfball-, Tischtennis- und Wasserski-Fisch, Sonnencreme, Kanu-Hecht, Fechter- und Schnorchelfisch sind neu gezeichnet, alle Inselfische haben einen weichen Kernschatten, und der Mantarochen ist heller und auf dunklem Wasser besser zu sehen. Die Sportplätze haben jetzt Sonne, ziehende Wolken, eine Insel am Horizont, geschwungene Palmen und einen Strand mit Schaumkante.',
       '🛟 Boot-Skin „David Hasselhoff“ repariert: Steuerrad und Fischdex-Kiste stehen jetzt auf seinem Rücken statt in seinen Beinen, und unter Wasser schimmert er durch statt als graue Platte.',
       '🏄 Neue Figuren in den Sportstationen: Beim Frisbee, Surfen und Beachvolleyball spielt jetzt deine eigene Spielfigur mit, mit Hut, Jacke, Haut und Haaren aus dem Kleiderschrank. Der Jetski ist neu gezeichnet, der Tischtennisschläger hat einen Griff.',
       '☀️ Auf der Sonneninsel schneit es nicht mehr: Wo sonst Schnee fällt, ist auf der Insel eine Hitzewelle.',
@@ -3175,9 +3176,43 @@
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   function skySea(horizon, dark = 0) {
     for (let i = 0; i < 8; i++) sq(0, i * horizon / 8, W, horizon / 8 + .5, mix([110, 196, 240], [190, 236, 255], i / 7));
+    if (horizon > 60) { sdisc(318, horizon * .32, 11, '#fff1b8'); sdisc(318, horizon * .32, 8, '#fde68a'); sdisc(316, horizon * .32 - 2, 4, '#fffbeb'); }
+    // clouds drift slowly: white tops, a cool shadow underneath
+    for (let i = 0; i < 3; i++) {
+      const cx = ((i * 150 + t * (3 + i)) % (W + 80)) - 40, cy = horizon * (.18 + i * .16);
+      if (cy > horizon - 8) continue;
+      for (const [dx, dy, r] of [[-9, 1, 5], [0, -2, 7], [9, 0, 6], [16, 2, 4]]) sdisc(cx + dx, cy + dy + 1.5, r, '#cfe8f5');
+      for (const [dx, dy, r] of [[-9, 1, 5], [0, -2, 7], [9, 0, 6], [16, 2, 4]]) sdisc(cx + dx, cy + dy, r, '#ffffff');
+      sq(cx - 14, cy + 4, 34, 2, '#cfe8f5');
+    }
+    // a small island far out, then the horizon
+    if (horizon > 40) {
+      for (let x = 0; x < 70; x += 1) { const h = Math.sin(x / 70 * Math.PI) * 7; sq(40 + x, horizon - h, 1, h + .5, x < 30 ? '#4f9e8a' : '#3f8a78'); }
+      sq(70, horizon - 16, 1, 9, '#6b4f2e'); for (let i = 0; i < 5; i++) sq(64 + i * 2.5, horizon - 17 + Math.abs(i - 2) * 1.2, 3, 1, '#2f7a5c');
+    }
     for (let i = 0; i < 10; i++) sq(0, horizon + i * (H - horizon) / 10, W, (H - horizon) / 10 + .5, mix([94, 220, 210], [16, 110, 150], i / 9));
+    sq(0, horizon, W, .5, '#e0fffa');
+    if (horizon > 60) for (let i = 0; i < 7; i++) sq(318 - 10 + ((i * 7 + t * 4) % 20), horizon + 2 + i * 2.5, 6 - i * .6, .5, '#fff7d1');
     for (let i = 0; i < 16; i++) { const tw = Math.sin(t * 2 + i * 2.3); if (tw > .3) sq((i * 47 + t * 6) % W, horizon + 3 + (i * 9) % (H - horizon - 6), 3 + i % 4, .5, '#e0fffa'); }
   }
+  // beach from y down: wet edge with a foam line, then dry sand with a fixed grain pattern
+  function sand(y, x0 = 0, w = W) {
+    sq(x0, y, w, H - y, '#f2dfa8');
+    sq(x0, y, w, 3, '#d9c08a');
+    for (let x = x0; x < x0 + w; x += 2) sq(x, y - .5 + Math.sin(x * .15 + t * 1.6) * .6, 2, 1, '#ffffff');
+    for (let i = 0; i < 90; i++) { const gx = x0 + (i * 71) % w, gy = y + 5 + (i * 37) % (H - y - 5); sq(gx, gy, 1, .5, i % 3 ? '#e2c98d' : '#fbeec5'); }
+  }
+  // palm: bent, ringed trunk, drooping fronds, three coconuts
+  function palm(x, base, h, lean = 1) {
+    for (let i = 0; i < h; i += 2) { const k = i / h, px2 = x + lean * k * k * 8; sq(px2, base - i - 2, 3, 2.5, i % 4 ? '#a16207' : '#854d0e'); sq(px2, base - i - 2, 1, 2.5, '#ca8a04'); }
+    const tx = x + lean * 8 + 1.5, ty = base - h - 1;
+    for (const [dx, c] of [[-1, '#15803d'], [1, '#16a34a']]) for (let f = 0; f < 3; f++) for (let i = 0; i < 12; i++) {
+      const fx = tx + dx * i * (1.1 - f * .25), fy = ty - 2 + (i * i) / 18 + f * 1.5 - (f === 2 ? 3 : 0);
+      sq(fx, fy, 2, 1.5, f === 2 ? '#22c55e' : c);
+    }
+    for (const [dx, dy] of [[-1.5, 1], [1, 1.5], [0, 3]]) sdisc(tx + dx, ty + dy, 1.4, '#57301a');
+  }
+
   // the sports: start(g) sets up, update(g, dt, I) plays, draw(g) paints, score(g) is the result; stamps get checked on g at the end
   const SPORTS = [
     { id: 'frisbee', icon: '🥏', name: 'Frisbee', st: 0, modes: ['Zielring', 'Weitwurf'],
@@ -3206,7 +3241,7 @@
       draw(g) {
         skySea(140);
         const cam = g.mode && g.dis ? Math.max(0, g.dis.x - 260) : 0; sx.save(); sx.translate(-cam, 0);
-        sq(0, 138, 44, 78, '#f2dfa8'); sq(0, 138, 44, 2, '#fde68a'); sq(40, 140, 6, 76, '#e9d39a');
+        sand(138, 0, 44); sq(40, 140, 6, 76, '#e2c98d');
         drawPelle(sq, 12, 148, 0); // the angler is Pelle's buddy: a little figure
         sme(28.5, 144, g.st === 'aim' ? 0 : 1);
         if (!g.mode && g.ring) { const r = 22; for (const [w, c] of [[r, '#f8fafc'], [12, '#ef4444'], [5, '#facc15']]) sq(g.ring - w, 159, w * 2, 2, c); sq(g.ring - .5, 150, 1, 9, '#ef4444'); }
@@ -3362,8 +3397,8 @@
         }
       },
       draw(g) {
-        skySea(120); sq(0, 150, W, 66, '#f2dfa8'); sq(0, 150, W, 2, '#fde68a');
-        for (const [x, h] of [[30, 60], [350, 70], [70, 40]]) { sq(x, 150 - h, 3, h, '#a16207'); for (let i = 0; i < 6; i++) sq(x - 12 + i * 4, 150 - h - 2 + Math.abs(i - 2.5) * 2, 6, 2, '#16a34a'); }
+        skySea(120); sand(150);
+        for (const [x, h, l] of [[30, 60, 1], [350, 70, -1], [70, 40, 1]]) palm(x, 152, h, l);
         if (g.mode === 0) {
           const R = [34, 23, 14][Math.min(2, g.k)];
           sq(190, 100 + R * .6, 4, 150 - 100 - R * .6, '#78350f');
@@ -3531,8 +3566,7 @@
         }
       },
       draw(g) {
-        skySea(110); sq(0, 150, W, 66, '#f2dfa8'); sq(0, 150, W, 1.5, '#fde68a');
-        for (let i = 0; i < 50; i++) sq((i * 71) % W, 152 + (i * 13) % 60, 1, .5, '#d4b97a');
+        skySea(110); sand(150); palm(20, 152, 50, 1); palm(360, 152, 58, -1);
         sq(8, 176, 368, 1, '#f8fafc'); sq(191, 108, 2, 70, '#64748b'); for (let y = 110; y < 134; y += 3) sq(186, y, 12, 1, '#e2e8f0'); sq(186, 108, 12, 2, '#f8fafc');
         if (g.mode === 1) for (const [a, b2, p, c] of [[192, 260, 1, '#fde68a'], [260, 330, 3, '#fcd34d'], [330, 376, 5, '#fbbf24']]) { sq(a, 174, b2 - a, 3, c); stext(String(p), (a + b2) / 2, 190, '#78350f', 8); }
         const run = Math.abs(g.px - (g.lastPx ?? g.px)) > .05; g.lastPx = g.px;
@@ -3570,7 +3604,7 @@
       },
       draw(g) {
         sq(0, 0, W, H, '#f2dfa8'); for (let i = 0; i < 70; i++) sq((i * 71) % W, (i * 37) % H, 1, .5, '#d4b97a');
-        for (const [x, h] of [[40, 70], [344, 80], [80, 50], [300, 55]]) { sq(x, 216 - h, 3, h, '#a16207'); for (let i = 0; i < 6; i++) sq(x - 12 + i * 4, 216 - h - 2 + Math.abs(i - 2.5) * 2, 6, 2, '#16a34a'); }
+        for (const [x, h, l] of [[40, 70, 1], [344, 80, -1], [80, 50, 1], [300, 55, -1]]) palm(x, 216, h, l);
         sq(146, 0, 92, H, '#78350f'); sq(150, 0, 84, H, '#d6a35c'); for (let x = 154; x < 232; x += 6) sq(x, 0, .5, H, '#c08a46');
         sq(146, 0, 6, H, '#57301a'); sq(232, 0, 6, H, '#57301a'); sq(150, 186, 84, 1, '#ef4444');
         for (let i = -2; i <= 2; i++) sq(192 + i * 10 - 1, 150 - Math.abs(i) * 4, 2, 4, '#7c2d12');

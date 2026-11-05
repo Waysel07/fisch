@@ -56,7 +56,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   `update(dt)` schaltet diese Zustände um, `draw()` zeichnet sie. Modals sperren je nach Zustand (`toggleModal`).
 - **Welt und Zeichnen:**
   - Leinwand 384×216 (`W`, `H`), wichtige Höhen sind `HORIZON`, `SURFACE` und `DOCK_Y`.
-  - Sprite-Quellen in `img/pxl/` rendert `node img/pxl/render.js fisch <name …>` zu `img/<name>.png` (ohne npm). `node img/pxl/render.js code <name …>` schreibt Raster aus `code.px.js` in den `ART`-Block (`S(…, keys)` legt Buchstaben fest). Mit `lit: true` am `F(…)` bekommt ein Sprite Glanz, Schatten und getönten Umriss (`light()`/`selout()` aus `render.js`); die Sonneninsel nutzt das.
+  - Sprite-Quellen in `img/pxl/` rendert `node img/pxl/render.js fisch <name …>` zu `img/<name>.png` (ohne npm). `node img/pxl/render.js code <name …>` schreibt Raster aus `code.px.js` in den `ART`-Block (`S(…, keys)` legt Buchstaben fest). Mit `lit: true` am `F(…)` bekommt ein Sprite Glanz, Kernschatten und getönten Umriss (`light()`/`selout()` aus `render.js`, `dither: true` für große flache Flächen); die Sonneninsel nutzt das. Weitere Helfer dort: `spec(c, x, y)` (Glanzpunkt) und `ramp(farbe)` (Farbtreppe hell → tief). Die Sportplätze malen Himmel und Meer mit `skySea(horizont)`, den Strand mit `sand(y)` und Palmen mit `palm(x, fuß, höhe, neigung)`.
   - Helfer:
     - `px(x, y, w, h, Farbe)` zeichnet auf das halbe Pixel gerundet (`snap`);
     - `bake()` erzeugt Sprites aus Zeichen-Rastern;

@@ -59,7 +59,7 @@ function F(name, W, H, o, fn) {
   if (o.flip) opt.flip = 'x'
   if (o.plain) { opt.w = W; opt.h = H; delete opt.outline }
   // lit: Glanz, Schatten und getönter Umriss aus render.js (die Sonneninsel nutzt das)
-  if (o.lit) { opt.post = (c) => light(c); if (opt.outline) opt.edge = (g) => selout(g, INK) }
+  if (o.lit) { opt.post = (c) => light(c, { core: 0.14, dither: !!o.dither, ...(o.lit === true ? {} : o.lit) }); if (opt.outline) opt.edge = (g) => selout(g, INK) }
   sprite(name, opt, fn)
 }
 
@@ -1545,7 +1545,7 @@ F('kokosnussfisch', 46, 30, { lit: true,}, (c) => {
   for (let x = 4; x < 32; x += 3) c.px(x, Math.round(p.top(x)) + 2, '#a16207')
   c.rect(13, 7, 2, 2, '#3b1d0c'); c.rect(18, 6, 2, 2, '#3b1d0c'); c.rect(15, 10, 2, 2, '#3b1d0c')
   eye(c, 5, 11); c.line(1, 18, 4, 18, '#3b1d0c')
-  c.line(20, 1, 22, 5, '#16a34a'); c.line(24, 0, 23, 5, '#22c55e') // kleiner Spross
+  spec(c, 9, 6); c.line(20, 1, 22, 5, '#16a34a'); c.line(24, 0, 23, 5, '#22c55e') // kleiner Spross
 })
 F('papageifisch', 50, 30, { lit: true,}, (c) => {
   // Papageifisch: türkis-grün mit pinken Schuppenrändern und einem Schnabel aus Zähnen
@@ -1554,23 +1554,44 @@ F('papageifisch', 50, 30, { lit: true,}, (c) => {
   c.poly([0, 13, 5, 12, 5, 18, 0, 17], '#e2e8f0'); c.line(0, 15, 5, 15, '#94a3b8')
   for (let i = 0; i < 4; i++) c.px(12 + i * 2, 20 + (i % 2), '#fde047')
 })
-F('badelatsche', 46, 26, { lit: true,}, (c) => {
-  // Badelatsche: verlorener Flip-Flop von oben, Zehensteg vorne, Riemen als V, Sand in den Rillen
-  c.ellipse(12, 12, 9, 8, '#0ea5e9'); c.ellipse(30, 12, 12, 9, '#0ea5e9'); c.rect(12, 5, 18, 15, '#0ea5e9')
-  c.ellipse(12, 12, 8, 7, '#38bdf8'); c.ellipse(30, 12, 11, 8, '#38bdf8'); c.rect(12, 6, 18, 13, '#38bdf8')
-  for (let x = 6; x < 40; x += 3) for (let y = 7; y < 18; y += 4) c.px(x, y + (x % 2), '#7dd3fc')
-  c.line(9, 12, 24, 4, '#f97316'); c.line(9, 12, 24, 20, '#f97316'); c.line(10, 12, 25, 5, '#fb923c'); c.line(10, 12, 25, 19, '#ea580c')
-  c.circ(9, 12, 1, '#c2410c')
-  for (const [x, y] of [[16, 15], [34, 9], [38, 14], [20, 8]]) c.px(x, y, '#fde68a')
-  drop(c, 43, 3)
+F('badelatsche', 46, 26, { lit: true, dither: true }, (c) => {
+  // Badelatsche: Flip-Flop schräg von oben, dicke Sohle mit Kante, Zehensteg, Riemen mit Schatten, Rillen; vorn ein Auge, hinten eine Flosse
+  const sole = (dy, k) => { c.ellipse(11, 10 + dy, 9, 7, k); c.ellipse(31, 11 + dy, 9, 6, k); c.rect(11, 6 + dy, 20, 10, k) }
+  sole(3, '#075985'); sole(2, '#0369a1'); sole(1, '#0284c7'); sole(0, '#38bdf8')
+  c.ellipse(11, 10, 7, 5, '#7dd3fc'); c.ellipse(31, 11, 7, 4, '#7dd3fc'); c.rect(11, 8, 20, 6, '#7dd3fc')
+  for (let x = 5; x < 39; x += 3) for (let y = 7; y < 16; y += 3) if ((x + y) % 2) c.px(x, y, '#38bdf8')
+  c.px(9, 9, '#0369a1')                                                      // Zehensteg-Loch
+  // Riemen: erst Schatten auf der Sohle, dann der Riemen selbst
+  c.line(10, 11, 24, 5, '#0284c7'); c.line(10, 11, 24, 17, '#0284c7')
+  c.line(9, 9, 23, 3, '#f97316', 2); c.line(9, 9, 23, 15, '#ea580c', 2)
+  c.line(9, 8, 22, 2, '#fdba74'); c.rect(8, 8, 3, 3, '#c2410c'); c.px(8, 8, '#fb923c')
+  // Fisch: Auge auf der Spitze, kleines Maul, Schwanzflosse an der Ferse
+  eye(c, 3, 7, { size: 3 }); c.line(1, 13, 3, 14, '#075985')
+  c.poly([40, 10, 44, 6, 43, 11, 44, 16, 40, 13], '#f97316'); c.line(41, 11, 43, 8, '#c2410c'); c.line(41, 12, 43, 14, '#c2410c')
+  for (const [x, y] of [[17, 13], [33, 9], [36, 13], [27, 12]]) c.px(x, y, '#fde68a')
+  drop(c, 42, 1)
 })
-F('sonnencreme', 30, 40, { lit: true,}, (c) => {
-  // Sonnencreme-Flasche: orange Tube, Deckel unten, Sonne vorne drauf, LSF 50
-  c.rect(6, 4, 17, 26, '#fb923c'); c.vline(6, 4, 26, '#fdba74'); c.vline(22, 4, 26, '#ea580c')
-  c.rect(5, 2, 19, 3, '#f97316'); c.rect(9, 30, 11, 6, '#e2e8f0'); c.hline(9, 35, 11, '#94a3b8')
-  c.circ(14, 14, 4, '#fde047'); for (const [x, y] of [[14, 8], [14, 20], [8, 14], [20, 14], [10, 10], [18, 10], [10, 18], [18, 18]]) c.px(x, y, '#facc15')
-  c.rect(9, 23, 11, 3, '#ffffff'); for (const x of [10, 12, 15, 17]) c.px(x, 24, '#ea580c')
-  drop(c, 26, 6); drop(c, 2, 20)
+F('sonnencreme', 30, 40, { lit: true }, (c) => {
+  // Sonnencreme-Tube: oben die gequetschte Falz, Klappdeckel unten, Etikett mit Sonne und LSF 50, Augen und kleine Flossen
+  c.rect(5, 1, 18, 3, '#ea580c'); for (let x = 6; x < 22; x += 2) c.vline(x, 1, 3, '#c2410c'); c.hline(5, 1, 18, '#fb923c')
+  c.poly([6, 4, 22, 4, 24, 27, 4, 27], '#fb923c')
+  c.vline(6, 5, 21, '#fdba74'); c.vline(7, 5, 21, '#fed7aa'); c.vline(22, 5, 21, '#ea580c'); c.vline(21, 8, 18, '#f97316')
+  c.line(15, 6, 19, 10, '#ea580c')                                          // Knick vom Drücken
+  // Etikett
+  c.rect(7, 13, 15, 11, '#fff7ed'); c.hline(7, 13, 15, '#ffffff'); c.hline(7, 23, 15, '#fed7aa')
+  c.circ(11, 17, 2, '#facc15'); c.px(10, 16, '#fef08a')
+  for (const [x, y] of [[11, 13], [11, 21], [7, 17], [15, 17], [8, 14], [14, 14], [8, 20], [14, 20]]) c.px(x, y, '#f59e0b')
+  c.text(16, 15, '50', '#dc2626')
+  c.hline(16, 21, 5, '#fdba74')
+  // Gesicht
+  eye(c, 9, 7, { size: 3 }); eye(c, 15, 7, { size: 3 }); c.line(12, 11, 14, 11, '#9a3412')
+  // Deckel
+  c.rect(7, 27, 14, 3, '#e2e8f0'); c.rect(8, 30, 12, 6, '#f8fafc'); c.vline(8, 30, 6, '#ffffff'); c.vline(19, 30, 6, '#cbd5e1')
+  for (let x = 10; x < 19; x += 2) c.vline(x, 31, 4, '#e2e8f0'); c.hline(8, 35, 12, '#94a3b8'); c.hline(7, 27, 14, '#cbd5e1')
+  // Flossen und ein Klecks Creme
+  c.poly([4, 16, 0, 13, 1, 20, 4, 20], '#f97316'); c.poly([24, 16, 27, 13, 27, 20, 24, 20], '#f97316')
+  c.ellipse(21, 36, 3, 1, '#fffbeb'); c.px(20, 35, '#ffffff')
+  drop(c, 26, 4); drop(c, 1, 26)
 })
 F('strandballkugelfisch', 40, 38, { lit: true,}, (c) => {
   // Strandball-Kugelfisch: aufgeblasen wie ein Wasserball, sechs bunte Segmente, kleine Stacheln
@@ -1581,7 +1602,7 @@ F('strandballkugelfisch', 40, 38, { lit: true,}, (c) => {
   }
   for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2; c.px(Math.round(18 + Math.cos(a) * 17), Math.round(18 + Math.sin(a) * 17), '#fde68a') }
   c.circ(11, 12, 1, '#ffffff'); eye(c, 6, 13, { size: 4 }); c.ellipse(4, 22, 2, 1, '#be123c')
-  c.poly([33, 16, 37, 12, 37, 24, 33, 20], '#facc15')
+  c.poly([33, 16, 37, 12, 37, 24, 33, 20], '#facc15'); spec(c, 23, 6)
 })
 F('flamingofisch', 52, 40, { lit: true,}, (c) => {
   // Flamingofisch: rosa Fisch auf einem dünnen Bein, langer gebogener Hals mit schwarzer Schnabelspitze
@@ -1600,28 +1621,52 @@ F('ananasbarsch', 52, 40, { lit: true,}, (c) => {
   for (const [bx, tx, ty] of [[14, 10, 1], [18, 17, 0], [22, 24, 2], [26, 31, 5], [16, 13, 3]]) c.poly([bx - 2, Math.round(p.top(bx)) + 1, tx, ty, bx + 3, Math.round(p.top(bx + 3)) + 1], ty % 2 ? '#16a34a' : '#22c55e')
   c.line(1, 26, 5, 26, '#92400e')
 })
-F('schnorchelfisch', 48, 30, { lit: true,}, (c) => {
-  // Schnorchelfisch: blauer Fisch mit Taucherbrille und Schnorchel, der nach oben zeigt
+F('schnorchelfisch', 48, 30, { lit: true }, (c) => {
+  // Schnorchelfisch: blauer Fisch mit großer Taucherbrille (Spiegelung im Glas) und gelbem Schnorchel, der klar vom Kopf absteht
   const p = iFish(c, { x1: 36, cy: 17, up: 10, dn: 10, tl: 10, sp: 8, fin: '#2563eb', body: (u, v, x, y) => B(v, 0.25, '#1d4ed8', 0.7, '#3b82f6', '#bfdbfe') })
-  c.rect(4, 11, 9, 6, '#f97316'); c.rect(5, 12, 7, 4, '#a5f3fc'); c.px(6, 13, '#ffffff'); eye(c, 8, 13, { size: 2 })
-  c.hline(13, 13, 14, '#f97316')
-  c.vline(14, 1, 11, '#facc15'); c.vline(15, 1, 11, '#eab308'); c.rect(13, 0, 4, 2, '#f97316')
-  for (const [x, y] of [[20, 3], [22, 0]]) c.circ(x, y, 1, '#e0f2fe')
+  c.hline(13, 12, 20, '#1e293b'); c.hline(13, 13, 20, '#f97316')                                   // Band
+  c.rect(2, 9, 12, 9, '#ea580c'); c.hline(2, 9, 12, '#fdba74')
+  c.rect(3, 10, 10, 7, '#67e8f9'); c.rect(3, 14, 10, 3, '#22d3ee')
+  c.line(4, 13, 7, 10, '#ecfeff'); c.px(9, 10, '#ecfeff')
+  eye(c, 7, 12, { size: 3 })
+  c.rect(14, 15, 3, 3, '#1e293b'); c.hline(14, 15, 3, '#475569')                                  // Mundstück
+  c.vline(17, 2, 15, '#facc15'); c.vline(18, 2, 15, '#ca8a04'); c.vline(16, 3, 9, INK)
+  c.rect(16, 0, 4, 3, '#f97316'); c.hline(16, 0, 4, '#fdba74')
+  for (const [x, y] of [[22, 3], [24, 0]]) { c.circ(x, y, 1, '#e0f2fe'); c.px(x - 1, y - 1, '#ffffff') }
 })
-F('pingpongkugelfisch', 36, 34, { lit: true,}, (c) => {
-  // Tischtennis-Kugelfisch: weiß und rund wie ein Ball, roter Schläger als Schwanzflosse
-  c.circ(15, 17, 13, '#f8fafc'); c.ellipse(15, 22, 11, 6, '#e2e8f0'); c.circ(10, 11, 2, '#ffffff')
-  for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; c.px(Math.round(15 + Math.cos(a) * 14), Math.round(17 + Math.sin(a) * 14), '#cbd5e1') }
-  eye(c, 5, 13, { size: 4 }); c.ellipse(4, 21, 2, 1, '#f97316')
-  c.circ(30, 12, 5, '#dc2626'); c.circ(29, 11, 3, '#ef4444'); c.rect(27, 16, 2, 7, '#a16207'); c.vline(27, 16, 7, '#ca8a04')
+F('pingpongkugelfisch', 36, 34, { lit: true }, (c) => {
+  // Tischtennis-Kugelfisch: Ball mit Naht und rundem Schatten, Schläger mit rotem Belag und Holzgriff als Schwanzflosse
+  for (let y = -13; y <= 13; y++) for (let x = -13; x <= 13; x++) if (x * x + y * y <= 13.5 * 13.5) {
+    const d = Math.hypot(x + 5, y + 6)
+    c.px(14 + x, 17 + y, d > 17 ? '#cbd5e1' : d > 13 ? '#e2e8f0' : d < 4 ? '#ffffff' : '#f8fafc')
+  }
+  for (let x = -12; x <= 12; x++) c.px(14 + x, Math.round(17 + 3 * Math.cos(x / 12 * Math.PI / 2)) + 1, x > 4 ? '#94a3b8' : '#cbd5e1') // Naht
+  for (const [x, y] of [[18, 9], [19, 8], [20, 9], [19, 10]]) c.px(x, y, '#fb923c')          // kleiner Stern als Aufdruck
+  // Schläger
+  c.line(26, 17, 28, 11, '#a16207', 2); c.line(26, 16, 28, 10, '#ca8a04'); c.px(26, 18, '#78350f')
+  c.circ(29, 6, 5, '#1c1917'); c.circ(29, 6, 4, '#dc2626'); c.circ(28, 5, 2, '#ef4444'); c.px(27, 4, '#fca5a5')
+  eye(c, 4, 12, { size: 4 }); spec(c, 8, 7)
+  c.ellipse(3, 21, 2, 1, '#f97316'); c.px(2, 21, '#9a3412')
+  c.poly([22, 25, 27, 27, 23, 28], '#cbd5e1')
 })
-F('frisbeerochen', 60, 34, { lit: true,}, (c) => {
-  // Frisbee-Rochen: flacher, runder Rochen in Orange mit Ringen wie eine Wurfscheibe, langer Schwanz
-  c.ellipse(24, 16, 22, 13, '#f97316'); c.ellipse(24, 16, 19, 10, '#fb923c'); c.ring(24, 16, 14, '#fdba74'); c.ring(24, 16, 8, '#ea580c')
-  c.ellipse(24, 16, 3, 2, '#fed7aa')
-  c.line(46, 16, 58, 18, '#c2410c'); c.line(50, 17, 58, 19, '#9a3412')
-  eye(c, 8, 11, { size: 2 }); eye(c, 8, 18, { size: 2 })
-  for (let x = 6; x < 42; x += 4) c.px(x, 28, '#fde68a')
+F('frisbeerochen', 60, 34, { lit: true, dither: true }, (c) => {
+  // Frisbee-Rochen von oben: runder Rochenkörper mit Wurfscheiben-Rille, Flügelspitzen, Augen vorn, Peitschenschwanz
+  c.poly([3, 15, 9, 7, 19, 2, 30, 1, 39, 4, 45, 10, 47, 15, 45, 21, 39, 27, 30, 30, 19, 29, 9, 24], '#c2410c')
+  c.poly([4, 14, 10, 7, 19, 2, 30, 1, 39, 4, 45, 10, 46, 14, 44, 19, 38, 25, 30, 28, 19, 27, 10, 22], '#f97316')
+  // Rille: oben links hell, unten rechts dunkel
+  for (let y = -12; y <= 12; y++) for (let x = -12; x <= 12; x++) {
+    const d = Math.hypot(x, y * 1.15), a = Math.atan2(y, x)
+    if (Math.abs(d - 11) < 0.6) c.px(25 + x, 15 + y, Math.sin(a + 0.8) < 0 ? '#fed7aa' : '#9a3412')
+    if (Math.abs(d - 10) < 0.5) c.px(25 + x, 15 + y, Math.sin(a + 0.8) < 0 ? '#ea580c' : '#fdba74')
+  }
+  c.ellipse(25, 15, 4, 3, '#fb923c'); c.ellipse(25, 15, 2, 1, '#fed7aa')
+  for (let a = 3.6; a < 4.5; a += 0.12) c.px(Math.round(25 + Math.cos(a) * 15), Math.round(15 + Math.sin(a) * 12), '#ffedd5') // Glanzbogen
+  // Kopf, Augen, Atemlöcher
+  eye(c, 9, 9, { size: 3 }); eye(c, 9, 18, { size: 3 })
+  c.px(13, 10, '#9a3412'); c.px(13, 20, '#9a3412'); c.hline(4, 14, 3, '#9a3412')
+  // Schwanz mit Stachel
+  c.line(46, 15, 57, 18, '#c2410c', 2); c.line(47, 14, 57, 17, '#fb923c'); c.poly([50, 16, 53, 13, 53, 17], '#9a3412')
+  for (let x = 8; x < 42; x += 5) c.px(x, 29, '#fde68a')
 })
 F('meeresschildkroete', 64, 40, { lit: true,}, (c) => {
   // Meeresschildkröte: grüner Panzer mit Waben, Flossen, freundlicher Blick
@@ -1640,13 +1685,14 @@ F('bowlingkugelfisch', 40, 36, { lit: true,}, (c) => {
   eye(c, 4, 18, { size: 3 }); c.line(2, 25, 6, 25, '#1e1b4b')
   c.ellipse(35, 18, 2, 6, '#f8fafc'); c.ellipse(35, 11, 1, 2, '#f8fafc'); c.hline(33, 15, 5, '#ef4444'); c.hline(33, 17, 5, '#ef4444')
 })
-F('wasserskimakrele', 58, 34, { lit: true,}, (c) => {
-  // Wasserski-Makrele: gestreifte Makrele auf zwei Skiern, hält eine Zugleine im Maul
-  const p = iFish(c, { x1: 44, cy: 14, up: 8, dn: 8, tl: 11, sp: 8, fin: '#1e3a8a', eyeAt: [7, 10], body: (u, v, x, y) => v < 0.45 ? ((x + Math.round(y * 0.5)) % 5 < 2 ? '#1e3a8a' : '#2563eb') : v < 0.6 ? '#93c5fd' : '#e2e8f0' })
-  c.rect(4, 25, 44, 2, '#ef4444'); c.hline(4, 25, 44, '#fca5a5'); c.poly([2, 24, 6, 25, 2, 26], '#ef4444')
-  c.rect(8, 29, 44, 2, '#facc15'); c.hline(8, 29, 44, '#fef08a'); c.poly([6, 28, 10, 29, 6, 30], '#facc15')
-  c.vline(16, 21, 4, '#64748b'); c.vline(30, 21, 8, '#64748b')
-  c.line(1, 15, 0, 4, '#e2e8f0'); c.rect(0, 2, 4, 2, '#f97316')
+F('wasserskimakrele', 58, 34, { lit: true }, (c) => {
+  // Wasserski-Makrele: Makrele mit Tigerstreifen, zwei schräge Skier unter dem Bauch, Gischt hinten, Zuggriff im Maul
+  const p = iFish(c, { x1: 44, cy: 13, up: 8, dn: 8, tl: 11, sp: 8, fin: '#1e3a8a', eyeAt: [7, 9], body: (u, v, x, y) => v < 0.45 ? ((x + Math.round(y * 0.6)) % 5 < 2 ? '#1e3a8a' : '#2563eb') : v < 0.6 ? '#93c5fd' : '#e2e8f0' })
+  c.vline(18, 21, 3, '#475569'); c.vline(32, 21, 6, '#475569')                              // Bindungen
+  c.rect(4, 23, 44, 2, '#ef4444'); c.hline(4, 23, 44, '#fca5a5'); c.hline(4, 24, 44, '#b91c1c'); c.px(3, 22, '#ef4444'); c.px(2, 21, '#fca5a5')
+  c.rect(10, 27, 44, 2, '#facc15'); c.hline(10, 27, 44, '#fef08a'); c.hline(10, 28, 44, '#ca8a04'); c.px(9, 26, '#facc15'); c.px(8, 25, '#fef08a')
+  for (const [x, y] of [[50, 22], [53, 24], [55, 21], [55, 27]]) { c.circ(x, y, 1, '#e0f2fe'); c.px(x - 1, y - 1, '#ffffff') }
+  c.line(1, 14, 0, 6, '#e2e8f0'); c.rect(0, 3, 5, 2, '#f97316'); c.hline(0, 3, 5, '#fdba74')
 })
 F('bogenschuetzenfisch', 56, 32, { lit: true,}, (c) => {
   // Bogenschützenfisch: silbriger Schützenfisch mit schwarzen Bändern, schießt einen Wasserstrahl wie einen Pfeil
@@ -1655,33 +1701,50 @@ F('bogenschuetzenfisch', 56, 32, { lit: true,}, (c) => {
   for (let i = 0; i < 6; i++) drop(c, 1 + i * 2, 13 - i * 2)
   c.line(14, 4, 26, 4, '#78350f'); c.poly([12, 4, 15, 2, 15, 6], '#94a3b8'); c.poly([26, 4, 29, 2, 29, 6], '#ef4444') // Pfeil über dem Kopf
 })
-F('fechterfisch', 72, 32, { lit: true,}, (c) => {
-  // Fechter-Schwertfisch: weiße Fechtmaske, Degenspitze als Schwert, blaue Seite mit Startnummer
+F('fechterfisch', 72, 32, { lit: true }, (c) => {
+  // Fechter-Schwertfisch: Florett statt Schwert (Glocke, Klinge, Knopf), Fechtmaske nur vorm Gesicht, blaue Flanke mit Startnummer
   const p = iFish(c, { x1: 60, cy: 17, up: 10, dn: 9, tl: 12, sp: 10, fin: '#1e40af', body: (u, v, x, y) => B(v, 0.3, '#1e3a8a', 0.68, '#3b82f6', '#e0f2fe') })
   fan(c, [26, Math.round(p.top(26)) + 1], [[28, 1], [33, 2], [40, Math.round(p.top(40)) + 1]], '#1e40af', '#1e3a8a')
-  c.line(0, 16, 14, 16, '#e2e8f0'); c.hline(0, 15, 6, '#ffffff'); c.rect(12, 14, 3, 5, '#facc15')
-  c.rect(14, 9, 10, 13, '#f8fafc'); for (let y = 10; y < 21; y += 2) for (let x = 15; x < 23; x += 2) c.px(x, y, '#94a3b8')
-  c.rect(34, 13, 9, 6, '#f8fafc'); c.rect(36, 14, 2, 4, '#dc2626'); c.rect(39, 14, 2, 4, '#dc2626')
+  c.hline(1, 16, 12, '#cbd5e1'); c.hline(1, 15, 11, '#f8fafc'); c.rect(0, 15, 2, 2, '#64748b')     // Klinge und Knopf
+  c.ellipse(13, 16, 1, 4, '#94a3b8'); c.vline(13, 13, 2, '#e2e8f0')                               // Glocke
+  c.rect(15, 10, 9, 12, '#f1f5f9'); c.hline(15, 10, 9, '#ffffff')
+  for (let x = 16; x < 23; x += 2) c.vline(x, 12, 7, '#64748b')                                    // Maskengitter
+  c.rect(15, 20, 9, 2, '#e2e8f0'); c.hline(24, 11, 1, '#cbd5e1')
+  c.rect(35, 13, 8, 6, '#f8fafc'); c.text(37, 13, '7', '#dc2626')
 })
-F('golfballfisch', 34, 32, { lit: true,}, (c) => {
-  // Golfballfisch: rund und weiß mit Dellen, ein kleines rotes Fähnchen als Rückenflosse
-  c.circ(15, 18, 12, '#f1f5f9'); c.ellipse(15, 23, 10, 5, '#e2e8f0')
-  for (let y = 9; y < 29; y += 3) for (let x = 6 + (y % 2) * 1; x < 26; x += 3) if ((x - 15) ** 2 + (y - 18) ** 2 < 120) c.px(x, y, '#cbd5e1')
-  eye(c, 5, 15, { size: 3 }); c.line(4, 23, 7, 23, '#94a3b8')
-  c.vline(20, 0, 7, '#475569'); c.poly([21, 0, 27, 2, 21, 4], '#ef4444')
-  c.poly([27, 18, 32, 14, 32, 23], '#cbd5e1')
+F('golfballfisch', 34, 32, { lit: true }, (c) => {
+  // Golfballfisch: weiße Kugel mit Dellen (jede Delle hat unten rechts Schatten), Fähnchen als Rückenflosse, kleine Flossen
+  for (let y = -12; y <= 12; y++) for (let x = -12; x <= 12; x++) if (x * x + y * y <= 12.5 * 12.5) {
+    const d = Math.hypot(x + 4, y + 5)
+    c.px(15 + x, 18 + y, d > 15 ? '#cbd5e1' : d > 11 ? '#e2e8f0' : '#f8fafc')
+  }
+  for (let j = 0; j < 9; j++) for (let i = 0; i < 9; i++) {
+    const x = 5 + i * 3 + (j % 2 ? 1 : 0), y = 8 + j * 2.6, r = Math.hypot(x - 15, y - 18)
+    if (r > 10.5) continue
+    const yy = Math.round(y)
+    c.px(x, yy, r > 8 ? '#94a3b8' : '#cbd5e1'); if (r < 8) c.px(x - 1, yy - 1, '#ffffff')
+  }
+  c.poly([27, 18, 32, 13, 31, 18, 32, 23], '#e2e8f0'); c.line(28, 18, 31, 15, '#94a3b8')
+  c.poly([12, 28, 9, 30, 15, 30], '#cbd5e1')
+  eye(c, 5, 14, { size: 3 }); c.line(4, 23, 7, 22, '#64748b'); spec(c, 9, 9)
+  c.vline(20, 0, 8, '#475569'); c.vline(21, 1, 6, '#94a3b8'); c.poly([21, 0, 28, 2, 21, 5], '#ef4444'); c.line(22, 1, 26, 2, '#fca5a5')
 })
 F('basketballbarsch', 50, 38, { lit: true,}, (c) => {
   // Basketball-Barsch: orange mit schwarzen Nähten, ein Schweißband als Schwanzmanschette
   const p = iFish(c, { x1: 38, cy: 19, up: 14, dn: 14, tl: 10, sp: 9, fin: '#c2410c', eyeAt: [7, 13, 4], peak: 0.45, body: (u, v, x, y) => (Math.abs(x - 22) < 1 || Math.abs(v - 0.5) < 0.04 || Math.abs(Math.hypot(x - 40, y - 19) - 18) < 0.7) ? '#1c1917' : B(v, 0.25, '#ea580c', 0.8, '#f97316', '#fb923c') })
-  c.rect(35, 13, 3, 12, '#f8fafc'); c.hline(35, 18, 3, '#ef4444')
+  c.rect(35, 13, 3, 12, '#f8fafc'); c.hline(35, 18, 3, '#ef4444'); spec(c, 13, 8)
   c.line(1, 26, 6, 25, '#7c2d12')
 })
-F('kanuhecht', 74, 28, { lit: true,}, (c) => {
-  // Kanu-Hecht: langer grüner Hecht, ein Paddel quer im Maul, Kanu-Holzmuster auf dem Rücken
-  const p = iFish(c, { x1: 62, cy: 15, up: 7, dn: 7, tl: 11, sp: 8, fin: '#365314', eyeAt: [10, 11], peak: 0.3, body: (u, v, x, y) => v < 0.3 ? ((x % 6) === 0 ? '#78350f' : '#a16207') : v < 0.7 ? (scale(x, y, 5) ? '#bef264' : '#4d7c0f') : '#d9f99d' })
-  c.poly([0, 14, 8, 13, 8, 17, 0, 16], '#4d7c0f')
-  c.line(4, 2, 12, 26, '#92400e'); c.line(5, 2, 13, 26, '#b45309'); c.ellipse(3, 2, 2, 3, '#f59e0b'); c.ellipse(13, 25, 2, 3, '#f59e0b')
+F('kanuhecht', 74, 28, { lit: true }, (c) => {
+  // Kanu-Hecht: kräftiger Hecht, der Rücken ist ein Holzkanu mit Bordkante, ein Paddel kreuzt vor dem Körper
+  const p = iFish(c, { x1: 62, cy: 14, up: 9, dn: 8, tl: 11, sp: 8, fin: '#3f6212', peak: 0.3, body: (u, v, x, y) =>
+    v < 0.38 ? (x % 7 === 0 ? '#7c2d12' : (x + y) % 9 === 0 ? '#b45309' : B(v, 0.12, '#c2410c', 0.3, '#a16207', '#92400e'))
+      : v < 0.46 ? '#fbbf24' : v < 0.75 ? (scale(x, y, 5) ? '#bef264' : '#4d7c0f') : '#d9f99d' })
+  for (let x = 14; x < 58; x += 7) c.px(x, Math.round(p.top(x)) + 1, '#fde68a')           // Nieten auf der Bordkante
+  c.poly([0, 13, 9, 11, 9, 18, 0, 16], '#4d7c0f'); c.hline(0, 15, 8, '#365314'); c.hline(1, 13, 6, '#84cc16')
+  eye(c, 10, 9, { size: 3 })
+  c.line(15, 1, 22, 25, '#92400e', 2); c.line(15, 0, 22, 24, '#d97706')
+  c.ellipse(14, 1, 2, 3, '#f59e0b'); c.px(13, 0, '#fde68a'); c.ellipse(22, 24, 2, 3, '#f59e0b'); c.px(21, 23, '#fde68a')
 })
 F('hulafisch', 52, 42, { lit: true,}, (c) => {
   // Hula-Fisch: tanzt nachts im Bastrock, Blumenkranz um den Hals, Hula-Reifen um den Bauch
@@ -1705,15 +1768,19 @@ F('pokalfisch', 56, 48, { lit: true,}, (c) => {
   c.rect(19, 41, 12, 2, '#fde047')
   for (const [x, y] of [[4, 4], [48, 3], [52, 30]]) sprk(c, x, y)
   c.poly([20, 4, 24, 0, 28, 4, 26, 6, 22, 6], '#fde047') // kleine Krone
+  spec(c, 14, 9); spec(c, 22, 31)
 })
 F('mantarochen', 96, 50, { lit: true }, (c) => {
   // Riesen-Mantarochen von oben: weite Schwingen nach oben und unten, Kopflappen vorn, helle Schulterflecken, Peitschenschwanz
-  const D = '#18223a', B = '#24324a', M = '#33476a', L = '#4b6489', W = '#d6e2f0'
+  const D = '#26375a', B = '#354b74', M = '#486492', L = '#6c8ab9', W = '#e6eef8'
   c.line(70, 23, 93, 21, D); c.line(70, 24, 90, 23, M)
   c.poly([14, 23, 24, 13, 36, 5, 48, 0, 54, 2, 57, 12, 66, 19, 72, 23, 66, 28, 57, 35, 54, 45, 48, 47, 36, 42, 24, 34], D)
   c.poly([16, 23, 26, 14, 37, 7, 47, 3, 52, 5, 54, 13, 63, 20, 68, 23, 63, 27, 54, 34, 52, 42, 47, 44, 37, 40, 26, 33], B)
   c.poly([18, 23, 28, 16, 40, 14, 56, 19, 64, 23, 56, 28, 40, 33, 28, 31], M)
   c.line(18, 23, 66, 23, L); c.line(24, 22, 56, 22, L)
+  // helle Unterseite schaut an der hinteren Kante der Schwingen hervor
+  c.line(36, 42, 47, 46, W); c.line(48, 46, 53, 44, W); c.line(55, 35, 63, 28, '#c7d6ea')
+  spec(c, 44, 5)
   // Schulterflecken wie ein heller Winkel
   c.poly([27, 15, 34, 10, 37, 12, 31, 18], W); c.poly([27, 31, 34, 37, 37, 35, 31, 29], W)
   for (const [x, y] of [[44, 9], [46, 38], [50, 15], [50, 31], [40, 18], [40, 28]]) c.px(x, y, L)

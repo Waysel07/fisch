@@ -89,22 +89,32 @@ function outline(g, k) {
 // light(c): Licht von oben links. Oberkanten bekommen einen warmen Glanz, Unterkanten einen kühlen Schatten,
 // Seiten etwas davon. Dünne Linien (Barteln, Strahlen) und Tinte bleiben unberührt.
 const GLOW = '#fff6d8', SHADE = '#2a1f4a';
-function light(c, { top = 0.3, top2 = 0.12, bot = 0.3, bot2 = 0.13, side = 0.12, min = 4 } = {}) {
+function light(c, { top = 0.3, top2 = 0.12, bot = 0.3, bot2 = 0.13, side = 0.12, min = 4, core = 0, dither = false } = {}) {
   const src = c.g.map((r) => r.slice()), at = (x, y) => (y >= 0 && y < c.h && x >= 0 && x < c.w ? src[y][x] : null);
-  const run = (x, y, dx, dy) => { let n = 0; while (n < 8 && at(x + dx * (n + 1), y + dy * (n + 1))) n++; return n; };
+  const run = (x, y, dx, dy, cap = 8) => { let n = 0; while (n < cap && at(x + dx * (n + 1), y + dy * (n + 1))) n++; return n; };
   for (let y = 0; y < c.h; y++) for (let x = 0; x < c.w; x++) {
     const k = src[y][x];
     if (!k || lum(k) < 0.13) continue;
-    const up = run(x, y, 0, -1), dn = run(x, y, 0, 1), lf = run(x, y, -1, 0), rt = run(x, y, 1, 0);
+    const up = run(x, y, 0, -1, 60), dn = run(x, y, 0, 1, 60), lf = run(x, y, -1, 0), rt = run(x, y, 1, 0);
     let t = 0, to = GLOW;
     if (up + dn + 1 >= min) {
       if (up === 0) t = top; else if (up === 1) t = top2;
       else if (dn === 0) { t = bot; to = SHADE; } else if (dn === 1) { t = bot2; to = SHADE; }
+      else if (core && up + dn + 1 >= 9) {
+        // Kernschatten: ein weiches Band im unteren Drittel, darunter etwas Rücklicht vor dem Rand
+        const v = up / (up + dn);
+        if (v > 0.6 && v < 0.84) { t = core; to = SHADE; if (dither && (v < 0.65 || v > 0.79) && (x + y) % 2) t = 0; }
+        else if (v <= 0.22 && v > 0.1) { t = core * 0.6; if (dither && v > 0.17 && (x + y) % 2) t = 0; }
+      }
     }
     if (!t && lf + rt + 1 >= min) { if (lf === 0) t = side; else if (rt === 0) { t = side; to = SHADE; } }
     if (t) c.g[y][x] = mix(k, to, t);
   }
 }
+// spec(c, x, y): kleiner Glanzpunkt (2 Pixel weiß, einer halb)
+function spec(c, x, y, k = '#ffffff') { c.px(x, y, k); c.px(x + 1, y, k); c.px(x, y + 1, k + '99'); }
+// ramp(base): Farbtreppe zum Grundton, heller wird wärmer, dunkler kühler: [hell, Grund, dunkel, tief]
+const ramp = (b) => [mix(b, GLOW, 0.35), b, mix(b, SHADE, 0.3), mix(b, SHADE, 0.55)];
 // selout(g, ink): Umriss auf der Lichtseite (oben, links) nimmt etwas Farbe vom Körper an, unten rechts bleibt er satt.
 function selout(g, ink, t = 0.38) {
   const h = g.length, w = g[0].length, o = g.map((r) => r.slice()), at = (x, y) => (y >= 0 && y < h && x >= 0 && x < w ? g[y][x] : null);
@@ -147,7 +157,7 @@ function sprite(name, opt, fn) {
   if (opt.edge) g = opt.edge(g);
   out.push({ name, g, keys: opt.keys, scale: opt.scale || 2, file: opt.file || path.join('img', name + '.png') });
 }
-const ctx = { sprite, light, selout, pal: (p) => Object.assign(PAL, p), mix, lum, rgb, hex, Math, console };
+const ctx = { sprite, light, selout, spec, ramp, pal: (p) => Object.assign(PAL, p), mix, lum, rgb, hex, Math, console };
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(__dirname, which + '.px.js'), 'utf8'), ctx, { filename: which + '.px.js' });
 

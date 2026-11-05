@@ -5,6 +5,7 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 ## 05.11.2026 · `2026-11-05-9`
 
 - 🎨 The 22 Sun Island fish have been reworked: they now have a shine on top, shading on the belly and softer outlines. The Giant Manta Ray is fully redrawn and shows itself from above with wide wings.
+- 🖌️ Even more polish: the flip-flop, Frisbee Ray, golf-ball, table-tennis and water-ski fish, sunscreen, Canoe Pike, fencer and snorkel fish are redrawn, all island fish have a soft core shadow, and the manta ray is brighter and easier to see on dark water. The sports grounds now have a sun, drifting clouds, an island on the horizon, curved palms and a beach with a foam line.
 - 🛟 Boat skin “David Hasselhoff” fixed: the steering wheel and the Fishdex crate now stand on his back instead of in his legs, and under water he shows through instead of looking like a grey slab.
 - 🏄 New figures at the sports stations: in Frisbee, Surfing and Beach Volleyball you now play as your own angler, with the hat, jacket, skin and hair from the wardrobe. The jet ski is redrawn, and the table-tennis paddle has a handle.
 - ☀️ No more snow on Sun Island: where it would snow elsewhere, the island has a heat wave.
