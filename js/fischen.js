@@ -174,6 +174,16 @@
     { id: 'limo',      name: 'Glitzerlimo',    icon: '✨', price: 8000, desc: 'Doppelte Shiny- und Mutationschance.' },
   ];
   trAll(SNACKS, ['name', 'desc']);
+  // Schätze: expensive one-time buys for the late game. They stay for good, even after prestige.
+  const TREASURES = [
+    { id: 'pokal',       name: 'Goldener Pokal',  price: 500000,  pres: 1, desc: 'Dauerhaft +5 % Taler.' },
+    { id: 'kompass',     name: 'Glückskompass',   price: 1000000, pres: 1, desc: 'Dauerhaft +5 % Glück für seltene Fische.' },
+    { id: 'sanduhr',     name: 'Ebbe-Sanduhr',    price: 2000000, pres: 1, desc: 'Dauerhaft 5 % schnellere Bisse.' },
+    { id: 'goldnetz',    name: 'Goldnetz',        price: 3500000, pres: 1, desc: 'Dauerhaft +10 % Erfahrung.' },
+    { id: 'perlmuschel', name: 'Perlenmuschel',   price: 5000000, pres: 2, desc: 'Bei jedem Prestige 1 Perle mehr.' },
+  ];
+  trAll(TREASURES, ['name', 'desc']);
+  const hasT = id => Array.isArray(save.treasures) && save.treasures.includes(id);
   const priceScale = p => p ? Math.round(p * Math.sqrt(Math.max(1, coinMult())) / 5) * 5 : 0;
   for (const it of [...BAITS, ...SNACKS, ...BOXES]) { const base = it.price; Object.defineProperty(it, 'price', { get: () => priceScale(base), enumerable: true }); }
   const SNACK_MS = 600000, SNACK_MAX = 1800000; // 10 minutes per snack, stacked up to 30
@@ -184,6 +194,18 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-05-2', date: '05.11.2026', items: [
+      '🧬 Shinydex mit Mutationen: Oben siehst du jetzt alle 7 Mutationen – welche du schon gefangen hast und welche davon auch als Shiny. Jede Karte zeigt die Mutationen des Fischs, als Shiny gefangene mit Goldrahmen. Dazu zwei neue Shiny-Belohnungen.',
+      '✦ Prestige geht schneller: Jedes Prestige braucht eine Wiedergeburt weniger als das letzte – erst 7, dann 6, dann 5, danach immer 4.',
+      '💠 Neues Perlen-Talent Perlenschliff: +2 % Taler pro Stufe, ohne Obergrenze. Perlen werden nie mehr nutzlos.',
+      '🔥 Glutschmiede: Ab 1× Prestige kannst du die Rute in der Hand über +15 hinaus bis +25 schmieden, mit Talern und Glutsteinen.',
+      '💎 Neu im Kiosk: Schätze. Fünf teure Stücke von 500 000 bis 5 Millionen Taler, die für immer bleiben, auch nach Prestige – zum Beispiel der Goldene Pokal (+5 % Taler) und die Perlenmuschel (1 Perle mehr pro Prestige).',
+      '💎 Diamant-Meisterschaft: Nach Gold kommt jetzt Diamant. Jeder Diamant-Fisch gibt dauerhaft +1 % Taler (bis +40 %). Wer schon genug Fänge hat, bekommt Diamant sofort.',
+      '🏷️ Sammlungen und Titel: Neue Belohnungen im Fischdex für Sets wie Haifischbecken, Nachtschicht oder Schrottplatz. Jede gibt einen Titel für dein Namensschild, anlegen im Kleiderschrank.',
+      '🐟 Der Odfisch wird stärker: Nach 10, 25 und 50 Siegen kommt er als Stufe 2, 3 und 4 zurück, mit mehr HP und mehr Beute. Ab Stufe 3 gibt es mit Prestige auch Perlen.',
+      '🎖️ Neue Ränge nach Fischgott: Wellenkaiser (13×), Ozeanlegende (16×), Poseidons Erbe (20×) und Ewiger Angler (25× Wiedergeburt). Dazu die Wellenkaiser-Krone und der Diamant-Zylinder.',
+      '🏆 Bestenliste: Neu sind „Fisch der Woche“ (größter Fang der Woche, jeden Montag neu; die Top 3 bekommen die Wochensieger-Kappe) und „Diamant“. „Wiedergeburten“ zählt jetzt alle insgesamt, „Kleinster Fisch“ fällt weg.',
+    ] },
     { id: '2026-11-05-1', date: '05.11.2026', items: [
       '🖤 Neuer epischer Fisch: der Playboi-Carti-Fisch im Vamp-Look mit Lederjacke, Dreads mit roten Spitzen, großer Sonnenbrille, Vampirzähnen und Silberketten. Er headbangt im Takt und beißt am Steg und auf Hoher See, am liebsten nachts.',
       '🧲 Neu im Kiosk ab 1× Prestige: die Magnet-Angel (20 000 Taler). Sie fängt keine Fische, nur Dinge: Alles aus „Kein Fisch“ ist damit dreimal so viel wert, und drei Funde hängen nur an ihr – Rostiger Anker, Altes Fahrrad und die legendäre Schatztruhe.',
@@ -389,6 +411,9 @@
   if (sigBroken || (DEBUG && !DEV_HOST)) save.tampered = true;
   if (sigBroken) setTimeout(() => toast(tr('⚠️ Dieser Spielstand wurde von Hand verändert. Du kannst weiterspielen, aber nicht mehr in die Bestenliste.')), 2500);
   save.prestige = save.prestige | 0; save.pearls = save.pearls | 0;
+  if (!Array.isArray(save.treasures)) save.treasures = [];
+  if (!Array.isArray(save.weekWon)) save.weekWon = [];
+  const weekBest = () => save.weekBest && save.weekBest.w === weekId() ? Math.min(1200, save.weekBest.cm | 0) : 0;
   // all rebirths ever (ranks and rebirth cosmetics count these, so a prestige doesn't take them away)
   if (typeof save.rebirthsTotal !== 'number') save.rebirthsTotal = (save.rebirths | 0) + save.prestige * 7;
   // "Erbe": 40 % of the rebirths before each prestige keep counting for the Taler bonus
@@ -430,7 +455,9 @@
     return s;
   }
   // Rutenschmiede: every forge level adds a little reel, luck, calm and cast to that rod
-  const FORGE_MAX = 15; // +11 to +15 are the late-game Taler sink
+  // +11 to +15 are the late-game Taler sink; +16 to +25 (Glutschmiede, from 1× prestige) also cost Glutsteine
+  const FORGE_MAX = 25, FORGE_TALER = 15;
+  const forgeGlut = k => k >= FORGE_TALER ? 25 * (k - FORGE_TALER + 1) : 0; // Glutsteine to forge from +k to +k+1
   const forgeLvl = id => Math.max(0, Math.min(FORGE_MAX, (save.forge && save.forge[id]) | 0));
   const forgeCost = (r, k) => Math.round(Math.max(60, r.price) * .3 * Math.pow(k + 1, 1.6) / 10) * 10;
   const forgedCache = new Map();
@@ -680,7 +707,7 @@
   function land() {
     state = 'wait'; bob.y = SURFACE; bob.dunk = 0; nextBite = null;
     splash(bob.x, SURFACE, 10, '#bfe9ff'); ripple(bob.x); sfx.splash();
-    waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss')) * (wx.bite ? 1 / wBoost(1 / wx.bite) : 1) * (wx.slow || 1) * (Date.now() < energyUntil ? .6 : 1) * (buffOn('kaffee') ? .7 : 1);
+    waitT = (2.5 + Math.random() * 6) / bait().speed * (1 - .08 * perk('biss')) * (hasT('sanduhr') ? .95 : 1) * (wx.bite ? 1 / wBoost(1 / wx.bite) : 1) * (wx.slow || 1) * (Date.now() < energyUntil ? .6 : 1) * (buffOn('kaffee') ? .7 : 1);
     if (bait().boss && !bossReady()) hint(tr('Der Odköder wirkt nur nachts auf Hoher See.'), 2.4);
     else if (bait().boss) { waitT = 2.5; nibbles = 0; hint(tr('Das Wasser wird unruhig …'), 2.4); return; }
     nibbles = Math.floor(Math.random() * 3); nibbleT = waitT - 1.2;
@@ -710,7 +737,7 @@
   function pickFish() {
     // out on the open sea and on the lava lake every cast counts as far out
     const d = Math.min(1, ((onSea() || inLava()) ? Math.max(.7, castDistance()) : castDistance()) + (wx.far ? wx.far * (1 + .1 * perk('wetter')) : 0)), night = isNight(), b = bait(), r = rod(), map = save.map;
-    const rawLuck = (b.lava && map !== 'lava' ? 1 : b.luck) * (map === 'lava' ? 1 + .08 * glutUp('licht') : 1) * r.luck * (1 + .08 * perk('glueck')) * (1 + .1 * pperk('pglueck')) * (dexPerk('luck10') ? 1.1 : 1);
+    const rawLuck = (b.lava && map !== 'lava' ? 1 : b.luck) * (map === 'lava' ? 1 + .08 * glutUp('licht') : 1) * r.luck * (1 + .08 * perk('glueck')) * (1 + .1 * pperk('pglueck')) * (dexPerk('luck10') ? 1.1 : 1) * (hasT('kompass') ? 1.05 : 1);
     // diminishing returns: rod × bait × talents multiply up to 30+ late, which made legendaries an everyday catch;
     // the log keeps every upgrade noticeable while rare stays rare
     const luck = 1 + .45 * Math.log(Math.max(1, rawLuck));
@@ -814,11 +841,13 @@
     const e = save.dex[f.id] || { n: 0, best: 0 };
     e.n++; e.best = Math.max(e.best, size); if (f.r !== 'junk') e.small = Math.min(e.small || Infinity, size); save.dex[f.id] = e;
     if (f.r !== 'junk') { e.cls = Math.max(e.cls || 0, cls); if (cls === 4) save.monsters = (save.monsters || 0) + 1; }
+    if (f.r !== 'junk' && size > weekBest()) save.weekBest = { w: weekId(), cm: size }; // Fisch der Woche
     checkMastery(f);
     let newMut = false;
     if (mut) { e.muts = e.muts || {}; newMut = !e.muts[mut.id]; e.muts[mut.id] = (e.muts[mut.id] || 0) + 1; }
     let newShiny = false;
     if (shiny) { e.shiny = (e.shiny || 0) + 1; newShiny = e.shiny === 1; }
+    if (shiny && mut) { e.smuts = e.smuts || {}; e.smuts[mut.id] = (e.smuts[mut.id] || 0) + 1; } // for the Shinydex: which mutations came out shiny
     save.coins += val; save.total++; save.lifeCoins += val; save.totalEarned += val;
     // Fang-Verlauf: the last 20 catches for the progress board
     save.history.unshift({ id: f.id, s: size, v: val, c: cls, m: mut ? mut.id : '', sh: shiny ? 1 : 0, map: save.map || 'steg', t: Date.now() });
@@ -990,6 +1019,10 @@
   // rage with harsh tension spikes. A snapped line stuns for 3 s. After 3 minutes it dives away.
   // In a lobby everyone on the sea fights the same Odfisch (shared HP on the server, api/lobby.js).
   const BOSS_HP = 1000, BOSS_TIME = 180000, BOSS_RHYTHM_EVERY = 9, BOSS_SCALES = 10;
+  // Odfisch-Stufen: after 10, 25 and 50 wins he comes back stronger (+50 % HP per stage) and pays more
+  const BOSS_STAGES = [0, 10, 25, 50];
+  const bossStage = () => BOSS_STAGES.filter(w => (save.bossWins | 0) >= w).length - 1;
+  const stageHp = st => Math.round(BOSS_HP * (1 + .5 * st));
   const ODBOSS = FISH.find(f => f.id === 'odboss');
   const bossImg = new Image(); bossImg.src = ODBOSS.img;
   const boss = { on: false, id: '', max: 1, hp: 1, ends: 0, mine: 0, pend: 0, stun: 0, solo: true, n: 1, rhythmT: 0, shoutT: 0, won: false, x: W - 80, rise: 0, quake: 0, invite: null, synced: 0 };
@@ -1044,7 +1077,7 @@
       try { const j = await lobbyFetch({ action: 'boss', code: save.lobby.code, id: save.lobby.id, me: lobbyMe() }); b = j.boss; fresh = !!j.fresh; }
       catch (e) { state = 'idle'; boss.rise = 0; hint(''); toast(e.message); return; }
       b.ends = Date.now() + (b.ends - b.now); // server clock → our clock
-    } else b = { id: 'solo-' + hex(6), max: BOSS_HP, hp: BOSS_HP, ends: Date.now() + BOSS_TIME, mine: 0, n: 1 };
+    } else { const st = bossStage(); b = { id: 'solo-' + hex(6), max: stageHp(st), hp: stageHp(st), ends: Date.now() + BOSS_TIME, mine: 0, n: 1, st }; }
     if (state !== 'summon') return;
     if (b.hp <= 0 || b.ends < Date.now() + 3000) { state = 'idle'; boss.rise = 0; toast(tr('🌊 Der Odfisch erholt sich gerade noch. Versuch es gleich nochmal.')); return; }
     if (fresh) { // only whoever calls him uses up the bait; joining an ongoing fight is free
@@ -1055,7 +1088,8 @@
     enterBoss(b, !save.lobby);
   }
   function enterBoss(b, solo) {
-    Object.assign(boss, { on: true, id: b.id, max: b.max, hp: b.hp, ends: b.ends, mine: b.mine || 0, pend: 0, stun: 0, solo, n: b.n || 1, rhythmT: 6, shoutT: 2, won: false, invite: null, quake: 1 });
+    Object.assign(boss, { on: true, id: b.id, max: b.max, hp: b.hp, ends: b.ends, mine: b.mine || 0, pend: 0, stun: 0, solo, n: b.n || 1, st: Math.max(0, Math.min(3, b.st | 0)), rhythmT: 6, shoutT: 2, won: false, invite: null, quake: 1 });
+    $('boss-name').textContent = '🐟 ' + tr('ODFISCH') + (boss.st ? ' · ' + tr('STUFE {n}', { n: boss.st + 1 }) : '');
     $('btn-boss').hidden = true;
     closeModals(); state = 'boss'; holding = false;
     hooked = { f: ODBOSS, size: ODBOSS.max, cls: 3, str: 1.6 };
@@ -1207,9 +1241,11 @@
     if (mine <= 0 || save.bossDone.includes(id)) { state = 'idle'; toast(tr('⚔️ Der Odfisch wurde besiegt!')); return; }
     save.bossDone = [...save.bossDone.slice(-19), id];
     save.bossWins = (save.bossWins || 0) + 1;
-    const bonus = Math.round((800 + 2200 * share) * coinMult());
-    save.scales += BOSS_SCALES; save.coins += bonus; save.lifeCoins += bonus; save.totalEarned += bonus;
-    setTimeout(() => toast(tr('⚔️ Odfisch besiegt! +{s} 🐚 · +{n} Taler Beute', { s: BOSS_SCALES, n: bonus })), 400);
+    const st = boss.st | 0;
+    const bonus = Math.round((800 + 2200 * share) * coinMult() * (1 + .5 * st)), sc = BOSS_SCALES + 5 * st, pearl = st >= 2 && save.prestige ? st - 1 : 0;
+    save.scales += sc; save.pearls += pearl; save.coins += bonus; save.lifeCoins += bonus; save.totalEarned += bonus;
+    setTimeout(() => toast(tr('⚔️ Odfisch besiegt! +{s} 🐚 · +{n} Taler Beute', { s: sc, n: bonus }) + (pearl ? tr(' · +{n} 🦪', { n: pearl }) : '')), 400);
+    if (BOSS_STAGES.includes(save.bossWins) && save.bossWins > 0) setTimeout(() => toast(tr('🐟 Der Odfisch wird stärker: ab jetzt Stufe {n} – mehr HP, mehr Beute.', { n: bossStage() + 1 })), 3200);
     // victory cutscene: he rears up one last time, fireworks, then the Odfisch himself comes on board – at least Kapital size
     state = 'summon'; bossFx.jump = 1.4; bossFx.flash = 1; boss.rise = 1;
     splash(boss.x, SURFACE, 60, '#ffffff'); splash(boss.x, SURFACE, 40, '#fde047');
@@ -1842,6 +1878,9 @@
     { id: 'jacke-sturm', slot: 'jacket', name: 'Sturmjacke',         col: ['#475569', '#1e293b', '#facc15'], desc: 'Gewittergrau mit Blitzkante. Hält dicht.', ach: 'Fange 10 Fische bei Gewitter.', got: () => cosmStat('sturm') >= 10 },
     { id: 'jacke-seebaer', slot: 'jacket', name: 'Seebären-Jacke',   col: ['#0f766e', '#134e4a', '#fde68a'], desc: 'Hat schon jeden Sturm gesehen.', ach: 'Werde 8× wiedergeboren.', got: () => (save.rebirthsTotal | 0) >= 8 },
     { id: 'hut-fischgott', slot: 'hat',  name: 'Fischgott-Krone',    col: ['#f0abfc', '#7e22ce', '#fef9c3'], sparkle: true, desc: 'Die Fische verneigen sich. Fast.', ach: 'Werde 10× wiedergeboren.', got: () => (save.rebirthsTotal | 0) >= 10 },
+    { id: 'hut-woche', slot: 'hat', name: 'Wochensieger-Kappe', col: ['#38bdf8', '#1e3a8a', '#fde047'], sparkle: true, desc: 'Für die Top 3 beim Fisch der Woche.', ach: 'Komm beim „Fisch der Woche“ in der Bestenliste unter die ersten 3.', got: () => save.weekWon.length > 0 },
+    { id: 'hut-wellenkaiser', slot: 'hat', name: 'Wellenkaiser-Krone', col: ['#67e8f9', '#0e7490', '#ecfeff'], sparkle: true, desc: 'Gischt und Gold auf dem Kopf.', ach: 'Werde insgesamt 13× wiedergeboren.', got: () => (save.rebirthsTotal | 0) >= 13 },
+    { id: 'hut-diamant', slot: 'hat', name: 'Diamant-Zylinder', col: ['#a5f3fc', '#0891b2', '#ffffff'], sparkle: true, desc: 'Geschliffen aus lauter Meisterschaft.', ach: 'Hol dir 10 Diamant-Medaillen.', got: () => masteryCount(4) >= 10 },
     { id: 'hut-perle',   slot: 'hat',    name: 'Perlenkrone',        col: ['#f5f3ff', '#a78bfa', '#ffffff'], sparkle: true, desc: 'Für alle, die ganz von vorn angefangen haben.', ach: 'Mach einmal Prestige.', got: () => save.prestige >= 1 },
     { id: 'pose-perle',  slot: 'bob',    name: 'Perlen-Pose',        col: '#ede9fe', desc: 'Schimmert wie Perlmutt.', ach: 'Mach 2× Prestige.', got: () => save.prestige >= 2 },
     { id: 'jacke-prestige', slot: 'jacket', name: 'Prestige-Mantel', col: ['#1e1b4b', '#0f0a2e', '#fbbf24'], desc: 'Nachtblau mit Goldsaum. Schon dreimal alles verloren und trotzdem hier.', ach: 'Mach 3× Prestige.', got: () => save.prestige >= 3 },
@@ -3076,7 +3115,7 @@
         px(bx - .75, by - 1.5, 1.5, 1.5, bobColor(p.cb)); px(bx - .75, by - .25, 1.5, 1, '#f8fafc');
       }
       ctx.globalAlpha = 1;
-      const label = p.rk !== undefined ? `${p.name} · ${presMark(p.pr | 0)}${rankOf(p.rk).name}` : p.name;
+      const label = titleOf(p.ti) ? `${p.name} · „${titleOf(p.ti)}“` : p.rk !== undefined ? `${p.name} · ${presMark(p.pr | 0)}${rankOf(p.rk).name}` : p.name;
       const w = Math.ceil(ctx.measureText(label).width) + 4;
       px(x - w / 2, y - 31, w, 7, 'rgba(15,23,42,.75)');
       ctx.fillStyle = '#e2e8f0'; ctx.fillText(label, x, y - 24.5);
@@ -3551,11 +3590,45 @@
     $('dex-show').value = dexF.show; $('dex-rar').value = dexF.r;
     if ($('dex-search').value !== dexF.q) $('dex-search').value = dexF.q;
   }
-  const SHINY_REWARDS = ['s1', 's5', 'sall'];
+  const SHINY_REWARDS = ['s1', 's5', 'sm1', 'small', 'sall'];
   function shinysFound() { return FISH.filter(f => save.dex[f.id] && save.dex[f.id].shiny).length; }
+  // mutation counts over all fish: normal and shiny
+  function mutCount(id, key = 'muts') { return FISH.reduce((a, f) => a + (((save.dex[f.id] || {})[key] || {})[id] | 0), 0); }
+  const shinyMutsFound = () => MUTATIONS.filter(m => mutCount(m.id, 'smuts') > 0);
+  // the mutation icons on a dex card; the ones that also came out shiny get a gold frame
+  function mutRow(e) {
+    const m = document.createElement('div'); m.className = 'muts';
+    for (const mu of MUTATIONS) if (e.muts && e.muts[mu.id]) {
+      const sp = document.createElement('span'), sh = e.smuts && e.smuts[mu.id];
+      sp.textContent = mu.icon; sp.title = `${mu.name} ×${e.muts[mu.id]}` + (sh ? tr(' · davon {n}× als Shiny', { n: sh }) : '');
+      if (sh) sp.className = 'sm';
+      m.append(sp);
+    }
+    return m;
+  }
+  // Shinydex: all mutations at a glance, caught normal and as shiny
+  function renderMutStrip() {
+    const box = $('dex-muts'); box.hidden = dexTab !== 'shiny';
+    if (box.hidden) return;
+    const h = document.createElement('h3');
+    h.textContent = tr('🧬 Mutationen · {a} von {b} gefangen · {c} von {b} als Shiny', { a: mutsFound().length, b: MUTATIONS.length, c: shinyMutsFound().length });
+    const row = document.createElement('div'); row.className = 'mut-strip';
+    row.append(...MUTATIONS.map(mu => {
+      const n = mutCount(mu.id), sn = mutCount(mu.id, 'smuts'), d = document.createElement('div');
+      d.className = 'mut' + (n ? '' : ' unknown') + (sn ? ' sm' : '');
+      d.style.setProperty('--mc', mu.c);
+      const i = document.createElement('span'); i.className = 'mi'; i.textContent = n ? mu.icon : '❔';
+      const b = document.createElement('b'); b.textContent = n ? mu.name : '???';
+      const s = document.createElement('small'); s.textContent = n ? tr('{n}× gefangen', { n: n.toLocaleString(I18N.locale) }) : tr('Noch nicht gefangen');
+      const s2 = document.createElement('small'); s2.className = 'msh'; s2.textContent = sn ? tr('💫 {n}× als Shiny', { n: sn }) : n ? tr('💫 noch nicht als Shiny') : '';
+      d.title = mu.desc + ' · ' + tr('×{n} Wert', { n: mu.val });
+      d.append(i, b, s, s2); return d;
+    }));
+    box.replaceChildren(h, row);
+  }
   function renderShinydex() {
     $('dex-count').textContent = tr('{a} von {b} Shinys gefunden · Chance pro Fang gerade {c} %', { a: shinysFound(), b: FISH.length, c: (shinyChance() * 100).toLocaleString(I18N.locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) });
-    renderDexRewards();
+    renderDexRewards(); renderMutStrip();
     const list = dexFilter(FISH, f => save.dex[f.id] && save.dex[f.id].shiny);
     if (!list.length) return $('dex-grid').replaceChildren(dexEmpty());
     $('dex-grid').replaceChildren(...list.map(f => {
@@ -3571,6 +3644,7 @@
       const info = document.createElement('small');
       info.textContent = sh ? tr('{n}× shiny gefangen', { n: e.shiny }) : e ? tr('Noch kein Shiny') : tr('Erst normal fangen');
       c.append(img, name, r, info);
+      if (e && e.muts) c.append(mutRow(e));
       return c;
     }));
   }
@@ -3591,8 +3665,8 @@
     const g = save.gamble || 0;
     $('dex-count').textContent = tr('{i} {n}: {a} von {b} entdeckt', { i: area.icon, n: area.name, a: gotA, b: inArea.length })
       + tr(' · Gesamt {a} von {b} · {c} von {d} Mutationen · {e} Fänge insgesamt', { a: got, b: FISH.length, c: mutsFound().length, d: MUTATIONS.length, e: save.total })
-      + tr(' · Meisterschaft: {g} 🥇 (+{p} % Taler)', { g: masteryCount(3), p: goldBonus() }) + (save.gamble !== undefined ? tr(' · Glücksspiel {n} Taler', { n: (g >= 0 ? '+' : '') + g }) : '');
-    renderDexRewards(); renderCrits();
+      + tr(' · Meisterschaft: {g} 🥇 · {d} 💎 (+{p} % Taler)', { g: masteryCount(3), d: masteryCount(4), p: goldBonus() + diaBonus() }) + (save.gamble !== undefined ? tr(' · Glücksspiel {n} Taler', { n: (g >= 0 ? '+' : '') + g }) : '');
+    renderDexRewards(); renderCrits(); renderMutStrip();
     const list = dexFilter(inArea, f => save.dex[f.id]);
     if (!list.length) return $('dex-grid').replaceChildren(dexEmpty());
     $('dex-grid').replaceChildren(...list.map(f => {
@@ -3612,21 +3686,15 @@
       c.append(img, name, r, info);
       if (e) { // mastery: medal and the way to the next one
         const m = e.m || 0, need = masteryNeed(f), ms = document.createElement('small'); ms.className = 'mastery m' + m;
-        ms.textContent = (m ? MEDALS[m] + ' ' : '') + (m < 3 ? tr('{a}/{b} bis {m}', { a: e.n, b: need[m], m: MEDALS[m + 1] }) : tr('Gold-Meister'));
-        ms.title = tr('Meisterschaft: Bronze, Silber und Gold für viele Fänge dieses Fischs. Jeder Gold-Fisch gibt dauerhaft +1 % Taler.');
+        ms.textContent = (m ? MEDALS[m] + ' ' : '') + (m < MEDAL_MAX ? tr('{a}/{b} bis {m}', { a: e.n, b: need[m], m: MEDALS[m + 1] }) : tr('Diamant-Meister'));
+        ms.title = tr('Meisterschaft: Bronze, Silber, Gold und Diamant für viele Fänge dieses Fischs. Jeder Gold- und jeder Diamant-Fisch gibt dauerhaft +1 % Taler.');
         c.append(ms);
       }
       if (e && f.page) {
         const a = document.createElement('a'); a.className = 'page'; a.href = f.page; a.textContent = tr('Seite ansehen ↗');
         c.append(a);
       }
-      if (e && e.muts) {
-        const m = document.createElement('div'); m.className = 'muts';
-        for (const mu of MUTATIONS) if (e.muts[mu.id]) {
-          const sp = document.createElement('span'); sp.textContent = mu.icon; sp.title = `${mu.name} ×${e.muts[mu.id]}`; m.append(sp);
-        }
-        c.append(m);
-      }
+      if (e && e.muts) c.append(mutRow(e));
       if (e) {
         const q = document.createElement('q'); q.textContent = f.say;
         c.append(q); c.title = f.desc;
@@ -3655,14 +3723,34 @@
     { id: 'ma10', name: '10× Bronze-Meister',  need: () => [masteryCount(1), 10], coins: 1500, scales: 3 },
     { id: 'mg10', name: '10× Gold-Meister',    need: () => [masteryCount(3), 10], coins: 8000, scales: 10 },
     { id: 'mgall', name: 'Alles in Gold',      need: () => [masteryCount(3), FISH.length], coins: 50000, scales: 40 },
+    { id: 'md1',  name: 'Erster Diamant-Meister', need: () => [masteryCount(4), 1], coins: 10000, scales: 8 },
+    { id: 'md10', name: '10× Diamant-Meister', need: () => [masteryCount(4), 10], coins: 40000, scales: 25 },
+    { id: 'mdall', name: 'Alles in Diamant',   need: () => [masteryCount(4), FISH.length], coins: 300000, scales: 120 },
     { id: 'm1',   name: 'Erste Mutation',      need: () => [mutsFound().length, 1], coins: 100 },
     { id: 'm4',   name: '4 Mutationen',        need: () => [mutsFound().length, 4], coins: 600, scales: 2 },
     { id: 's1',   name: 'Erster Shiny',        need: () => [shinysFound(), 1],  coins: 300,  scales: 1 },
     { id: 's5',   name: '5 Shinys',            need: () => [shinysFound(), 5],  coins: 1500, scales: 3 },
+    { id: 'sm1',  name: 'Erster Mutations-Shiny', need: () => [shinyMutsFound().length, 1], coins: 2000, scales: 4 },
+    { id: 'small', name: 'Alle Mutationen als Shiny', need: () => [shinyMutsFound().length, MUTATIONS.length], coins: 25000, scales: 20 },
     { id: 'sall', name: 'Shinydex komplett',   need: () => [shinysFound(), FISH.length], coins: 10000, scales: 15, perk: 'shiny2', perkText: 'dauerhaft doppelte Shiny-Chance' },
     { id: 'mall', name: 'Alle Mutationen',     need: () => [mutsFound().length, MUTATIONS.length], coins: 2000, scales: 6, perk: 'mutchance', perkText: 'dauerhaft +25 % Mutationschance' },
+    // Sammlungen: themed sets, each gives a title for your name tag (pick it in the wardrobe)
+    ...[
+      ['set-spezi',  'Sammlung: Alles Spezi',     f => ['spezi1', 'spezi2', 'spee', 'spees', 'fischer', 'flasche'].includes(f.id), 'Spezi-Sommelier', 6000, 6],
+      ['set-hai',    'Sammlung: Haifischbecken',  f => /hai$/.test(f.id), 'Haiflüsterer', 9000, 8],
+      ['set-nacht',  'Sammlung: Nachtschicht',    f => !!f.night && !f.boss, 'Nachteule', 12000, 10],
+      ['set-wetter', 'Sammlung: Alle Wetter',     f => !!f.weather, 'Wettergott', 12000, 10],
+      ['set-schrott', 'Sammlung: Schrottplatz',   f => !!f.magnet, 'Schrottkönig', 20000, 12],
+      ['set-feuer',  'Sammlung: Feuerfest',       f => f.map === 'lava' && f.r === 'legendary', 'Feuerfest', 30000, 15],
+    ].map(([id, name, has, title, coins, scales]) => ({ id, name, title, coins, scales, need: () => { const all = FISH.filter(has); return [all.filter(f => save.dex[f.id]).length, all.length]; } })),
+    { id: 'set-monster', name: 'Sammlung: 10 verschiedene Monster', title: 'Monsterjäger', coins: 15000, scales: 10, need: () => [FISH.filter(f => (save.dex[f.id] || {}).cls === 4).length, 10] },
+    { id: 'set-od50', name: '50 Odfisch-Siege', title: 'Odfisch-Bezwinger', coins: 50000, scales: 25, need: () => [save.bossWins || 0, 50] },
   ];
-  trAll(DEX_REWARDS, ['name', 'perkText']);
+  for (const r of DEX_REWARDS) if (r.id === 'mdall') r.title = 'Diamantangler';
+  trAll(DEX_REWARDS, ['name', 'perkText', 'title']);
+  // titles come from claimed rewards; save.title is the id of the reward whose title you wear
+  const titleOf = id => { const r = typeof id === 'string' && id && DEX_REWARDS.find(x => x.id === id && x.title); return r ? r.title : ''; };
+  const myTitle = () => (save.dexClaimed || []).includes(save.title) ? titleOf(save.title) : '';
   function discovered() { return FISH.filter(f => save.dex[f.id]).length; }
   function mutsFound() { return MUTATIONS.filter(m => FISH.some(f => save.dex[f.id] && save.dex[f.id].muts && save.dex[f.id].muts[m.id])); }
   function dexPerk(p) { return (save.dexClaimed || []).some(id => (DEX_REWARDS.find(r => r.id === id) || {}).perk === p); }
@@ -3674,7 +3762,7 @@
     save.coins += r.coins; save.scales += r.scales || 0; save.totalEarned += r.coins;
     sfx.coin(); setTimeout(sfx.coin, 150);
     const ep = gainXp(r.coins / 5);
-    toast(`📖 ${r.name}: ` + tr('+{c} Taler · +{e} EP', { c: r.coins, e: ep }) + `${r.scales ? ` · +${r.scales} 🐚` : ''}${r.perkText ? ' · ' + r.perkText : ''}`);
+    toast(`📖 ${r.name}: ` + tr('+{c} Taler · +{e} EP', { c: r.coins, e: ep }) + `${r.scales ? ` · +${r.scales} 🐚` : ''}${r.perkText ? ' · ' + r.perkText : ''}` + (r.title ? tr(' · Titel „{t}“ (anlegen im Kleiderschrank)', { t: r.title }) : ''));
     persist(); updateCoins(); updateDexBadge(); renderDex();
   }
   function updateDexBadge() { $('btn-dex').classList.toggle('ready', dexClaimable().length > 0); }
@@ -3693,7 +3781,7 @@
       const d = document.createElement('div'); d.className = 'reward' + (got ? ' got' : done ? ' ready' : '');
       const b = document.createElement('b'); b.textContent = r.name;
       const s = document.createElement('small');
-      s.textContent = `${Math.min(h, n)}/${n} · ` + tr('{n} Taler', { n: r.coins }) + `${r.scales ? ` · ${r.scales} 🐚` : ''}${r.perkText ? ' · ' + r.perkText : ''}`;
+      s.textContent = `${Math.min(h, n)}/${n} · ` + tr('{n} Taler', { n: r.coins.toLocaleString(I18N.locale) }) + `${r.scales ? ` · ${r.scales} 🐚` : ''}${r.perkText ? ' · ' + r.perkText : ''}` + (r.title ? tr(' · Titel „{t}“', { t: r.title }) : '');
       const bar = document.createElement('div'); bar.className = 'qbar';
       const fi = document.createElement('i'); fi.style.width = Math.min(100, h / n * 100) + '%'; bar.append(fi);
       d.append(b, bar, s);
@@ -3815,6 +3903,54 @@
     d.append(l, bar); return d;
   }
   for (const sn of SNACKS) ICONS[sn.id] = artIcon(ART['snack_' + sn.id]);
+  { // the Schätze, drawn by hand
+    const k = '#1b1f2e', G = '#fbbf24', Y = '#fde68a', D = '#b45309', ring = (p, cx, cy, r, f) => { for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) { const d = Math.hypot(x - cx, y - cy); if (d < r) { const c = f(d, x, y); if (c) p(x, y, c); } } };
+    ICONS.pokal = iconCanvas(p => {
+      for (let y = 1; y <= 8; y++) { const a = y < 7 ? 3 : y - 3, b = y < 7 ? 12 : 18 - y; for (let x = a; x <= b; x++) p(x, y, x === a || x === b || y === 1 ? k : x === a + 1 ? Y : x === b - 1 ? D : G); }
+      for (const y of [3, 4, 5]) { p(1, y, k); p(14, y, k); } p(2, 2, k); p(2, 6, k); p(13, 2, k); p(13, 6, k);
+      for (let y = 9; y <= 11; y++) { p(7, y, k); p(8, y, G); p(9, y, k); }
+      for (let x = 5; x <= 11; x++) { p(x, 12, x === 5 || x === 11 ? k : G); p(x, 13, x === 5 || x === 11 ? k : D); p(x, 14, k); }
+      p(5, 3, '#fff');
+    });
+    ICONS.kompass = iconCanvas(p => {
+      ring(p, 7.5, 7.5, 7.6, d => d > 6.6 ? k : d > 5.6 ? G : '#f1f5f9');
+      for (let i = 0; i < 4; i++) { p(7, 3 + i, '#ef4444'); p(8, 3 + i, '#b91c1c'); p(7, 9 + i, '#60a5fa'); p(8, 9 + i, '#1d4ed8'); }
+      p(7, 7, k); p(8, 7, k); p(7, 8, k); p(8, 8, k);
+    });
+    ICONS.sanduhr = iconCanvas(p => {
+      for (let x = 2; x <= 13; x++) { p(x, 1, k); p(x, 2, '#8b5a2b'); p(x, 13, '#8b5a2b'); p(x, 14, k); }
+      for (let y = 3; y <= 12; y++) { const w = Math.abs(y - 7.5) * .9 + .6, a = Math.round(7.5 - w), b = Math.round(7.5 + w); p(a - 1, y, k); p(b + 1, y, k);
+        for (let x = a; x <= b; x++) p(x, y, (y >= 10 || (y <= 5 && y >= 4)) ? '#facc15' : y === 7 || y === 8 ? (x === 7 || x === 8 ? '#facc15' : '#e0f2fe') : '#e0f2fe'); }
+      for (let y = 3; y <= 12; y++) { p(2, y, '#5b3416'); p(13, y, '#5b3416'); }
+    });
+    ICONS.goldnetz = iconCanvas(p => {
+      ring(p, 7.5, 8, 7.2, (d, x, y) => d > 6.3 ? k : (x + y) % 3 === 0 || (x - y + 30) % 3 === 0 ? G : '');
+      p(4, 4, '#fff'); p(11, 3, Y);
+    });
+    ICONS.perlmuschel = iconCanvas(p => {
+      ring(p, 7.5, 9, 7, (d, x, y) => y < 9 ? '' : d > 6 ? k : x % 3 === 0 ? '#c084fc' : '#e9d5ff');
+      ring(p, 7.5, 7, 6.5, (d, x, y) => y > 6 ? '' : d > 5.5 ? k : x % 3 === 0 ? '#a855f7' : '#d8b4fe');
+      ring(p, 7.5, 8.5, 2.6, (d, x, y) => d > 1.9 ? '#94a3b8' : x < 7 && y < 8 ? '#fff' : '#f1f5f9');
+    });
+  }
+  function treasureWare(t) {
+    const owned = hasT(t.id), lock = !owned && lockText(t);
+    return ware({
+      id: t.id, name: t.name, desc: t.desc + ' ' + tr('Bleibt für immer, auch nach Prestige.'), stats: [],
+      state: owned ? 'owned' : lock ? 'locked' : '',
+      owned: owned ? tr('Im Besitz') : '',
+      btnText: owned ? tr('Im Besitz') : lock || tr('{n} Taler', { n: t.price.toLocaleString(I18N.locale) }),
+      disabled: owned || !!lock || save.coins < t.price,
+      onClick: () => {
+        if (owned) return keeper(tr('Den hast du schon. Gut aufpassen drauf!'));
+        if (lock) return keeper(KEEPER.locked(lock));
+        if (save.coins < t.price) return keeper(KEEPER.poor(t.price - save.coins));
+        spend(t.price); save.treasures.push(t.id); sfx.coin(); [523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .12, 'triangle', .06), i * 90));
+        keeper(tr('Ein echter Schatz! {t} gehört jetzt dir – für immer.', { t: t.name }));
+        persist(); updateCoins(); updateGear(); renderShop(false);
+      },
+    });
+  }
   function hatIcon(p, h, H, l) {
     const k = '#1b1f2e';
     for (let x = 5; x <= 10; x++) p(x, 3, k);
@@ -3902,7 +4038,28 @@
       }
       sec.append(h, row); return sec;
     };
-    $('wardrobe-list').replaceChildren(swatches(tr('Hautfarbe'), SKINS, SKIN_NAMES, 'skin', 'hell'), swatches(tr('Haar- & Bartfarbe'), HAIRS, HAIR_NAMES, 'hair', 'braun'), ...Object.entries(SLOT_NAMES).map(([slot, label]) => {
+    const titles = (() => { // name-tag titles from the collection rewards
+      const sec = document.createElement('section'); sec.className = 'wd-slot';
+      const h = document.createElement('h3'); h.textContent = tr('🏷️ Titel am Namensschild');
+      const row = document.createElement('div'); row.className = 'wd-titles';
+      const btn = (id, text, on, locked, hintText) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'wd-title' + (on ? ' on' : '') + (locked ? ' locked' : ''); b.textContent = text;
+        if (hintText) b.title = hintText;
+        b.addEventListener('click', () => {
+          if (locked) return toast('🔒 ' + hintText);
+          save.title = id; persist(); renderWardrobe(); sfx.tick();
+        });
+        return b;
+      };
+      const cur = myTitle() ? save.title : '';
+      row.append(btn('', tr('Kein Titel'), !cur, false, ''));
+      for (const r of DEX_REWARDS.filter(x => x.title)) {
+        const got = (save.dexClaimed || []).includes(r.id);
+        row.append(btn(r.id, got ? r.title : '🔒 ' + r.title, cur === r.id, !got, got ? '' : tr('Belohnung im Fischdex: {n}', { n: r.name })));
+      }
+      sec.append(h, row); return sec;
+    })();
+    $('wardrobe-list').replaceChildren(swatches(tr('Hautfarbe'), SKINS, SKIN_NAMES, 'skin', 'hell'), swatches(tr('Haar- & Bartfarbe'), HAIRS, HAIR_NAMES, 'hair', 'braun'), titles, ...Object.entries(SLOT_NAMES).map(([slot, label]) => {
       const sec = document.createElement('section'); sec.className = 'wd-slot';
       const h = document.createElement('h3'); h.textContent = label;
       const grid = document.createElement('div'); grid.className = 'wd-grid';
@@ -3956,15 +4113,20 @@
   }
   // Rutenschmiede: a second button on the rod in hand
   function forgeButton(r) {
-    const k = forgeLvl(r.id), cost = forgeCost(r, k), btn = document.createElement('button');
+    const k = forgeLvl(r.id), cost = forgeCost(r, k), g = forgeGlut(k), btn = document.createElement('button');
+    const top = k >= FORGE_MAX || (g && !save.prestige); // the Glutschmiede needs the Glutgrotte (1× prestige)
     btn.className = 'btn forge';
-    btn.textContent = k >= FORGE_MAX ? tr('⚒️ Voll geschmiedet') : tr('⚒️ Schmieden +{n} · {c} Taler', { n: k + 1, c: cost.toLocaleString(I18N.locale) });
-    btn.title = tr('Jede Stufe: +3 % Kurbel, +3 % Glück, 2 % weniger Spannung, etwas mehr Wurf. Bei der Wiedergeburt weg.');
-    btn.setAttribute('aria-disabled', k >= FORGE_MAX || save.coins < cost ? 'true' : 'false');
+    btn.textContent = k >= FORGE_MAX ? tr('⚒️ Voll geschmiedet') : top ? tr('⚒️ +{n} · Glutschmiede ab 1× Prestige', { n: k + 1 })
+      : g ? tr('🔥 Glutschmiede +{n} · {c} Taler + {g} 🔥', { n: k + 1, c: cost.toLocaleString(I18N.locale), g })
+      : tr('⚒️ Schmieden +{n} · {c} Taler', { n: k + 1, c: cost.toLocaleString(I18N.locale) });
+    btn.title = tr('Jede Stufe: +3 % Kurbel, +3 % Glück, 2 % weniger Spannung, etwas mehr Wurf. Bei der Wiedergeburt weg.') + ' ' + tr('Ab +16 schmiedet Glimm mit Glutsteinen weiter, bis +25.');
+    btn.setAttribute('aria-disabled', top || save.coins < cost || save.glut < g ? 'true' : 'false');
     btn.addEventListener('click', () => {
       if (k >= FORGE_MAX) return keeper(tr('Besser wird die nicht mehr. Ehrlich.'));
+      if (top) return keeper(tr('Weiter als +15 geht nur mit Glutsteinen. Die gibt es unten in der Glutgrotte – ab 1× Prestige.'));
       if (save.coins < cost) return keeper(KEEPER.poor(cost - save.coins));
-      spend(cost); if (!save.forge || typeof save.forge !== 'object') save.forge = {};
+      if (save.glut < g) return keeper(tr('Für die Glutschmiede fehlen dir noch {n} 🔥.', { n: g - save.glut }));
+      spend(cost); save.glut -= g; if (!save.forge || typeof save.forge !== 'object') save.forge = {};
       save.forge[r.id] = k + 1; sfx.coin(); [330, 330, 523].forEach((n, i) => setTimeout(() => tone(n, .07, 'square', .06), i * 120));
       keeper(tr('Klong, klong! {r} ist jetzt +{n}.', { r: r.name, n: k + 1 }));
       persist(); updateCoins(); updateGear(); renderShop(false);
@@ -4148,7 +4310,7 @@
     document.querySelectorAll('[data-shop-tab]').forEach(t => {
       const on = t.dataset.shopTab === shopTab; t.classList.toggle('on', on); t.setAttribute('aria-selected', on);
     });
-    const wares = shopTab === 'snacks' ? SNACKS.map(snackWare) : shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'cosm' ? COSMETICS.filter(c => c.price).map(cosmWare) : shopTab === 'lava' ? lavaWares() : shopTab === 'rods' ? RODS.filter(r => !r.lava).map(r0 => {
+    const wares = shopTab === 'snacks' ? SNACKS.map(snackWare) : shopTab === 'boxes' ? BOXES.map(boxWare) : shopTab === 'cosm' ? COSMETICS.filter(c => c.price).map(cosmWare) : shopTab === 'treasure' ? TREASURES.map(treasureWare) : shopTab === 'lava' ? lavaWares() : shopTab === 'rods' ? RODS.filter(r => !r.lava).map(r0 => {
       const owned = save.rods.includes(r0.id), active = r0.lava ? save.lavaRod === r0.id : save.rod === r0.id, lock = !owned && lockText(r0), r = owned ? forged(r0) : r0;
       const w = ware({
         id: r.id, name: (r.lava ? '🌋 ' : '') + r.name, desc: r.desc,
@@ -4280,37 +4442,41 @@
   const perkMax = () => save.rebirths >= 5 ? 10 : 5; // from the 5th rebirth talents go up to level 10
   // Prestige: from the 7th rebirth start over completely. Rebirths, rank, Schuppen, talents and
   // the forge go too; in return Perlen for prestige talents and a bonus that never resets.
-  const PRESTIGE_REB = 7;
+  // each prestige needs one rebirth fewer than the last: 7, 6, 5, then always 4
+  const presReb = (p = save.prestige) => Math.max(4, 7 - (p | 0));
   const PPERKS = [
     { id: 'ptaler',    icon: '🦪', name: 'Perlenhaken',   max: 10, desc: l => tr('+{n} % Taler', { n: l * 10 }) },
     { id: 'pglueck',   icon: '🌟', name: 'Perlenglück',   max: 10, desc: l => tr('+{n} % Glück für seltene Fische', { n: l * 10 }) },
     { id: 'pschuppen', icon: '🐚', name: 'Schuppensegen', max: 10, desc: l => tr('+{n} % Schuppen bei jeder Wiedergeburt', { n: l * 20 }) },
     { id: 'preif',     icon: '⏩', name: 'Frühreif',      max: 5,  desc: l => tr('Wiedergeburt {n} Level früher', { n: l }) },
     { id: 'pkarte',    icon: '🗺️', name: 'Seekarte',      max: 1,  desc: () => tr('Hohe See und Odköder schon ohne Wiedergeburt') },
+    { id: 'pschliff',  icon: '💠', name: 'Perlenschliff', max: Infinity, cost: l => 4 + l, desc: l => tr('+{n} % Taler', { n: l * 2 }) }, // never full: pearls always have a use
   ];
   trAll(PPERKS, ['name']);
   function pperk(id) { return (save.pperks && save.pperks[id]) | 0; }
-  const pperkCost = l => 1 + l;
-  const pearlsFor = () => 3 + Math.max(0, save.rebirths - PRESTIGE_REB) * 2;
+  const pperkCost = (l, p) => p && p.cost ? p.cost(l) : 1 + l;
+  const pearlsFor = () => 3 + Math.max(0, save.rebirths - presReb()) * 2 + (hasT('perlmuschel') ? 1 : 0);
   const presMark = n => n ? '✦' + n + ' ' : ''; // shown in front of the rank
   const nightMult = () => isNight() ? 1 + .1 * perk('nacht') : 1;
   // Fisch-Meisterschaft: bronze, silver and gold for catching the same fish again and again
-  const MASTERY = { common: [10, 50, 200], junk: [10, 50, 200], uncommon: [8, 40, 150], rare: [5, 25, 100], wii: [5, 25, 100], epic: [3, 15, 60], legendary: [2, 8, 30] };
+  // the 4th medal, Diamant, is the long goal for everyone who already has a full dex
+  const MASTERY = { common: [10, 50, 200, 600], junk: [10, 50, 200, 500], uncommon: [8, 40, 150, 450], rare: [5, 25, 100, 300], wii: [5, 25, 100, 300], epic: [3, 15, 60, 180], legendary: [2, 8, 30, 90] };
   const MASTERY_XP = { common: 1, junk: 1, uncommon: 1.3, rare: 1.8, wii: 2, epic: 2.5, legendary: 4 };
-  const MEDALS = ['', '🥉', '🥈', '🥇'], MEDAL_NAMES = ['', tr('Bronze'), tr('Silber'), tr('Gold')];
-  const masteryNeed = f => f.boss ? [1, 3, 10] : MASTERY[f.r] || MASTERY.common;
+  const MEDALS = ['', '🥉', '🥈', '🥇', '💎'], MEDAL_NAMES = ['', tr('Bronze'), tr('Silber'), tr('Gold'), tr('Diamant')], MEDAL_MAX = 4;
+  const masteryNeed = f => f.boss ? [1, 3, 10, 25] : MASTERY[f.r] || MASTERY.common;
   const masteryCount = m => FISH.filter(f => ((save.dex[f.id] || {}).m || 0) >= m).length;
   const goldBonus = () => Math.min(40, masteryCount(3)); // +1 % Taler per gold fish, at most +40 %
-  function masteryTier(f) { const e = save.dex[f.id], need = masteryNeed(f); let m = 0; while (e && m < 3 && e.n >= need[m]) m++; return m; }
+  const diaBonus = () => Math.min(40, masteryCount(4));  // and +1 % more per diamond fish, also at most +40 %
+  function masteryTier(f) { const e = save.dex[f.id], need = masteryNeed(f); let m = 0; while (e && m < MEDAL_MAX && e.n >= need[m]) m++; return m; }
   function checkMastery(f) {
     const e = save.dex[f.id]; if (!e) return;
     const to = masteryTier(f);
     for (let m = (e.m || 0) + 1; m <= to; m++) {
-      const xp = Math.round([0, 50, 200, 600][m] * (MASTERY_XP[f.r] || 1)), sc = [0, 0, 1, 3][m];
+      const xp = Math.round([0, 50, 200, 600, 1500][m] * (MASTERY_XP[f.r] || 1)), sc = [0, 0, 1, 3, 8][m];
       e.m = m; save.scales += sc; gainXp(xp);
       setTimeout(() => {
-        toast(tr('{i} {m}-Meister: {f}! +{x} EP', { i: MEDALS[m], m: MEDAL_NAMES[m], f: f.name, x: xp }) + (sc ? ` · +${sc} 🐚` : '') + (m === 3 ? tr(' · dauerhaft +1 % Taler') : ''));
-        (m === 3 ? [523, 659, 784, 1047] : [523, 659, 784]).forEach((n, i) => setTimeout(() => tone(n, .12, 'triangle', .06), i * 90));
+        toast(tr('{i} {m}-Meister: {f}! +{x} EP', { i: MEDALS[m], m: MEDAL_NAMES[m], f: f.name, x: xp }) + (sc ? ` · +${sc} 🐚` : '') + (m >= 3 ? tr(' · dauerhaft +1 % Taler') : ''));
+        (m === 4 ? [523, 659, 784, 1047, 1319, 1568] : m === 3 ? [523, 659, 784, 1047] : [523, 659, 784]).forEach((n, i) => setTimeout(() => tone(n, .12, 'triangle', .06), i * 90));
       }, 2600 + m * 300);
     }
   }
@@ -4318,8 +4484,12 @@
   { let medals = 0, sc = 0;
     for (const f of FISH) { const e = save.dex[f.id]; if (!e || e.m !== undefined) continue; const m = masteryTier(f); e.m = m; medals += m; for (let i = 1; i <= m; i++) sc += [0, 0, 1, 3][i]; }
     if (medals) { save.scales += sc; setTimeout(() => toast(tr('🏅 Fisch-Meisterschaft nachgetragen: {n} Medaillen, +{s} 🐚. Schau in den Fischdex!', { n: medals, s: sc })), 3000); } }
+  // Diamant came later: gold fish that already have enough catches get it quietly (with its Schuppen)
+  { let n = 0;
+    for (const f of FISH) { const e = save.dex[f.id]; if (!e || e.m !== 3 || masteryTier(f) < 4) continue; e.m = 4; n++; }
+    if (n) { save.scales += n * 8; setTimeout(() => toast(tr('💎 Neu: Diamant-Meisterschaft! {n} deiner Fische sind schon Diamant, +{s} 🐚.', { n, s: n * 8 })), 4200); } }
   // ranks by rebirths, and what each rebirth unlocks
-  const RANKS = [[0, 'Lehrling'], [1, 'Angler'], [2, 'Fischer'], [3, 'Seemann'], [4, 'Kapitän'], [5, 'Seebär'], [6, 'Tiefseetaucher'], [8, 'Meeresmeister'], [10, 'Fischgott']].map(([r, n]) => ({ r, name: tr(n) }));
+  const RANKS = [[0, 'Lehrling'], [1, 'Angler'], [2, 'Fischer'], [3, 'Seemann'], [4, 'Kapitän'], [5, 'Seebär'], [6, 'Tiefseetaucher'], [8, 'Meeresmeister'], [10, 'Fischgott'], [13, 'Wellenkaiser'], [16, 'Ozeanlegende'], [20, 'Poseidons Erbe'], [25, 'Ewiger Angler']].map(([r, n]) => ({ r, name: tr(n) }));
   const rankOf = n => RANKS.filter(k => (n | 0) >= k.r).pop();
   const MILESTONES = [
     { r: 1, t: 'Regenbogenrute' }, { r: 2, t: 'Mondköder' }, { r: 3, t: 'Sternenrute, Hohe See und Odköder' }, { r: 4, t: 'Tiefseerute' },
@@ -4331,11 +4501,11 @@
   // Taler bonus in three groups: inside a group the boni add up, only the groups multiply
   //   path (rebirths, Erbe, prestige) × talents (Goldener Haken, Perlenhaken) × collection (Fischdex, gold medals)
   const pathMult = (reb = save.rebirths, heir = save.rebHeir || 0, pres = save.prestige) => 1 + .2 * (reb + heir) + pres;
-  const talentMult = () => 1 + .08 * perk('taler') + .1 * pperk('ptaler');
-  const collectMult = () => 1 + (dexPerk('taler10') ? .1 : 0) + goldBonus() / 100;
+  const talentMult = () => 1 + .08 * perk('taler') + .1 * pperk('ptaler') + .02 * pperk('pschliff');
+  const collectMult = () => 1 + (dexPerk('taler10') ? .1 : 0) + goldBonus() / 100 + diaBonus() / 100 + (hasT('pokal') ? .05 : 0);
   function coinMult() { return pathMult() * talentMult() * collectMult(); }
   // what the bonus would be right after the next prestige (talents reset, Erbe grows)
-  function coinMultAfterPrestige() { return pathMult(0, (save.rebHeir || 0) + save.rebirths * .4, save.prestige + 1) * (1 + .1 * pperk('ptaler')) * collectMult(); }
+  function coinMultAfterPrestige() { return pathMult(0, (save.rebHeir || 0) + save.rebirths * .4, save.prestige + 1) * (1 + .1 * pperk('ptaler') + .02 * pperk('pschliff')) * collectMult(); }
   function lockText(item) {
     if (item.pres && save.prestige < item.pres) return tr('🔒 {n}× Prestige', { n: item.pres });
     if (item.depth && caveDepth() < item.depth) return tr('🔒 Tiefe {n}', { n: item.depth });
@@ -4347,7 +4517,7 @@
   function scalesFor() { return Math.floor((Math.floor(save.lvl / 2) + Math.min(20 + 4 * save.rebirths, Math.floor(Math.sqrt(save.lifeCoins / 40)))) * (1 + .2 * pperk('pschuppen'))); }
 
   function gainXp(n, quiet) {
-    const add = Math.round(n * (1 + .15 * perk('wissen')) * (1 + .25 * save.prestige));
+    const add = Math.round(n * (1 + .15 * perk('wissen')) * (1 + .25 * save.prestige) * (hasT('goldnetz') ? 1.1 : 1));
     save.xp += add;
     const from = save.lvl;
     let reward = 0;
@@ -4378,7 +4548,7 @@
     $('lvl-bar').style.width = Math.min(100, save.xp / xpNeed(save.lvl) * 100) + '%';
     $('lvl').title = tr('Level {l} · {x}/{n} EP', { l: save.lvl, x: save.xp, n: xpNeed(save.lvl) }) + (save.rebirths ? tr(' · {n}× wiedergeboren', { n: save.rebirths }) : '') + (save.prestige ? tr(' · {n}× Prestige', { n: save.prestige }) : '') + ' · ' + presMark(save.prestige) + rankOf(save.rebirthsTotal).name;
     $('lvl-reb').textContent = (save.prestige ? '✦' + save.prestige : '') + (save.rebirths ? '🌀' + save.rebirths : '');
-    $('btn-prog').classList.toggle('ready', save.lvl >= rebirthLvl() || save.rebirths >= PRESTIGE_REB || save.quests.some(q => q.p >= q.n) || (lavaOpen() && (save.glimmQ.some(q => q.p >= q.n) || canDig())));
+    $('btn-prog').classList.toggle('ready', save.lvl >= rebirthLvl() || save.rebirths >= presReb() || save.quests.some(q => q.p >= q.n) || (lavaOpen() && (save.glimmQ.some(q => q.p >= q.n) || canDig())));
   }
 
   // ---- quests
@@ -4621,7 +4791,7 @@
 
   // ---- prestige
   function prestige() {
-    if (save.rebirths < PRESTIGE_REB) return;
+    if (save.rebirths < presReb()) return;
     const gain = pearlsFor();
     if (!confirm(tr('Prestige?\n\nDu bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP. 40 % deiner Wiedergeburten zählen als Erbe weiter für den Taler-Bonus.\nZurückgesetzt werden Level, Taler, Ruten (auch Lavaruten), Köder, Wiedergeburten, Schuppen, Talente, Glutsteine, die Grotten-Tiefe und die Schmiede.\nFischdex, Medaillen, Rekorde, Kosmetik, Rang und Perlen-Talente bleiben.', { n: gain }))) return;
     checkCosm(true); // keep the rebirth cosmetics earned so far
@@ -4639,7 +4809,7 @@
     if (save.lb) { save.lbT = 0; lbSubmit(true); } // rebirths drop to 0 on the leaderboard too
   }
   function buyPPerk(id) {
-    const p = PPERKS.find(x => x.id === id), l = pperk(id), c = pperkCost(l);
+    const p = PPERKS.find(x => x.id === id), l = pperk(id), c = pperkCost(l, p);
     if (!p || l >= p.max || save.pearls < c) return;
     save.pearls -= c; save.pperks[id] = l + 1; sfx.coin(); persist(); renderProg(); updateMapUi();
   }
@@ -4684,7 +4854,7 @@
     $('prog-xp').textContent = tr('{x} / {n} EP', { x: save.xp, n: need });
     $('prog-xpbar').style.width = Math.min(100, save.xp / need * 100) + '%';
     const rk = rankOf(save.rebirthsTotal), nrk = RANKS.find(k => k.r > save.rebirthsTotal);
-    $('prog-rank').textContent = tr('🎖️ Rang: {r}', { r: presMark(save.prestige) + rk.name }) + (nrk ? tr(' · nächster Rang: {r} bei {n}× Wiedergeburt', { r: nrk.name, n: nrk.r }) : tr(' · höchster Rang erreicht'));
+    $('prog-rank').textContent = tr('🎖️ Rang: {r}', { r: presMark(save.prestige) + rk.name }) + (myTitle() ? ` · „${myTitle()}“` : '') + (nrk ? tr(' · nächster Rang: {r} bei {n}× Wiedergeburt', { r: nrk.name, n: nrk.r }) : tr(' · höchster Rang erreicht'));
     $('prog-stats').textContent = tr('{a} Fänge · {b} Aufträge · {c}× wiedergeboren · Taler-Bonus +{p} %', { a: save.total, b: save.questsDone, c: save.rebirths, p: Math.round((coinMult() - 1) * 100) }) + tr(' · ⏱ Spielzeit {t}', { t: fmtPlay(save.playTime) }) + (save.prestige ? tr(' · {n}× Prestige (+{t} % EP)', { n: save.prestige, t: save.prestige * 25 }) : '');
     const left = dailyLeft();
     $('prog-bonus').textContent = (left ? tr('☀️ Tagesbonus: noch {n} Fänge mit doppelten EP', { n: left }) : tr('☀️ Tagesbonus für heute aufgebraucht – morgen wieder')) +
@@ -4726,7 +4896,7 @@
     { // the next goals at a glance
       const parts = [], rl = rebirthLvl(), cd = caveDepth(), nx = CAVE_DEPTHS[cd];
       parts.push(save.lvl >= rl ? tr('🌀 Wiedergeburt bereit') : tr('🌀 Wiedergeburt in {n} Level', { n: rl - save.lvl }));
-      parts.push(save.rebirths >= PRESTIGE_REB ? tr('✦ Prestige bereit') : tr('✦ Prestige in {n} Wiedergeburten', { n: PRESTIGE_REB - save.rebirths }));
+      parts.push(save.rebirths >= presReb() ? tr('✦ Prestige bereit') : tr('✦ Prestige in {n} Wiedergeburten', { n: presReb() - save.rebirths }));
       if (lavaOpen() && nx) parts.push(save.glut >= nx.cost ? tr('⛏️ Tiefe {n} bereit', { n: nx.n }) : tr('⛏️ Tiefe {n} in {c} 🔥', { n: nx.n, c: nx.cost - save.glut }));
       const lvlNext = Math.ceil((save.lvl + 1) / 5) * 5; parts.push(tr('🎁 Meilenstein bei Level {n}', { n: lvlNext }));
       $('prog-next').textContent = parts.join(' · ');
@@ -4784,19 +4954,19 @@
       d.append(txt, btn);
       return d;
     }));
-    const pcan = save.rebirths >= PRESTIGE_REB;
+    const pcan = save.rebirths >= presReb();
     $('pres-info').textContent = pcan
       ? tr('Bereit! Du bekommst {n} Perlen, dauerhaft +100 % Taler und +25 % EP – und {e} deiner {w} Wiedergeburten zählen als Erbe weiter. Taler-Bonus danach: +{a} % statt jetzt +{b} %.', { n: pearlsFor(), e: (save.rebirths * .4).toLocaleString(I18N.locale, { maximumFractionDigits: 1 }), w: save.rebirths, a: Math.round((coinMultAfterPrestige() - 1) * 100), b: Math.round((coinMult() - 1) * 100) })
-      : tr('Ab {r}× Wiedergeburt möglich (noch {d}). Fängt fast alles von vorn an, auch die Talente – dafür gibt es Perlen, dauerhaft +100 % Taler und +25 % EP pro Prestige, und 40 % deiner Wiedergeburten zählen als Erbe weiter.', { r: PRESTIGE_REB, d: PRESTIGE_REB - save.rebirths });
+      : tr('Ab {r}× Wiedergeburt möglich (noch {d}). Fängt fast alles von vorn an, auch die Talente – dafür gibt es Perlen, dauerhaft +100 % Taler und +25 % EP pro Prestige, und 40 % deiner Wiedergeburten zählen als Erbe weiter.', { r: presReb(), d: presReb() - save.rebirths });
     $('btn-prestige').disabled = !pcan;
     $('prog-pearls').textContent = save.pearls;
     $('prog-pperks').replaceChildren(...PPERKS.map(p => {
-      const l = pperk(p.id), max = l >= p.max, c = pperkCost(l);
+      const l = pperk(p.id), max = l >= p.max, c = pperkCost(l, p);
       const d = document.createElement('div'); d.className = 'item perk';
       const txt = document.createElement('div');
       const b = document.createElement('b'); b.textContent = `${p.icon} ${p.name}`;
       const pips = document.createElement('span'); pips.className = 'pips';
-      pips.textContent = '●'.repeat(l) + '○'.repeat(Math.max(0, p.max - l)); b.append(' ', pips);
+      pips.textContent = p.max === Infinity ? tr('Stufe {n} · ohne Ende', { n: l }) : '●'.repeat(l) + '○'.repeat(Math.max(0, p.max - l)); b.append(' ', pips);
       const s = document.createElement('small'); s.textContent = l ? p.desc(l) + (max ? '' : ` → ${p.desc(l + 1)}`) : p.desc(1);
       txt.append(b, s);
       const btn = document.createElement('button'); btn.className = 'btn';
@@ -4826,10 +4996,11 @@
   const LB_API = '/api/leaderboard';
   const LB_TABS = {
     taler:  { label: tr('🪙 Taler'),          fmt: s => tr('{n} Taler', { n: s.toLocaleString(I18N.locale) }) },
-    wieder: { label: tr('🌀 Wiedergeburten'), fmt: s => s + '×' }, // current rebirths, they drop to 0 on prestige
+    woche:  { label: tr('📅 Fisch der Woche'), fmt: s => s + ' cm', note: () => tr('Größter Fisch dieser Woche (ohne Müll). Montag geht es von vorn los – die Top 3 bekommen die Wochensieger-Kappe.') },
+    reb:    { label: tr('🌀 Wiedergeburten'), fmt: s => s + '×', note: () => tr('Alle Wiedergeburten insgesamt – ein Prestige nimmt sie dir nicht weg.') },
     dex:    { label: tr('📖 Fischdex'),       fmt: s => tr('{a} Fische · {b} Mut.', { a: Math.floor(s / 100), b: s % 100 }) },
+    diamant: { label: tr('💎 Diamant'),       fmt: s => tr('{n} Fische', { n: s }), note: () => tr('Fische mit Diamant-Medaille.') },
     rekord: { label: tr('📏 Rekordfang'),     fmt: s => s + ' cm' },
-    klein:  { label: tr('🔬 Kleinster Fisch'), fmt: s => s ? s + ' cm' : '–' },
     monster: { label: tr('👑 Monster-Fänge'), fmt: s => s + '×' },
     boss:   { label: tr('🐟 Odfisch-Siege'),  fmt: s => s + '×' },
     prestige: { label: tr('✦ Prestige'),      fmt: s => s + '×' },
@@ -4840,10 +5011,11 @@
   function lbScores() {
     return {
       taler: Math.floor(save.totalEarned),
-      wieder: save.rebirths,
+      woche: weekBest(),
+      reb: save.rebirthsTotal | 0,
       dex: discovered() * 100 + mutsFound().length,
+      diamant: masteryCount(4),
       rekord: Math.max(0, ...Object.values(save.dex).map(e => e.best || 0)),
-      klein: Math.min(...Object.values(save.dex).map(e => e.small || Infinity), Infinity) | 0, // 0 = noch keiner
       monster: save.monsters || 0,
       boss: save.bossWins || 0,
       spent: Math.floor(save.spent || 0),
@@ -4872,11 +5044,21 @@
     if (!$('lb').hidden) renderLb();
   }
   setInterval(() => lbSubmit(), 130000);
+  // Fisch der Woche: the top 3 of last week get the Wochensieger-Kappe (and a toast), once per week
+  function checkWeekWin(j) {
+    if (!save.lb || !save.lb.me || !j || !j.prev || !Array.isArray(j.prev.woche) || !j.week) return;
+    const pos = j.prev.woche.findIndex(r => r.me === save.lb.me), w = j.week - 1;
+    if (pos < 0 || save.weekWon.includes(w)) return;
+    save.weekWon = [...save.weekWon.slice(-9), w]; persist();
+    toast(tr('📅 Platz {n} beim Fisch der Woche! Die Wochensieger-Kappe gehört dir.', { n: pos + 1 }));
+    checkCosm();
+  }
+  if (save.lb) setTimeout(() => lbFetch('GET').then(checkWeekWin).catch(() => {}), 12000);
 
   async function openLb() {
     renderLb();
     await lbSubmit(true);
-    try { LB.boards = (await lbFetch('GET')).boards; LB.err = save.lb ? LB.err : ''; }
+    try { const j = await lbFetch('GET'); LB.boards = j.boards; LB.err = save.lb ? LB.err : ''; checkWeekWin(j); }
     catch (e) { LB.err = e.message; }
     renderLb();
   }
@@ -4902,6 +5084,7 @@
     $('lb-me').textContent = save.lb
       ? (my && my.rank ? tr('Dein Platz: {a} von {b} · {c}', { a: my.rank, b: my.of, c: LB_TABS[LB.tab].fmt(lbScores()[LB.tab]) }) : tr('Dein Wert: {c}', { c: LB_TABS[LB.tab].fmt(lbScores()[LB.tab]) })) + (LB.err && LB.boards ? ` · ${LB.err}` : '')
       : '';
+    const note = LB_TABS[LB.tab].note; $('lb-note').hidden = !note; $('lb-note').textContent = note ? note() : '';
     $('lb-join').hidden = !!save.lb; $('lb-joined').hidden = !save.lb;
     if (save.lb) $('lb-myname').textContent = save.lb.name;
   }
@@ -4940,7 +5123,7 @@
     return j;
   }
   function lobbyMe() {
-    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'boss', 'crit'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: Math.min(99, save.rebirthsTotal | 0), pr: save.prestige };
+    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'boss', 'crit'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: Math.min(99, save.rebirthsTotal | 0), pr: save.prestige, ti: myTitle() ? save.title : '', bs: bossStage() };
   }
   async function lobbySync() {
     if (!save.lobby || LOBBY.busy || document.hidden) return;
@@ -5080,7 +5263,7 @@
       const n = document.createElement('b'); n.textContent = (p.m === 'see' ? '⛵ ' : p.m === 'lava' ? '🌋 ' : '') + p.name;
       if (p.m === 'see') n.title = tr('Auf Hoher See');
       if (p.m === 'lava') n.title = tr('In der Glutgrotte');
-      if (p.rk !== undefined) { const rk = document.createElement('small'); rk.className = 'rank'; rk.textContent = ' ' + presMark(p.pr | 0) + rankOf(p.rk).name; n.append(rk); }
+      if (p.rk !== undefined) { const rk = document.createElement('small'); rk.className = 'rank'; rk.textContent = ' ' + presMark(p.pr | 0) + rankOf(p.rk).name + (titleOf(p.ti) ? ` · „${titleOf(p.ti)}“` : ''); n.append(rk); }
       const sc = document.createElement('span'); sc.className = 'sc'; sc.textContent = tr('{n} Taler', { n: (p.sc || 0).toLocaleString(I18N.locale) });
       li.append(pos, n, sc);
       if (p.big) { const b = document.createElement('span'); b.className = 'big'; b.textContent = tr('Größter: {f} ({cm} cm)', { f: p.big.f, cm: p.big.cm }); li.append(b); }
@@ -5223,7 +5406,7 @@
   requestAnimationFrame(frame);
 
   // tiny debug/test hook
-  if (DEBUG) window.__fischen = { save, crit: () => startCrit(), get critState() { return { ...crit, c: crit.c && crit.c.id }; }, critChance: () => critChance(), gainXp, rebirth, prestige, dig: () => digDeeper(), buyGlutUp: id => buyGlutUp(id), claimGlimm: i => claimGlimm(i), caveMult: () => caveMult(), glimm: () => talkGlimm(), MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
+  if (DEBUG) window.__fischen = { save, coinMult: () => coinMult(), bossStage: () => bossStage(), crit: () => startCrit(), get critState() { return { ...crit, c: crit.c && crit.c.id }; }, critChance: () => critChance(), gainXp, rebirth, prestige, dig: () => digDeeper(), buyGlutUp: id => buyGlutUp(id), claimGlimm: i => claimGlimm(i), caveMult: () => caveMult(), glimm: () => talkGlimm(), MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); },
     rhythm: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; reel.maxT = 0; startRhythm(); },
     get notes() { return rhythm.notes; },
@@ -5231,6 +5414,6 @@
     setWeather: id => { weatherForce = id || null; wx = currentWeather(); updateWeatherPill(); },
     weatherAt, travel, boss, rollSize, SIZE_CLASSES,
     landCls: (id, cls) => { const f = FISH.find(x => x.id === id); hooked = { f, ...sizeIn(f, cls), str: STRENGTH[f.r] }; bob.x = 260; land_catch(); },
-    bossSolo: () => { save.lobby ? summonBoss() : enterBoss({ id: 'solo-test', max: BOSS_HP, hp: BOSS_HP, ends: Date.now() + BOSS_TIME, n: 1 }, true); },
+    bossSolo: () => { const st = bossStage(); save.lobby ? summonBoss() : enterBoss({ id: 'solo-test', max: stageHp(st), hp: stageHp(st), ends: Date.now() + BOSS_TIME, n: 1, st }, true); },
     bossHit, pick: () => pickFish(), get wx() { return wx.id; } };
 })();

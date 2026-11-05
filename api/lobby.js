@@ -85,6 +85,8 @@ function cleanMe(me) {
     n: Math.round(num(me.n, 0, 1e6)),                 // Fänge in der Lobby
     rk: Math.round(num(me.rk, 0, 99)),                // Wiedergeburten, für den Rang am Namensschild
     pr: Math.round(num(me.pr, 0, 99)),                // Prestige, als ✦ vor dem Rang
+    ti: typeof me.ti === 'string' && /^[a-z0-9-]{1,16}$/.test(me.ti) ? me.ti : '', // Titel am Namensschild (ID einer Sammlung)
+    bs: Math.round(num(me.bs, 0, 3)),                 // Odfisch-Stufe, die dieser Spieler ruft (0–3)
   };
 }
 
@@ -96,7 +98,7 @@ function bossView(meta, dmgHash, k, now) {
     const v = Number(dmgHash[i + 1]) || 0; sum += v; n++;
     if (dmgHash[i] === k) mine = v;
   }
-  return { id: meta.id, max: meta.max, hp: Math.max(0, meta.max - sum), ends: meta.ends, now, mine, n: Math.max(1, n) };
+  return { id: meta.id, max: meta.max, hp: Math.max(0, meta.max - sum), ends: meta.ends, now, mine, n: Math.max(1, n), st: meta.st | 0 };
 }
 
 function players(hash, now) {
@@ -173,7 +175,8 @@ module.exports = async function handler(req, res) {
       }
       if (!isNight(now)) return send(res, 409, { error: 'Der Odfisch kommt nur nachts.' });
       const onSea = players(hash || [], now).filter((p) => p.m === 'see').length;
-      const fresh = { id: crypto.randomBytes(5).toString('hex'), max: BOSS_HP * Math.max(1, onSea), ends: now + BOSS_MS, by: k };
+      const st = cleanMe(body.me).bs; // the caller's Odfisch-Stufe: +50 % HP per stage
+      const fresh = { id: crypto.randomBytes(5).toString('hex'), max: Math.round(BOSS_HP * (1 + .5 * st)) * Math.max(1, onSea), ends: now + BOSS_MS, by: k, st };
       const [made] = await redis([['SET', B, JSON.stringify(fresh), 'NX', 'PX', BOSS_MS + 5000]]);
       if (made !== 'OK') return send(res, 409, { error: 'Gerade taucht schon ein Odfisch auf – nochmal versuchen.' });
       return send(res, 200, { boss: bossView(fresh, [], k, now), fresh: true });

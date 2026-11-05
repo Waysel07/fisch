@@ -47,10 +47,10 @@ Other keys: **O** lobby, **E** settings, **M** sound, **1–9** bait hotbar, **E
 
 | Currency | Earned from | Spent on | Reset by |
 |---|---|---|---|
-| Taler | Catches, quests, the slot machine | Gear, snacks, boxes, cosmetics, the forge | Rebirth, prestige |
+| Taler | Catches, quests, the slot machine | Gear, snacks, boxes, cosmetics, the forge, Schätze | Rebirth, prestige |
 | Schuppen 🐚 | Rebirths, medals, weekly goals, Fischdex rewards, the Odfisch | Talents | Prestige |
-| Perlen 🦪 | Prestige (3, plus 2 for every rebirth above 7), weekly goals, one of Glimm's jobs | Prestige talents | Never |
-| Glutsteine 🔥 | Cave catches and creatures, Glimm's jobs, weekly goals | Cave depths, Glimm's workshop, the Lava-Laden | Rebirth, prestige |
+| Perlen 🦪 | Prestige (3, plus 2 for every extra rebirth, plus 1 with the Perlenmuschel), weekly goals, one of Glimm's jobs, the Odfisch from stage 3 | Prestige talents | Never |
+| Glutsteine 🔥 | Cave catches and creatures, Glimm's jobs, weekly goals | Cave depths, Glimm's workshop, the Lava-Laden, the Glutschmiede | Rebirth, prestige |
 
 Glutsteine can't be turned into Taler.
 
@@ -59,7 +59,7 @@ Glutsteine can't be turned into Taler.
 Catches, lost fish, quests and Fischdex rewards give XP toward angler levels, which unlock gear. Catch bonuses add up rather than multiply: catch streaks, clean catches (tension under 70 %), mutations, shinies, night fishing and the first catches of each day. Every 5 levels a milestone gives Schuppen, and every 10 levels a mystery box.
 
 - **Rebirth** is available from level 12, and each one needs 2 more levels. It gives Schuppen and a permanent +20 % Taler, and resets level, Taler, rods, bait, quests, the forge, Glutsteine and the cave depth. The Fischdex, records and talents stay.
-- **Prestige** is available from the 7th rebirth and also resets rebirths, Schuppen and talents. It gives Perlen, a permanent +100 % Taler and +25 % XP. 40 % of the rebirths before it stay in the Taler bonus as an Erbe (`rebHeir`). Ranks count `rebirthsTotal`, so ranks and rebirth cosmetics stay.
+- **Prestige** needs 7 rebirths the first time, then one fewer each time (6, 5, then always 4, `presReb()`). It also resets rebirths, Schuppen and talents. It gives Perlen, a permanent +100 % Taler and +25 % XP. 40 % of the rebirths before it stay in the Taler bonus as an Erbe (`rebHeir`). Ranks count `rebirthsTotal`, so ranks and rebirth cosmetics stay.
 
 | Rebirth | Unlocks |
 |---|---|
@@ -72,14 +72,14 @@ Catches, lost fish, quests and Fischdex rewards give XP toward angler levels, wh
 | 8 | Seebären-Jacke |
 | 10 | Fischgott-Krone |
 
-**Ranks** follow total rebirths, from Lehrling to Fischgott. They show in progress, on lobby name tags and on the rebirth leaderboard.
+**Ranks** follow total rebirths, from Lehrling to Fischgott and on to Wellenkaiser (13), Ozeanlegende (16), Poseidons Erbe (20) and Ewiger Angler (25). They show in progress, on lobby name tags and on the rebirth leaderboard. Wellenkaiser also unlocks the Wellenkaiser-Krone.
 
 ### Talents
 
 | Bought with | Talents |
 |---|---|
 | Schuppen | Goldener Haken (Taler), Glückspilz (luck), Lockruf (bite speed), Starke Schnur (tension), Anglerwissen (XP), Erbstück (starting Taler), Maßband (size classes), Wetterfrosch (weather bonuses), Nachtangler, Bossjäger |
-| Perlen | Perlenhaken (+10 % Taler per level), Perlenglück (+10 % luck per level), Schuppensegen (+20 % Schuppen per level), Frühreif (rebirth one level earlier, up to 5), Seekarte (Hohe See and Odköder without rebirths) |
+| Perlen | Perlenhaken (+10 % Taler per level), Perlenglück (+10 % luck per level), Schuppensegen (+20 % Schuppen per level), Frühreif (rebirth one level earlier, up to 5), Seekarte (Hohe See and Odköder without rebirths), Perlenschliff (+2 % Taler per level, no cap, costs 4 + level) |
 
 ### Taler bonus
 
@@ -88,8 +88,8 @@ Catches, lost fish, quests and Fischdex rewards give XP toward angler levels, wh
 | Group | Contains |
 |---|---|
 | Path | Rebirths and Erbe × 20 %, +100 % per prestige |
-| Talents | Goldener Haken 8 % per level, Perlenhaken 10 % per level |
-| Collection | Fischdex 10 %, gold medals up to 40 % |
+| Talents | Goldener Haken 8 % per level, Perlenhaken 10 % per level, Perlenschliff 2 % per level |
+| Collection | Fischdex 10 %, gold medals up to 40 %, diamond medals up to 40 %, Goldener Pokal 5 % |
 
 Bait, snacks and mystery boxes cost their base price × √(Taler bonus), so prices keep up with income.
 
@@ -97,8 +97,10 @@ Bait, snacks and mystery boxes cost their base price × √(Taler bonus), so pri
 
 - **Quests:** three rotating quests pay Taler and XP.
 - **Wochenziele:** three bigger goals per week, the same for everyone (`week`). Each gives 6 Schuppen, a pearl after a prestige, and 40 Glutsteine once the cave is open.
-- **Fisch-Meisterschaft:** bronze, silver and gold medals per fish for repeat catches, with thresholds by rarity (`dex[id].m`). Medals give XP and Schuppen. Each gold fish adds a permanent +1 % Taler, up to +40 %.
+- **Fisch-Meisterschaft:** bronze, silver, gold and diamond medals per fish for repeat catches, with thresholds by rarity (`dex[id].m`, `MASTERY`). Medals give XP and Schuppen. Each gold fish adds a permanent +1 % Taler, up to +40 %, and each diamond fish another +1 %, up to +40 %. Ten diamonds unlock the Diamant-Zylinder.
 - **Fischdex rewards:** milestones pay Taler, Schuppen and permanent bonuses.
+- **Sammlungen:** themed sets in the Fischdex rewards (Alles Spezi, Haifischbecken, Nachtschicht, Alle Wetter, Schrottplatz, Feuerfest, 10 Monster, 50 Odfisch wins, Alles in Diamant). Each gives a title for the name tag, picked in the wardrobe (`save.title`) and shown in the lobby.
+- **Shinydex:** shows all mutations, caught normally and as shiny (`dex[id].smuts`), with rewards for the first mutated shiny and for all of them.
 - **Käpt'n Bealin:** every second chat drops a vague hint about a secret wish, which pays Taler and XP when you happen to fulfil it (`bealin`).
 
 ### Spending Taler
@@ -116,7 +118,7 @@ Bait, snacks and mystery boxes cost their base price × √(Taler bonus), so pri
   | Tiefseerute | 40 000 | Rebirth 4 |
   | Krakenrute | 120 000 | Rebirth 6 |
 
-- **Rutenschmiede:** forges the rod in hand up to +15 for growing costs (`forge`). Each level adds +3 % reel and luck and −2 % tension.
+- **Rutenschmiede:** forges the rod in hand up to +15 for growing costs (`forge`). Each level adds +3 % reel and luck and −2 % tension. From 1× prestige the **Glutschmiede** goes on to +25 and also costs Glutsteine (25 per step, rising).
 - **Bait** (`BAITS`): Spezi-Köder, Glitzerköder, Wii-Köder (Wii fish bite twice as often), Mondköder, Abgrundköder, Odköder. Worms are free and unlimited. Baits come with extra bite speed, and the setting `autoBait` rebuys them when they run out.
 - **Snacks** (`SNACKS`): 10 minutes each, stackable to 30, saved as `buffs`.
 
@@ -127,6 +129,7 @@ Bait, snacks and mystery boxes cost their base price × √(Taler bonus), so pri
   | Kleeblatt-Keks | Rare, epic and legendary fish bite 30 % more often |
   | Glitzerlimo | Double shiny and mutation chance |
 
+- **Schätze** (`TREASURES`, `save.treasures`): one-time buys from 500 000 to 5 million Taler that stay forever, even through prestige: Goldener Pokal (+5 % Taler), Glückskompass (+5 % luck), Ebbe-Sanduhr (5 % faster bites), Goldnetz (+10 % XP) and Perlenmuschel (1 more pearl per prestige, from 2× prestige).
 - **Mystery boxes** (`BOXES`): wooden 120, silver 450 (level 4), golden 1 500 (level 8). They are also found on the hook now and then (`boxes`). A box holds Taler, bait, XP, an old sock or a 5× jackpot.
 - **Fischautomat:** stakes run from 50 to 2 000, and the cap rises with each rebirth to 5 000, 10 000, 25 000 and 50 000. 2 % of every stake feeds a jackpot (`jackpot`, starts at 1 000) that three Odfische win on top of ×150.
 - **Cosmetics** (`COSMETICS`, saved as `cosm`): hats, jackets, bobbers and boat skins. Some are sold, some come from achievements, and luxury items are late-game Taler sinks, up to the Sonnenkrone (500 000, prestige 1) and the Galaxiemantel (1 000 000, prestige 2). The wardrobe previews them and offers free skin and hair colours. The boat skin „David Hasselhoff“ (`boot-hoff`, 30 000 Taler, rebirth 3) replaces the boat on the open sea with a giant swimming pixel man. More colours (orange, purple, camo hats; yellow, black, pink raincoats; yellow, purple, white bobbers), the Diamantjacke (75 000) and Diamantpose (60 000) in the shop, and catch rewards for the new content: Vamp-Jacke/Vamp-Hut (Carti fish, 1× and 5×), Schrotthelm (anchor), Schatzpose (chest) and Muschelhut (Magic Conch). The slot machine gives the Jackpot-Jacke for any JACKPOT (×40 or the pot) and the sparkling Jackpot-Hut for the Odfisch pot (counters `cosm.st.jackpot` and `cosm.st.pot`).
@@ -231,8 +234,9 @@ The buoy next to Bealin takes you onto the boat, and the steering wheel takes yo
 - Phase 2 adds Taktdrill salvos, and phase 3 is a rage with harder pulls.
 - Cutscenes (`startCine`, `drawCine`) cover the intro, the phase changes and the ending. The fight pauses meanwhile and the solo clock is extended.
 - Winning lands the Odfisch (at least Kapital size), 10 Schuppen, Taler by damage share and the Odfisch hat.
+- **Stages** (`bossStage()`): after 10, 25 and 50 wins he comes back as stage 2, 3 and 4, each with +50 % HP, +50 % Taler and +5 Schuppen. From stage 3 he also gives pearls after a prestige (1 at stage 3, 2 at stage 4). In a lobby the caller's stage counts (`bs`).
 
-In a lobby, everyone on the open sea fights the same Odfisch. `api/lobby.js` keeps a shared record with 1 000 HP per angler, adds each player's capped damage per sync (`HINCRBY`), and checks the summon against the server's clock.
+In a lobby, everyone on the open sea fights the same Odfisch. `api/lobby.js` keeps a shared record with 1 000 HP per angler (more at higher stages), adds each player's capped damage per sync (`HINCRBY`), and checks the summon against the server's clock.
 
 ### Glutgrotte
 
@@ -284,7 +288,7 @@ Depth 5 also earns the Lavamantel.
 
 All of these are opt-in. Without them, progress stays in the browser's `localStorage` (`fischen-save-v1`, see `datenschutz.html`, section 5).
 
-- **Leaderboard** (🏆): sends a nickname and scores to `api/leaderboard.js`. The boards are Taler, rebirths, Fischdex, biggest catch, smallest non-junk catch, Monster catches, Odfisch wins, prestige and Taler spent.
+- **Leaderboard** (🏆): sends a nickname and scores to `api/leaderboard.js`. The boards are Taler, Fisch der Woche (biggest non-junk catch this week, its own key per week; last week's top 3 get the Wochensieger-Kappe), total rebirths, Fischdex, diamond medals, biggest catch, Monster catches, Odfisch wins, prestige and Taler spent. Names that fail the filter in `_names.js` are shown as ???.
 - **Cloud save** (☁️): a secret key stores a copy of the save, so it can be loaded on another device. It's stored under the key's SHA-256 with a 180-day TTL.
 - **Lobbies** (👥): up to 8 anglers share a 4-letter code or a `?lobby=CODE` link. Everyone sees the others on the dock, a feed of catches and a scoreboard of Taler fished since joining. Chat messages ride along with each sync and appear as speech bubbles. The server keeps the last 30 per lobby and stars out words from the name blocklist.
 
@@ -350,7 +354,7 @@ All functions use Upstash Redis through its REST pipeline.
 
 | Endpoint | Purpose |
 |---|---|
-| `api/leaderboard.js` | Scores with plausibility limits per board. `DELETE {id, admin}` removes an entry. |
+| `api/leaderboard.js` | Scores with plausibility limits per board. `DELETE {id, admin}` removes an entry. `POST {action: 'stats', admin}` returns totals only: entries per board and how prestige and rebirths are spread. |
 | `api/save.js` | Cloud saves. `POST {action: 'gift', key, hours, admin}` gifts up to 1 000 h of play time, stored under `sv:gift:<hash>`. The game claims it on its next sync (`put` with `claim: true`). |
 | `api/lobby.js` | Lobbies, chat, catch feed and the shared boss fight |
 | `api/_names.js` | Name filter for the leaderboard and lobbies |

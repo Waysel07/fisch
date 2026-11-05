@@ -122,6 +122,7 @@
           <summary>🎁 Belohnungen</summary>
           <div class="rewards" id="dex-rewards"></div>
         </details>
+        <div class="dex-crits dex-muts" id="dex-muts" hidden></div>
         <div class="grid" id="dex-grid"></div>
         <div class="dex-crits" id="dex-crits" hidden></div>
       </div>
@@ -146,6 +147,7 @@
             <button class="tab" data-shop-tab="snacks" role="tab" aria-selected="false">🥪 Snacks</button>
             <button class="tab" data-shop-tab="boxes" role="tab" aria-selected="false">📦 Mysteryboxen</button>
             <button class="tab" data-shop-tab="cosm" role="tab" aria-selected="false">🎩 Kosmetik</button>
+            <button class="tab" data-shop-tab="treasure" role="tab" aria-selected="false">💎 Schätze</button>
           </div>
           <span class="purse" id="shop-coins-p"><img src="img/fish-icon.png" alt="" class="coin"> <b id="shop-coins">0</b></span>
           <span class="purse" id="shop-glut-p" hidden>🔥 <b id="shop-glut">0</b></span>
@@ -380,6 +382,7 @@
         <button class="close" data-close aria-label="Schließen">✕</button>
         <h2 id="lb-title">Bestenliste</h2>
         <div class="tabs" id="lb-tabs" role="tablist"></div>
+        <p class="sub" id="lb-note" hidden></p>
         <ol class="lb-list" id="lb-list"></ol>
         <p class="sub" id="lb-me"></p>
         <div class="lb-join" id="lb-join">

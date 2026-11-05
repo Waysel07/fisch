@@ -2,6 +2,19 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 05.11.2026 · `2026-11-05-2`
+
+- 🧬 Shinydex with mutations: at the top you now see all 7 mutations – which ones you have caught and which of them also as a shiny. Every card shows the fish’s mutations, shiny ones with a gold frame. Plus two new shiny rewards.
+- ✦ Prestige gets faster: every prestige needs one rebirth fewer than the last – first 7, then 6, then 5, after that always 4.
+- 💠 New pearl talent Pearl Polish: +2 % coins per level, with no cap. Pearls never become useless again.
+- 🔥 Ember Forge: from 1 prestige you can forge the rod in your hand past +15, up to +25, with coins and embers.
+- 💎 New at the kiosk: Treasures. Five expensive pieces from 500,000 to 5 million coins that stay forever, even after prestige – for example the Golden Trophy (+5 % coins) and the Pearl Oyster (1 more pearl per prestige).
+- 💎 Diamond mastery: after gold now comes diamond. Every diamond fish gives +1 % coins for good (up to +40 %). If you already have enough catches, you get diamond right away.
+- 🏷️ Collections and titles: new Fishdex rewards for sets like Shark Tank, Night Shift or Scrapyard. Each gives a title for your name tag – wear it in the wardrobe.
+- 🐟 The Odfisch grows stronger: after 10, 25 and 50 wins he comes back as stage 2, 3 and 4, with more HP and more loot. From stage 3 he also gives pearls if you have prestige.
+- 🎖️ New ranks after Fish God: Wave Emperor (13×), Ocean Legend (16×), Heir of Poseidon (20×) and Eternal Angler (25 rebirths). Plus the Wave Emperor Crown and the Diamond Top Hat.
+- 🏆 Leaderboard: new are “Fish of the week” (biggest catch of the week, new every Monday; the top 3 get the Weekly Winner Cap) and “Diamond”. “Rebirths” now counts all of them in total, and “Smallest fish” is gone.
+
 ## 05.11.2026 · `2026-11-05-1`
 
 - 🖤 New epic fish: the Playboi Carti Fish in a vamp look with a leather jacket, red-tipped dreads, big shades, vampire fangs and silver chains. It headbangs to the beat and bites at the dock and on the high seas, best at night.
