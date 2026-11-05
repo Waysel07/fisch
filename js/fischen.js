@@ -233,7 +233,7 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
-    { id: '2026-11-05-7', date: '05.11.2026', items: [
+    { id: '2026-11-05-8', date: '05.11.2026', items: [
       '🌴 Neue Welt – die Sonneninsel: Ab 3× Prestige fliegt dich der Inselflieger (Wasserflugzeug am Steg) auf eine Vulkaninsel mit fünf Buchten. Alles, was du dort schaffst, bleibt für immer – auch nach Wiedergeburt und Prestige.',
       '🏅 Neun Sportstationen bei Coach Pelle: Frisbee, Angelturnier, Rundflug, Jetski, Surfen, Bogenschießen, Beachvolleyball, Tischtennis und Strand-Bowling. Jede hat zwei Modi, drei Stufen und Medaillen in Bronze, Silber und Gold.',
       '📈 Jede Station hat ein eigenes Können bis 2500: Ab 1000 bist du Profi (+2 % Taler überall), ab 1500 und 26 Stempeln fordert dich Kapitän Kraul zum Champion-Duell. Ein Sieg bringt einen Pokal für den Steg, eine Perle und +3 % Taler überall.',
@@ -242,10 +242,15 @@
       '🐠 22 neue Inselfische, vom Kokosnussfisch bis zum Riesen-Mantarochen, mit eigenem Fischdex-Tab. Auf der Insel gibt es mehr Taler pro Fang, je weiter die Bucht, desto mehr.',
       '🍹 Neu in Zylinderwels’ Strandbude: Mango-Köder, Hawaiihemd, Strohhut und Kokos-Pose. Dazu Stirnband, Fliegerkappe, Trainingsjacke und Pokal-Hut als Belohnungen, die Bestenliste „Sportler“ und neue Wochenziele.',
     ] },
-    { id: '2026-11-05-6', date: '05.11.2026', items: [
+    { id: '2026-11-05-7', date: '05.11.2026', items: [
       '💰 Neuer Fisch: der Talerfisch – goldener Kopf, Trainingsanzug, Goldkette, Bauchtasche und Vape. Selten, am Steg und auf Hoher See, und er bringt richtig Taler.',
       '🗑️ Neuer Müll: die Elfbar, eine leere Einweg-Vape. Liegt am Steg und auf Hoher See im Wasser.',
       '🐚 Die Magische Miesmuschel spricht wieder: Sie wartet jetzt, bis der Browser seine Stimmen geladen hat, und funktioniert auch auf iPhone und iPad. Hat dein Gerät keine eingebaute Stimme, sagt das Spiel Bescheid.',
+    ] },
+    { id: '2026-11-05-6', date: '05.11.2026', items: [
+      '⚖️ Prestige ausbalanciert: Jedes Prestige wurde bisher schneller als das letzte. Ab jetzt braucht jede Wiedergeburt pro Prestige 2 Level mehr – der EP-Bonus vom Prestige hält dich also im Tempo, statt Level zu überspringen.',
+      '✦ Ein Prestige braucht jetzt mindestens 5 Wiedergeburten statt 4, und ab dem 6. Prestige alle drei Stufen eine mehr (höchstens 10). Taler-Bonus, Perlen und alles, was du schon hast, bleiben.',
+      '🏆 Bestenliste: Wer zwei Wiedergeburten kurz hintereinander geschafft hat, dessen Eintrag bei „Wiedergeburten“ blieb seit heute Vormittag stehen. Er holt jetzt von selbst auf.',
     ] },
     { id: '2026-11-05-5', date: '05.11.2026', items: [
       '🏆 Bestenliste repariert: Mit mehr als 99 Fischen im Fischdex wurde dein Eintrag abgelehnt und keine Liste mehr aktualisiert. Jetzt kommen alle Werte wieder an.',
@@ -5473,7 +5478,8 @@
   const xpNeed = l => Math.round(30 * Math.pow(l, 1.35));
   const DAILY_N = 10; // the first catches of each day give double XP
   let streak = 0;     // catches in a row without losing a fish (not saved)
-  const rebirthLvl = () => 12 + save.rebirths * 2 - pperk('preif');
+  // each prestige adds 2 levels, so its +25 % XP keeps runs about as long instead of making every loop shorter
+  const rebirthLvl = () => 12 + save.rebirths * 2 + 2 * (save.prestige | 0) - pperk('preif');
   const RARITY_ORDER = ['junk', 'common', 'uncommon', 'rare', 'wii', 'epic', 'legendary'];
   const PERKS = [
     { id: 'taler',  icon: '🪝', name: 'Goldener Haken', desc: l => tr('+{n} % Taler pro Fang', { n: l * 8 }) },
@@ -5491,8 +5497,8 @@
   const perkMax = () => save.rebirths >= 5 ? 10 : 5; // from the 5th rebirth talents go up to level 10
   // Prestige: from the 7th rebirth start over completely. Rebirths, rank, Schuppen, talents and
   // the forge go too; in return Perlen for prestige talents and a bonus that never resets.
-  // each prestige needs one rebirth fewer than the last: 7, 6, 5, then always 4
-  const presReb = (p = save.prestige) => Math.max(4, 7 - (p | 0));
+  // rebirths for the 1st, 2nd, … prestige: 7, 6, 5, 5, 5, then one more every third (6, 6, 6, 7, …, at most 10)
+  const presReb = (p = save.prestige) => (p |= 0) < 3 ? 7 - p : Math.min(10, 5 + Math.floor((p - 2) / 3));
   const PPERKS = [
     { id: 'ptaler',    icon: '🦪', name: 'Perlenhaken',   max: 10, desc: l => tr('+{n} % Taler', { n: l * 10 }) },
     { id: 'pglueck',   icon: '🌟', name: 'Perlenglück',   max: 10, desc: l => tr('+{n} % Glück für seltene Fische', { n: l * 10 }) },

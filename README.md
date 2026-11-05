@@ -58,8 +58,8 @@ Glutsteine can't be turned into Taler.
 
 Catches, lost fish, quests and Fischdex rewards give XP toward angler levels, which unlock gear. Catch bonuses add up rather than multiply: catch streaks, clean catches (tension under 70 %), mutations, shinies, night fishing and the first catches of each day. Every 5 levels a milestone gives Schuppen, and every 10 levels a mystery box.
 
-- **Rebirth** is available from level 12, and each one needs 2 more levels. It gives Schuppen and a permanent +20 % Taler, and resets level, Taler, rods, bait, quests, the forge, Glutsteine and the cave depth. The Fischdex, records and talents stay.
-- **Prestige** needs 7 rebirths the first time, then one fewer each time (6, 5, then always 4, `presReb()`). It also resets rebirths, Schuppen and talents. It gives Perlen, a permanent +100 % Taler and +25 % XP. 40 % of the rebirths before it stay in the Taler bonus as an Erbe (`rebHeir`). Ranks count `rebirthsTotal`, so ranks and rebirth cosmetics stay.
+- **Rebirth** is available from level 12, and each one needs 2 more levels, plus 2 more per prestige (`rebirthLvl()`), so the prestige XP bonus doesn't make every run shorter. It gives Schuppen and a permanent +20 % Taler, and resets level, Taler, rods, bait, quests, the forge, Glutsteine and the cave depth. The Fischdex, records and talents stay.
+- **Prestige** needs 7 rebirths the first time, then 6, then 5 for prestiges 3–5, and from the 6th one more every three prestiges, at most 10 (`presReb()`). It also resets rebirths, Schuppen and talents. It gives Perlen, a permanent +100 % Taler and +25 % XP. 40 % of the rebirths before it stay in the Taler bonus as an Erbe (`rebHeir`). Ranks count `rebirthsTotal`, so ranks and rebirth cosmetics stay.
 
 | Rebirth | Unlocks |
 |---|---|
@@ -235,9 +235,9 @@ Fish that moved to a harder area are worth more Taler there, in line with the ot
 
 The buoy next to Bealin takes you onto the boat, and the steering wheel takes you back. Every cast out here counts as far out.
 
-Elfbar (junk, since `2026-11-05-6`): an empty disposable vape at the dock and on the High Seas.
+Elfbar (junk, since `2026-11-05-7`): an empty disposable vape at the dock and on the High Seas.
 
-Talerfisch (since `2026-11-05-6`): rare, at the dock and on the High Seas, worth 90 Taler, a golden fish in a tracksuit with a gold chain, a crossbody bag and a vape.
+Talerfisch (since `2026-11-05-7`): rare, at the dock and on the High Seas, worth 90 Taler, a golden fish in a tracksuit with a gold chain, a crossbody bag and a vape.
 
 Deep-sea catches (since `2026-11-05-3`): Beilfisch, Alter Taucherhelm (junk), Riesenassel, Leuchtqualle (night), Fangzahnfisch (far), Pelikanaal (night) and the legendary Megalodon (very far).
 
@@ -301,7 +301,7 @@ Deep cave catches (since `2026-11-05-3`): Schmelzente (junk) and Lavalampenfisch
 
 ### Sonneninsel
 
-From the 3rd prestige the seaplane at the end of the dock (`flieger`) flies you to a volcano island (since `2026-11-05-7`). The first arrival plays a short intro (`inselSeen`): you jump out with a parachute and Coach Pelle, a pelican with a whistle, greets you. **Nothing on the island ever resets**, apart from a running Angelturnier.
+From the 3rd prestige the seaplane at the end of the dock (`flieger`) flies you to a volcano island (since `2026-11-05-8`). The first arrival plays a short intro (`inselSeen`): you jump out with a parachute and Coach Pelle, a pelican with a whistle, greets you. **Nothing on the island ever resets**, apart from a running Angelturnier.
 
 **Bays** (`INSEL_BAYS`, `inselBay()`) open with stamps. Each has its own painted world (`img/welt-insel-1..5.png`) and fish, and every catch on the island is worth `inselMult()` = 1.3 × (1 + 0.1 × (bay − 1)) more.
 

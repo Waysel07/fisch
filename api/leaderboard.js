@@ -31,7 +31,7 @@ const BOARDS = {
   monster: { max: 1e6, step: (dt) => 20 + dt / 20 },        // Fänge der Größenklasse „Monster“
   boss:   { max: 1e5,  step: (dt) => 2 + dt / 60 },         // besiegte Odfische
   spent:  { max: 1e10, step: (dt) => 200000 + dt * 20000 }, // im Laden ausgegebene Taler
-  prestige: { max: 1000, step: (dt) => 1 + dt / 3600 },     // Prestige (das erste braucht 7 Wiedergeburten, danach weniger)
+  prestige: { max: 1000, step: (dt) => 1 + dt / 3600 },     // Prestige (braucht 5–7 Wiedergeburten, später mehr)
   sport:  { max: 22500, step: (dt) => 300 + dt * 3 },       // Sonneninsel: Summe des Könnens an allen 9 Sportstationen (je 0–2500)
 };
 const WEEK_TTL = 21 * 86400; // Wochenlisten bleiben drei Wochen, dann löscht Redis sie
@@ -150,9 +150,11 @@ module.exports = async function handler(req, res) {
 
     // Plausibilität gegenüber dem letzten Stand
     const prev = last ? JSON.parse(last) : { t: Date.now() - 3600e3, s: {} };
-    const dt = Math.max(0, (Date.now() - prev.t) / 1000);
-    const scores = {}, skipped = [];
+    // each list keeps its own clock: a skipped list keeps its old time, so the allowed jump grows until it catches up
+    const now = Date.now(), times = {}, skipped = [], scores = {};
     for (const [b, rule] of Object.entries(BOARDS)) {
+      const since = prev.ts && Number.isFinite(prev.ts[b]) ? prev.ts[b] : prev.t;
+      const dt = Math.max(0, (now - since) / 1000);
       // ältere Spielversionen schicken neue Listen noch nicht mit: dann 0 (= kein Eintrag dort)
       const raw = body.scores && body.scores[b];
       const v = raw === undefined ? 0 : Math.floor(Number(raw));
@@ -160,15 +162,15 @@ module.exports = async function handler(req, res) {
       const known = !last || prev.s[b] !== undefined;
       // an implausible value only skips that one list (it keeps its last value) instead of blocking every other list
       if (!Number.isFinite(v) || v < 0 || v > rule.max || (known && v - (prev.s[b] || 0) > rule.step(dt))) {
-        skipped.push(b); if (prev.s[b] !== undefined) scores[b] = Math.max(0, Math.floor(Number(prev.s[b]) || 0)); continue;
+        skipped.push(b); times[b] = since; if (prev.s[b] !== undefined) scores[b] = Math.max(0, Math.floor(Number(prev.s[b]) || 0)); continue;
       }
-      scores[b] = v;
+      scores[b] = v; times[b] = now;
     }
 
     const keys = Object.keys(BOARDS), wk = weekId();
     const out = await redis([
       ['HSET', 'lb:names', id, name],
-      ['SET', 'lb:last:' + id, JSON.stringify({ t: Date.now(), s: scores })],
+      ['SET', 'lb:last:' + id, JSON.stringify({ t: now, s: scores, ts: times })],
       // Werte dürfen nur steigen (GT); 0 heißt „noch nichts“ und wird nicht eingetragen
       ...keys.map((b) => scores[b] > 0 ? ['ZADD', keyOf(b, wk), 'GT', scores[b], id] : ['ZSCORE', keyOf(b, wk), id]),
       ...keys.map((b) => ['ZREVRANK', keyOf(b, wk), id]),

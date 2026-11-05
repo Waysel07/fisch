@@ -2,7 +2,7 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
-## 05.11.2026 · `2026-11-05-7`
+## 05.11.2026 · `2026-11-05-8`
 
 - 🌴 New world – Sun Island: from 3 prestiges the island plane (seaplane at the dock) flies you to a volcano island with five bays. Everything you achieve there stays forever – even after rebirth and prestige.
 - 🏅 Nine sports stations with Coach Pelle: Frisbee, Fishing Tournament, Island Flight, Jet Ski, Surfing, Archery, Beach Volleyball, Table Tennis and Beach Bowling. Each has two modes, three levels and bronze, silver and gold medals.
@@ -12,11 +12,17 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 - 🐠 22 new island fish, from the Coconut Fish to the Giant Manta Ray, with their own Fishdex tab. Catches on the island are worth more coins, the further the bay, the more.
 - 🍹 New in Zylinderwels’ Beach Hut: mango bait, Hawaiian shirt, straw hat and coconut bobber. Plus headband, aviator cap, track jacket and trophy hat as rewards, the “Athletes” leaderboard and new weekly goals.
 
-## 05.11.2026 · `2026-11-05-6`
+## 05.11.2026 · `2026-11-05-7`
 
 - 💰 New fish: the Taler Fish – golden head, tracksuit, gold chain, crossbody bag and vape. Rare, at the dock and on the High Seas, and it brings in real coins.
 - 🗑️ New junk: the Elf Bar, an empty disposable vape. Found in the water at the dock and on the High Seas.
 - 🐚 The Magic Conch talks again: it now waits until the browser has loaded its voices, and works on iPhone and iPad too. If your device has no built-in voice, the game tells you.
+
+## 05.11.2026 · `2026-11-05-6`
+
+- ⚖️ Prestige rebalanced: until now every prestige went faster than the one before. From now on each rebirth needs 2 more levels per prestige – so the prestige XP bonus keeps you at pace instead of skipping levels.
+- ✦ A prestige now needs at least 5 rebirths instead of 4, and from the 6th prestige one more every three prestiges (at most 10). Your coin bonus, Perlen and everything you already have stay.
+- 🏆 Leaderboard: if you did two rebirths in quick succession, your “Rebirths” entry got stuck since this morning. It now catches up by itself.
 
 ## 05.11.2026 · `2026-11-05-5`
 
