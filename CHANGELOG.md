@@ -6,6 +6,7 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 
 - ⚖️ Prestige rebalanced: until now every prestige went faster than the one before. From now on each rebirth needs 2 more levels per prestige – so the prestige XP bonus keeps you at pace instead of skipping levels.
 - ✦ A prestige now needs at least 5 rebirths instead of 4, and from the 6th prestige one more every three prestiges (at most 10). Your coin bonus, Perlen and everything you already have stay.
+- 🏆 Leaderboard: if you did two rebirths in quick succession, your “Rebirths” entry got stuck since this morning. It now catches up by itself.
 
 ## 05.11.2026 · `2026-11-05-5`
 

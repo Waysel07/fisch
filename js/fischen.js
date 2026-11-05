@@ -210,6 +210,7 @@
     { id: '2026-11-05-6', date: '05.11.2026', items: [
       '⚖️ Prestige ausbalanciert: Jedes Prestige wurde bisher schneller als das letzte. Ab jetzt braucht jede Wiedergeburt pro Prestige 2 Level mehr – der EP-Bonus vom Prestige hält dich also im Tempo, statt Level zu überspringen.',
       '✦ Ein Prestige braucht jetzt mindestens 5 Wiedergeburten statt 4, und ab dem 6. Prestige alle drei Stufen eine mehr (höchstens 10). Taler-Bonus, Perlen und alles, was du schon hast, bleiben.',
+      '🏆 Bestenliste: Wer zwei Wiedergeburten kurz hintereinander geschafft hat, dessen Eintrag bei „Wiedergeburten“ blieb seit heute Vormittag stehen. Er holt jetzt von selbst auf.',
     ] },
     { id: '2026-11-05-5', date: '05.11.2026', items: [
       '🏆 Bestenliste repariert: Mit mehr als 99 Fischen im Fischdex wurde dein Eintrag abgelehnt und keine Liste mehr aktualisiert. Jetzt kommen alle Werte wieder an.',
