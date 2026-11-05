@@ -5,6 +5,7 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 ## 05.11.2026 · `2026-11-05-5`
 
 - 💰 New fish: the Taler Fish – golden head, tracksuit, gold chain, crossbody bag and vape. Rare, at the dock and on the High Seas, and it brings in real coins.
+- 🗑️ New junk: the Elf Bar, an empty disposable vape. Found in the water at the dock and on the High Seas.
 - 🐚 The Magic Conch talks again: it now waits until the browser has loaded its voices, and works on iPhone and iPad too. If your device has no built-in voice, the game tells you.
 
 ## 05.11.2026 · `2026-11-05-4`

@@ -1509,3 +1509,23 @@ F('talerfisch', 74, 40, {}, (c0) => {
   c.circ(-4, 16, 3, '#cbd5e1'); c.circ(-2, 12, 3, '#e2e8f0'); c.circ(-6, 9, 2, '#f1f5f9'); c.circ(1, 8, 2, '#e2e8f0')
   c.px(-3, 11, '#ffffff'); c.px(-6, 8, '#ffffff')
 })
+
+// ---------------------------------------------------------------- Neu 2026-11-05: Elfbar (Müll)
+F('elfbar', 44, 22, {}, (c) => {
+  // Leere Einweg-Vape, Verlauf Blau nach Pink, Mundstück links, ein Algenfaden und Wassertropfen
+  const G = ['#22d3ee', '#38bdf8', '#60a5fa', '#818cf8', '#a78bfa', '#c084fc', '#e879f9', '#f472b6', '#ec4899']
+  for (let x = 9; x <= 38; x++) {
+    const k = G[Math.min(G.length - 1, Math.floor((x - 9) / 30 * G.length))], r = x === 9 || x === 38 ? 1 : 0
+    c.vline(x, 4 + r, 11 - 2 * r, k)
+    c.px(x, 5 + r, '#f0f9ff')
+    c.px(x, 14 - r, '#1e1b4b')
+  }
+  c.rect(2, 6, 7, 7, '#18181b'); c.hline(2, 6, 7, '#52525b'); c.rect(1, 8, 1, 3, '#0a0a0a')   // Mundstück
+  c.rect(4, 9, 2, 1, '#3f3f46')
+  // Schriftzug: kleine weiße Blöcke
+  for (const [x, w] of [[15, 3], [19, 2], [22, 3], [27, 3], [31, 2]]) c.rect(x, 9, w, 2, '#ffffff')
+  c.rect(36, 8, 1, 3, '#fde047')                                                              // Lüftungsschlitz
+  // Algenfaden und Tropfen
+  for (let i = 0; i < 9; i++) c.px(28 + i, 16 + Math.round(Math.sin(i * 0.9) * 1.2), i % 2 ? '#15803d' : '#22c55e')
+  drop(c, 41, 3); drop(c, 6, 2)
+})
