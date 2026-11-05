@@ -233,10 +233,13 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
-    { id: '2026-11-05-5', date: '05.11.2026', items: [
+    { id: '2026-11-05-6', date: '05.11.2026', items: [
       '💰 Neuer Fisch: der Talerfisch – goldener Kopf, Trainingsanzug, Goldkette, Bauchtasche und Vape. Selten, am Steg und auf Hoher See, und er bringt richtig Taler.',
       '🗑️ Neuer Müll: die Elfbar, eine leere Einweg-Vape. Liegt am Steg und auf Hoher See im Wasser.',
       '🐚 Die Magische Miesmuschel spricht wieder: Sie wartet jetzt, bis der Browser seine Stimmen geladen hat, und funktioniert auch auf iPhone und iPad. Hat dein Gerät keine eingebaute Stimme, sagt das Spiel Bescheid.',
+    ] },
+    { id: '2026-11-05-5', date: '05.11.2026', items: [
+      '🏆 Bestenliste repariert: Mit mehr als 99 Fischen im Fischdex wurde dein Eintrag abgelehnt und keine Liste mehr aktualisiert. Jetzt kommen alle Werte wieder an.',
     ] },
     { id: '2026-11-05-4', date: '05.11.2026', items: [
       '📜 Aufträge neu ausbalanciert: Die Taler-Belohnung wächst jetzt mit deinem Taler-Bonus, die EP mit deinem Level. Aufträge verlangen nur noch Fische, die du gerade fangen kannst, und Größen, die dort auch vorkommen.',

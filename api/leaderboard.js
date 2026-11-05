@@ -25,7 +25,7 @@ const BOARDS = {
   taler:  { max: 1e10, step: (dt) => 200000 + dt * 20000 }, // insgesamt verdiente Taler
   woche:  { max: 1200, step: () => 1200, week: true },      // größter Fisch dieser Woche in cm (ohne Müll), Montag neu
   reb:    { max: 1e5,  step: (dt) => 1 + dt / 240 },        // Wiedergeburten insgesamt (fallen beim Prestige nicht)
-  dex:    { max: 9999, step: () => 9999 },                  // Fische × 100 + Mutationen
+  dex:    { max: 99999, step: () => 99999 },                // Fische × 100 + Mutationen (über 100 Fische geht es über 9999)
   diamant: { max: 1000, step: (dt) => 1 + dt / 60 },        // Fische mit Diamant-Medaille
   rekord: { max: 1200, step: () => 1200 },                  // größter Fang in cm (Monster-Klasse und Mutationen können weit übers Maximum gehen)
   monster: { max: 1e6, step: (dt) => 20 + dt / 20 },        // Fänge der Größenklasse „Monster“
@@ -151,15 +151,17 @@ module.exports = async function handler(req, res) {
     // Plausibilität gegenüber dem letzten Stand
     const prev = last ? JSON.parse(last) : { t: Date.now() - 3600e3, s: {} };
     const dt = Math.max(0, (Date.now() - prev.t) / 1000);
-    const scores = {};
+    const scores = {}, skipped = [];
     for (const [b, rule] of Object.entries(BOARDS)) {
       // ältere Spielversionen schicken neue Listen noch nicht mit: dann 0 (= kein Eintrag dort)
       const raw = body.scores && body.scores[b];
       const v = raw === undefined ? 0 : Math.floor(Number(raw));
-      if (!Number.isFinite(v) || v < 0 || v > rule.max) return send(res, 400, { error: 'Unplausibler Wert: ' + b });
       // a board this player never sent before (a new list) only checks the maximum; brand-new players still check the jump
       const known = !last || prev.s[b] !== undefined;
-      if (known && v - (prev.s[b] || 0) > rule.step(dt)) return send(res, 400, { error: 'Unplausibler Sprung: ' + b });
+      // an implausible value only skips that one list (it keeps its last value) instead of blocking every other list
+      if (!Number.isFinite(v) || v < 0 || v > rule.max || (known && v - (prev.s[b] || 0) > rule.step(dt))) {
+        skipped.push(b); if (prev.s[b] !== undefined) scores[b] = Math.max(0, Math.floor(Number(prev.s[b]) || 0)); continue;
+      }
       scores[b] = v;
     }
 
@@ -175,7 +177,7 @@ module.exports = async function handler(req, res) {
     ]);
     const n = keys.length, ranks = {};
     keys.forEach((b, i) => { const r = out[2 + n + i]; ranks[b] = { rank: r === null ? null : r + 1, of: out[2 + 2 * n + i] }; });
-    return send(res, 200, { ok: true, ranks, me: sha(id).slice(0, 12) });
+    return send(res, 200, { ok: true, ranks, me: sha(id).slice(0, 12), skipped });
   } catch (e) {
     console.error(e);
     return send(res, 502, { error: 'Bestenliste gerade nicht erreichbar.' });

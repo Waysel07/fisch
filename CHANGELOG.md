@@ -2,11 +2,15 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
-## 05.11.2026 · `2026-11-05-5`
+## 05.11.2026 · `2026-11-05-6`
 
 - 💰 New fish: the Taler Fish – golden head, tracksuit, gold chain, crossbody bag and vape. Rare, at the dock and on the High Seas, and it brings in real coins.
 - 🗑️ New junk: the Elf Bar, an empty disposable vape. Found in the water at the dock and on the High Seas.
 - 🐚 The Magic Conch talks again: it now waits until the browser has loaded its voices, and works on iPhone and iPad too. If your device has no built-in voice, the game tells you.
+
+## 05.11.2026 · `2026-11-05-5`
+
+- 🏆 Leaderboard fixed: with more than 99 fish in the Fishdex your entry was rejected and none of your lists updated anymore. All your scores get through again now.
 
 ## 05.11.2026 · `2026-11-05-4`
 
