@@ -233,6 +233,10 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-05-12', date: '05.11.2026', items: [
+      '🏝️ Mehr Insel als je zuvor: Auf der Inselkarte gibt es jetzt eine Hafenstadt mit Rathaus, Markt und Booten am Kai, eine Ferienanlage mit Pool und Wasserbungalows, einen Flugplatz, ein Stadion, Felder mit Windmühle, Obstgärten, eine glühende Lavarinne am Vulkan, Sonnenschirme, Segelboote und kleine Nachbarinseln. Im Rundflug gibt es überall etwas zu entdecken.',
+      '🏐 Schönere Minispiele: Bälle, Pins, Bojen, Ballons und die Frisbee-Scheibe haben Licht und Schatten, die Zielscheibe steht auf einem Holzgestell, und beim Beachvolleyball und Bogenschießen jubeln Zuschauer bei jedem Punkt. Die Surfwelle bricht jetzt sichtbar, mit Lippe, Gischt und Weißwasser, über den Stränden ziehen Möwen und Segler, und die Anzeigen sind auf dunklem Grund besser zu lesen.',
+    ] },
     { id: '2026-11-05-11', date: '05.11.2026', items: [
       '🖼️ Die Sonneninsel in neuem Pixel-Look: Alle Sportplätze haben gemalte Kulissen – Strand mit Palmen und Fernsicht beim Frisbee, Bogenschießen und Beachvolleyball, ein Holzpavillon fürs Tischtennis, eine echte Bowlingbahn im Sand und fließendes Wasser beim Jetski. Die Inselkarte im Rundflug und bei Pelle ist ganz neu gezeichnet, mit Höhenlicht, Dschungelkronen, Riff und Brandung.',
     ] },
@@ -1885,6 +1889,8 @@
 
   // Sprites as char rows, drawn in img/pxl/code.px.js. 1 char = 1 fine pixel = 0.5 world units.
   const ART = {
+    sp_fan_1: [["..kkkkkkk..",".kshhhhhSk.",".kchssSHCk.",".kcsssSsCk.",".kcsssSsCk.",".kckssskCk.",".kcccccCCk.","..kccccCk..","..kccccCk..","..kccccCk..","..kCCCCCk..","...kpkPk...","...kpkPk...","...kpkPk...","....k.k....","..........."], {"k":"#1b1f2e","s":"#f2c9a0","h":"#7c4a24","S":"#d9a47a","c":"#ef4444","H":"#4a2a12","C":"#b91c1c","p":"#334155","P":"#1e293b"}],
+    sp_fan_0: [["...kkkkk...","..khhhhhk..","..khssSHk..","..ksssSsk..","..ksssSsk..","...ksssk...","..kccccCk..",".kcccccCCk.",".kcccccCCk.",".kcccccCCk.",".ksCCCCCSk.","..kkpkPkk..","...kpkPk...","...kpkPk...","....k.k....","..........."], {"k":"#1b1f2e","h":"#7c4a24","s":"#f2c9a0","S":"#d9a47a","H":"#4a2a12","c":"#ef4444","C":"#b91c1c","p":"#334155","P":"#1e293b"}],
     beachhut: [["................................................................","..........abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba.........",".........acdddddddddddddddddddddddddddddddddddddddddddca........","........aceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeck.......","........feghijjijijijjijijihjgjgjgjhihijijjijijgjjijghgek.......",".......achhghihihjgjgjgjhihihihjghgjgjhihihihjgjgjgjhghgck......",".......lmnnnnnnnnonnnnnnnnnonononnnononnnnnnnnnonnnnnnnnek......","......achhhhhhhhhhhhhhhhhhhjhjhjhhhjhjhhhhhhhhhjhhhhhhhhjck.....",".....aceghghhghghghhghghghhghghghhghghghhghghghhghghghhghpk.....",".....fejhijihghhghghghhghghghhghgjghhghghghhghghghhgjijihjck....","....achjnoooqnqnqnqnqnqnqnqnqnqnqoqnqnqnqnqnqnqnqnqnoooohjek....","....fehhjjjjrhrhrhrhrhrhrhrhrhrhrjrhrhrhrhrhrhrhrhrhjjjjhhhck...","...achghijjirsrsrhshshsrrsrgrgrhsjshshrgrgrsrrshshshjijirghek...","...fehhgjijihrgrghgrhshshshhghghgjhghghshrgrgrghhshsjijjshghtk..","..acuhuhjjjjurururururururuhuhuhujuhuhururururuhururjjjjuhuhtk..","..fevhvhjjjjvrvhvrvrvrvrvhvhvhvhvjvhvhvrvrvrvhvhvrvrjjjjvhvhhtk.","..whkukrxhytkhkukrkrkrkhkukhkhkhkhkhkhkrkrkhkukrkrkrzhytkrkhkk..","..AukBkrxhytkukBkrkrkhkukBkhChkhkhkDkhkrkhkukBkrkrkezhyEkrkrk...","..FBkkkrGhGtkBkkkhkhkukBkkkrHrkrknkIkrkhkukBkkkrkhkuGnGJkrkrk...","...k..fezhyEkk..whkukBkkkKKLMLKLKNKLKLKukBkk..OrkukBzyyPkhkuk...","......AuznyPk...AukBkk..QRSTUTSTSUSTSTRBkk....OrkBkkVyyPkukBk...","......FBzyyPk...FBkk....QRUWXWXWXXUTUTYk......Zqkk.0VyyPkBkk....",".......0VyyPk....k......QRUTUTUTUUUTUTYk......123k.0VyyPkk......",".......0VyyPk...45k.....QRUXXXXXXXXXUUYk.....672781kVyyPk.......",".......9!GGJk...45k.....#LTUTUTUTUTUTULk....672$2222GGGJk.......",".......0VyyPk..%&k......#LTXWXWXTU*UTULk...6722+-2222yyPk.......",".......0VyyPk==k?k......@Y^^^^^^^U_^^^Yk....kkkk-kkkVyyPk.......",".......0Vyy~<<<&>k......|;;;;;;;;:;;;;;k....ÀÁÁÁÂÁkkVyyPk.......",".......0Vyy~ÃÃÃÃÄk.......kkkkkkkk:kkkkk.....ÅÆÆÆÇÈkkVyyPk.......",".......0Vyy~ÉÉÉÉÊk..........ËÌÌÌÍÎk.........ÅÆÏÏÇÐkkVyyPk.......",".......9!GGGÉÉÉÉÊk.........ËÌÑÑÑÑÒÌk........ÅÆÏÏÇÐkk!GGJk.......",".......0Vyy~ÓÓÓÓÊk.........ÔÕÖÖÖÖÖÕk........×ÇÇÇÏØkkVyyPk.......",".ÙÙÙÙÙÙkVyy~ÓÓÓÓÊkÙÙÙÙÙÙÙÙÙkÕÖÖÖÖÖÎkÙÙÙÙÙÙÙÙkÇÇÇÏØkkVyyPkÙÙÙÙÙÙ.","ÙÚÚÚÚÚÚÚÛÛÛÛÜÜÜÜÜÚÚÚÚÚÚÚÚÚÚÚÛÜÜÜÜÛÛÚÚÚÚÚÚÚÚÚÚÜÜÜÛÜÚÚÛÛÛÛÚÚÚÚÚÚÚk","ÝÞÞÞÞÞÞÞßßßßààààßÞÞÞÞÞÞÞÞÞÞÞàààààßàÞÞÞÞÞÞÞÞÞÞàààßàÞÞßßßßÞÞÞÞÞÞÞk","áââßßßßßßßßßßßßßßßßßßßßßßßßßàààààßàßßßßßßßßßßßßßßßßßßßßßßßßßßßãk","äååæææææçççççççççææææææææææææææææçæææææææææææçççççææççççæææææææk",".kkxèèéxyy~zyy~zyèéxèèéxèèéxèy~zyyéxèèéxèèéxèy~zyyéxyy~zèèéxèèék","..êxèèéxyy~zyy~zyèéxèèéxèèéxyy~zyy~xèèéxèèéxèy~zyyéxyy~zèèéxèèék","..êxèèéxyëìíyy~zyèéxèèéxèèéxyy~zyë~xèèéxèèéxèy~zyyéxëëìíèèéxèèék","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..9!GGGGîîîîGGGGGGGGGGGGGGGGGGGGGîGGGGGGGGGGGGGGGGGGîîîîGGGGGGJk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zëy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zëy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zëy~zëëìíyy~zyyPk","..0Vyy~zëëìíëëìíëy~zyy~zyy~zyëìíëë~zyy~zyy~zyëìíëë~zëëìíyy~zyyPk","..0Vyy~zëëìíëëìíëy~zyy~zyy~zëëìíëëìzyy~zyy~zyëìíëë~zëëìíyy~zyyPk","..ïîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîk","..ðíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìk","..ðíëëìíyy~zëëìíëëìíëëìíëëìíëëìíëyìíëëìíëëìíëëìíëëìíyy~zëëìíëëìk","..ðíëëìíyy~zëëìíëëìíëëìíëëìíëëìíëyìíëëìíëëìíëëìíëëìíyy~zëëìíëëìk","..ðíëëìíyy~zëëìíëëìíëëìíëëìíëëìíëyìíëëìíëëìíëëìíëëìíyy~zëëìíëëìk","..ðíëëìíyy~zëëìíëëìíëëìíëëìíëëìíëyìíëëìíëëìíëëìíyëìíyy~zëëìíëëìk","..ðíëëìíyy~zyy~zyëìíëëìíëëìíyy~zyy~íëëìíëëìíëy~zyyìíyy~zëëìíëëìk","..9!GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGJk","..0Vyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyyPk","..0Vyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyyPk",".ñkòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôk","ñõçååååååååååååååååååååååååååååååååååååååååååååååååååååååååååååk",".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk."], {"0":"#696051","1":"#6d3f62","2":"#f472b6","3":"#f79ac0","4":"#1e5e40","5":"#22c55e","6":"#6e4563","7":"#f582ba","8":"#dc68a9","9":"#453c33","a":"#635849","b":"#6f6b62","c":"#d9b675","d":"#f9e8b6","e":"#cfa55b","k":"#1b1f2e","f":"#5f523f","g":"#e9c77b","h":"#c99a4a","i":"#ebcb83","j":"#cea256","l":"#544838","m":"#b28a48","n":"#a87b34","o":"#af8542","p":"#eccd86","q":"#966e37","r":"#b3894a","s":"#ceaf74","t":"#b68b4a","u":"#b48a4a","v":"#99754a","w":"#5d4e39","x":"#e8c886","y":"#c9a15a","z":"#e6c47e","A":"#554839","B":"#825f3b","C":"#896b53","D":"#57301a","E":"#997037","F":"#423733","G":"#7a5726","H":"#6b4831","I":"#512e21","J":"#70502a","K":"#766753","L":"#392821","M":"#4b3b2a","N":"#3b2a1a","O":"#554739","P":"#8d6936","Q":"#302c2f","R":"#534231","S":"#3a423a","T":"#212829","U":"#1f2a24","V":"#e9ca89","W":"#c8ccd9","X":"#e2e8f0","Y":"#392920","Z":"#4a3d31","!":"#8a6a3b","#":"#262229","$":"#da67a8","%":"#37644e","&":"#64d483","*":"#ddb41c","+":"#b75996","-":"#a16207","=":"#716862","?":"#3dcb6d","@":"#262329","^":"#202929","_":"#dfb61c","~":"#9a7333","<":"#fee0b8",">":"#e5c19e","|":"#25222c",";":"#362728",":":"#facc15","À":"#5f6d78","Á":"#cfebf2","Â":"#a96e19","Ã":"#fb9e4f","Ä":"#d35113","Å":"#2f5e79","Æ":"#50c4f4","Ç":"#49c2f5","È":"#2092c9","É":"#fb923c","Ê":"#ec651d","Ë":"#4f433f","Ì":"#a37e5a","Í":"#fcd950","Î":"#724529","Ï":"#38bdf8","Ð":"#0778b8","Ñ":"#ab7743","Ò":"#a0662f","Ó":"#fb9a49","Ô":"#463733","Õ":"#8c5f3a","Ö":"#7c4a24","×":"#2c5d7a","Ø":"#178ec8","Ù":"#5d5047","Ú":"#c89f70","Û":"#b07a44","Ü":"#b78450","Ý":"#4b3d35","Þ":"#996d40","ß":"#8b5a2b","à":"#95673a","á":"#41322e","â":"#7e522f","ã":"#7f532f","ä":"#2e252b","å":"#4c2e26","æ":"#694426","ç":"#5b3416","è":"#cea865","é":"#a27e41","ê":"#695f4f","ë":"#b38f58","ì":"#8a6736","í":"#ccad77","î":"#6f4f2b","ï":"#3b312d","ð":"#5e554a","ñ":"#3b302e","ò":"#ceaf77","ó":"#b49058","ô":"#8b6836","õ":"#6f4b2d"}],
     pelle_fly_1: [["........................................","........................................","........................................","........................................","........................................","........................................","........................................","........................................","...........aaaaa........................","..........bcccccb....aaaaaaaaa........d.",".........aefffffeaaaacccccccccaaa..dddgk",".....hhhhcijklllicccciiiiiiiiicccadgggmk",".noopqqqqrskklllliiiillttttttliiicgmmmuk","nrvvwxxxxvsllllllllllllllllllllllimyyyuk","zAssrsvvBvvCCCCCllllllllllllllllllDDDyuk",".kkxBBvvEBBFFFFFGGllyHHyyyyyyHyylCIIIDDk","...JEEBBkEEkkkkkKKCCCHHyLyyyLHMDCFkkkIIk","....kkEEvkk.....kkNNNDDHOHHHODHNFk...kk.","......kkk.........kkkFIHHOHHOIDkk.......",".....................kkDDPDDPkIk........","......................QIIRIIRuk.........",".......................kkkkkkk.........."], {"a":"#707278","b":"#6d4147","c":"#faf9f1","d":"#6a6d75","e":"#f47970","f":"#f15956","g":"#ebece9","k":"#1b1f2e","h":"#6f5938","i":"#f9faf8","j":"#ffffff","l":"#f8fafc","m":"#e5eaed","n":"#6e532a","o":"#705c2a","p":"#71623f","q":"#f8b849","r":"#f6a924","s":"#f59e0b","t":"#f9faf9","u":"#ccd0dc","v":"#fbbf24","w":"#fcd05a","x":"#fbc63a","y":"#e2e8f0","z":"#654628","A":"#de861f","B":"#e0aa29","C":"#dddee5","D":"#caceda","E":"#bc8f2f","F":"#bab8c7","G":"#dfb61c","H":"#c8ccd9","I":"#abacbe","J":"#584a2e","K":"#bc9825","L":"#94a3b8","M":"#dbdbe3","N":"#9b9eb4","O":"#8591a9","P":"#8692aa","Q":"#525565","R":"#747b97"}],
     pelle_fly_0: [["..........................aaa...........",".........................abbbaaa........","........................abcccbbbk.......","........................dceffgcck.......",".......................abfeffehik.......",".......................dcfjhhelik.......","......................abfhjhhjmlk.......",".....................abcfhjhhnkmk.......","...........ooooo.....dcfhhjhjhbk........","..........pqqqqqp...abfhhhjhjhck......a.",".........orsssssroookchhhhjhjhiko..aaabk",".....ttttquvkwwwuqqqbhhhhhjhjhhqqoabbbck",".xyyzAAAABCkkwwwwuuuchhhhDDDDDhuuqbcccik","xBEEFGGGGECwwwwwwwwwwwwwHHHHHHwwwuchhhik","IJCCBCEEKEELLLLLwwwwwwHHHHHHHHHwwwlllhik",".kkGKKEEMKKNNNNNOOwwwHHHHHHHHHHwwLmmmllk","...PMMKKkMMkkkkkQQLLLHHHwwwwwwLLLNkkkmmk","....kkMMEkk.....kkRRRSSSSSSSSSRRNk...kk.","......kkk.........kkkNNNNNNNNNkkk.......",".....................kkkkkkkkk..........","........................................","........................................"], {"a":"#6a6d75","b":"#ebece9","c":"#e5eaed","k":"#1b1f2e","d":"#686c77","e":"#9daabb","f":"#e4e9ee","g":"#a1adbc","h":"#e2e8f0","i":"#ccd0dc","j":"#94a3b8","l":"#caceda","m":"#abacbe","n":"#8793ab","o":"#707278","p":"#6d4147","q":"#faf9f1","r":"#f47970","s":"#f15956","t":"#6f5938","u":"#f9faf8","v":"#ffffff","w":"#f8fafc","x":"#6e532a","y":"#705c2a","z":"#71623f","A":"#f8b849","B":"#f6a924","C":"#f59e0b","D":"#c8ccd9","E":"#fbbf24","F":"#fcd05a","G":"#fbc63a","H":"#dbdbe3","I":"#654628","J":"#de861f","K":"#e0aa29","L":"#dddee5","M":"#bc8f2f","N":"#bab8c7","O":"#dfb61c","P":"#584a2e","Q":"#bc9825","R":"#9b9eb4","S":"#b6bdcd"}],
@@ -3173,6 +3179,81 @@
   }
   const rnd = (a, b) => a + Math.random() * (b - a);
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  // lit props for the sports, painted once into small canvases (2 px per world unit, light from the top left like the ART sprites):
+  // tone ramps light → deep with ordered dither between the bands, an ink outline and a glint
+  const spCache = new Map(), BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+  function spPaint(key, w, h, fn) {
+    let c = spCache.get(key);
+    if (!c) { c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); fn((X, Y, col) => { x.fillStyle = col; x.fillRect(X, Y, 1, 1); }, w, h); spCache.set(key, c); }
+    return c;
+  }
+  // ellipse rx × ry (world units); pick(u, v) → ramp name for the surface at u, v (−1…1), so a ball can have panels or a band
+  function litEll(key, rx, ry, ramps, pick = () => 'a', glint = true) {
+    const A = Math.round(rx * 2), B = Math.round(ry * 2);
+    return spPaint(key, A * 2 + 3, B * 2 + 3, (set) => {
+      for (let y = -B - 1; y <= B + 1; y++) for (let x = -A - 1; x <= A + 1; x++) {
+        const u = x / A, v = y / B, d = Math.hypot(u, v), X = x + A + 1, Y = y + B + 1;
+        if (d > 1 + .7 / Math.min(A, B)) continue;
+        if (d > 1 - .5 / Math.min(A, B)) { set(X, Y, '#1b1f2e'); continue; }
+        const nz = Math.sqrt(Math.max(0, 1 - d * d)), l = -u * .5 - v * .62 + nz * .6, r = ramps[pick(u, v)] || ramps.a;
+        const k = clamp(Math.floor((1 - (l + .25) / 1.25) * (r.length - .01) + (BAYER[(Y & 3) * 4 + (X & 3)] / 16 - .5) * .9), 0, r.length - 1);
+        set(X, Y, r[k]);
+      }
+      if (glint) { set(Math.round(A * .55) + 1, Math.round(B * .5) + 1, '#ffffff'); if (A > 4) set(Math.round(A * .55) + 2, Math.round(B * .5) + 1, '#ffffff'); }
+    });
+  }
+  const sspr = (c, x, y) => sx.drawImage(c, snap(x - c.width / 4), snap(y - c.height / 4), c.width / 2, c.height / 2);
+  const BALLS = {
+    volley: () => litEll('volley', 3.4, 3.4, { a: ['#fff6c2', '#fde047', '#eab308', '#a16207'], b: ['#bfdbfe', '#3b82f6', '#1d4ed8', '#1e3a8a'], w: ['#ffffff', '#f1f5f9', '#cbd5e1', '#94a3b8'] },
+      (u, v) => { const k = Math.sin((u * 1.3 + v * .6) * 3.2); return k > .45 ? 'b' : k < -.55 ? 'w' : 'a'; }),
+    tt: () => litEll('tt', 2.2, 2.2, { a: ['#ffffff', '#fff7ed', '#fed7aa', '#f59e0b'] }),
+    bowl: () => litEll('bowl', 5.5, 5.5, { a: ['#93c5fd', '#3b82f6', '#1d4ed8', '#1e3a8a', '#172554'], s: ['#c4b5fd', '#8b5cf6', '#6d28d9', '#4c1d95', '#2e1065'] },
+      (u, v) => Math.sin(u * 4 + Math.cos(v * 3) * 2) > .55 ? 's' : 'a'),
+    pin: () => litEll('pin', 3, 3, { a: ['#ffffff', '#f8fafc', '#e2e8f0', '#94a3b8'], r: ['#fca5a5', '#ef4444', '#b91c1c', '#7f1d1d'] }, (u, v) => { const d = Math.hypot(u, v); return d > .5 && d < .72 ? 'r' : 'a'; }),
+    buoyR: () => litEll('buoyR', 4, 3.6, { a: ['#fca5a5', '#ef4444', '#b91c1c', '#7f1d1d'], w: ['#ffffff', '#f1f5f9', '#cbd5e1', '#94a3b8'] }, (u, v) => Math.abs(v + u * .2) < .22 ? 'w' : 'a'),
+    buoyY: () => litEll('buoyY', 4, 3.6, { a: ['#fef08a', '#facc15', '#ca8a04', '#854d0e'], w: ['#ffffff', '#f1f5f9', '#cbd5e1', '#94a3b8'] }, (u, v) => Math.abs(v + u * .2) < .22 ? 'w' : 'a'),
+    buoyG: () => litEll('buoyG', 4, 3.6, { a: ['#cbd5e1', '#94a3b8', '#64748b', '#334155'] }),
+    disc: () => litEll('disc', 3.6, 1.4, { a: ['#fed7aa', '#fb923c', '#ea580c', '#9a3412'] }),
+  };
+  const BAL_COL = { r: ['#fecaca', '#ef4444', '#b91c1c', '#7f1d1d'], b: ['#bfdbfe', '#3b82f6', '#1d4ed8', '#1e3a8a'], g: ['#bbf7d0', '#22c55e', '#15803d', '#14532d'], p: ['#fbcfe8', '#f472b6', '#db2777', '#831843'], y: ['#fef9c3', '#facc15', '#ca8a04', '#854d0e'] };
+  function sballoon(x, y, col) { // balloon with knot and a waving string, centre at x, y
+    for (let i = 0; i < 8; i++) sq(x - .25 + Math.sin(t * 3 + i * .7 + x) * .6 * (i / 8), y + 6.5 + i, .5, 1, '#e2e8f0');
+    sq(x - 1, y + 6, 2, 1, BAL_COL[col][2]); sspr(litEll('bal' + col, 5, 6, { a: BAL_COL[col] }), x, y);
+  }
+  // spectators: ART.sp_fan_* recoloured per seat; they jump and throw their arms up for g.cheer seconds
+  const FAN_PAL = { h: ['#7c4a24', '#1b1f2e', '#f5d76e', '#b45309', '#e5e7eb', '#c2410c'], c: ['#ef4444', '#3b82f6', '#22c55e', '#f59e0b', '#a855f7', '#ec4899', '#14b8a6', '#f8fafc'], s: ['#f2c9a0', '#d9a47a', '#a0662f', '#7c4a24', '#fde3c8'] };
+  const fanArt = new Map();
+  function sfan(x, foot, i, cheer) {
+    const up = cheer && Math.sin(t * 14 + i * 1.7) > -.2, k = i % 97 + '|' + (up ? 1 : 0);
+    if (!fanArt.has(k)) {
+      const [rows, map] = ART[up ? 'sp_fan_1' : 'sp_fan_0'], dk = (c, a = .72) => '#' + [1, 3, 5].map(o => Math.round(parseInt(c.substr(o, 2), 16) * a).toString(16).padStart(2, '0')).join('');
+      const h = FAN_PAL.h[i % 6], c = FAN_PAL.c[(i * 5 + 3) % 8], sk = FAN_PAL.s[(i * 3 + 1) % 5];
+      fanArt.set(k, bake(rows, { ...map, h, H: dk(h), c, C: dk(c), s: sk, S: dk(sk, .85) }, i % 2 === 1));
+    }
+    const img = fanArt.get(k), hop = cheer ? Math.abs(Math.sin(t * 9 + i * 1.3)) * 2 : Math.sin(t * 1.5 + i) > .96 ? .5 : 0;
+    sx.globalAlpha = .22; sq(x - 2.5, foot - .5, 5, 1, '#3b2a14'); sx.globalAlpha = 1;
+    sx.drawImage(img, snap(x - img.width / 4), snap(foot - img.height / 2 - hop + .5), img.width / 2, img.height / 2);
+  }
+  // a row of spectators from x0 to x1; cheers for a second after the watched score went up
+  function crowd(g, x0, x1, foot, score, n = 8, seed = 0) {
+    if (score > (g._cs ?? score)) g._cheer = 1.2; g._cs = score; g._cheer = Math.max(0, (g._cheer || 0) - 1 / 60);
+    for (let i = 0; i < n; i++) sfan(x0 + (x1 - x0) * (i + .5) / n + Math.sin(i * 7.3) * 2, foot + (i % 2) * 1.5, i + seed, g._cheer > 0);
+  }
+  // gulls and a far sail drifting over painted skies
+  function skyLife(horizon) {
+    for (let i = 0; i < 3; i++) {
+      const gx = ((i * 131 + t * (9 + i * 3)) % (W + 40)) - 20, gy = horizon * (.25 + i * .14) + Math.sin(t * .7 + i * 2) * 3, up = Math.sin(t * 7 + i * 2) > 0;
+      sq(gx - 3, gy - (up ? 1 : 0), 2, .5, '#334155'); sq(gx - 1, gy, 1, .5, '#334155'); sq(gx, gy - (up ? 1 : 0), 2, .5, '#334155');
+      if (up) { sq(gx - 4, gy - 1.5, 1, .5, '#334155'); sq(gx + 2, gy - 1.5, 1, .5, '#334155'); } else { sq(gx - 4, gy + .5, 1, .5, '#334155'); sq(gx + 2, gy + .5, 1, .5, '#334155'); }
+    }
+    const bx = (t * 2.2 + 90) % (W + 30) - 15;
+    sq(bx - 4, horizon - 1, 8, 1, '#1e3a5f'); sq(bx - 3, horizon, 6, .5, '#2d5a7b'); for (let k = 0; k < 6; k++) sq(bx - .5 - k * .35, horizon - 2 - k, .5 + k * .35, 1, '#f8fafc'); sq(bx, horizon - 8, .5, 7, '#475569');
+  }
+  // HUD line on a dark backing so it stays readable over the busier scenes
+  function shud(s, x, y, c = '#fff', size = 8, al = 'center') {
+    sx.font = `700 ${size}px Poppins, sans-serif`; const w = sx.measureText(s).width + 8, x0 = al === 'left' ? x - 4 : al === 'right' ? x - w + 4 : x - w / 2;
+    sx.globalAlpha = .5; sq(x0, y - size * .82, w, size * 1.12, '#0b1030'); sx.globalAlpha = 1; stext(s, x, y, c, size, al);
+  }
   function skySea(horizon, dark = 0) {
     for (let i = 0; i < 8; i++) sq(0, i * horizon / 8, W, horizon / 8 + .5, mix([110, 196, 240], [190, 236, 255], i / 7));
     if (horizon > 60) { sdisc(318, horizon * .32, 11, '#fff1b8'); sdisc(318, horizon * .32, 8, '#fde68a'); sdisc(316, horizon * .32 - 2, 4, '#fffbeb'); }
@@ -3209,6 +3290,7 @@
     }
     if (horizon > 60) for (let i = 0; i < 7; i++) sq(318 - 10 + ((i * 7 + t * 4) % 20), horizon + 2 + i * 2.5, 6 - i * .6, .5, '#fff7d1');
     for (let i = 0; i < 16; i++) { const tw = Math.sin(t * 2 + i * 2.3); if (tw > .3) sq((i * 47 + t * 6) % W, horizon + 3 + (i * 9) % (H - horizon - 6), 3 + i % 4, .5, '#e0fffa'); }
+    skyLife(horizon);
   }
   setTimeout(() => { if (inselOpen()) SPORT_BG.forEach(worldImg); }, 3000); // ready before the first catch drill
   // beach from y down: wet edge with a foam line, then dry sand with a fixed grain pattern
@@ -3229,6 +3311,25 @@
     for (const [dx, dy] of [[-1.5, 1], [1, 1.5], [0, 3]]) sdisc(tx + dx, ty + dy, 1.4, '#57301a');
   }
 
+  // archery target on a wooden easel: a straw boss behind painted rings, dithered shade toward the bottom right
+  function drawTarget(R) {
+    sq(178, 100, 2, 52, '#57301a'); sq(178, 100, 1, 52, '#8b5a2b'); sq(204, 100, 2, 52, '#57301a'); sq(204, 100, 1, 52, '#8b5a2b'); sq(191, 104, 2, 46, '#6b421b');
+    sx.globalAlpha = .3; sq(172, 150, 40, 2, '#3b2a14'); sx.globalAlpha = 1;
+    const face = spPaint('target' + R, R * 4 + 9, R * 4 + 9, (set, w) => {
+      const c = w / 2, RR = R * 2;
+      for (let y = 0; y < w; y++) for (let x = 0; x < w; x++) {
+        const d = Math.hypot(x - c, y - c) / RR, sh = ((x - c) + (y - c)) / RR * .5 + BAYER[(y & 3) * 4 + (x & 3)] / 16 * .35;
+        if (d > 1.1) continue;
+        if (d > 1.04) { set(x, y, '#1b1f2e'); continue; }
+        if (d > .98) { set(x, y, sh > .2 ? '#a16207' : '#d6a85a'); continue; } // straw edge
+        const ring = [[.8, ['#ffffff', '#e2e8f0']], [.6, ['#334155', '#1e293b']], [.4, ['#60a5fa', '#2563eb']], [.2, ['#f87171', '#dc2626']], [0, ['#fde047', '#eab308']]].find(([r]) => d >= r);
+        const edge = [.8, .6, .4, .2].some(r => Math.abs(d - r) < .6 / RR);
+        set(x, y, edge ? '#1b1f2e' : ring[1][sh > .28 ? 1 : 0]);
+      }
+      set(Math.round(c - RR * .55), Math.round(c - RR * .6), '#ffffff');
+    });
+    sx.drawImage(face, snap(192 - face.width / 4), snap(100 - face.height / 4), face.width / 2, face.height / 2);
+  }
   // the sports: start(g) sets up, update(g, dt, I) plays, draw(g) paints, score(g) is the result; stamps get checked on g at the end
   const SPORTS = [
     { id: 'frisbee', icon: '🥏', name: 'Frisbee', st: 0, modes: ['Zielring', 'Weitwurf'],
@@ -3260,17 +3361,20 @@
         { const u = worldImg('sport-ufer'); if (imgReady(u)) sx.drawImage(u, 0, 138, 46, 78); else { sand(138, 0, 44); sq(40, 140, 6, 76, '#e2c98d'); } }
         drawPelle(sq, 12, 148, 0); // the angler is Pelle's buddy: a little figure
         sme(28.5, 144, g.st === 'aim' ? 0 : 1);
-        if (!g.mode && g.ring) { const r = 22; for (const [w, c] of [[r, '#f8fafc'], [12, '#ef4444'], [5, '#facc15']]) sq(g.ring - w, 159, w * 2, 2, c); sq(g.ring - .5, 150, 1, 9, '#ef4444'); }
+        if (!g.mode && g.ring) { // floating target: three rings of floats seen from the side, a flag in the middle
+          const bob = Math.sin(t * 2) * .4; sx.globalAlpha = .3; sq(g.ring - 23, 161.5, 46, 1.5, '#0b3d5c'); sx.globalAlpha = 1;
+          for (const [w, c, d] of [[22, '#f8fafc', '#94a3b8'], [12, '#ef4444', '#991b1b'], [5, '#facc15', '#a16207']]) for (let x = -w; x < w; x += 2) { sq(g.ring + x, 159 + bob, 2, 2, (x / 2 + w) % 4 < 2 ? c : d); sq(g.ring + x, 159 + bob, 2, .5, '#ffffff'); }
+          sq(g.ring - .5, 149 + bob, 1, 10, '#78350f'); sq(g.ring + .5, 149 + bob + Math.sin(t * 5) * .3, 5, 3, '#ef4444'); sq(g.ring + .5, 149 + bob, 5, .5, '#fca5a5'); }
         if (g.mode) for (let m = 50; m <= 450; m += 50) { const x = 30 + m * 2; sq(x, 158, .5, 4, '#f8fafc'); stext(m + ' m', x, 170, '#f8fafc', 6); }
         sx.restore();
         const wl = clamp(g.wind / 20, -1, 1); stext(tr('Wind'), 340, 14, '#fff', 7); sq(340, 18, Math.abs(wl) * 30 * Math.sign(wl) || .5, 2, '#38bdf8'); sq(340 + wl * 30 - (wl < 0 ? 0 : 1), 17, 1.5, 4, '#38bdf8');
         sx.save(); sx.translate(-cam, 0);
         if (g.st === 'aim') { for (let i = 0; i < 9; i++) sq(31 + Math.cos(g.ang) * i * 3, 128 - Math.sin(g.ang) * i * 3, 1, 1, '#facc15'); sq(14, 100, 6, 24, '#1b1f2e'); sq(15, 101 + 22 * (1 - g.pow), 4, 22 * g.pow, g.pow > .9 ? '#ef4444' : '#22c55e'); sq(31, 129, 5, 1.5, '#f97316'); }
-        if (g.dis && g.st !== 'aim') { const d = g.dis; sq(d.x - 3, d.y - 1, 6, 1.5, '#f97316'); sq(d.x - 2, d.y - 1.5, 4, .5, '#fdba74'); drawPelle(sq, g.peX, d.y + 4, 0, true, 1); }
+        if (g.dis && g.st !== 'aim') { const d = g.dis; sspr(BALLS.disc(), d.x, d.y - .5); if (Math.floor(t * 12) % 2) sq(d.x - 1, d.y - 1.5, 2, .5, '#fff7ed'); drawPelle(sq, g.peX, d.y + 4, 0, true, 1); }
         if (g.pop && g.dis) stext(g.pop, g.dis.x, 150 - g.lt * 10, '#fde047', 9);
         sx.restore();
         if (g.mode && g.dis && g.st === 'fly') stext(Math.max(0, Math.round((g.dis.x - 30) * .5)) + ' m', 192, 28, '#fde047', 9);
-        stext(tr('Wurf {a}/{b}', { a: Math.min(g.n, g.i + 1), b: g.n }), 192, 14, '#fff', 8);
+        shud(tr('Wurf {a}/{b}', { a: Math.min(g.n, g.i + 1), b: g.n }), 192, 14, '#fff', 8);
       },
       score: g => g.mode ? g.far : g.pts },
     { id: 'turnier', icon: '🎣', name: 'Angelturnier', st: 0, modes: ['Fünf Fänge', 'Größter Fang'], fishing: true,
@@ -3375,16 +3479,16 @@
         }
         for (const w of g.wake) { sx.globalAlpha = .4; sq(w.x - 2, w.y, 4, 2, '#ffffff'); sx.globalAlpha = 1; }
         for (const o of g.objs) {
-          if (o.k === 'gate') for (const s of [-1, 1]) { sdisc(o.x + s * o.w / 2, o.y, 4, o.ok === -1 ? '#64748b' : s < 0 ? '#ef4444' : '#facc15'); sq(o.x + s * o.w / 2 - 1, o.y - 2, 2, 1, '#ffffff'); }
+          if (o.k === 'gate') for (const s of [-1, 1]) { const bx = o.x + s * o.w / 2, by = o.y + Math.sin(t * 3 + bx) * .6; sx.globalAlpha = .35; sdisc(bx + 1.5, by + 2, 4, '#0b3d5c'); sx.globalAlpha = 1; for (let k = 0; k < 4; k++) sq(bx - 5 + k * 3, by + 3.5 + Math.sin(t * 4 + k) * .3, 2, .5, '#e0fffa'); sspr(BALLS[o.ok === -1 ? 'buoyG' : s < 0 ? 'buoyR' : 'buoyY'](), bx, by); }
           else if (o.k === 'wave') { for (let i = -o.w / 2; i < o.w / 2; i += 1) sq(o.x + i, o.y + Math.sin(i * .2) * 1.5, 1, 2, '#f8fafc'); }
-          else if (o.k === 'ring' && !o.ok) { for (let a = 0; a < 6.3; a += .3) sq(o.x + Math.cos(a) * 9, o.y + Math.sin(a) * 5, 1.5, 1.5, '#fde047'); }
+          else if (o.k === 'ring' && !o.ok) { for (let a = 0; a < 6.3; a += .3) { const rx = o.x + Math.cos(a) * 9, ry = o.y + Math.sin(a) * 5; sq(rx, ry + 1, 1.5, 1, '#0b3d5c'); sq(rx, ry, 1.5, 1.5, Math.floor(a / .6) % 2 ? '#fde047' : '#f97316'); sq(rx, ry, 1, .5, '#fffbeb'); } }
         }
         const j = g.jump > 0 ? Math.sin(g.jump / .6 * Math.PI) * 6 : 0, x = g.x, y = 176 - j;
         if (j) { sx.globalAlpha = .3; sdisc(x, 178, 6, '#0b3d5c'); sx.globalAlpha = 1; }
         sart('sp_jetski', x - 5.5, y - 9.5);
         if (Math.random() < .5) { sx.globalAlpha = .6; sq(x - 4 + Math.random() * 8, y + 8 + Math.random() * 3, 1, 1, '#ffffff'); sx.globalAlpha = 1; }
-        stext(tr('⏱ {s} s · {p} Punkte', { s: Math.ceil(g.time), p: g.pts }), 192, 14, '#fff', 8);
-        stext(g.mode ? tr('Ringe: {n}', { n: g.rings }) : tr('Tore: {n} · verpasst: {m}', { n: g.passed, m: g.miss }), 192, 26, '#fde047', 7);
+        shud(tr('⏱ {s} s · {p} Punkte', { s: Math.ceil(g.time), p: g.pts }), 192, 14, '#fff', 8);
+        shud(g.mode ? tr('Ringe: {n}', { n: g.rings }) : tr('Tore: {n} · verpasst: {m}', { n: g.passed, m: g.miss }), 192, 26, '#fde047', 7);
       },
       score: g => g.pts },
     { id: 'bogen', icon: '🏹', name: 'Bogenschießen', st: 10, modes: ['Scheiben', 'Ballons'],
@@ -3418,16 +3522,16 @@
       },
       draw(g) {
         if (!sceneBg('sport-bogen', 120)) { sand(150); for (const [x, h, l] of [[30, 60, 1], [350, 70, -1], [70, 40, 1]]) palm(x, 152, h, l); }
+        crowd(g, 238, 300, 166, g.mode ? g.pts : g.bulls * 10 + g.pts, 5, 11);
         if (g.mode === 0) {
           const R = [34, 23, 14][Math.min(2, g.k)];
-          sq(190, 100 + R * .6, 4, 150 - 100 - R * .6, '#78350f');
-          for (const [f, c] of [[1, '#f8fafc'], [.8, '#1e293b'], [.6, '#3b82f6'], [.4, '#ef4444'], [.2, '#facc15']]) sdisc(192, 100, R * f, c);
-          for (const a of g.arrows) if (a.k === g.k || g.over) { sq(a.x - .5, a.y - .5, 1.5, 1.5, '#1b1f2e'); sq(a.x + .5, a.y - 2, 2, 1, '#f97316'); }
+          drawTarget(R);
+          for (const a of g.arrows) if (a.k === g.k || g.over) { sq(a.x - .5, a.y - .5, 1.5, 1.5, '#1b1f2e'); sq(a.x + .5, a.y - 1, 2.5, 1, '#78350f'); sq(a.x + 2.5, a.y - 2.5, 1.5, 1.5, '#f97316'); sq(a.x + 2.5, a.y - .5, 1.5, 1, '#fde68a'); }
           const wl = clamp(g.wind, -1, 1); stext(tr('Wind'), 340, 14, '#fff', 7); sq(340, 18, wl * 30 || .5, 2, '#38bdf8');
-          stext(tr('Scheibe {a}/3 · Pfeil {b}/2', { a: Math.min(3, g.k + 1), b: g.shot % 2 + 1 }), 192, 14, '#fff', 8);
+          shud(tr('Scheibe {a}/3 · Pfeil {b}/2', { a: Math.min(3, g.k + 1), b: g.shot % 2 + 1 }), 192, 14, '#fff', 8);
         } else {
-          for (const b of g.bal) { sdisc(b.x, b.y, 6, b.gold ? '#facc15' : ['#ef4444', '#3b82f6', '#22c55e', '#f472b6'][Math.floor(b.v) % 4]); sq(b.x - 2, b.y - 3, 1.5, 1.5, '#ffffff'); sq(b.x - .25, b.y + 6, .5, 8, '#e2e8f0'); }
-          stext(tr('⏱ {s} s · {p} Ballons', { s: Math.ceil(g.time), p: g.pts }), 192, 14, '#fff', 8);
+          for (const b of g.bal) { sballoon(b.x, b.y, b.gold ? 'y' : 'rbgp'[Math.floor(b.v) % 4]); if (b.gold) for (let i = 0; i < 3; i++) if (Math.sin(t * 6 + i * 2) > .5) sq(b.x - 7 + i * 6, b.y - 8 + (i % 2) * 3, 1, 1, '#fffbeb'); }
+          shud(tr('⏱ {s} s · {p} Ballons', { s: Math.ceil(g.time), p: g.pts }), 192, 14, '#fff', 8);
         }
         const X = g.ax + (g.sx || 0), Y = g.ay + (g.sy || 0);
         sq(X - 6, Y - .25, 4, .5, '#1b1f2e'); sq(X + 2, Y - .25, 4, .5, '#1b1f2e'); sq(X - .25, Y - 6, .5, 4, '#1b1f2e'); sq(X - .25, Y + 2, .5, 4, '#1b1f2e'); sq(X - .5, Y - .5, 1, 1, '#ef4444');
@@ -3472,7 +3576,7 @@
         sq(g.ox - 12, 30, 24, 3, '#1b1f2e'); sq(g.ox - 11.5, 30.5, 23, 2, '#3b82f6');
         sq(g.px - 1.5, 188.5, 3, 7, '#1b1f2e'); sq(g.px - 1, 189, 2, 6, '#b45309'); sq(g.px - 1.5, 192, 3, 3, lookPal().pal.s);
         sq(g.px - 14, 185.5, 28, 4, '#1b1f2e'); sq(g.px - 13, 186, 26, 3, '#ef4444'); sq(g.px - 12.5, 186, 25, .5, '#fca5a5'); sq(g.px - 13, 188.5, 26, .5, '#b91c1c');
-        if (g.ball) { sx.globalAlpha = .3; sdisc(g.ball.x + 2, g.ball.y + 3, 2, '#0b1030'); sx.globalAlpha = 1; sdisc(g.ball.x, g.ball.y, 2.2, '#ffffff'); }
+        if (g.ball) { sx.globalAlpha = .3; sdisc(g.ball.x + 2, g.ball.y + 3, 2, '#0b1030'); sx.globalAlpha = 1; sspr(BALLS.tt(), g.ball.x, g.ball.y); }
         stext(g.mode ? tr('Ballwechsel: {n}', { n: g.rally }) : `${g.me} : ${g.op}`, 64, 108, '#1b1f2e', 12);
         if (!g.mode) stext(tr('Erster bis 7'), 64, 122, '#78350f', 7);
       },
@@ -3511,14 +3615,35 @@
       draw(g) {
         sceneBg('sport-surf', 56);
         const lipAt = x => 70 + Math.sin(x * .02 + g.scroll * .03 - 2.6) * 5 + Math.max(0, 120 - x) * .12;
-        for (let x = 0; x < W; x += 2) {
-          const top = lipAt(x);
-          for (let i = 0; i < 6; i++) { const a = top + i * (180 - top) / 6; sq(x, a, 2, (180 - top) / 6 + .5, mix([120, 232, 220], [14, 116, 144], i / 5)); }
-          sq(x, top - 1, 2, 2, '#f8fafc');
-          if (Math.sin(x * .4 + g.scroll * .2) > .7) sq(x, top + 4 + (x % 9), 2, .5, '#e0fffa');
+        // the wave face: a dithered strip from the back-lit lip (light) down to the deep trough, painted once
+        const FACE = ['#c4fff4', '#8cf2e2', '#5ad9d1', '#36bcc6', '#2399b5', '#17789b', '#105e81'];
+        const face = spPaint('surfFace', 4, 240, (set) => { for (let y = 0; y < 240; y++) for (let x = 0; x < 4; x++) set(x, y, FACE[clamp(Math.floor(Math.pow(y / 240, .8) * 7 + (BAYER[(y & 3) * 4 + x] / 16 - .5) * .9), 0, 6)]); });
+        for (let x = 0; x < W; x += 2) { const top = lipAt(x); sx.drawImage(face, (x / 2 % 2) * 2, 0, 2, 240, x, snap(top), 2, 182 - snap(top)); }
+        sq(0, 180, W, 36, '#0e6a86');
+        for (let i = 0; i < 26; i++) { const x = (i * 61 + g.scroll * 1.3) % (W + 20) - 10, y = 184 + (i * 13) % 30; sq(x, y, 6 + i % 5, .5, i % 3 ? '#1d8aa6' : '#5cc8d4'); }
+        // sun streak running down the face, and moving lines that show the wave is rolling
+        for (let y = 0; y < 100; y += 2.5) { const k = y / 100, x = 300 + Math.sin(y * .35 + t * 3) * (2 + k * 4); sx.globalAlpha = .55 * (1 - k); sq(x, lipAt(300) + 6 + y, 4 - k * 3, .5, '#fff7d1'); }
+        sx.globalAlpha = .55;
+        for (let i = 0; i < 44; i++) { const x = (i * 53 + g.scroll * 1.6) % W, top = lipAt(x), y = top + 8 + (i * 29) % Math.max(8, 170 - top - 8); if (x > g.foam + 6) sq(x, y, 3 + i % 4, .5, '#a8f7ec'); }
+        sx.globalAlpha = 1;
+        // the curl on the unbroken side: shadow under the lip, a bright lip edge and spray blown back off the crest
+        for (let x = Math.floor((g.foam + 4) / 2) * 2; x < W; x += 2) {
+          const top = lipAt(x), ph = (x + Math.floor(g.scroll * .5)) % 14;
+          sq(x, top - 7, 2, 5, '#3aa9b8'); sq(x, top - 7, 2, .5, ph < 7 ? '#6fd0d6' : '#56c2cc'); // back of the wave against the sea behind
+          sx.globalAlpha = .5; sq(x, top + 2, 2, 4, '#0a4562'); sx.globalAlpha = .28; sq(x, top + 6, 2, 6, '#0a4562'); sx.globalAlpha = .12; sq(x, top + 12, 2, 8, '#0a4562'); sx.globalAlpha = 1;
+          sq(x, top - 2.5, 2, 4, '#e8fffb'); sq(x, top - 2.5, 2, 1, '#ffffff'); sq(x, top + 1, 2, .5, '#9fe9e6');
+          if (ph < 4) sq(x, top - 3, 2, .5, '#ffffff'); if (ph === 6 || ph === 7) sq(x, top + 1.5, 2, 1 + (x % 5) * .5, '#d6fbf6');
         }
-        sq(0, 180, W, 36, '#0e7490');
-        for (let x = 0; x < g.foam + 10; x += 2) { const h = (Math.sin(x * 1.7 + g.scroll) + 1) * 4; sq(x, lipAt(x) - h, 2, 180 - lipAt(x) + h, x > g.foam ? '#cffafe' : '#f8fafc'); }
+        for (let i = 0; i < 18; i++) { const x0 = g.foam + 12 + (i * 37) % Math.max(10, W - g.foam - 12), k = (t * 1.2 + i * .37) % 1; sx.globalAlpha = 1 - k; sq(x0 - k * 14, lipAt(x0) - 2 - k * 9 + k * k * 7, 1, 1, '#ffffff'); }
+        sx.globalAlpha = 1;
+        // whitewater: lumpy white with cool shading lower down, bubbles and a churning front
+        for (let x = 0; x < g.foam + 10; x += 2) {
+          const top = lipAt(x), h = (Math.sin(x * 1.7 + g.scroll) + 1) * 4 + (Math.sin(x * .45 - g.scroll * .7) + 1) * 2, y0 = top - h, front = x > g.foam;
+          sq(x, y0, 2, 182 - y0, front ? '#cffafe' : '#f8fafc'); sq(x, y0, 2, .5, '#ffffff');
+          sq(x, y0 + 14 + Math.sin(x * .3 + g.scroll * .2) * 3, 2, 182 - y0 - 14, front ? '#a5f3fc' : '#e3f6f8'); sq(x, top + 40 + Math.sin(x * .2 - g.scroll * .1) * 4, 2, 182 - top - 40, front ? '#7fe3ef' : '#cdeef3');
+          if ((x * 7 + Math.floor(g.scroll)) % 11 < 2) sq(x, y0 + 4 + (x * 13) % 30, 1, 1, '#bfe8ee');
+        }
+        for (let i = 0; i < 6; i++) { const y = lipAt(g.foam) + 4 + i * 16, r = 3 + Math.abs(Math.sin(g.scroll * .15 + i * 1.3)) * 3; if (y < 178) { sdisc(g.foam + 8 + Math.sin(t * 4 + i) * 2, y, r, '#f8fafc'); sdisc(g.foam + 7 + Math.sin(t * 4 + i) * 2, y - 1, r * .6, '#ffffff'); } }
         const crest = Math.sin(g.scroll * .03 + 1.2) > .3;
         if (g.mode === 0 && crest && !g.used) for (let i = 0; i < 3; i++) sq(118 + i * 8, lipAt(126) - 4 - (i % 2) * 2, 1.5, 1.5, '#fde047');
         if (g.mode === 1 && g.cue > 0) { stext(tr('JETZT!'), 192, 44, '#fde047', 14); for (let a = 0; a < 6.3; a += .35) sq(130 + Math.cos(a) * 14, lipAt(130) + 10 + Math.sin(a) * 6, 1.5, 1.5, '#fde047'); }
@@ -3531,8 +3656,8 @@
           if (Math.random() < .6) { sx.globalAlpha = .7; sq(x - 11 - Math.random() * 4, y + Math.random() * 2, 1, 1, '#ffffff'); sx.globalAlpha = 1; }
         }
         if (g.popT > 0) stext(g.pop, x, y - 18, '#fde047', 9);
-        stext(tr('⏱ {s} s · {p} Punkte', { s: Math.ceil(g.time), p: Math.round(g.pts) }), 192, 14, '#fff', 8);
-        stext(g.mode ? tr('Serie: {n}', { n: g.chain }) : tr('Kombo: {n}', { n: g.combo }), 192, 26, '#fde047', 7);
+        shud(tr('⏱ {s} s · {p} Punkte', { s: Math.ceil(g.time), p: Math.round(g.pts) }), 192, 14, '#fff', 8);
+        shud(g.mode ? tr('Serie: {n}', { n: g.chain }) : tr('Kombo: {n}', { n: g.combo }), 192, 26, '#fde047', 7);
       },
       score: g => g.pts },
     { id: 'volley', icon: '🏐', name: 'Beachvolleyball', st: 14, modes: ['Match', 'Aufschlag-Serie'],
@@ -3592,7 +3717,10 @@
           sq(8, 176, 368, 1, '#f8fafc'); sq(191, 108, 2, 70, '#64748b'); for (let y = 110; y < 134; y += 3) sq(186, y, 12, 1, '#e2e8f0'); sq(186, 108, 12, 2, '#f8fafc');
         }
         if (g.mode === 1) for (const [a, b2, p, c] of [[192, 260, 1, '#fde68a'], [260, 330, 3, '#fcd34d'], [330, 376, 5, '#fbbf24']]) { sq(a, 174, b2 - a, 3, c); stext(String(p), (a + b2) / 2, 190, '#78350f', 8); }
+        crowd(g, 34, 150, 160, g.mode ? g.pts : g.me, 7, 3); for (let i = 0; i < 7; i++) sfan(236 + i * 17 + Math.sin(i * 5.1) * 2, 160 + (i % 2) * 1.5, 20 + i, g._cheer > 0);
         const run = Math.abs(g.px - (g.lastPx ?? g.px)) > .05; g.lastPx = g.px;
+        if (run && Math.random() < .4) (g.dust = g.dust || []).push({ x: g.px + rnd(-2, 2), y: 176, l: .5 });
+        if (g.dust) { g.dust = g.dust.filter(d => (d.l -= 1 / 60) > 0); for (const d of g.dust) { sx.globalAlpha = d.l * 1.4; sq(d.x, d.y - (.5 - d.l) * 6, 1.5, 1, '#f5e6bf'); } sx.globalAlpha = 1; }
         sx.globalAlpha = .25; sdisc(g.px, 176, 5, '#78350f'); sx.globalAlpha = 1;
         sme(g.px, 176, run ? [0, 1, 0, 2][Math.floor(t * 10) % 4] : 0);
         if (g.mode === 0) { if (g.lvl === 3) drawKraul(sq, g.ox, 176, true); else drawPelle(sq, g.ox, 176, 0, true); }
@@ -3600,13 +3728,13 @@
           const b = g.ball, land = b.x + b.vx * ((b.vh + Math.sqrt(Math.max(0, b.vh * b.vh + 320 * b.h))) / 160);
           if (b.vx < 0 && land < 192) { for (let a = 0; a < 6.3; a += .4) sq(land + Math.cos(a) * 7, 176 + Math.sin(a) * 2, 1, 1, '#ef4444'); }
           sx.globalAlpha = .3; sdisc(b.x, 176, 3, '#0b1030'); sx.globalAlpha = 1;
-          sdisc(b.x, 172 - b.h, 3.2, '#facc15'); sq(b.x - 2, 171 - b.h, 4, 1, '#3b82f6');
+          sspr(BALLS.volley(), b.x, 172 - b.h);
         }
         if (g.mode === 1 && !g.ball && g.n < 10) { const a = g.ang; for (let i = 0; i < 8; i++) sq(g.px + 4 + i * 3, 150 - i * 3 * (.4 + a), 1, 1, '#facc15'); sq(g.px - 12, 120, 5, 24, '#1b1f2e'); sq(g.px - 11, 121 + 22 * (1 - g.pow), 3, 22 * g.pow, '#22c55e'); }
         if (g.mark && g.popT > 0) stext(g.pop || (g.mark.p ? '✓' : '✗'), g.mark.x, 166, '#fde047', 8);
         else if (g.popT > 0) stext(g.pop, g.px, 140, '#fde047', 8);
-        stext(g.mode ? tr('Aufschlag {a}/{b} · {p} Punkte', { a: Math.min(g.drillN || 10, g.n + 1), b: g.drillN || 10, p: g.pts }) : `${g.me} : ${g.op}`, 192, 16, '#fff', 10);
-        if (!g.mode && !g.ball && g.serve > 0 && g.wait <= 0) stext(tr('Tippen = Aufschlag'), 192, 30, '#fde047', 7);
+        shud(g.mode ? tr('Aufschlag {a}/{b} · {p} Punkte', { a: Math.min(g.drillN || 10, g.n + 1), b: g.drillN || 10, p: g.pts }) : `${g.me} : ${g.op}`, 192, 16, '#fff', 10);
+        if (!g.mode && !g.ball && g.serve > 0 && g.wait <= 0) shud(tr('Tippen = Aufschlag'), 192, 30, '#fde047', 7);
       },
       score: g => g.mode ? g.pts : g.me * 10 + (g.me >= 7 ? 30 + (7 - g.op) * 5 : 0) },
     { id: 'bowling', icon: '🎳', name: 'Strand-Bowling', st: 22, modes: ['10 Frames', 'Pyramide'],
@@ -3635,16 +3763,15 @@
         }
         for (const p of g.pins) {
           if (p.gone) continue;
-          if (p.down) { sx.globalAlpha = .55; sq(p.x - 3, p.y - 1, 6, 2.5, '#e2e8f0'); sx.globalAlpha = 1; continue; }
-          sdisc(p.x, p.y, 3, '#f8fafc'); sq(p.x - 2.5, p.y - .5, 5, 1, '#ef4444'); sq(p.x - 1, p.y - 2, 1, 1, '#ffffff');
+          if (p.down) { sspr(litEll('pinDown', 3.6, 1.6, { a: ['#f8fafc', '#e2e8f0', '#cbd5e1', '#94a3b8'], r: ['#fca5a5', '#ef4444', '#b91c1c', '#7f1d1d'] }, (u) => Math.abs(u + .35) < .12 ? 'r' : 'a', false), p.x, p.y); continue; }
+          sx.globalAlpha = .28; sdisc(p.x + 1.5, p.y + 2, 3, '#3b2a14'); sx.globalAlpha = 1; sspr(BALLS.pin(), p.x, p.y);
         }
-        if (g.ball) { const b = g.ball; sdisc(b.x, b.y, 5.5, '#1e3a8a'); sdisc(b.x - 1, b.y - 1.5, 2, '#3b82f6'); sq(b.x + 1, b.y - 2, 1, 1, '#0f172a'); sq(b.x + 2.5, b.y, 1, 1, '#0f172a'); }
-        else { sdisc(192, 196, 5.5, '#1e3a8a'); sdisc(191, 194.5, 2, '#3b82f6'); }
+        { const b = g.ball || { x: 192, y: 196 }; sx.globalAlpha = .3; sdisc(b.x + 2, b.y + 2.5, 5, '#3b2a14'); sx.globalAlpha = 1; sspr(BALLS.bowl(), b.x, b.y); for (const [dx, dy] of [[1, -2.5], [2.5, -1], [3, 1.5]]) sq(b.x + dx, b.y + dy, 1, 1, '#0b1030'); }
         if (g.ph === 'aim' || g.ph === 'spin') { for (let i = 1; i < 12; i++) sq(192 + Math.sin(g.aim) * i * 7 - .5, 196 - Math.cos(g.aim) * i * 7, 1.5, 1.5, '#facc15'); }
         if (g.ph === 'spin') { sq(252, 170, 70, 6, '#1b1f2e'); sq(286.5, 169, 1, 8, '#f8fafc'); sq(287 + g.spin * 33 - 1.5, 168, 3, 10, '#ef4444'); stext(tr('Drall'), 287, 164, '#78350f', 7); }
-        if (g.ph === 'aim') stext(tr('Tippen = Richtung'), 287, 164, '#78350f', 7);
+        if (g.ph === 'aim') shud(tr('Tippen = Richtung'), 287, 164, '#fde047', 7);
         if (g.popT > 0) stext(g.pop, 192, 100, '#fde047', 14);
-        stext(g.mode ? tr('Wurf {a}/3 · {p} Pins', { a: Math.min(3, g.throws + 1), p: g.pts }) : tr('Frame {a}/10 · {p} Punkte', { a: Math.min(10, g.frame + 1), p: bowlTotal(g.rolls) }), 8, 14, '#1b1f2e', 8, 'left');
+        shud(g.mode ? tr('Wurf {a}/3 · {p} Pins', { a: Math.min(3, g.throws + 1), p: g.pts }) : tr('Frame {a}/10 · {p} Punkte', { a: Math.min(10, g.frame + 1), p: bowlTotal(g.rolls) }), 8, 14, '#fff', 8, 'left');
       },
       score: g => g.pts },
   ];

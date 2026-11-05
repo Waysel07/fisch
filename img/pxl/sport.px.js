@@ -244,6 +244,8 @@ const MARKS = [[1, 0, .97], [1, -.35, .92], [1, .3, 1.08], [1, .55, .8], [1, -.6
   [3, 0, 1.12], [3, .35, .9], [3, -.3, .9], [3, .1, 1.0], [3, -.1, .62], [3, .25, .5], [4, 0, .95], [4, .3, 1.02], [4, -.32, .88], [4, .5, .72], [4, -.12, .6], [4, .15, .38],
   [5, 0, 1.25], [5, .32, 1.0], [5, -.3, .95], [5, .12, .32], [5, -.12, .18], [5, .5, .6]].map(([b, d, k]) => isleAt(b, d, k).map(Math.round))
 const cx = MW / 2, cy = MH / 2
+const coastAt = (a, k) => [cx + Math.cos(a) * isleR(a) * 1.2 * k, cy + Math.sin(a) * isleR(a) * .8 * k]
+const nearMark = (x, y, r, skip = []) => MARKS.some((p, i) => !skip.includes(i) && Math.hypot(p[0] - x, p[1] - y) < r)
 const riverY = (xx) => cy + Math.sin((cx - xx) * .025) * 16 + (cx - xx) * .04
 // Lage eines Kartenpunkts: e = Abstand zur Küste (+ an Land), h = 0 Gipfel … 1 Küste
 function geo(xx, yy) { const dx = (xx - cx) / 1.2, dy = (yy - cy) / .8, a = Math.atan2(dy, dx), r = Math.hypot(dx, dy), R = isleR(a); return { e: R - r, h: r / R, r } }
@@ -263,7 +265,7 @@ function paintMap(f, s, detail) {
     if (g.e < 0) {
       const d = -g.e
       if (d < 3 / s * .34 && hash(Math.floor(X / 2) * 7 + Y, 73) > .3) c = '#ffffff' // Brandung
-      else if (d < 44) { const k = d / 44 + (n - .5) * .25; c = SHALLOW[Math.max(0, Math.min(3, Math.floor(k * 4)))]; if (d > 30 && (X + Y) % 2 && n > .5) c = OCEAN[0] }
+      else if (d < 44) { const k = d / 44 + (n - .5) * .25; c = SHALLOW[Math.max(0, Math.min(3, Math.floor(k * 4)))]; if (d > 30 && (X + Y) % 2 && n > .5) c = OCEAN[0]; if (detail && d > 4 && d < 34 && d < 26 && Math.abs(vn2(X * .07, Y * .1, 96) - .5) < .012 && (X + Y) % 2) c = '#c4f7ee' }
       else { const k = Math.min(1, (d - 44) / 240) + (vn2(X * .03, Y * .03, 74) - .5) * .18; c = OCEAN[Math.max(0, Math.min(5, Math.floor(k * 6)))] }
     } else if (g.e < 3) c = '#e3c98f'
     else if (g.e < 10) c = n > .6 ? SAND[0] : n < .25 ? SAND[2] : SAND[1]
@@ -283,8 +285,12 @@ function paintMap(f, s, detail) {
   }
   // Wellenstriche im tiefen Wasser
   for (let i = 0; i < 260 * s; i++) { const X = hash(i, 76) * W2, Y = hash(i, 77) * H2, g = geo(X / s, Y / s); if (g.e > -60) continue; for (let k = 0; k < 6 * s + 2; k++) f.set(X + k, Y + Math.round(Math.sin(k * .9)), C(k % 3 ? '#5cc4d8' : '#8ad8e6')) }
-  // Ringweg und Pfad zum Krater
-  if (detail) for (let i = 0; i < 720; i++) { const a = i / 720 * Math.PI * 2, k = .82, X = (cx + Math.cos(a) * isleR(a) * 1.2 * k) * s, Y = (cy + Math.sin(a) * isleR(a) * .8 * k) * s; f.set(X, Y, C('#e2c48b')); if (detail) { f.set(X + 1, Y, C('#d6b97a')); f.set(X, Y + 1, C('#b89a5e')) } }
+  // Ringstraße (Winkel −π…π: isleR kennt nur diesen Bereich) und Pfad zum Krater
+  if (detail) for (let i = 0; i < 1800; i++) {
+    const a = i / 1800 * Math.PI * 2 - Math.PI, [X, Y] = coastAt(a, .82)
+    if (geo(X, Y).e < 4) continue
+    f.rect(X - 1, Y - 1, 3, 3, C('#e8d3a0')); f.set(X + 1, Y + 1, C('#b99a62')); if (hash(i, 99) > .93) f.set(X, Y, C('#c9ab72'))
+  }
   for (let i = 0; i < 120; i++) { const k = .2 + i / 120 * .6, a = BAY_ANG[0] + Math.sin(i * .25) * .12, X = (cx + Math.cos(a) * isleR(a) * 1.2 * k) * s, Y = (cy + Math.sin(a) * isleR(a) * .8 * k) * s; if (i % 3) f.set(X, Y, C('#d6b97a')) }
   // Baumkronen im Dschungel: runde Tupfen mit Licht oben links
   const blobs = detail ? 1400 : 0
@@ -297,10 +303,11 @@ function paintMap(f, s, detail) {
   }
   // Palmen an der Küste
   for (let i = 0; i < 90; i++) {
-    const a = i / 90 * Math.PI * 2, k = .88 + hash(i, 81) * .06, xx = cx + Math.cos(a) * isleR(a) * 1.2 * k, yy = cy + Math.sin(a) * isleR(a) * .8 * k
+    const a = i / 90 * Math.PI * 2 - Math.PI, k = .88 + hash(i, 81) * .06, xx = cx + Math.cos(a) * isleR(a) * 1.2 * k, yy = cy + Math.sin(a) * isleR(a) * .8 * k
     if (detail) palmTop(f, Math.round(xx), Math.round(yy), 6, i); else { f.set(xx * s, yy * s, C(JUNGLE[3])); f.set(xx * s - 1, yy * s, C(JUNGLE[1])) }
   }
-  if (!detail) return
+  if (!detail) return miniAreas(f, s)
+  areas(f)
   props(f)
 }
 // kleine Hilfen für Gebäude von oben
@@ -337,5 +344,252 @@ function props(f) {
   { const [X, Y] = L(26); for (const [dx, h0, c0] of [[-7, 4, '#94a3b8'], [0, 7, '#facc15'], [7, 2, '#b45309']]) { f.rect(X + dx - 3, Y - h0, 6, h0 + 2, C(c0)); f.rect(X + dx - 3, Y - h0, 6, 1, C('#ffffff')) } } // Siegertreppe
   { const [X, Y] = L(29); for (let i = 0; i < 34; i++) { const x = X - 18 + hash(i, 94) * 36, y = Y - 12 + hash(i, 95) * 24; f.ell(x, y, 2, 1, C(i % 3 ? '#44403c' : '#ea580c')); if (i % 3 === 0) f.set(x, y, C('#fde047')) } } // Lavafelder
 }
-scene('insel-karte', MW, MH, (f) => paintMap(f, 1, true))
+// ---------------------------------------------------------------- Orte zwischen den Aussichtspunkten
+// Alles hier liegt in freien Flächen; MARKS bleiben, wo sie sind. Licht kommt von links oben, Schatten fallen nach rechts unten.
+const ROOFS = { terra: ['#f59e6b', '#dc6a42', '#a3412a'], ocker: ['#f8d27c', '#de9f45', '#9c6526'], blau: ['#9cc3e6', '#6a92c2', '#41618f'],
+  weiss: ['#ffffff', '#e5e9f0', '#9aa7b8'], tuerkis: ['#86e0cc', '#40ad9c', '#25716a'], stroh: ['#f3d58e', '#d6ac5c', '#9b7433'] }
+function shadow(f, x, y, w, h, a = .42, to = '#0d2a1c') { const t = C(to); for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) { const v = f.get(x + i, y + j); if (v >= 0) f.set(x + i, y + j, mixI(v, t, a)) } }
+function shadowEll(f, x, y, rx, ry, a = .38) { const t = C('#0d2a1c'); f.ell(x, y, rx, ry, (X, Y) => { const v = f.get(X, Y); return v >= 0 ? mixI(v, t, a) : t }) }
+// Haus von schräg oben: Dach mit Lichtseite, First, Traufe und 2 Pixel Hauswand mit Fenstern
+function house(f, x, y, w, h, pal, seed = 1, wall = '#f6eedf') {
+  x = Math.round(x); y = Math.round(y)
+  shadow(f, x + 2, y + 2, w + 1, h + 2)
+  const vert = h > w + 2
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+    const lit = vert ? i < w / 2 : j < h / 2, row = vert ? i : j
+    let c = lit ? pal[0] : pal[1]
+    if (row % 2 === 1 && (vert ? j : i) % 3 === (row % 4 === 1 ? 0 : 1)) c = lit ? pal[1] : pal[2]
+    f.set(x + i, y + j, C(c))
+  }
+  if (vert) f.rect(x + Math.floor(w / 2), y, 1, h, C(mixI(C(pal[0]), C('#ffffff'), .5) === 0 ? pal[0] : hx(mixI(C(pal[0]), C('#ffffff'), .45))))
+  else f.rect(x, y + Math.floor(h / 2) - 1, w, 1, C(hx(mixI(C(pal[0]), C('#ffffff'), .45))))
+  f.rect(x + w - 1, y, 1, h, C(pal[2]))
+  f.rect(x, y + h, w, 2, C(wall)); f.rect(x, y + h + 1, w, 1, C(hx(mixI(C(wall), C('#000000'), .18))))
+  for (let i = 1 + (seed % 2); i < w - 1; i += 3) f.set(x + i, y + h, C('#3d6ea8'))
+  if (w > 6) f.rect(x + Math.floor(w / 2), y + h, 1, 2, C('#7c4a24'))
+  if (hash(seed, 101) > .55) { const k = x + 1 + Math.floor(hash(seed, 102) * (w - 3)); f.rect(k, y + 1, 1, 2, C('#6b625a')); f.set(k, y, C('#a8a29e')) }
+}
+function flatRoof(f, x, y, w, h, seed = 1) { // Flachdach mit Brüstung (Hotel, Hangar-Büro)
+  shadow(f, x + 3, y + 3, w, h + 2, .45)
+  f.rect(x, y, w, h, C('#e2e8f0')); f.rect(x + 1, y + 1, w - 2, h - 2, C('#cbd5e1'))
+  for (let j = 2; j < h - 2; j++) for (let i = 2; i < w - 2; i++) if (h2(i + x, j + y, seed) > .93) f.set(x + i, y + j, C('#b6c2d1'))
+  f.rect(x, y, w, 1, C('#ffffff')); f.rect(x, y, 1, h, C('#ffffff'))
+  f.rect(x, y + h, w, 3, C('#f8fafc')); for (let i = 1; i < w - 1; i += 2) { f.set(x + i, y + h, C('#7dd3fc')); f.set(x + i, y + h + 1, C('#38bdf8')) }
+  f.rect(x, y + h + 2, w, 1, C('#94a3b8'))
+}
+function tree(f, x, y, r = 3, pal = JUNGLE, fruit) {
+  shadowEll(f, x + 2, y + 2, r, r - 1, .4)
+  f.ell(x, y, r, r - 1, C(pal[3])); f.ell(x - 1, y - 1, r - 1, r - 2, C(pal[2])); f.set(x - 1, y - 2, C(pal[0])); f.set(x - 2, y - 1, C(pal[1]))
+  if (fruit) for (let k = 0; k < 3; k++) f.set(x - 1 + k, y + (k % 2), C(fruit))
+}
+function road(f, pts, w = 3, col = '#e8d3a0', edge = '#b99a62') {
+  for (let k = 0; k + 1 < pts.length; k++) { const [x0, y0] = pts[k], [x1, y1] = pts[k + 1]; f.line(x0 + 1, y0 + 1, x1 + 1, y1 + 1, C(edge), w); }
+  for (let k = 0; k + 1 < pts.length; k++) { const [x0, y0] = pts[k], [x1, y1] = pts[k + 1]; f.line(x0, y0, x1, y1, C(col), w) }
+}
+function clearing(f, x, y, rx, ry, pal, seed) { // gemähte Fläche mit ausgefranstem Rand
+  for (let j = -ry - 3; j <= ry + 3; j++) for (let i = -rx - 3; i <= rx + 3; i++) {
+    const d = Math.hypot(i / rx, j / ry) + (vn2((x + i) * .2, (y + j) * .2, seed) - .5) * .25
+    if (d > 1 || geo(x + i, y + j).e < 6) continue
+    f.set(x + i, y + j, C(pal[(Math.floor((x + i + (y + j) * .3) / 3) % 2) + (d > .9 && (i + j) % 2 ? 2 : 0)]))
+  }
+}
+const LAWN = ['#a8de6a', '#9bd35c', '#7fbf45', '#6fae3a']
+function umbrellaTop(f, x, y, a, b) {
+  shadowEll(f, x + 2, y + 2, 3, 2, .35)
+  for (let j = -3; j <= 3; j++) for (let i = -3; i <= 3; i++) { if (i * i + j * j > 10) continue; const s = Math.floor((Math.atan2(j, i) + Math.PI) / (Math.PI / 3)) % 2; f.set(x + i, y + j, C(s ? a : b)) }
+  f.set(x - 1, y - 2, C('#ffffff')); f.set(x, y, C('#ffffff'))
+}
+function boat(f, x, y, dir, kind = 'segel', col = '#ef4444', wake = true) { // von oben, dir = Fahrtrichtung in Bogenmaß
+  const ux = Math.cos(dir), uy = Math.sin(dir), px_ = -uy, py_ = ux
+  // Kielwasser: zwei Schaumlinien, die hinter dem Boot auseinanderlaufen
+  const L = kind === 'faehre' ? 34 : kind === 'motor' ? 26 : 16
+  if (wake) for (let t = 4; t < L; t++) for (const sd of [-1, 1]) { const wv = 1 + t * .22, X = x - ux * t + px_ * wv * sd, Y = y - uy * t + py_ * wv * sd; if (hash(t * 3 + sd, 103) > t / L * .9) f.set(X, Y, C(t < 8 ? '#ffffff' : '#bfeef5')) }
+  const len = kind === 'faehre' ? 9 : kind === 'motor' ? 4 : 5, wd = kind === 'faehre' ? 3 : 2
+  for (let t = -len; t <= len; t++) for (let k = -wd; k <= wd; k++) {
+    const taper = t > len - 3 ? (len - t) / 3 : 1; if (Math.abs(k) > wd * taper + .3) continue
+    const X = x + ux * t + px_ * k, Y = y + uy * t + py_ * k
+    f.set(X + 1, Y + 1, C('#0e5e7a'))
+  }
+  for (let t = -len; t <= len; t++) for (let k = -wd; k <= wd; k++) {
+    const taper = t > len - 3 ? (len - t) / 3 : 1; if (Math.abs(k) > wd * taper + .3) continue
+    const X = x + ux * t + px_ * k, Y = y + uy * t + py_ * k
+    f.set(X, Y, C(Math.abs(k) >= wd * taper - .5 ? col : k * py_ + k * px_ < 0 ? '#ffffff' : '#e2e8f0'))
+  }
+  if (kind === 'segel') { for (let t = -3; t <= 3; t++) for (let k = 0; k <= 3 - Math.abs(t) * .7; k++) f.set(x + ux * t + px_ * (k + 1), y + uy * t + py_ * (k + 1), C(k > 1 ? '#f8fafc' : '#ffffff')); f.set(x, y, C('#78350f')) }
+  if (kind === 'faehre') { for (let t = -4; t <= 3; t++) for (let k = -1; k <= 1; k++) f.set(x + ux * t + px_ * k, y + uy * t + py_ * k, C(k < 0 ? '#fde68a' : '#facc15')); f.set(x + ux * 5, y + uy * 5, C('#1e3a8a')) }
+  if (kind === 'motor') f.set(x + ux * -1, y + uy * -1, C('#1e293b'))
+}
+function rocks(f, x, y, n, seed) {
+  for (let i = 0; i < n; i++) {
+    const X = x + (hash(i, seed) - .5) * 18, Y = y + (hash(i, seed + 1) - .5) * 10, r = 1 + Math.round(hash(i, seed + 2) * 2.4)
+    if (geo(X, Y).e < 0) f.ell(X, Y + 1, r + 1, r, C('#ffffff'))
+    f.ell(X + 1, Y + 1, r, r, C('#4f4a45')); f.ell(X, Y, r, r, C('#8a8580')); f.ell(X - .5, Y - .5, Math.max(0, r - 1), Math.max(0, r - 1), C('#a8a29e')); f.set(X - r * .6, Y - r * .6, C('#d6d3d1'))
+  }
+}
+function islet(f, x, y, rx, ry, seed) {
+  f.ell(x, y, rx + 9, ry + 6, (X, Y) => C(SHALLOW[Math.max(0, Math.min(3, Math.floor(Math.hypot((X - x) / (rx + 9), (Y - y) / (ry + 6)) * 4 + (h2(X, Y, seed) - .5) * .6)))]))
+  f.ell(x, y + 1, rx + 1, ry + 1, (X, Y) => hash(X * 3 + Y, seed) > .35 ? C('#ffffff') : C('#c4f7ee'))
+  f.ell(x, y, rx, ry, (X, Y) => C(SAND[(h2(X, Y, seed) > .7 ? 0 : 1) + (Y > y + ry * .5 ? 1 : 0)]))
+  palmTop(f, x - 1, y - 2, 5, seed); if (rx > 10) palmTop(f, x + rx * .45, y, 4, seed + 1)
+}
+
+function areas(f) {
+  // --- Hafenstadt rund um den Strandplatz (Bucht 1)
+  const [PX, PY] = MARKS[0]
+  for (let j = -40; j <= 16; j++) for (let i = -110; i <= 110; i++) {
+    const X = PX + i, Y = PY + j, d = Math.hypot(i / 104, (j + 14) / 30) + (vn2(X * .15, Y * .15, 104) - .5) * .25
+    if (d > 1 || geo(X, Y).e < 7 || Math.hypot(X - MARKS[5][0], Y - MARKS[5][1]) < 22) continue
+    f.set(X, Y, C(LAWN[(h2(X, Y, 105) > .6 ? 1 : 0) + (d > .92 && (X + Y) % 2 ? 2 : 0)]))
+  }
+  const town = (X, Y) => { const d = Math.hypot((X - PX) / 100, (Y - PY + 14) / 28); return d < .95 && geo(X, Y).e > 9 && Math.hypot(X - MARKS[5][0], Y - MARKS[5][1]) > 24 }
+  const STREETS_X = [-74, -50, -26, 26, 50, 74], ST = '#d8c9a8', STE = '#a8916a'
+  for (let i = -100; i <= 100; i++) for (const [yy, w] of [[-26, 2], [-8, 3]]) { const X = PX + i, Y = PY + yy; if (town(X, Y)) { f.rect(X, Y, 1, w, C(ST)); f.set(X, Y + w, C(STE)) } }
+  for (const dx of STREETS_X) for (let j = -40; j <= 14; j++) { const X = PX + dx, Y = PY + j; if (town(X, Y)) { f.rect(X, Y, 2, 1, C(ST)); f.set(X + 2, Y, C(STE)) } }
+  // Häuserblöcke
+  const pals = [ROOFS.terra, ROOFS.terra, ROOFS.ocker, ROOFS.terra, ROOFS.blau, ROOFS.weiss, ROOFS.tuerkis]
+  const rowsY = [[-40, -27], [-24, -17], [-17, -9], [-4, 5], [5, 14]]
+  let seed = 0
+  for (let b = 0; b + 1 < STREETS_X.length + 2; b++) {
+    const xs = [-104, ...STREETS_X, 104], x0 = xs[b] + 3, x1 = xs[b + 1] - 2
+    if (x1 - x0 < 6) continue
+    for (const [y0, y1] of rowsY) {
+      let x = x0
+      while (x < x1 - 5) {
+        const w = 5 + Math.floor(hash(++seed, 106) * 4), h = Math.max(3, Math.min(y1 - y0 - 3, 4 + Math.floor(hash(seed, 107) * 3)))
+        const X = PX + x, Y = PY + y0
+        if (x + w <= x1 && town(X, Y) && town(X + w, Y + h + 2) && !(Math.abs(X + w / 2 - PX) < 20 && Y > PY - 12)) house(f, X, Y, w, h, pals[Math.floor(hash(seed, 109) * pals.length)], seed)
+        else if (town(X + 2, Y + 2) && hash(seed, 110) > .4) tree(f, X + 3, Y + 3, 3, LEAF.slice(1))
+        x += w + 1 + (hash(seed, 111) > .85 ? 3 : 0)
+      }
+    }
+  }
+  // Rathaus mit Turm am Platz, Markt mit Ständen
+  house(f, PX + 2, PY - 24, 16, 10, ROOFS.terra, 7)
+  f.rect(PX + 4, PY - 31, 5, 8, C('#f6eedf')); f.rect(PX + 4, PY - 31, 5, 3, C('#2f8f83')); f.set(PX + 5, PY - 31, C('#7fe0cf')); f.rect(PX + 6, PY - 28, 1, 2, C('#1e293b')); shadow(f, PX + 9, PY - 29, 3, 7)
+  for (let i = 0; i < 6; i++) { const X = PX - 24 + (i % 3) * 7, Y = PY - 22 + Math.floor(i / 3) * 6; shadow(f, X + 1, Y + 1, 5, 4); for (let k = 0; k < 5; k++) f.rect(X + k, Y, 1, 3, C(k % 2 ? '#ffffff' : ['#ef4444', '#f59e0b', '#3b82f6'][i % 3])); f.rect(X, Y + 3, 5, 1, C('#8b5a2b')) }
+  // Hafen: Kaimauer im Buchtinneren, Stege, Boote, Fähre
+  for (let a = BAY_ANG[0] - .3; a <= BAY_ANG[0] + .2; a += .002) {
+    const [X, Y] = coastAt(a, 1.0); if (nearMark(X, Y, 12, [0])) continue
+    f.rect(X - 1, Y - 3, 3, 3, C('#c9c2b6')); f.set(X, Y - 3, C('#ece7de')); f.rect(X - 1, Y, 3, 1, C('#5f5850'))
+  }
+  for (const [da, len] of [[-.07, 16], [-.16, 20], [-.24, 14], [.1, 12]]) {
+    const [X, Y] = coastAt(BAY_ANG[0] + da, 1.0)
+    shadow(f, X + 1, Y + 1, 3, len, .35, '#0b4a63'); planks(f, X - 1, Y, 3, len, 'v', WOOD, 3, X)
+    for (let t = 6, k = 0; t < len + 2; t += 11, k++) { const sd = k % 2 ? -5 : 5; shadowEll(f, X + sd + 2, Y + t + 1, 2, 5, .3); boat(f, X + sd, Y + t, Math.PI / 2, 'motor', ['#ef4444', '#2563eb', '#f59e0b', '#10b981'][(t + len + k) % 4], false) }
+  }
+  { const [X, Y] = coastAt(BAY_ANG[0] - .05, 1.16); boat(f, X, Y, Math.PI * .62, 'faehre', '#1e3a8a') }
+
+  // --- Ferienanlage an der Ostbucht (Bucht 2)
+  { const X = 872, Y = 357
+    clearing(f, X, Y, 30, 24, LAWN, 112)
+    road(f, [[X - 30, Y - 4], [X - 52, Y - 14], [X - 80, Y - 6]], 2)
+    f.rect(X - 14, Y + 1, 34, 16, C('#eedcb6')); for (let j = 0; j < 16; j++) for (let i = 0; i < 34; i++) if ((i + j) % 4 === 0) f.set(X - 14 + i, Y + 1 + j, C('#e2cc9f'))
+    f.ell(X + 4, Y + 9, 11, 5, C('#f1f5f9')); f.ell(X - 5, Y + 11, 6, 4, C('#f1f5f9'))
+    f.ell(X + 4, Y + 9, 10, 4, (x, y) => C((x + y * 2) % 7 === 0 ? '#bae6fd' : y < Y + 8 ? '#38bdf8' : '#0ea5e9')); f.ell(X - 5, Y + 11, 5, 3, (x, y) => C((x + y * 2) % 7 === 0 ? '#bae6fd' : '#38bdf8'))
+    for (let i = 0; i < 6; i++) { f.rect(X - 12 + i * 5, Y + 2, 3, 1, C('#ffffff')); f.set(X - 12 + i * 5, Y + 2, C(['#f472b6', '#facc15', '#22d3ee'][i % 3])) }
+    umbrellaTop(f, X + 18, Y + 4, '#f97316', '#ffffff'); umbrellaTop(f, X - 10, Y + 15, '#14b8a6', '#ffffff')
+    flatRoof(f, X - 22, Y - 22, 40, 10, 113); flatRoof(f, X - 22, Y - 9, 10, 8, 114); flatRoof(f, X + 20, Y - 20, 8, 22, 115)
+    for (let i = 0; i < 5; i++) tree(f, X - 28 + i * 3, Y + 18 + (i % 2) * 3, 2, LEAF.slice(1))
+    palmTop(f, X + 26, Y + 10, 5, 116); palmTop(f, X - 27, Y - 4, 5, 117)
+    // Wasserbungalows auf Stelzen in der Lagune
+    const [BX, BY] = coastAt(BAY_ANG[1] + .12, 1.0)
+    shadow(f, BX + 1, BY + 1, 34, 2, .35, '#0b4a63'); planks(f, BX - 2, BY - 1, 36, 2, 'h', WOOD, 3, 7)
+    for (let i = 0; i < 5; i++) { const x = BX + 4 + i * 7, y = BY + (i % 2 ? 3 : -8); f.rect(x + 2, i % 2 ? y - 2 : y + 5, 1, 3, C(WOOD[2])); house(f, x, y, 6, 4, ROOFS.stroh, 30 + i, '#c08a4a') }
+    for (let i = 0; i < 7; i++) { const [x, y] = coastAt(BAY_ANG[1] + .16 + i * .035, 1 - 7 / isleR(BAY_ANG[1] + .16 + i * .035)); umbrellaTop(f, x, y, ['#f43f5e', '#0ea5e9', '#facc15'][i % 3], '#ffffff') }
+  }
+
+  // --- Flugplatz im Nordwesten
+  { const x0 = 352, x1 = 462, y = 172
+    clearing(f, 407, 179, 62, 16, LAWN, 118)
+    for (let i = x0; i <= x1; i++) for (let j = 0; j < 9; j++) f.set(i, y + j, C(j === 0 || j === 8 ? '#e5e7eb' : h2(i, j, 119) > .85 ? '#5b6573' : '#4b5563'))
+    for (let i = x0 + 8; i < x1 - 8; i += 8) f.rect(i, y + 4, 4, 1, C('#f8fafc'))
+    for (const e of [x0 + 2, x1 - 6]) for (let j = 2; j < 7; j += 2) f.rect(e, y + j, 4, 1, C('#f8fafc'))
+    f.rect(404, y + 9, 3, 6, C('#6b7280')); f.rect(388, y + 14, 34, 7, C('#9ca3af')); f.rect(388, y + 14, 34, 1, C('#d1d5db'))
+    shadow(f, 427, 189, 18, 11, .45)
+    for (let j = 0; j < 9; j++) for (let i = 0; i < 16; i++) f.set(425 + i, 187 + j, C(i % 2 ? '#94a3b8' : j < 4 ? '#e2e8f0' : '#cbd5e1'))
+    f.rect(425, 196, 16, 2, C('#64748b')); f.rect(430, 196, 6, 2, C('#1e293b'))
+    f.rect(378, 184, 4, 4, C('#f8fafc')); f.rect(378, 184, 4, 2, C('#7dd3fc')); shadow(f, 382, 186, 2, 4)
+    // geparktes Flugzeug von oben
+    const plane = (X, Y) => { shadow(f, X - 3, Y + 1, 9, 2, .4); shadow(f, X + 2, Y - 1, 2, 9, .4); f.rect(X, Y - 3, 1, 9, C('#f8fafc')); f.rect(X - 4, Y, 9, 2, C('#f8fafc')); f.rect(X - 4, Y + 1, 9, 1, C('#e11d48')); f.rect(X - 1, Y + 5, 3, 1, C('#e11d48')); f.set(X, Y - 3, C('#38bdf8')) }
+    plane(398, 188); plane(414, 188)
+    f.rect(366, 170, 1, 2, C('#374151')); f.rect(367, 170, 3, 1, C('#f97316'))
+    road(f, [[392, 198], [380, 214], [372, 236]], 2)
+  }
+
+  // --- Stadion im Nordosten
+  { const X = 814, Y = 266
+    clearing(f, X, Y, 36, 20, LAWN, 120)
+    shadowEll(f, X + 3, Y + 3, 33, 17, .45)
+    f.ell(X, Y, 33, 17, (x, y) => { const k = (x * 3 + y * 7) % 5; return C(['#ef4444', '#f8fafc', '#3b82f6', '#facc15', '#22c55e'][Math.floor(h2(x, y, 121) * 5)] ) })
+    f.ell(X, Y, 33, 17, (x, y) => { const d = Math.hypot((x - X) / 33, (y - Y) / 17); return d > .96 ? C('#64748b') : h2(x, y, 121) > .45 ? C(['#ef4444', '#f8fafc', '#3b82f6', '#facc15', '#a855f7'][Math.floor(h2(x, y, 122) * 5)]) : C('#94a3b8') })
+    f.ell(X, Y, 27, 12, C('#e2e8f0'))
+    f.ell(X, Y, 26, 11, (x, y) => { const d = Math.hypot((x - X) / 26, (y - Y) / 11); return C(d > .82 ? (Math.abs(d - .91) < .03 ? '#fde7d4' : '#c2410c') : (Math.floor((x - X + 40) / 4) % 2 ? '#4ade80' : '#22c55e')) })
+    f.rect(X - 8, Y - 4, 16, 8, C('#ffffff')); f.rect(X - 7, Y - 3, 14, 6, C('#22c55e')); f.rect(X, Y - 3, 1, 6, C('#ffffff'))
+    for (const [dx, dy] of [[-32, -15], [32, -15], [-32, 15], [32, 15]]) { f.rect(X + dx, Y + dy - 4, 1, 5, C('#334155')); f.rect(X + dx - 1, Y + dy - 5, 3, 1, C('#fef9c3')) }
+    road(f, [[X - 30, Y + 18], [X - 40, Y + 40], [X - 52, Y + 70]], 2)
+  }
+
+  // --- Felder und Windmühle im Südwesten, Obstgärten im Südosten
+  { const x0 = 304, y0 = 424, cw = 17, ch = 12
+    const kinds = ['weizen', 'beet', 'acker', 'wiese', 'blumen', 'ananas', 'weizen', 'beet']
+    for (let r = 0; r < 5; r++) for (let q = 0; q < 5; q++) {
+      const X = x0 + q * cw + (r % 2) * 4, Y = y0 + r * ch, kind = kinds[Math.floor(h2(q, r, 123) * kinds.length)]
+      if (geo(X, Y).e < 12 || geo(X + cw, Y + ch).e < 12 || nearMark(X + cw / 2, Y + ch / 2, 22)) continue
+      for (let j = 0; j < ch - 1; j++) for (let i = 0; i < cw - 1; i++) {
+        let c
+        if (kind === 'weizen') c = j % 2 ? '#e3b94f' : '#f2d37a'
+        else if (kind === 'beet') c = j % 3 === 0 ? '#8a5a32' : (i + j) % 2 ? '#4d9a32' : '#62b041'
+        else if (kind === 'acker') c = j % 2 ? '#8f5c33' : '#a8703f'
+        else if (kind === 'wiese') c = h2(X + i, Y + j, 124) > .96 ? '#ffffff' : '#9fd36a'
+        else if (kind === 'blumen') c = j % 2 ? (i % 3 ? '#f472b6' : '#fde047') : '#6fbf4a'
+        else c = j % 3 === 0 ? '#a6763f' : (i % 2 ? '#2f7d3a' : (h2(X + i, Y + j, 125) > .7 ? '#facc15' : '#3f9b48'))
+        f.set(X + i, Y + j, C(c))
+      }
+      f.rect(X, Y + ch - 1, cw, 1, C('#3f6f22')); f.rect(X + cw - 1, Y, 1, ch, C('#3f6f22'))
+      if (h2(q, r, 126) > .6) tree(f, X + cw - 1, Y + ch - 1, 2, LEAF.slice(1))
+    }
+    house(f, 360, 444, 10, 7, ROOFS.terra, 41); house(f, 372, 446, 12, 8, ['#e46b5a', '#b9473a', '#7f2a22'], 42, '#f3e3cf')
+    f.ell(390, 452, 3, 3, C('#cbd5e1')); f.ell(389, 451, 2, 2, C('#f1f5f9'))
+    { const mx = 344, my = 470; shadowEll(f, mx + 2, my + 2, 3, 3); f.ell(mx, my, 3, 3, C('#e9dcc3')); f.ell(mx - 1, my - 1, 1, 1, C('#fff7ea'))
+      for (const [dx, dy] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) for (let t = 2; t < 9; t++) { f.set(mx + dx * t, my + dy * t * .8, C('#7c4a24')); f.set(mx + dx * t + dx, my + dy * t * .8, C(t > 3 ? '#ffffff' : '#7c4a24')) } }
+    road(f, [[362, 456], [398, 476], [440, 482]], 2)
+  }
+  for (let r = 0; r < 4; r++) for (let q = 0; q < 9; q++) { const X = 646 + q * 8 + (r % 2) * 4, Y = 390 + r * 9; if (geo(X, Y).e > 14 && !nearMark(X, Y, 14)) { if (q === 0) f.rect(X - 4, Y - 4, 76, 8, C('#93cf5a')); tree(f, X, Y, 3, LEAF.slice(1), ['#f97316', '#ef4444', '#facc15'][r % 3]) } }
+
+  // --- Vulkan: Lavarinnen vom Krater zu den Lavafeldern, Basalt, Hütte am Rand, Serpentinen von Norden
+  { const [LX, LY] = MARKS[29]
+    f.ell(LX, LY, 30, 18, (x, y) => { const d = Math.hypot((x - LX) / 30, (y - LY) / 18) + (vn2(x * .2, y * .2, 127) - .5) * .35; const v = f.get(x, y); return d > 1 ? v : C(h2(x, y, 128) > .75 ? '#57534e' : d > .85 && (x + y) % 2 ? '#6b6560' : '#44403c') })
+    const lav = (t) => [600 + (LX - 600) * t + Math.sin(t * 9) * 7, 294 + (LY - 294) * t + Math.cos(t * 7) * 3]
+    for (let t = 0; t <= 1; t += .003) { const [x, y] = lav(t); f.ell(x + 1, y + 1, 4, 3, (X, Y) => { const v = f.get(X, Y); return v >= 0 ? mixI(v, C('#1c1917'), .28) : v }) }
+    for (let t = 0; t <= 1; t += .003) { const [x, y] = lav(t), w = 1 + (Math.sin(t * 23) > -.3 ? 1 : 0); f.rect(x - 1, y - 1, w + 1, w + 1, C('#9a3412')); f.rect(x - 1, y - 1, w, w, C('#ea580c')) }
+    for (let t = 0; t <= 1; t += .006) { const [x, y] = lav(t); f.set(x - 1, y - 1, C(hash(t * 999, 129) > .55 ? '#fde047' : '#fb923c')) }
+    for (let i = 0; i < 5; i++) { const x = LX - 16 + hash(i, 130) * 32, y = LY - 8 + hash(i, 131) * 16; f.ell(x + 1, y + 1, 3, 2, C('#1c1917')); f.ell(x, y, 3, 2, C('#ea580c')); f.ell(x - 1, y, 1, 1, C('#fde047')) }
+    const [KX, KY] = MARKS[27]; house(f, KX - 38, KY + 2, 8, 6, ROOFS.stroh, 51, '#c9b08a')
+    const zz = []; for (let i = 0; i <= 10; i++) zz.push([576 + (i % 2 ? 10 : -10) * (1 - i / 14), 146 + i * 9.5]); for (let k = 0; k + 1 < zz.length; k++) for (let t = 0; t <= 1; t += .08) if (Math.round(t * 12) % 2 === 0) { const X = zz[k][0] + (zz[k + 1][0] - zz[k][0]) * t, Y = zz[k][1] + (zz[k + 1][1] - zz[k][1]) * t; if (geo(X, Y).r > 36) f.set(X, Y, C('#e8d3a0')) }
+  }
+
+  // --- Brücke, wo die Ringstraße den Fluss quert
+  { let best = null; for (let i = 0; i < 1800; i++) { const a = i / 1800 * Math.PI * 2 - Math.PI, [X, Y] = coastAt(a, .82); if (X < cx - 40) { const d = Math.abs(Y - riverY(X)); if (!best || d < best[2]) best = [X, Y, d] } }
+    const [X] = best, Y = riverY(X); shadow(f, X - 1, Y - 6, 6, 12, .35, '#0b4a63'); planks(f, X - 2, Y - 7, 5, 13, 'v', WOOD, 2, 9); f.rect(X - 3, Y - 7, 1, 13, C(WOOD[4])); f.rect(X + 3, Y - 7, 1, 13, C(WOOD[4])) }
+
+  // --- Küste: Felsnasen, Sonnenschirme, Boote, Inselchen, Sandbank, Seegras
+  for (const a of [-2.75, -1.95, -.95, .6, 1.25, 2.3, 2.85]) { const [X, Y] = coastAt(a, 1.0); if (!nearMark(X, Y, 20)) rocks(f, X, Y, 8, Math.round(a * 100)) }
+  for (const [a0, n] of [[1.75, 6], [2.05, 4], [-1.25, 5], [.95, 5], [-2.45, 4]]) for (let i = 0; i < n; i++) { const a = a0 + i * .028, [x, y] = coastAt(a, 1 - 6 / isleR(a)); if (!nearMark(x, y, 14)) umbrellaTop(f, x, y, ['#f43f5e', '#0ea5e9', '#facc15', '#a855f7'][(i + n) % 4], '#ffffff') }
+  for (const [x, y, d, k, c] of [[640, 600, -.3, 'segel'], [470, 610, 3.3, 'motor', '#2563eb'], [1010, 250, -1.2, 'segel'], [1040, 400, 1.9, 'motor', '#f59e0b'], [200, 200, -.6, 'segel'], [160, 470, 2.6, 'segel'],
+    [780, 70, .2, 'motor', '#10b981'], [330, 60, 3.0, 'segel'], [880, 560, -2.6, 'segel'], [960, 160, -2.2, 'motor', '#ef4444']]) if (geo(x, y).e < -20) boat(f, x, y, d, k, c || '#ef4444')
+  islet(f, 136, 120, 12, 7, 131); islet(f, 1040, 560, 9, 5, 132); islet(f, 1072, 110, 7, 4, 133); islet(f, 96, 560, 6, 4, 134)
+  for (let i = -30; i <= 30; i++) { const X = 300 + i * 2, Y = 588 + i * i * .022, t = Math.round(3.4 * (1 - Math.abs(i) / 31)); for (let j = -1; j <= t + 1; j++) f.set(X, Y + j, C(j < 0 || j > t ? SHALLOW[0] : SAND[j === t ? 2 : (h2(X, Y + j, 138) > .6 ? 0 : 1)])); f.set(X + 1, Y + t + 2, C('#ffffff')) }
+  for (let i = 0; i < 900; i++) { const X = hash(i, 135) * MW, Y = hash(i, 136) * MH, g = geo(X, Y); if (g.e < -70 && g.e > -170 && vn2(X * .03, Y * .03, 137) > .62) { const v = f.get(X, Y); if (v >= 0) f.set(X, Y, mixI(v, C('#0b3f57'), .45)); f.set(X + 1, Y - 1, mixI(f.get(X + 1, Y - 1), C('#0b3f57'), .3)) } }
+}
+// Kleine Karte: die Orte aus der großen Karte auf ein Drittel verkleinert (nächster Bildpunkt), damit Stadt, Flugplatz und Anlagen dort auch zu sehen sind
+function miniAreas(f, s) {
+  const big = bigMap(), boxes = [[470, 440, 690, 510], [835, 330, 960, 385], [345, 160, 470, 200], [775, 244, 852, 290], [300, 420, 400, 490], [640, 382, 720, 425], [590, 186, 705, 300]]
+  for (const [x0, y0, x1, y1] of boxes) for (let Y = Math.floor(y0 * s); Y <= y1 * s; Y++) for (let X = Math.floor(x0 * s); X <= x1 * s; X++) {
+    const xx = X / s + 1, yy = Y / s + 1, v = big.get(xx, yy), g = big.get(xx - 1, yy - 1)
+    if (v >= 0 && geo(xx, yy).e > 2) f.set(X, Y, v === g ? v : big.get(xx, yy))
+  }
+}
+let BIG = null
+const bigMap = () => { if (!BIG) { BIG = new FB(MW, MH); paintMap(BIG, 1, true) } return BIG }
+scene('insel-karte', MW, MH, (f) => f.p.set(bigMap().p))
 scene('insel-karte-mini', 384, 216, (f) => paintMap(f, 1 / 3, false))

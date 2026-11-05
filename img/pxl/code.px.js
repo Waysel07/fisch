@@ -477,3 +477,17 @@ S('beachhut', 64, 64, (c) => {
   for (let x = 3; x < 61; x += 4) { c.rect(x, 37, 4, 26, Bm); c.vline(x, 37, 26, Bl); c.vline(x + 3, 37, 26, Bd); for (let y = 41 + (x % 8 ? 3 : 0); y < 62; y += 7) c.hline(x, y, 4, N) }
   c.hline(1, 62, 62, '#5b3416')
 }, true, undefined, true)
+
+// ---------------------------------------------------------------- Sonneninsel: Zuschauer
+// 10×15 (5×7,5 Welt), Füße unten Mitte. h H = Haare, c C = Shirt, s S = Haut; das Spiel färbt jeden Zuschauer anders ein (sfan).
+// sp_fan_1 reißt die Arme hoch (Jubel).
+const FAN = { h: '#7c4a24', H: '#4a2a12', c: '#ef4444', C: '#b91c1c', s: '#f2c9a0', S: '#d9a47a', p: '#334155', P: '#1e293b' }
+function fan(c, up) {
+  c.rect(4, 11, 1, 3, FAN.p); c.rect(6, 11, 1, 3, FAN.P)
+  c.rect(3, 6, 5, 5, FAN.c); c.vline(7, 6, 5, FAN.C); c.hline(3, 10, 5, FAN.C)
+  if (up) { c.vline(2, 2, 5, FAN.c); c.vline(8, 2, 5, FAN.C); c.px(2, 1, FAN.s); c.px(8, 1, FAN.S) }
+  else { c.vline(2, 7, 3, FAN.c); c.vline(8, 7, 3, FAN.C); c.px(2, 10, FAN.s); c.px(8, 10, FAN.S) }
+  c.ellipse(5, 3, 2, 2, FAN.s); c.vline(6, 2, 3, FAN.S); c.hline(3, 1, 5, FAN.h); c.px(3, 2, FAN.h); c.px(7, 2, FAN.H); c.hline(4, 0, 3, FAN.h)
+}
+S('sp_fan_0', 11, 16, (c) => fan(c, false), true, FAN)
+S('sp_fan_1', 11, 16, (c) => fan(c, true), true, FAN)

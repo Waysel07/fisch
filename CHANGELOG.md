@@ -2,6 +2,11 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 05.11.2026 · `2026-11-05-12`
+
+- 🏝️ More island than ever: the island map now has a harbour town with a town hall, a market and boats at the quay, a resort with a pool and water bungalows, an airstrip, a stadium, fields with a windmill, orchards, a glowing lava channel on the volcano, beach umbrellas, sailboats and small neighbouring islets. There is something to discover everywhere in the Island Flight.
+- 🏐 Better-looking minigames: balls, pins, buoys, balloons and the frisbee have light and shadow, the archery target stands on a wooden easel, and spectators cheer every point in Beach Volleyball and Archery. The surf wave now visibly breaks, with a lip, spray and whitewater, gulls and sailboats pass over the beaches, and the HUD is easier to read on a dark backing.
+
 ## 05.11.2026 · `2026-11-05-11`
 
 - 🖼️ Sun Island in a new pixel look: every sports ground has a painted backdrop – a beach with palms and a sea view for Frisbee, Archery and Beach Volleyball, a wooden pavilion for Table Tennis, a real bowling lane in the sand and flowing water for the Jet Ski. The island map in the Island Flight and at Pelle’s is fully redrawn, with hill shading, jungle canopy, reef and surf.
