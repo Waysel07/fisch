@@ -50,6 +50,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   | `summon` | Boss erscheint |
   | `boss` | Bossfight |
 | `crit` | Kampf gegen eine Lava-Kreatur |
+  | `sdrill` | Fang-Drill (Sport-Minispiel im Modal `#sport`) |
 
   Die Sportstationen der Sonneninsel sind kein eigener `state`: Sie laufen im Modal `#sport` (`sportPlaying()`, `sportTick(dt)` aus `frame()`), das Angeln steht so lange still. Das Modal nutzt denselben Slot-Look wie die übrigen Karten (`.sport-card`, `.sport-mode`, `.sport-stamps li` auf `var(--slot)`); Stationen lassen sich auch auf der Minikarte antippen (`sportMiniMap`).
 
@@ -72,7 +73,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
 - **Fang-Ablauf:**
   - `pickFish()` wählt nach Gewichten, Glück, Wurfweite, Nacht, Wetter und Map.
   - `hook()` würfelt die Größe (`rollSize`/`sizeIn`).
-  - Es folgt der Drill (`reel`) oder ein Taktdrill (`startRhythm`).
+  - Es folgt der Drill (`reel`), ein Taktdrill (`startRhythm`) oder ab der Sonneninsel bei seltenen und besseren Bissen ein Fang-Drill (`SPORT_DRILLS`, `startDrill`, Zustand `sdrill`): eine kurze Runde einer offenen Sportstation im Modal `#sport`. Er ändert weder Können noch Stempel; `sportFinish()` ruft für ihn `drillEnd()` auf.
   - `land_catch()` schreibt Dex, Taler und Mutationen und ruft dann auf:
     - `checkMastery()` und `progressCatch()` (EP und Aufträge);
     - `showCatch()` mit der Fanfare.

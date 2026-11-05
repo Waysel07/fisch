@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 05.11.2026 · `2026-11-05-10`
+
+- 🎲 New catch drills: once you have reached Sun Island, a rare, epic or legendary bite can turn into a short sports minigame anywhere – Frisbee, Island Flight, Jet Ski, Archery, Table Tennis, Surfing, Beach Volleyball or Beach Bowling, depending on which stations you have opened. Hit the target score and the fish is yours; a strong round counts as a clean catch.
+
 ## 05.11.2026 · `2026-11-05-9`
 
 - 🎨 The 22 Sun Island fish have been reworked: they now have a shine on top, shading on the belly and softer outlines. The Giant Manta Ray is fully redrawn and shows itself from above with wide wings.

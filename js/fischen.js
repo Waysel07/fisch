@@ -233,6 +233,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-05-10', date: '05.11.2026', items: [
+      '🎲 Neue Fang-Drills: Ab der Sonneninsel kann ein seltener, epischer oder legendärer Biss überall zu einem kurzen Sport-Minispiel werden – Frisbee, Rundflug, Jetski, Bogenschießen, Tischtennis, Surfen, Beachvolleyball oder Strand-Bowling, je nachdem, welche Stationen du schon offen hast. Schaffst du die Punktzahl, hängt der Fisch am Haken; mit einer starken Runde ist es ein sauberer Fang.',
+    ] },
     { id: '2026-11-05-9', date: '05.11.2026', items: [
       '🎨 Die 22 Fische der Sonneninsel sind überarbeitet: Sie haben jetzt Glanz von oben, Schatten am Bauch und weichere Umrisse. Der Riesen-Mantarochen ist ganz neu gezeichnet und zeigt sich von oben mit weiten Schwingen.',
       '🖌️ Noch mehr Feinschliff: Badelatsche, Frisbee-Rochen, Golfball-, Tischtennis- und Wasserski-Fisch, Sonnencreme, Kanu-Hecht, Fechter- und Schnorchelfisch sind neu gezeichnet, alle Inselfische haben einen weichen Kernschatten, und der Mantarochen ist heller und auf dunklem Wasser besser zu sehen. Die Sportplätze haben jetzt Sonne, ziehende Wolken, eine Insel am Horizont, geschwungene Palmen und einen Strand mit Schaumkante.',
@@ -900,6 +903,10 @@
     hooked = { f, ...rollSize(f), str: STRENGTH[f.r] };
     Object.assign(reel, { tension: .15, progress: .22, thrash: 0, thrashT: 1 + Math.random(), slack: 0, maxT: 0 });
     if (f.r === 'legendary' && !f.fake && Math.random() < RHYTHM_CHANCE) { sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff'); startRhythm(); return; }
+    if (DRILL_D[f.r] && !f.fake && inselOpen() && Math.random() < SPORT_DRILL_CHANCE) {
+      const pool = drillPool(f);
+      if (pool.length) { sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff'); startDrill(pool[Math.floor(Math.random() * pool.length)]); return; }
+    }
     state = 'reel'; $('reel').hidden = false; hint('');
     sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff');
   }
@@ -3517,7 +3524,7 @@
         const launch = (x, h, tx2, T) => ({ x, h, vx: (tx2 - x) / T, vh: (-h + .5 * G * T * T) / T, side: tx2 > 192 ? 1 : -1, hit: 0 });
         if (g.mode === 1) { // serve series: 10 serves into zones on Pelle's side, hold for power, release when the aim fits
           if (!g.ball) {
-            if (g.n >= 10) { g.over = true; return; }
+            if (g.n >= (g.drillN || 10)) { g.over = true; return; }
             g.ang = .5 + .5 * Math.sin(g.t * (2 + g.d * 2.5));
             if (I.down) g.pow = Math.min(1, g.pow + dt * .9);
             if (I.rel && g.pow > .05) { const land = 200 + g.pow * 190; g.ball = launch(g.px, 30, land, 1.1 - g.ang * .4); g.ball.serve = 1; g.pow = 0; sfx.whoosh(); }
@@ -3571,7 +3578,7 @@
         if (g.mode === 1 && !g.ball && g.n < 10) { const a = g.ang; for (let i = 0; i < 8; i++) sq(g.px + 4 + i * 3, 150 - i * 3 * (.4 + a), 1, 1, '#facc15'); sq(g.px - 12, 120, 5, 24, '#1b1f2e'); sq(g.px - 11, 121 + 22 * (1 - g.pow), 3, 22 * g.pow, '#22c55e'); }
         if (g.mark && g.popT > 0) stext(g.pop || (g.mark.p ? '✓' : '✗'), g.mark.x, 166, '#fde047', 8);
         else if (g.popT > 0) stext(g.pop, g.px, 140, '#fde047', 8);
-        stext(g.mode ? tr('Aufschlag {a}/10 · {p} Punkte', { a: Math.min(10, g.n + 1), p: g.pts }) : `${g.me} : ${g.op}`, 192, 16, '#fff', 10);
+        stext(g.mode ? tr('Aufschlag {a}/{b} · {p} Punkte', { a: Math.min(g.drillN || 10, g.n + 1), b: g.drillN || 10, p: g.pts }) : `${g.me} : ${g.op}`, 192, 16, '#fff', 10);
         if (!g.mode && !g.ball && g.serve > 0 && g.wait <= 0) stext(tr('Tippen = Aufschlag'), 192, 30, '#fde047', 7);
       },
       score: g => g.mode ? g.pts : g.me * 10 + (g.me >= 7 ? 30 + (7 - g.op) * 5 : 0) },
@@ -3789,6 +3796,48 @@
     $('sport-title').textContent = `${s.icon} ${s.name} · ${s.modes[mode]}`;
     $('sport-sub').textContent = lvl === 3 ? tr('Champion-Duell gegen Kapitän Kraul: schlag {n} Punkte!', { n: s.champ[mode] }) : `${SP_LV[lvl]} · ${s.info}`;
   }
+  // Fang-Drills: from the Sun Island on, a rare, epic or legendary bite can turn into a short round of a
+  // station you already opened (or the osu-Taktdrill for legendaries). Score `pass` and the fish is landed,
+  // `clean` counts as a clean catch. Nothing here touches skill, stamps, medals or the daily limit.
+  const SPORT_DRILL_CHANCE = .15, DRILL_D = { rare: .15, epic: .3, legendary: .45 };
+  const SPORT_DRILLS = [
+    { id: 'frisbee', mode: 1, set: g => { g.n = 2; }, pass: 170, clean: 270 },
+    { id: 'flug', mode: 0, set: g => { g.time = 45; }, pass: 4, clean: 8 },
+    { id: 'jetski', mode: 1, set: g => { g.time = 20; }, pass: 55, clean: 95 },
+    { id: 'bogen', mode: 1, set: g => { g.time = 18; }, pass: 6, clean: 10 },
+    { id: 'tt', mode: 1, set: () => {}, pass: 6, clean: 12 },
+    { id: 'surf', mode: 0, set: g => { g.time = 22; }, pass: 35, clean: 60 },
+    { id: 'volley', mode: 1, set: g => { g.drillN = 5; }, pass: 6, clean: 11 },
+    { id: 'bowling', mode: 1, set: () => {}, pass: 7, clean: 12 },
+  ];
+  function drillPool(f) {
+    const pool = SPORT_DRILLS.filter(c => sportOpen(SPORTS.find(s => s.id === c.id)));
+    return f.r === 'legendary' ? [...pool, 'osu'] : pool;
+  }
+  function startDrill(c) {
+    if (c === 'osu') return startRhythm();
+    const s = SPORTS.find(x => x.id === c.id);
+    closeModals(); state = 'sdrill'; hint(''); $('reel').hidden = true;
+    sp = { id: s.id, s, mode: c.mode, lvl: 0, t: 0, cd: 2.4, phase: 'count', drill: c, g: { mode: c.mode, lvl: 0, t: 0, d: DRILL_D[hooked.f.r] || .2 } };
+    s.start(sp.g); c.set(sp.g); Object.assign(SIN, { down: false, tap: false, rel: false, moved: 0, keys: {} });
+    $('sport-hub').hidden = true; $('sport-play').hidden = false; $('sport-result').hidden = true; $('sport-play').classList.remove('done');
+    $('sport').hidden = false;
+    $('sport-title').textContent = tr('🎣 Fang-Drill · {s}', { s: `${s.icon} ${s.name}` });
+    $('sport-sub').textContent = tr('{f} hängt an der Leine! Schaff {n} Punkte, dann ist er gefangen.', { f: hooked.f.name, n: c.pass }) + ' ' + s.info;
+  }
+  function drillEnd(score) { // score < 0: the drill was left early
+    const c = sp.drill, f = hooked && hooked.f; sp = null;
+    $('sport').hidden = true;
+    if (!f) { state = 'idle'; return; }
+    if (score >= c.pass) {
+      reel.maxT = score >= c.clean ? 0 : .8;
+      toast(tr('🎣 Geschafft! {f} gefangen ({n} Punkte)', { f: f.name, n: score }));
+      land_catch();
+    } else {
+      retract((score < 0 ? tr('Drill abgebrochen! {f} ist weg.', { f: f.name }) : tr('Nicht geschafft! {f} ist weg. ({n} / {p} Punkte)', { f: f.name, n: score, p: c.pass })) + lostXp(f));
+      bealinEvent({ type: 'lost' });
+    }
+  }
   function sportTick(dt) {
     introTick(dt);
     if (!sp || $('sport').hidden || sp.done) return;
@@ -3846,6 +3895,7 @@
     return { score, medal, dLv: r.lv - before, lv: r.lv, newSt, coins, xp: xpGot || xp, scales, lines, half: pay.half, champ: lvl === 3 };
   }
   function sportFinish() {
+    if (sp.drill) return drillEnd(Math.max(0, Math.round(sp.s.score(sp.g))));
     sp.done = true;
     const res = sportResult(sp.s, sp.g);
     showSportResult(sp.s, sp.g, res);
@@ -4384,6 +4434,7 @@
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
     for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'sport']) $(id).hidden = true;
+    if (sp && sp.drill) drillEnd(-1); // leaving a catch drill loses the fish
     if (sp && !sp.done) sp = null; // leaving a running station ends it without a result
     if (window.speechSynthesis) window.speechSynthesis.cancel();
   }
@@ -4409,14 +4460,14 @@
   $('patch-more').addEventListener('click', () => { const y = $('patch-list').parentElement.scrollTop; renderPatch(patchShown + 5); $('patch-list').parentElement.scrollTop = y; });
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
-    if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'boss', 'summon', 'crit'].includes(state)) return;
+    if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'sdrill', 'boss', 'summon', 'crit'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
     if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings, muschel: renderMuschel, sport: () => { spView.id = null; sp = null; renderSport(); } })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
-    if (e.target === m && m.id !== 'title' && m.id !== 'catch') closeModals();
+    if (e.target === m && m.id !== 'title' && m.id !== 'catch' && !(m.id === 'sport' && sp && sp.drill)) closeModals(); // a stray tap must not lose the fish in a catch drill
   }));
   $('btn-dex').addEventListener('click', () => toggleModal('dex'));
   $('btn-shop').addEventListener('click', () => toggleModal('shop'));
@@ -6310,7 +6361,7 @@
     return j;
   }
   function lobbyMe() {
-    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'boss', 'crit'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: Math.min(99, save.rebirthsTotal | 0), pr: save.prestige, ti: myTitle() ? save.title : '', bs: bossStage(), sp: profis() };
+    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'sdrill', 'boss', 'crit'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: Math.min(99, save.rebirthsTotal | 0), pr: save.prestige, ti: myTitle() ? save.title : '', bs: bossStage(), sp: profis() };
   }
   async function lobbySync() {
     if (!save.lobby || LOBBY.busy || document.hidden) return;
@@ -6605,5 +6656,6 @@
     bossSolo: () => { const st = bossStage(); save.lobby ? summonBoss() : enterBoss({ id: 'solo-test', max: stageHp(st), hp: stageHp(st), ends: Date.now() + BOSS_TIME, n: 1, st }, true); },
     bossHit, pick: () => pickFish(), get wx() { return wx.id; },
     // Sonneninsel: start a station, end it now, peek at the running game
-    sport: (id, mode = 0, lvl = 0) => startSport(id, mode, lvl), sportOver: () => { if (sp && sp.g) sp.g.over = true; }, get sportG() { return sp && sp.g; }, sportRec, inselMult: () => inselMult(), sportBonus: () => sportBonus() };
+    sport: (id, mode = 0, lvl = 0) => startSport(id, mode, lvl),
+    drill: (id, fid = 'spezi1') => { const f = FISH.find(x => x.id === fid); hooked = { f, ...rollSize(f), str: STRENGTH[f.r] }; reel.maxT = 0; startDrill(id === "osu" ? "osu" : SPORT_DRILLS.find(c => c.id === id)); }, sportOver: () => { if (sp && sp.g) sp.g.over = true; }, get sportG() { return sp && sp.g; }, sportRec, inselMult: () => inselMult(), sportBonus: () => sportBonus() };
 })();
