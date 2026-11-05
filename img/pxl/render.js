@@ -167,12 +167,13 @@ if (which === 'code') {
   let src = fs.readFileSync(file, 'utf8');
   for (const { name, g, keys: fixed = {} } of out) {
     // opt.keys = { Zeichen: Farbe } legt Buchstaben fest, die das Spiel umfärbt (z. B. Hut h H l wie bei PLAYER_PAL)
-    const map = {}, inv = {}, keys = 'kabcdefghijlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('').filter((ch) => !(ch in fixed));
+    const map = {}, inv = {}, keys = ('kabcdefghijlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%&*+-=?@^_~<>|;:' + Array.from({ length: 64 }, (_, i) => String.fromCharCode(0xc0 + i)).join('')).split('').filter((ch) => !(ch in fixed));
+    // gelichtete Sprites haben viele Mischfarben; reichen die Zeichen nicht, bricht der Lauf ab statt kaputte Raster zu schreiben
     for (const [ch, v] of Object.entries(fixed)) inv[col(v)] = ch;
     let n = 0;
     const rows = g.map((r) => r.map((v) => {
       if (!v) return '.';
-      if (!(v in inv)) { const ch = v === PAL.k ? 'k' : keys[1 + n++]; inv[v] = ch; }
+      if (!(v in inv)) { const ch = v === PAL.k ? 'k' : keys[1 + n++]; if (!ch) throw new Error(name + ': zu viele Farben'); inv[v] = ch; }
       map[inv[v]] = v;
       return inv[v];
     }).join(''));

@@ -4,10 +4,12 @@
 pal({ k: '#1b1f2e' })
 const INK = '#1b1f2e'
 
-function S(name, W, H, fn, outline = true, keys) {
+function S(name, W, H, fn, outline = true, keys, lit) {
   const o = outline ? 1 : 0
   const opt = { w: W - 2 * o, h: H - 2 * o, keys }
   if (outline) opt.outline = 'k'
+  // lit: Glanz, Kernschatten und getönter Umriss wie bei den Inselfischen
+  if (lit) { opt.post = (c) => light(c, { core: 0.14 }); if (outline) opt.edge = (g) => selout(g, INK) }
   sprite(name, opt, (c) => fn({
     px: (x, y, col) => c.px(x - o, y - o, col),
     rect: (x, y, w, h, col) => c.rect(x - o, y - o, w, h, col),
@@ -369,3 +371,49 @@ S('sp_jetski', 22, 36, (c) => {
   c.ellipse(11, 21, 5, 3, LOOK.c); c.hline(8, 19, 7, LOOK.y); c.hline(7, 23, 9, LOOK.C)
   c.ellipse(11, 18, 3, 3, LOOK.H); c.ellipse(11, 18, 2, 2, LOOK.h); c.px(10, 17, LOOK.l); c.px(11, 17, LOOK.l)
 }, true, LOOK)
+
+// ---------------------------------------------------------------- Steg: Bealins Ruderboot und der Inselflieger (mit Licht)
+// Das Spiel tönt sie nachts selbst ab; Laterne, Propeller und Wellen zeichnet es dazu.
+S('bealin_boat', 62, 16, (c) => {
+  const H = '#a8442a', Hd = '#7a2f1c', Hl = '#c75a3a', Cr = '#efe0c0', Wd = '#a0662f', Wl = '#c98a4b'
+  c.poly([2, 4, 60, 4, 58, 9, 53, 13, 9, 13, 4, 9], H)
+  c.hline(4, 5, 55, Cr); c.hline(4, 6, 55, '#d9c59c')                                    // helle Bordwand-Leiste
+  c.hline(5, 8, 53, Hl); c.hline(6, 10, 50, Hd); c.hline(8, 12, 46, '#5e2416')            // Planken
+  for (const x of [14, 26, 38, 50]) c.vline(x, 7, 5, Hd)                                  // Nietreihen der Spanten
+  c.hline(1, 3, 60, '#e8d3a8'); c.hline(2, 2, 58, '#fff1d0')                              // Dollbord
+  c.rect(1, 0, 3, 4, Wd); c.vline(1, 0, 4, Wl)                                            // Bugpfosten
+  c.rect(57, 1, 3, 3, Wd); c.px(57, 1, Wl)                                                // Heck
+  // Riemen ruht schräg an der Bordwand, Blatt im Wasser
+  c.line(10, 0, 16, 11, Wd, 2); c.line(10, 0, 16, 11, Wl); c.rect(15, 11, 4, 4, Wd); c.vline(15, 11, 4, Wl)
+  c.rect(9, 1, 3, 2, '#64748b')                                                           // Dolle
+  // Name am Bug
+  for (const [x, w] of [[42, 2], [45, 1], [47, 3], [51, 2]]) c.hline(x, 9, w, Cr)
+}, true, undefined, true)
+S('plane', 56, 34, (c) => {
+  const R = '#ef4444', Rd = '#b91c1c', Rl = '#fca5a5', Wt = '#f8fafc', Wg = '#cbd5e1', G = '#94a3b8', Gd = '#475569', Gl = '#64748b', N = '#1e3a8a', Gl2 = '#7dd3fc'
+  // Schwimmer mit Streben
+  c.line(14, 19, 12, 25, Gd, 2); c.line(36, 19, 38, 25, Gd, 2); c.line(15, 19, 13, 25, Gl); c.line(37, 19, 39, 25, Gl)
+  c.poly([2, 27, 6, 25, 44, 25, 49, 27, 45, 31, 8, 31, 4, 30], Wg)
+  c.hline(6, 25, 38, Wt); c.hline(5, 26, 42, '#e2e8f0'); c.hline(8, 30, 37, G); c.poly([2, 27, 6, 25, 7, 30, 4, 30], R); c.px(4, 26, Rl)
+  c.vline(30, 26, 4, G)                                                                   // Stufe im Schwimmer
+  // Rumpf
+  c.poly([5, 11, 9, 8, 30, 8, 47, 9, 52, 10, 52, 13, 40, 17, 30, 19, 9, 19, 5, 16], Wt)
+  c.hline(9, 9, 38, '#ffffff'); c.hline(7, 18, 30, Wg)
+  c.hline(6, 14, 42, R); c.hline(6, 15, 40, Rd); c.hline(8, 16, 34, N)                   // Zierstreifen
+  // Motorhaube und Spinner
+  c.poly([3, 10, 9, 9, 10, 18, 3, 17], G); c.vline(3, 10, 8, Gl); c.hline(4, 10, 5, Wg); c.vline(9, 10, 8, Gd)
+  for (const y of [12, 14, 16]) c.hline(5, y, 3, Gd)
+  c.rect(0, 12, 3, 4, R); c.px(0, 12, Rl)
+  // Fenster
+  c.poly([11, 9, 16, 9, 16, 13, 10, 13], Gl2); c.line(12, 12, 14, 10, '#ecfeff')
+  c.rect(18, 10, 5, 3, '#38bdf8'); c.hline(18, 10, 5, '#bae6fd'); c.rect(25, 10, 5, 3, '#38bdf8'); c.hline(25, 10, 5, '#bae6fd')
+  c.rect(19, 11, 2, 2, '#1e293b'); c.px(19, 11, '#f2c9a0')                               // Pilot im Fenster
+  c.vline(32, 9, 9, Wg); c.px(33, 13, G)                                                  // Tür
+  // Leitwerk
+  c.poly([41, 9, 46, 1, 52, 1, 53, 10], R); c.line(47, 2, 51, 2, Rl); c.line(45, 5, 52, 5, Wt); c.vline(52, 2, 8, Rd)
+  c.poly([44, 11, 55, 10, 55, 12, 44, 13], '#e2e8f0'); c.hline(45, 11, 9, Wt)
+  // Hochdecker-Flügel mit Streben
+  c.poly([10, 6, 13, 4, 42, 4, 44, 6, 42, 8, 12, 8], R)
+  c.hline(13, 4, 29, Rl); c.hline(12, 5, 31, '#f87171'); c.hline(12, 8, 30, Rd); c.rect(40, 5, 3, 2, '#fde047') // Positionslicht
+  c.line(17, 17, 12, 9, Gl); c.line(35, 17, 41, 9, Gl)                                    // Flügelstreben
+}, true, undefined, true)

@@ -236,6 +236,7 @@
     { id: '2026-11-05-9', date: '05.11.2026', items: [
       '🎨 Die 22 Fische der Sonneninsel sind überarbeitet: Sie haben jetzt Glanz von oben, Schatten am Bauch und weichere Umrisse. Der Riesen-Mantarochen ist ganz neu gezeichnet und zeigt sich von oben mit weiten Schwingen.',
       '🖌️ Noch mehr Feinschliff: Badelatsche, Frisbee-Rochen, Golfball-, Tischtennis- und Wasserski-Fisch, Sonnencreme, Kanu-Hecht, Fechter- und Schnorchelfisch sind neu gezeichnet, alle Inselfische haben einen weichen Kernschatten, und der Mantarochen ist heller und auf dunklem Wasser besser zu sehen. Die Sportplätze haben jetzt Sonne, ziehende Wolken, eine Insel am Horizont, geschwungene Palmen und einen Strand mit Schaumkante.',
+      '⛵ Am Steg neu gezeichnet: Käpt’n Bealins Ruderboot (Planken, Dollbord, Riemen im Wasser) und der Inselflieger (Hochdecker mit Streben, Fenster mit Pilot, Schwimmer, Leitwerk). Beide haben jetzt Licht und Schatten und werden nachts dunkler.',
       '🛟 Boot-Skin „David Hasselhoff“ repariert: Steuerrad und Fischdex-Kiste stehen jetzt auf seinem Rücken statt in seinen Beinen, und unter Wasser schimmert er durch statt als graue Platte.',
       '🏄 Neue Figuren in den Sportstationen: Beim Frisbee, Surfen und Beachvolleyball spielt jetzt deine eigene Spielfigur mit, mit Hut, Jacke, Haut und Haaren aus dem Kleiderschrank. Der Jetski ist neu gezeichnet, der Tischtennisschläger hat einen Griff.',
       '☀️ Auf der Sonneninsel schneit es nicht mehr: Wo sonst Schnee fällt, ist auf der Insel eine Hitzewelle.',
@@ -1873,6 +1874,8 @@
 
   // Sprites as char rows, drawn in img/pxl/code.px.js. 1 char = 1 fine pixel = 0.5 world units.
   const ART = {
+    plane: [["..............................................aaaaaaa...",".............................................abbbbbbbk..","............................................abcdddddek..","............afffffffffffffffffffffffffffffakbcgggggghk..","...........abiiiiiiiiiiiiiiiiiiiiiiiiiiiiibkcgggjjjjlk..","..........mbnnnnnnnnnnnnnnnnnnnnnnnnnnnnooobgppppppplk..",".........mccjjggggggggggggggggggggggggggqqqcjjjjjjjjrbk.","........skkggggggggggggggggggggggggggjjjjjjgjjjjjjjjrck.","......ttuuuvhhhrrrrrrrrrrrrrrrrrrrrrhrrrrrjjjjjjjjwjrxk.","...yzzAABBCDEFDDDGGGGGGGGGGGGGGGHGGGGGGGGIjjjjjjwwwwJxk.","..yKLLMMNOvDDIPDDpQQQQQppQQQQQppHpppppppIppppRRwwSSSSTUk",".akVBBWWWXDDDIDDDpYZ0YYppYYYYYppHpppppppIpppSRRRRR1RR1Uk","abbIWXXXWXDDPDIDDpY00YYppYYYYYppHppppRR2RRRRSSSSTp3443Uk","mccIWWWWWXDDDDDIDpppppppppppppppH5RppR2RRRRRSTTT44k66kk.","788IWX9XWXWwjjj2wwwwwwwwwwwwwwww!wwwj2wwwwwwj88866#kk...","$%%IWW55595JrrrJ2JJJJJJJJJJJJJJJ!JJJr&rrrr***+66kkk.....",".kk&-==9595?@@??2???????????????!@@?2^____666kkk........","..~<>>>--95pppRRpIppppppppppppppH112Rk6666kkk...........","...kkkk>>--|HH!H|||||||||||||||||;;H!ukkkk..............",".......kk666ppR166666666666666666kk=9Vk.................",".........kkk:XX<kkkkkkkkkkkkkkkkk.ÀÁXEk.................","...........Â99Ik...................ÃXXKk................","...........Â99&k...................Ä=XVk................","..........ÅÆ99<k...................ÀÁXEk................",".....aasssk:92kkssssssssssssssssssskkXXKsssszz..........","...afbbuuuupRRuuuuuuuuuuuuuuuuuuuuuuuppÇuuuuLLÈÉ........","..mbiccÊÊÊÊTSSÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊBÊÊÊÊÊÊSTTÊÊÊÊÊÊTËÌÉ......",".mcccjjHHHHHHHHHHHHHHHHHHHHHHHWHHHHHH!HHHHHHHHHHHËk.....","..78jjjjHHH!HHHHHHHHHHHHHHHHHHWHHHHHH!!HHHHHH|ËkHk......","..$%88jjHHH!HHHHHHHHHHHHHHHHHHWHHHHHHH!HHHHHH;kHk.......","...$%%88-------------------------------------kHk........","....kk;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Ëk.........","......kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk..........","........................................................"], {"0":"#1e293b","1":"#dddee5","2":"#5c6882","3":"#abacbe","4":"#caceda","5":"#8591a9","6":"#bab8c7","7":"#622b37","8":"#d53f45","9":"#434d65","a":"#6d4147","b":"#f47970","k":"#1b1f2e","c":"#f15956","d":"#fcafab","e":"#c13633","f":"#715b61","g":"#f05350","h":"#bf2e2c","i":"#fdbdb4","j":"#ef4444","l":"#a81c22","m":"#6c353d","n":"#f9817d","o":"#fde358","p":"#f8fafc","q":"#fde253","r":"#b91c1c","s":"#707278","t":"#555b66","u":"#faf9f1","v":"#f9faf9","w":"#d33f45","x":"#d74045","y":"#494e5a","z":"#646871","A":"#b4bcc2","B":"#a1adbc","C":"#fffefa","D":"#7dd3fc","E":"#717f91","F":"#88d6f9","G":"#ffffff","H":"#cbd5e1","I":"#64748b","J":"#a51c22","K":"#939ba2","L":"#dbdfde","M":"#d1d9e0","N":"#cfd8e0","O":"#566372","P":"#ecfeff","Q":"#bae6fd","R":"#dbdbe3","S":"#c8ccd9","T":"#e2e8f0","U":"#ccd0dc","V":"#778494","W":"#94a3b8","X":"#475569","Y":"#38bdf8","Z":"#f2c9a0","!":"#b4bccc","#":"#dfe0e7","$":"#552937","%":"#b43946","&":"#5c6983","*":"#a61c22","+":"#8e1d2a","-":"#8692aa","=":"#434e65","?":"#203681","@":"#1e3a8a","^":"#223277","_":"#203682","~":"#30364a","<":"#535b78",">":"#747b97","|":"#b6bdcd",";":"#9b9eb4",":":"#5d6876","À":"#282d41","Á":"#3e4560","Â":"#2a3043","Ã":"#2c3444","Ä":"#2a3143","Å":"#414651","Æ":"#7e858a","Ç":"#f9faf8","È":"#676b78","É":"#575c6b","Ê":"#e5eaed","Ë":"#b8bfcf","Ì":"#5e6472"}],
+    bealin_boat: [[".abb.....ccc.............................................dbb..","aeffggggghhhbggggggggggggggggggggggggggggggggggggggggggggiffk.","jlmmnnnnnooofnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnmmmk.","jlppqqqqqrrslqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpptuk",".vwxxxxxyxxpzsyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyxxxxABk",".CAxDDDDDDDDpeDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDEkxk","..vwFFFFFFFFpepFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFGBk.","..CAxHxxxxxxxpexxxxxxxxxxxIxxxxxxxxxxxIxxxxxxxxxxxIxxxxxxwHBk.","...vwJJJKKKKKpepKKKKKKKKKKIKKKKKKKKKKKIKKKKKKKKKKKIKKKKJLMwk..","...CAwHHHHHHHHNexxxHHHHHHHOHHHHHHHHHHHOHHHPPHPHPPPOPPHHHAkAk..","....CAQQOOOOOONRNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOQkxk...",".....CAAwHHHHHORNNNHHHHHHHOHHHHHHHHHHHOHHHHHHHHHHHOHHHwABk....","......kkSTTTTTTRNNNTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTAkk.....","........CAAAAAAUtttAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAk.......",".........kkkkkkVWWWkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk........","...............kkkk..........................................."], {"a":"#5d4839","b":"#594a42","c":"#494e5a","d":"#635449","e":"#c98a4b","f":"#bd9162","g":"#72706c","h":"#939ba2","i":"#d9aa75","k":"#1b1f2e","j":"#5f4d3f","l":"#cf975c","m":"#ab7743","n":"#fff3d2","o":"#778494","p":"#a0662f","q":"#ebd7ae","r":"#ead6ac","s":"#a8723d","t":"#915d33","u":"#d1bd9d","v":"#4b2b2e","w":"#983f2e","x":"#a8442a","y":"#af5339","z":"#ce9357","A":"#823934","B":"#99402e","C":"#422930","D":"#efe0c0","E":"#d7c9b2","F":"#d9c59c","G":"#c1ae91","H":"#963f2e","I":"#7a2f1c","J":"#b1523c","K":"#c75a3a","L":"#b3523c","M":"#98483f","N":"#8f5c33","O":"#6f2d22","P":"#d3c5af","Q":"#702d22","R":"#b37b4b","S":"#4e2326","T":"#57231d","U":"#b47c4b","V":"#996a4b","W":"#7d5137"}],
     sp_jetski: [["..........kk..........",".........kaak.........","........kaabak........",".......kaabbaak.......","......kaabbaaaak......","......kabbbaaaaak.....",".....kaabbaaaaaak.....",".....kabbbaaaaaaak....","....kaababaaaaaaak....","....kabbdeeedddaaak...","....kabddddddddaaak...","...kaabdddddddddaaak..","...kabbdddddddddaaak..","...kafssaaaaaaassfgk..","...kafssfffffffssfgk..","...kabbCaaHHHaaCgggk..","...kabbCaHhhhHaCgggk..","...kabbCHhllhhHCgggk..","..kaabbCHhhhhhHCgggak.","..kaabbcHhhhhhHcgggak.","..kaabcccHhhhHcccggak.","..kaabccccHHHccccggak.","..kaabcccccccccccggak.","..kaabbCCCCCCCCCgggak.","..kaabbbicccccjagggak.","..kaabbbijjjjjjagggak.","..kaaebbijjjjjjagegak.","..kaaebbijjjjjjagegak.","...kaebbijjjjjjggekak.","...kaaebijjjjjjggeak..","...kaaebjjjjjjjgegak..","...kaaeaaaaaaaagegak..","...kaaeaaaaaaaagekak..","....kaaaggggggggaak...",".....kkaaaaaaaaakk....",".......kkkkkkkkk......"], {"k":"#1b1f2e","a":"#e11d48","b":"#fb7185","d":"#7dd3fc","e":"#f8fafc","f":"#334155","s":"#f2c9a0","g":"#9f1239","C":"#c2410c","H":"#15803d","h":"#22c55e","l":"#86efac","c":"#f59e0b","i":"#475569","j":"#1f2937"}],
     bait_abyss: [[".....kkkkk......","....kaaaaak.....","...kaaaaaaak....","..kabacccaaak...",".kaaacccccaaak..",".kaaccbbbccaak..",".kaaccbdbccaak..",".kaaccbbbccaak..",".kaaacccccaaak..","..kaaacccaaak...","...kaaaaaaak....","....kaaeaak.....",".....kkekkfk....","......kekkfk....","......kfffk.....",".......kkk......"], {"k":"#1b1f2e","a":"#0e7490","b":"#ecfeff","c":"#22d3ee","d":"#0b0f19","e":"#94a3b8","f":"#cbd5e1"}],
     bait_glitzer: [["......kkk...k...","....kkaaakkkbk..","...kacccaaabdbk.","...kcccccaakbk..","..kcceccdcaak...","..kcceccccaak...","..kcceccccaak...","..kccecccfaak...","..kccccdccaak...","...kcccccaak....","...kacccaaak....","....kkaaakk.....","......kakkgk....","......kakkgk....","......kgggk.....",".......kkk......"], {"k":"#1b1f2e","a":"#94a3b8","b":"#fbbf24","c":"#e2e8f0","d":"#fde68a","e":"#ffffff","f":"#f9a8d4","g":"#cbd5e1"}],
@@ -2090,6 +2093,15 @@
   // lure stuck in it, a red checked shirt and a patched olive vest. He rows his little boat out
   // on the water and is always far too excited about the fishing weather. Click him to chat.
   const BEALIN_BODY = bake(...ART.bealin);
+  // baked props that get darker at night: a cached silhouette in the night colour drawn over them
+  const nightTint = new Map();
+  function drawLit(img, x, y, dark, col = '#283246') {
+    ctx.drawImage(img, snap(x), snap(y), img.width / 2, img.height / 2);
+    if (dark <= 0) return;
+    if (!nightTint.has(img)) { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d'); g.drawImage(img, 0, 0); g.globalCompositeOperation = 'source-atop'; g.fillStyle = col; g.fillRect(0, 0, c.width, c.height); nightTint.set(img, c); }
+    ctx.globalAlpha = dark * .6; ctx.drawImage(nightTint.get(img), snap(x), snap(y), img.width / 2, img.height / 2); ctx.globalAlpha = 1;
+  }
+  const BEALIN_BOAT = bake(...ART.bealin_boat), PLANE = bake(...ART.plane);
   const BEALIN = { x: 322, w: 30, h: 22 };
   // He always says the same thing. Every second chat he lets slip a vague hint about what he
   // secretly wants; doing it (whenever, wherever) pays out and he thinks of something new.
@@ -2152,7 +2164,6 @@
   function drawBealin(dark) {
     if (onSea() || inLava() || onInsel()) return; // out at sea we are on his boat, and he never goes underground or on holiday
     const k = '#1b1f2e', x = BEALIN.x, y = SURFACE - 1 + bealinBob();
-    const hull = mix([150, 62, 40], [70, 35, 30], dark), hullD = mix([110, 42, 28], [50, 25, 22], dark), rim = mix([222, 200, 160], [100, 92, 80], dark);
     // the old man sits in the middle of the boat
     ctx.drawImage(BEALIN_BODY, snap(x + 10), snap(y - 13), 8, 9);
     // while he talks he waves with his free hand
@@ -2165,13 +2176,8 @@
     ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = .5;
     ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(fx, fy); ctx.stroke();
     px(fx - .75, fy - 1, 1.5, 1, '#ef4444'); px(fx - .75, fy, 1.5, .5, '#f8fafc');
-    // rowboat
-    px(x - .5, y - 4.5, 29, 1.5, k); px(x, y - 4, 28, 1, rim);
-    px(x + .5, y - 3, 27, 3.5, k); px(x + 1, y - 3, 26, 3, hull); px(x + 1, y - 1, 26, 1, hullD);
-    px(x + 2.5, y + .5, 23, 1, k); px(x + 3, y + .5, 22, .5, hullD);
-    px(x - 1, y - 6, 2, 3, k); px(x - .5, y - 5.5, 1, 2, rim);
-    // oar resting on the side
-    px(x + 4, y - 6, 1, 4, '#a0662f'); px(x + 3.5, y - 2, 2, 3, '#a0662f');
+    // rowboat (ART.bealin_boat)
+    drawLit(BEALIN_BOAT, x - 1.5, y - 6.5, dark);
     // lantern at the bow lights up at night
     px(x + 26, y - 7.5, 2, 2.5, k); px(x + 26.5, y - 7, 1, 1.5, dark > .3 ? '#fde68a' : '#94a3b8');
     if (dark > .3) { const a = dark - .3; ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = a * .1; disc(x + 27, y - 6.5, 9, '#f59e0b'); ctx.globalAlpha = a * .16; disc(x + 27, y - 6.5, 5, '#fde68a'); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; }
@@ -3088,15 +3094,10 @@
   }
   // the seaplane that flies between the Steg and the island
   function drawPlane(cx, wy, dark = 0) {
-    const y = wy + Math.sin(t * 1.8) * .6, k = '#1b1f2e', d = c => mix(c, [40, 50, 70], dark * .6);
-    px(cx - 12, y - 2.5, 24, 2.5, k); px(cx - 11.5, y - 2, 23, 1.5, d([203, 213, 225]));
-    px(cx - 6, y - 6, 1, 4, k); px(cx + 4, y - 6, 1, 4, k);
-    px(cx - 12, y - 10, 22, 5, k); px(cx - 11.5, y - 9.5, 21, 4, d([248, 250, 252])); px(cx - 11.5, y - 7.5, 21, 1, d([239, 68, 68]));
-    px(cx - 9.5, y - 9, 3, 1.5, '#7dd3fc');
-    px(cx + 7, y - 14, 4, 5, k); px(cx + 7.5, y - 13.5, 3, 4, d([239, 68, 68]));
-    px(cx - 7, y - 11.5, 13, 2, k); px(cx - 6.5, y - 11, 12, 1, d([239, 68, 68]));
+    const y = wy + Math.sin(t * 1.8) * .6;
+    drawLit(PLANE, cx - 14, y - 16, dark);
     const spin = Math.floor(t * 20) % 2;
-    px(cx - 13, y - (spin ? 11 : 9), .8, spin ? 6 : 2, '#94a3b8');
+    px(cx - 15, y - (spin ? 13.5 : 11), .8, spin ? 6 : 2, '#94a3b8'); if (spin) px(cx - 15, y - 13.5, .8, .8, '#ef4444');
   }
   // Strandbude: bamboo counter with a straw roof and a drink on the counter
   function drawBeachHut(dark) {
