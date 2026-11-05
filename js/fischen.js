@@ -187,6 +187,7 @@
     { id: '2026-11-05-1', date: '05.11.2026', items: [
       '🖤 Neuer epischer Fisch: der Playboi-Carti-Fisch im Vamp-Look mit Lederjacke, Dreads mit roten Spitzen, großer Sonnenbrille, Vampirzähnen und Silberketten. Er headbangt im Takt und beißt am Steg und auf Hoher See, am liebsten nachts.',
       '🧲 Neu im Kiosk ab 1× Prestige: die Magnet-Angel (20 000 Taler). Sie fängt keine Fische, nur Dinge: Alles aus „Kein Fisch“ ist damit dreimal so viel wert, und drei Funde hängen nur an ihr – Rostiger Anker, Altes Fahrrad und die legendäre Schatztruhe.',
+      '🎰 Jackpot-Kosmetik: Wer am Fischautomaten einen JACKPOT knackt, bekommt die Jackpot-Jacke. Wer den ganzen Odfisch-Topf holt, bekommt den funkelnden Jackpot-Hut.',
       '👕 Neue Kosmetik im Kleiderschrank: Im Kiosk gibt es 9 neue Teile, darunter die gelbe Fischerjacke und der Tarnhut, dazu die Diamantjacke (75 000) und die Diamantpose (60 000). 5 weitere bekommst du für Fänge: Vamp-Jacke und Vamp-Hut für den Carti-Fisch, den Schrotthelm für den Anker, die Schatzpose für die Truhe und den Muschelhut für die Miesmuschel.',
     ] },
     { id: '2026-11-04-19', date: '04.11.2026', items: [
@@ -1849,6 +1850,8 @@
     { id: 'hut-schrott', slot: 'hat',    name: 'Schrotthelm',        col: ['#a16207', '#713f12', '#d6d3d1'], desc: 'Aus einem rostigen Eimer gebogen. Hält trotzdem.', ach: 'Fange den rostigen Anker.', got: () => !!save.dex.anker },
     { id: 'pose-schatz', slot: 'bob',    name: 'Schatzpose',         col: '#eab308', desc: 'Aus dem Gold der Schatztruhe gegossen.', ach: 'Fange eine Schatztruhe.', got: () => !!save.dex.truhe },
     { id: 'hut-muschel', slot: 'hat',    name: 'Muschelhut',         col: ['#fbcfe8', '#db2777', '#fdf2f8'], sparkle: true, desc: 'Die Muschel hat gesagt, er steht dir.', ach: 'Fange die Magische Miesmuschel.', got: () => !!save.dex.muschel },
+    { id: 'jacke-jackpot', slot: 'jacket', name: 'Jackpot-Jacke',  col: ['#16a34a', '#14532d', '#facc15'], desc: 'Grün wie der Spieltisch, mit goldenen Knöpfen. Riecht nach Münzen.', ach: 'Knack am Fischautomaten einen JACKPOT.', got: () => cosmStat('jackpot') >= 1 },
+    { id: 'hut-jackpot', slot: 'hat',    name: 'Jackpot-Hut',        col: ['#facc15', '#15803d', '#fef9c3'], sparkle: true, desc: 'Gold mit grünem Band. Für alle, die den ganzen Topf geholt haben.', ach: 'Gewinn am Fischautomaten den Odfisch-Jackpot-Topf.', got: () => cosmStat('pot') >= 1 },
     // codes (settings): FISCH-BETA-TEST-RWRD unlocks the beta set
     { id: 'hut-beta',    slot: 'hat',    name: 'Beta-Kappe',         col: ['#22d3ee', '#0e7490', '#f0abfc'], sparkle: true, desc: 'Für alle, die von Anfang an dabei waren.', ach: 'Löse den Beta-Code in den Einstellungen ein.', got: () => (save.codes || []).includes('beta') },
     { id: 'jacke-beta',  slot: 'jacket', name: 'Beta-Jacke',         col: ['#7c3aed', '#3b0764', '#22d3ee'], desc: 'Lila mit Türkis. Steht „BETA“ drauf, man sieht es nur nicht.', ach: 'Löse den Beta-Code in den Einstellungen ein.', got: () => (save.codes || []).includes('beta') },
@@ -3434,6 +3437,8 @@
     const jack = mult && result[0].id === 'odfisch' && hits.length === 3 ? Math.round(pot()) : 0;
     const win = Math.round(stake * mult) + jack;
     if (jack) save.jackpot = POT_SEED;
+    if (jack || mult >= 40) cosmCount('jackpot');
+    if (jack) cosmCount('pot');
     save.coins += win;
     save.gamble = (save.gamble || 0) + win - stake;
     bealinEvent({ type: 'slot', won: win > stake });
@@ -3446,6 +3451,7 @@
     else { r.className = 'result lose'; r.textContent = rat ? tr('Die Ratten haben deinen Einsatz gefressen.') : tr('Nichts. Nochmal?'); tone(200, .3, 'triangle', .06, -80); }
     spinning = false;
     renderCasino();
+    if (jack || mult >= 40) checkCosm();
   }
 
   let lastCatchVal = 0;
