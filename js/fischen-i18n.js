@@ -1305,6 +1305,7 @@
     "🏝️ Steg": "🏝️ Dock",
     "⛵ Hohe See": "⛵ High Seas",
     "🌋 Glutgrotte": "🌋 Ember Cave",
+    "🌴 Sonneninsel": "🌴 Sun Island",
     "💫 Shinydex": "💫 Shinydex",
     "🔎 Fisch suchen …": "🔎 Search fish …",
     "Fisch suchen": "Search fish",

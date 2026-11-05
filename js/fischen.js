@@ -3764,7 +3764,7 @@
     for (const st of s.stamps) if (!hasStamp(st.id) && st.ok(g)) { save.stamps.push(st.id); newSt.push(st); }
     let champWin = false;
     if (lvl === 3 && score >= s.champ[mode] && !save.trophies.includes(s.id)) { champWin = true; save.trophies.push(s.id); save.pearls++; }
-    const pay = sportPay(s, lvl, lvl === 3 ? (score >= s.champ[mode] ? 3 : 0) : medal);
+    const pay = score > 0 ? sportPay(s, lvl, lvl === 3 ? (score >= s.champ[mode] ? 3 : 0) : medal) : { coins: 0, xp: 0, half: false }; // an empty round (AFK) pays nothing
     let coins = pay.coins, xp = pay.xp, scales = 0;
     for (const st of newSt) { coins += Math.round((600 + save.lvl * 60) * coinMult()); xp += 80 + save.lvl * 8; scales += 2; }
     save.coins += coins; save.lifeCoins += coins; save.totalEarned += coins; save.scales += scales;
