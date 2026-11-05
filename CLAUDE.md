@@ -73,7 +73,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   - Alle Laden-Ausgaben laufen über `spend(n)`; das zählt für die Bestenliste „Ausgegeben“. Einsätze am Automaten laufen nicht darüber.
   - Zeit-Buffs prüft `buffOn(id)` (Werte in `save.buffs`).
   - `rod()` liefert die geschmiedete Rute (`forged()`, `save.forge`); `bait()` liefert den aktuellen Köder.
-  - Spätes Spiel: Prestige-Leiter `presReb()` (7, 6, 5, dann 4 Wiedergeburten); Schätze `TREASURES` (einmal kaufen, bleiben für immer, Abfrage `hasT(id)`); die Glutschmiede (ab `FORGE_TALER` = +15 kostet jede Stufe zusätzlich `forgeGlut(k)` Glutsteine, bis `FORGE_MAX`); Odfisch-Stufen `bossStage()` nach Siegen (`BOSS_STAGES`, Lobby-Feld `bs`).
+  - Spätes Spiel: Prestige-Leiter `presReb()` (7, 6, 5, 5, 5, dann alle drei Prestige eine mehr bis 10; `rebirthLvl()` +2 Level pro Prestige); Schätze `TREASURES` (einmal kaufen, bleiben für immer, Abfrage `hasT(id)`); die Glutschmiede (ab `FORGE_TALER` = +15 kostet jede Stufe zusätzlich `forgeGlut(k)` Glutsteine, bis `FORGE_MAX`); Odfisch-Stufen `bossStage()` nach Siegen (`BOSS_STAGES`, Lobby-Feld `bs`).
   - Titel: Einträge in `DEX_REWARDS` mit Feld `title`. Getragen wird `save.title` (ID der Belohnung, `myTitle()`), in der Lobby als Feld `ti`.
 - **Zeit und Wetter** sind deterministisch aus der echten Uhr (`worldTime`, `weatherAt(slot)`, `WEATHER_LEN`). Sie sind für alle Spieler gleich, ohne Server.
 - **Lobby:**

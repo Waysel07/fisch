@@ -207,6 +207,10 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-05-6', date: '05.11.2026', items: [
+      '⚖️ Prestige ausbalanciert: Jedes Prestige wurde bisher schneller als das letzte. Ab jetzt braucht jede Wiedergeburt pro Prestige 2 Level mehr – der EP-Bonus vom Prestige hält dich also im Tempo, statt Level zu überspringen.',
+      '✦ Ein Prestige braucht jetzt mindestens 5 Wiedergeburten statt 4, und ab dem 6. Prestige alle drei Stufen eine mehr (höchstens 10). Taler-Bonus, Perlen und alles, was du schon hast, bleiben.',
+    ] },
     { id: '2026-11-05-5', date: '05.11.2026', items: [
       '🏆 Bestenliste repariert: Mit mehr als 99 Fischen im Fischdex wurde dein Eintrag abgelehnt und keine Liste mehr aktualisiert. Jetzt kommen alle Werte wieder an.',
     ] },
@@ -4461,7 +4465,8 @@
   const xpNeed = l => Math.round(30 * Math.pow(l, 1.35));
   const DAILY_N = 10; // the first catches of each day give double XP
   let streak = 0;     // catches in a row without losing a fish (not saved)
-  const rebirthLvl = () => 12 + save.rebirths * 2 - pperk('preif');
+  // each prestige adds 2 levels, so its +25 % XP keeps runs about as long instead of making every loop shorter
+  const rebirthLvl = () => 12 + save.rebirths * 2 + 2 * (save.prestige | 0) - pperk('preif');
   const RARITY_ORDER = ['junk', 'common', 'uncommon', 'rare', 'wii', 'epic', 'legendary'];
   const PERKS = [
     { id: 'taler',  icon: '🪝', name: 'Goldener Haken', desc: l => tr('+{n} % Taler pro Fang', { n: l * 8 }) },
@@ -4479,8 +4484,8 @@
   const perkMax = () => save.rebirths >= 5 ? 10 : 5; // from the 5th rebirth talents go up to level 10
   // Prestige: from the 7th rebirth start over completely. Rebirths, rank, Schuppen, talents and
   // the forge go too; in return Perlen for prestige talents and a bonus that never resets.
-  // each prestige needs one rebirth fewer than the last: 7, 6, 5, then always 4
-  const presReb = (p = save.prestige) => Math.max(4, 7 - (p | 0));
+  // rebirths for the 1st, 2nd, … prestige: 7, 6, 5, 5, 5, then one more every third (6, 6, 6, 7, …, at most 10)
+  const presReb = (p = save.prestige) => (p |= 0) < 3 ? 7 - p : Math.min(10, 5 + Math.floor((p - 2) / 3));
   const PPERKS = [
     { id: 'ptaler',    icon: '🦪', name: 'Perlenhaken',   max: 10, desc: l => tr('+{n} % Taler', { n: l * 10 }) },
     { id: 'pglueck',   icon: '🌟', name: 'Perlenglück',   max: 10, desc: l => tr('+{n} % Glück für seltene Fische', { n: l * 10 }) },
