@@ -1111,22 +1111,51 @@ button#btn-boss:hover { background: #be123c; }
 .sport-stamp { color: #fde68a; font-weight: 600; }
 .sport-line { color: #bbf7d0; font-size: .9rem; }
 #sport-result .sub { color: #cbd5e1; }
-.sport-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: .5rem; margin: .5rem 0; }
-.sport-card { display: flex; flex-direction: column; align-items: center; gap: .2rem; padding: .6rem .4rem; font: inherit; color: var(--ink); background: #fff7e6; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); cursor: pointer; }
-.sport-card:hover:not(:disabled) { transform: translateY(-1px); }
-.sport-card:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 var(--ink); }
-.sport-card.locked { opacity: .55; cursor: default; }
-.sport-card .sport-ic { font-size: 1.8rem; line-height: 1; }
-.sport-card small { font-size: .78rem; }
-.sport-card .bar { width: 100%; }
-.sport-dots { letter-spacing: .1em; color: #b45309; }
-.sport-row { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin: .45rem 0; }
-.sport-row > b { flex: 1 0 100%; }
-.sport-row .btn { padding: .35rem .6rem; font-size: .85rem; }
-.sport-stamps { list-style: none; padding: 0; margin: .5rem 0; display: grid; gap: .2rem; }
-.sport-stamps li { padding: .25rem .5rem; border: 2px solid var(--ink); background: #f1f5f9; font-size: .88rem; }
-.sport-stamps li.got { background: #fef3c7; }
-.sport-card .bar { height: 8px; } .sport-card .bar i { background: var(--gold); }
+/* hub and station page use the same inset wells as cards and quests elsewhere (--slot, ink frame) */
+.sport-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem .5rem; margin: .35rem 0 .1rem; }
+.sport-chip { font-size: .8rem; font-weight: 600; color: #cbd5e1; background: var(--slot); padding: .15rem .55rem; box-shadow: 0 0 0 2px var(--ink), inset 0 2px 0 rgba(0,0,0,.35); white-space: nowrap; }
+.sport-chip b { color: var(--gold); font-weight: 800; font-variant-numeric: tabular-nums; }
+.sport-chip.off { color: #64748b; }
+.sport-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: .8rem; margin: .6rem 0; padding: 3px; }
+.sport-card { display: flex; flex-direction: column; align-items: center; gap: .25rem; padding: .7rem .55rem .6rem; font: inherit; text-align: center; color: #e2e8f0; background: var(--slot); border: 0;
+  box-shadow: 0 0 0 3px var(--ink), inset 0 3px 0 rgba(0,0,0,.35), inset 0 -3px 0 #1a2448; cursor: pointer; }
+.sport-card:hover:not(:disabled), .sport-card:focus-visible { background: #16204a; box-shadow: 0 0 0 3px var(--ink), inset 0 0 0 3px var(--gold-d); outline: none; }
+.sport-card:active:not(:disabled) { translate: 0 2px; }
+.sport-card.locked { cursor: default; color: #64748b; }
+.sport-card.locked .sport-ic { filter: grayscale(1); opacity: .45; }
+.sport-card .sport-ic { font-size: 1.8rem; line-height: 1; margin-bottom: .1rem; }
+.sport-card b { font-weight: 800; font-size: .95rem; line-height: 1.2; }
+.sport-card small { font-size: .78rem; color: #94a3b8; }
+.sport-foot { margin-top: auto; width: 100%; display: grid; gap: .3rem; justify-items: center; padding-top: .2rem; }
+.sport-card .bar, .sport-skill .bar { width: 100%; height: 8px; border-radius: 0; background: #0b1226; box-shadow: 0 0 0 2px var(--ink); }
+.sport-card .bar i, .sport-skill .bar i { background: var(--gold); border-radius: 0; box-shadow: inset 0 2px 0 #fde68a; }
+.sport-dots { display: flex; gap: 3px; align-items: center; }
+.sport-dots i { width: 8px; height: 8px; background: #1e293b; box-shadow: 0 0 0 1px #475569; }
+.sport-dots i.on { background: var(--gold); box-shadow: 0 0 0 1px var(--gold-d); }
+.sport-dots em { font-style: normal; font-size: .8rem; margin-left: 2px; }
+.sport-map.click { cursor: pointer; }
+/* station page */
+.sport-head { margin: .2rem 0 .7rem; }
+.sport-head p { max-width: 60ch; margin: 0 auto .45rem; line-height: 1.45; }
+.sport-skill { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .6rem; max-width: 26rem; margin: 0 auto; font-size: .82rem; color: #cbd5e1; }
+.sport-skill b { color: var(--gold); font-variant-numeric: tabular-nums; }
+.sport-best { font-size: .8rem; color: #94a3b8; margin-top: .35rem; }
+.sport-mode { background: var(--slot); padding: .6rem .7rem .75rem; margin: .8rem 3px; text-align: left;
+  box-shadow: 0 0 0 3px var(--ink), inset 0 3px 0 rgba(0,0,0,.35), inset 0 -3px 0 #1a2448; }
+.sport-mode > b { display: block; font-weight: 800; margin-bottom: .5rem; }
+.sport-mode > b small { font-weight: 600; color: #94a3b8; margin-left: .3rem; }
+.sport-row { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; }
+.sport-row .btn { padding: .4rem .75rem; font-size: .85rem; }
+.sport-row .btn:disabled { background: #141c36; color: #64748b;
+  box-shadow: 0 -3px 0 var(--ink), 0 3px 0 var(--ink), -3px 0 0 var(--ink), 3px 0 0 var(--ink), inset 0 0 0 2px #263154; cursor: default; }
+.sport-champ { font-size: .82rem; color: #fde68a; background: #2a2210; padding: .45rem .65rem; margin: .8rem 3px; box-shadow: 0 0 0 3px var(--ink), inset 0 0 0 2px var(--gold-d); }
+.sport-stamps { list-style: none; padding: 3px; margin: .9rem 0 .8rem; display: grid; gap: .55rem; text-align: left; }
+.sport-stamps li { display: flex; gap: .5rem; align-items: baseline; padding: .4rem .6rem; font-size: .86rem; color: #94a3b8; background: var(--slot);
+  box-shadow: 0 0 0 2px var(--ink), inset 0 2px 0 rgba(0,0,0,.35); }
+.sport-stamps li.got { color: #fef3c7; background: #241d0e; box-shadow: 0 0 0 2px var(--ink), inset 0 0 0 2px var(--gold-d); }
+.sport-stamps li span:first-child { flex: none; width: 1.2em; text-align: center; }
+.sport-stamps li span + span { flex: 1; text-align: left; }
+.sport-stamps-h { font-family: var(--px); font-size: .8rem; color: #cbd5e1; margin-top: 1rem; }
 @media (max-width: 600px) {
   #sport-result { position: static; margin-top: .5rem; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); }
   #sport-play.done #sport-cv { display: none; }

@@ -417,3 +417,63 @@ S('plane', 56, 34, (c) => {
   c.hline(13, 4, 29, Rl); c.hline(12, 5, 31, '#f87171'); c.hline(12, 8, 30, Rd); c.rect(40, 5, 3, 2, '#fde047') // Positionslicht
   c.line(17, 17, 12, 9, Gl); c.line(35, 17, 41, 9, Gl)                                    // Flügelstreben
 }, true, undefined, true)
+
+// ---------------------------------------------------------------- Sonneninsel: Coach Pelle und die Strandbude (mit Licht)
+// Pelle stehend: 32×37 (16×18,5 Welt), Füße unten Mitte bei x 19; pelle_1 hebt den Flügel (Pfiff)
+function pelleStand(c, wingUp) {
+  const W = '#f8fafc', Wd = '#cbd5e1', Gr = '#e2e8f0', Gd = '#94a3b8', O = '#f59e0b', Ol = '#fbbf24', Od = '#d97706', F = '#f97316'
+  // Beine und Schwimmfüße
+  c.rect(15, 30, 2, 5, F); c.rect(21, 30, 2, 5, F); c.hline(12, 35, 6, F); c.hline(20, 35, 6, F); c.px(12, 34, F); c.px(25, 34, F)
+  // Körper, Bauch etwas grauer
+  c.ellipse(19, 24, 8, 7, W); c.ellipse(19, 27, 6, 3, Wd); c.ellipse(17, 21, 4, 3, '#ffffff')
+  // Hals und Kopf mit Stirnband
+  c.rect(16, 9, 5, 10, W); c.vline(20, 10, 9, Wd)
+  c.ellipse(19, 5, 5, 4, W); c.hline(14, 3, 11, '#ef4444'); c.hline(15, 2, 9, '#f87171'); c.px(24, 4, '#b91c1c'); c.px(25, 5, '#ef4444')
+  c.rect(16, 4, 2, 2, INK); c.px(16, 4, '#ffffff')
+  // langer Schnabel mit Kehlsack
+  c.poly([15, 5, 2, 6, 1, 8, 15, 8], O); c.hline(3, 6, 12, Ol); c.px(1, 8, Od); c.px(2, 9, Od)
+  c.poly([15, 8, 3, 9, 6, 12, 10, 13, 14, 11], Ol); c.line(4, 10, 13, 12, Od)
+  // Pfeife an der Schnur
+  c.line(17, 11, 14, 15, '#475569'); c.rect(12, 15, 3, 2, '#facc15'); c.px(12, 15, '#fef08a')
+  // Flügel
+  if (wingUp) { c.poly([25, 19, 27, 7, 30, 4, 31, 8, 28, 19], Gr); c.line(28, 7, 27, 17, Gd); c.line(30, 6, 29, 12, Gd) }
+  else { c.poly([21, 18, 27, 19, 28, 27, 24, 29, 21, 25], Gr); c.line(23, 21, 26, 27, Gd); c.line(25, 20, 27, 25, Gd) }
+}
+S('pelle_0', 32, 37, (c) => pelleStand(c, false), true, undefined, true)
+S('pelle_1', 32, 37, (c) => pelleStand(c, true), true, undefined, true)
+// Pelle fliegt: 40×22 (20×11 Welt), Kopf links
+function pelleFly(c, up) {
+  const W = '#f8fafc', Wd = '#cbd5e1', Gr = '#e2e8f0', Gd = '#94a3b8', O = '#f59e0b', Ol = '#fbbf24', Od = '#d97706'
+  c.ellipse(25, 14, 9, 4, W); c.hline(18, 17, 14, Wd)
+  c.poly([34, 12, 39, 10, 39, 16, 34, 15], Gr)                                              // Schwanz
+  if (up) { c.poly([20, 12, 26, 1, 31, 2, 30, 12], Gr); c.line(26, 3, 26, 11, Gd); c.line(29, 3, 28, 11, Gd) }
+  else { c.poly([20, 15, 31, 15, 29, 21, 24, 21], Gr); c.line(24, 16, 25, 20, Gd); c.line(28, 16, 28, 20, Gd) }
+  c.ellipse(13, 12, 4, 3, W); c.hline(10, 10, 7, '#ef4444'); c.rect(11, 11, 2, 2, INK); c.px(11, 11, '#ffffff')
+  c.poly([10, 12, 1, 13, 1, 14, 10, 14], O); c.hline(2, 13, 8, Ol); c.poly([10, 14, 3, 15, 7, 17, 10, 16], Ol); c.px(1, 14, Od)
+  c.rect(16, 15, 2, 2, '#facc15')
+}
+S('pelle_fly_0', 40, 22, (c) => pelleFly(c, true), true, undefined, true)
+S('pelle_fly_1', 40, 22, (c) => pelleFly(c, false), true, undefined, true)
+// Strandbude: 64×64 (32×32 Welt), steht mit der Theke auf dem Steg
+S('beachhut', 64, 64, (c) => {
+  const Bm = '#c9a15a', Bl = '#e6c47e', Bd = '#9a7333', N = '#7a5726', S1 = '#e9c77b', S2 = '#c99a4a', S3 = '#a87b34'
+  // Pfosten
+  for (const x of [8, 52]) { c.rect(x, 14, 4, 22, Bm); c.vline(x, 14, 22, Bl); c.vline(x + 3, 14, 22, Bd); for (let y = 18; y < 36; y += 6) c.hline(x, y, 4, N) }
+  // Strohdach in Lagen, unten Fransen
+  c.poly([3, 15, 10, 2, 54, 2, 61, 15], S2)
+  for (let y = 3; y < 15; y++) { const w0 = 10 - (y - 2) * 0.54, w1 = 54 + (y - 2) * 0.54; for (let x = Math.ceil(w0); x < w1; x++) if ((x * 3 + y * 5) % 7 < 3) c.px(x, y, y % 4 < 2 ? S1 : S2) }
+  for (const y of [6, 10]) c.hline(8, y, 48, S3)
+  c.hline(11, 2, 43, '#f6e2a8')
+  for (let x = 3; x < 61; x += 2) { const l = 3 + ((x * 7) % 5); c.vline(x, 15, l, x % 4 ? S2 : S3); c.px(x, 15 + l - 1, S3) }
+  // Tafel unter dem Dach
+  c.rect(25, 19, 14, 9, '#3b2a1a'); c.rect(26, 20, 12, 7, '#1f2a24'); for (const [x, y, w] of [[27, 21, 7], [27, 23, 9], [27, 25, 5]]) c.hline(x, y, w, '#e2e8f0')
+  c.vline(28, 17, 2, '#57301a'); c.vline(35, 17, 2, '#57301a')
+  // Getränke auf der Theke
+  c.rect(12, 27, 5, 6, '#fb923c'); c.hline(12, 27, 5, '#fed7aa'); c.vline(16, 28, 5, '#ea580c'); c.line(15, 27, 17, 23, '#22c55e')
+  c.rect(45, 27, 5, 6, '#38bdf8'); c.hline(45, 27, 5, '#bae6fd'); c.vline(49, 28, 5, '#0284c7'); c.poly([44, 25, 48, 22, 52, 25], '#f472b6'); c.vline(48, 25, 3, '#a16207')
+  c.ellipse(31, 31, 3, 2, '#7c4a24'); c.hline(29, 30, 5, '#a0662f'); c.line(32, 29, 34, 25, '#facc15')
+  // Theke: Brett oben, Bambus-Lamellen vorne mit Knoten
+  c.rect(1, 33, 62, 4, '#8b5a2b'); c.hline(1, 33, 62, '#b07a44'); c.hline(1, 36, 62, '#5b3416')
+  for (let x = 3; x < 61; x += 4) { c.rect(x, 37, 4, 26, Bm); c.vline(x, 37, 26, Bl); c.vline(x + 3, 37, 26, Bd); for (let y = 41 + (x % 8 ? 3 : 0); y < 62; y += 7) c.hline(x, y, 4, N) }
+  c.hline(1, 62, 62, '#5b3416')
+}, true, undefined, true)

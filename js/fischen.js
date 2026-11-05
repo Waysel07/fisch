@@ -239,6 +239,7 @@
       '⛵ Am Steg neu gezeichnet: Käpt’n Bealins Ruderboot (Planken, Dollbord, Riemen im Wasser) und der Inselflieger (Hochdecker mit Streben, Fenster mit Pilot, Schwimmer, Leitwerk). Beide haben jetzt Licht und Schatten und werden nachts dunkler.',
       '🛟 Boot-Skin „David Hasselhoff“ repariert: Steuerrad und Fischdex-Kiste stehen jetzt auf seinem Rücken statt in seinen Beinen, und unter Wasser schimmert er durch statt als graue Platte.',
       '🏄 Neue Figuren in den Sportstationen: Beim Frisbee, Surfen und Beachvolleyball spielt jetzt deine eigene Spielfigur mit, mit Hut, Jacke, Haut und Haaren aus dem Kleiderschrank. Der Jetski ist neu gezeichnet, der Tischtennisschläger hat einen Griff.',
+      '🐦 Coach Pelle und die Strandbude sind neu gezeichnet und werden nachts dunkler. Die Sportstationen sehen jetzt aus wie der Rest des Spiels: Stempel sind lesbar, gesperrte Stufen klar ausgegraut, und Stationen lassen sich direkt auf der Karte antippen.',
       '☀️ Auf der Sonneninsel schneit es nicht mehr: Wo sonst Schnee fällt, ist auf der Insel eine Hitzewelle.',
       '📈 Fairere Sportstationen: Das erwartete Ergebnis steigt mit dem Können langsamer, jede Medaille bringt zusätzlich Können (Bronze +6, Silber +12, Gold +18), und Gold und das Champion-Duell sind besser erreichbar. Profi wirst du jetzt nach etwa 50 statt oft nie erreichten 100+ Runden.',
     ] },
@@ -1874,6 +1875,11 @@
 
   // Sprites as char rows, drawn in img/pxl/code.px.js. 1 char = 1 fine pixel = 0.5 world units.
   const ART = {
+    beachhut: [["................................................................","..........abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba.........",".........acdddddddddddddddddddddddddddddddddddddddddddca........","........aceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeck.......","........feghijjijijijjijijihjgjgjgjhihijijjijijgjjijghgek.......",".......achhghihihjgjgjgjhihihihjghgjgjhihihihjgjgjgjhghgck......",".......lmnnnnnnnnonnnnnnnnnonononnnononnnnnnnnnonnnnnnnnek......","......achhhhhhhhhhhhhhhhhhhjhjhjhhhjhjhhhhhhhhhjhhhhhhhhjck.....",".....aceghghhghghghhghghghhghghghhghghghhghghghhghghghhghpk.....",".....fejhijihghhghghghhghghghhghgjghhghghghhghghghhgjijihjck....","....achjnoooqnqnqnqnqnqnqnqnqnqnqoqnqnqnqnqnqnqnqnqnoooohjek....","....fehhjjjjrhrhrhrhrhrhrhrhrhrhrjrhrhrhrhrhrhrhrhrhjjjjhhhck...","...achghijjirsrsrhshshsrrsrgrgrhsjshshrgrgrsrrshshshjijirghek...","...fehhgjijihrgrghgrhshshshhghghgjhghghshrgrgrghhshsjijjshghtk..","..acuhuhjjjjurururururururuhuhuhujuhuhururururuhururjjjjuhuhtk..","..fevhvhjjjjvrvhvrvrvrvrvhvhvhvhvjvhvhvrvrvrvhvhvrvrjjjjvhvhhtk.","..whkukrxhytkhkukrkrkrkhkukhkhkhkhkhkhkrkrkhkukrkrkrzhytkrkhkk..","..AukBkrxhytkukBkrkrkhkukBkhChkhkhkDkhkrkhkukBkrkrkezhyEkrkrk...","..FBkkkrGhGtkBkkkhkhkukBkkkrHrkrknkIkrkhkukBkkkrkhkuGnGJkrkrk...","...k..fezhyEkk..whkukBkkkKKLMLKLKNKLKLKukBkk..OrkukBzyyPkhkuk...","......AuznyPk...AukBkk..QRSTUTSTSUSTSTRBkk....OrkBkkVyyPkukBk...","......FBzyyPk...FBkk....QRUWXWXWXXUTUTYk......Zqkk.0VyyPkBkk....",".......0VyyPk....k......QRUTUTUTUUUTUTYk......123k.0VyyPkk......",".......0VyyPk...45k.....QRUXXXXXXXXXUUYk.....672781kVyyPk.......",".......9!GGJk...45k.....#LTUTUTUTUTUTULk....672$2222GGGJk.......",".......0VyyPk..%&k......#LTXWXWXTU*UTULk...6722+-2222yyPk.......",".......0VyyPk==k?k......@Y^^^^^^^U_^^^Yk....kkkk-kkkVyyPk.......",".......0Vyy~<<<&>k......|;;;;;;;;:;;;;;k....ÀÁÁÁÂÁkkVyyPk.......",".......0Vyy~ÃÃÃÃÄk.......kkkkkkkk:kkkkk.....ÅÆÆÆÇÈkkVyyPk.......",".......0Vyy~ÉÉÉÉÊk..........ËÌÌÌÍÎk.........ÅÆÏÏÇÐkkVyyPk.......",".......9!GGGÉÉÉÉÊk.........ËÌÑÑÑÑÒÌk........ÅÆÏÏÇÐkk!GGJk.......",".......0Vyy~ÓÓÓÓÊk.........ÔÕÖÖÖÖÖÕk........×ÇÇÇÏØkkVyyPk.......",".ÙÙÙÙÙÙkVyy~ÓÓÓÓÊkÙÙÙÙÙÙÙÙÙkÕÖÖÖÖÖÎkÙÙÙÙÙÙÙÙkÇÇÇÏØkkVyyPkÙÙÙÙÙÙ.","ÙÚÚÚÚÚÚÚÛÛÛÛÜÜÜÜÜÚÚÚÚÚÚÚÚÚÚÚÛÜÜÜÜÛÛÚÚÚÚÚÚÚÚÚÚÜÜÜÛÜÚÚÛÛÛÛÚÚÚÚÚÚÚk","ÝÞÞÞÞÞÞÞßßßßààààßÞÞÞÞÞÞÞÞÞÞÞàààààßàÞÞÞÞÞÞÞÞÞÞàààßàÞÞßßßßÞÞÞÞÞÞÞk","áââßßßßßßßßßßßßßßßßßßßßßßßßßàààààßàßßßßßßßßßßßßßßßßßßßßßßßßßßßãk","äååæææææçççççççççææææææææææææææææçæææææææææææçççççææççççæææææææk",".kkxèèéxyy~zyy~zyèéxèèéxèèéxèy~zyyéxèèéxèèéxèy~zyyéxyy~zèèéxèèék","..êxèèéxyy~zyy~zyèéxèèéxèèéxyy~zyy~xèèéxèèéxèy~zyyéxyy~zèèéxèèék","..êxèèéxyëìíyy~zyèéxèèéxèèéxyy~zyë~xèèéxèèéxèy~zyyéxëëìíèèéxèèék","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..9!GGGGîîîîGGGGGGGGGGGGGGGGGGGGGîGGGGGGGGGGGGGGGGGGîîîîGGGGGGJk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zëy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zëy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zëy~zëëìíyy~zyyPk","..0Vyy~zëëìíëëìíëy~zyy~zyy~zyëìíëë~zyy~zyy~zyëìíëë~zëëìíyy~zyyPk","..0Vyy~zëëìíëëìíëy~zyy~zyy~zëëìíëëìzyy~zyy~zyëìíëë~zëëìíyy~zyyPk","..ïîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîk","..ðíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìk","..ðíëëìíyy~zëëìíëëìíëëìíëëìíëëìíëyìíëëìíëëìíëëìíëëìíyy~zëëìíëëìk","..ðíëëìíyy~zëëìíëëìíëëìíëëìíëëìíëyìíëëìíëëìíëëìíëëìíyy~zëëìíëëìk","..ðíëëìíyy~zëëìíëëìíëëìíëëìíëëìíëyìíëëìíëëìíëëìíëëìíyy~zëëìíëëìk","..ðíëëìíyy~zëëìíëëìíëëìíëëìíëëìíëyìíëëìíëëìíëëìíyëìíyy~zëëìíëëìk","..ðíëëìíyy~zyy~zyëìíëëìíëëìíyy~zyy~íëëìíëëìíëy~zyyìíyy~zëëìíëëìk","..9!GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGJk","..0Vyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyyPk","..0Vyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyyPk",".ñkòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôk","ñõçååååååååååååååååååååååååååååååååååååååååååååååååååååååååååååk",".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk."], {"0":"#696051","1":"#6d3f62","2":"#f472b6","3":"#f79ac0","4":"#1e5e40","5":"#22c55e","6":"#6e4563","7":"#f582ba","8":"#dc68a9","9":"#453c33","a":"#635849","b":"#6f6b62","c":"#d9b675","d":"#f9e8b6","e":"#cfa55b","k":"#1b1f2e","f":"#5f523f","g":"#e9c77b","h":"#c99a4a","i":"#ebcb83","j":"#cea256","l":"#544838","m":"#b28a48","n":"#a87b34","o":"#af8542","p":"#eccd86","q":"#966e37","r":"#b3894a","s":"#ceaf74","t":"#b68b4a","u":"#b48a4a","v":"#99754a","w":"#5d4e39","x":"#e8c886","y":"#c9a15a","z":"#e6c47e","A":"#554839","B":"#825f3b","C":"#896b53","D":"#57301a","E":"#997037","F":"#423733","G":"#7a5726","H":"#6b4831","I":"#512e21","J":"#70502a","K":"#766753","L":"#392821","M":"#4b3b2a","N":"#3b2a1a","O":"#554739","P":"#8d6936","Q":"#302c2f","R":"#534231","S":"#3a423a","T":"#212829","U":"#1f2a24","V":"#e9ca89","W":"#c8ccd9","X":"#e2e8f0","Y":"#392920","Z":"#4a3d31","!":"#8a6a3b","#":"#262229","$":"#da67a8","%":"#37644e","&":"#64d483","*":"#ddb41c","+":"#b75996","-":"#a16207","=":"#716862","?":"#3dcb6d","@":"#262329","^":"#202929","_":"#dfb61c","~":"#9a7333","<":"#fee0b8",">":"#e5c19e","|":"#25222c",";":"#362728",":":"#facc15","À":"#5f6d78","Á":"#cfebf2","Â":"#a96e19","Ã":"#fb9e4f","Ä":"#d35113","Å":"#2f5e79","Æ":"#50c4f4","Ç":"#49c2f5","È":"#2092c9","É":"#fb923c","Ê":"#ec651d","Ë":"#4f433f","Ì":"#a37e5a","Í":"#fcd950","Î":"#724529","Ï":"#38bdf8","Ð":"#0778b8","Ñ":"#ab7743","Ò":"#a0662f","Ó":"#fb9a49","Ô":"#463733","Õ":"#8c5f3a","Ö":"#7c4a24","×":"#2c5d7a","Ø":"#178ec8","Ù":"#5d5047","Ú":"#c89f70","Û":"#b07a44","Ü":"#b78450","Ý":"#4b3d35","Þ":"#996d40","ß":"#8b5a2b","à":"#95673a","á":"#41322e","â":"#7e522f","ã":"#7f532f","ä":"#2e252b","å":"#4c2e26","æ":"#694426","ç":"#5b3416","è":"#cea865","é":"#a27e41","ê":"#695f4f","ë":"#b38f58","ì":"#8a6736","í":"#ccad77","î":"#6f4f2b","ï":"#3b312d","ð":"#5e554a","ñ":"#3b302e","ò":"#ceaf77","ó":"#b49058","ô":"#8b6836","õ":"#6f4b2d"}],
+    pelle_fly_1: [["........................................","........................................","........................................","........................................","........................................","........................................","........................................","........................................","...........aaaaa........................","..........bcccccb....aaaaaaaaa........d.",".........aefffffeaaaacccccccccaaa..dddgk",".....hhhhcijklllicccciiiiiiiiicccadgggmk",".noopqqqqrskklllliiiillttttttliiicgmmmuk","nrvvwxxxxvsllllllllllllllllllllllimyyyuk","zAssrsvvBvvCCCCCllllllllllllllllllDDDyuk",".kkxBBvvEBBFFFFFGGllyHHyyyyyyHyylCIIIDDk","...JEEBBkEEkkkkkKKCCCHHyLyyyLHMDCFkkkIIk","....kkEEvkk.....kkNNNDDHOHHHODHNFk...kk.","......kkk.........kkkFIHHOHHOIDkk.......",".....................kkDDPDDPkIk........","......................QIIRIIRuk.........",".......................kkkkkkk.........."], {"a":"#707278","b":"#6d4147","c":"#faf9f1","d":"#6a6d75","e":"#f47970","f":"#f15956","g":"#ebece9","k":"#1b1f2e","h":"#6f5938","i":"#f9faf8","j":"#ffffff","l":"#f8fafc","m":"#e5eaed","n":"#6e532a","o":"#705c2a","p":"#71623f","q":"#f8b849","r":"#f6a924","s":"#f59e0b","t":"#f9faf9","u":"#ccd0dc","v":"#fbbf24","w":"#fcd05a","x":"#fbc63a","y":"#e2e8f0","z":"#654628","A":"#de861f","B":"#e0aa29","C":"#dddee5","D":"#caceda","E":"#bc8f2f","F":"#bab8c7","G":"#dfb61c","H":"#c8ccd9","I":"#abacbe","J":"#584a2e","K":"#bc9825","L":"#94a3b8","M":"#dbdbe3","N":"#9b9eb4","O":"#8591a9","P":"#8692aa","Q":"#525565","R":"#747b97"}],
+    pelle_fly_0: [["..........................aaa...........",".........................abbbaaa........","........................abcccbbbk.......","........................dceffgcck.......",".......................abfeffehik.......",".......................dcfjhhelik.......","......................abfhjhhjmlk.......",".....................abcfhjhhnkmk.......","...........ooooo.....dcfhhjhjhbk........","..........pqqqqqp...abfhhhjhjhck......a.",".........orsssssroookchhhhjhjhiko..aaabk",".....ttttquvkwwwuqqqbhhhhhjhjhhqqoabbbck",".xyyzAAAABCkkwwwwuuuchhhhDDDDDhuuqbcccik","xBEEFGGGGECwwwwwwwwwwwwwHHHHHHwwwuchhhik","IJCCBCEEKEELLLLLwwwwwwHHHHHHHHHwwwlllhik",".kkGKKEEMKKNNNNNOOwwwHHHHHHHHHHwwLmmmllk","...PMMKKkMMkkkkkQQLLLHHHwwwwwwLLLNkkkmmk","....kkMMEkk.....kkRRRSSSSSSSSSRRNk...kk.","......kkk.........kkkNNNNNNNNNkkk.......",".....................kkkkkkkkk..........","........................................","........................................"], {"a":"#6a6d75","b":"#ebece9","c":"#e5eaed","k":"#1b1f2e","d":"#686c77","e":"#9daabb","f":"#e4e9ee","g":"#a1adbc","h":"#e2e8f0","i":"#ccd0dc","j":"#94a3b8","l":"#caceda","m":"#abacbe","n":"#8793ab","o":"#707278","p":"#6d4147","q":"#faf9f1","r":"#f47970","s":"#f15956","t":"#6f5938","u":"#f9faf8","v":"#ffffff","w":"#f8fafc","x":"#6e532a","y":"#705c2a","z":"#71623f","A":"#f8b849","B":"#f6a924","C":"#f59e0b","D":"#c8ccd9","E":"#fbbf24","F":"#fcd05a","G":"#fbc63a","H":"#dbdbe3","I":"#654628","J":"#de861f","K":"#e0aa29","L":"#dddee5","M":"#bc8f2f","N":"#bab8c7","O":"#dfb61c","P":"#584a2e","Q":"#bc9825","R":"#9b9eb4","S":"#b6bdcd"}],
+    pelle_1: [[".................aaaaa..........","...............bbcccccbb........","..............deefffffeed.......",".............dghhiiiiihhgk...jj.","........lllllkmnoknnnnnnpk..jqqk","..lrrrrrssssssttkkuuunnnvwkjqxxk",".yszzzzzAAAAAABtuuuuuCnnDkkqxEFk","yGGGGGGGttttttHtuuuuuCvvk.IxJEFk","KLHHtttttBBBBBMNunnnnvDDk.OPQEFk",".RSMNBBBBBBBBNkMunnnnDkk..IxQTFk","..kkSUVBWWWWBMXkmnnnYk...jqEQZTk","....0MNU111WNkBkm2nnYk...IxEQ3Tk",".....0MMNNNUS4kk5nnnYk...OPEZ67k","......kkMMMMkk.85nnnYk...OPQTk9k","........kkkkkk!5nnnnYk...IxZTqk.","...........#$%%kmnnnYk...IxZ7xk.","...........!%%%kmnnnYka.jqEZ97k.","............kkkkmnnn&ccakxEQk9k.",".............ac*nnnn&mmccPE7+k..","............ac--ooooouummEE9+k..","...........ac-==o????=uuun@kk...","...........^m=o=o????onnnnCk....","..........acnooo?????onnnnCck...","..........^mnnoo?????nnnnnCmk...","..........^mnnno????_&&nnCC@k...","..........~vCn&&_____&&&&CCvk...","..........<DC__&_____&&___nDk...","...........~v__&_&&&&&&__&vk....","...........<D>_&_&&&&____>Dk....","............<D>__&&&&__>>Dk.....",".............<DC&>>>>__DDk......","..............|;nDDDDCCkk.......","..............|;:kkkk;;k........","............À.À::k..À::k.À......","...........À:ÀkÁÁk..ÂÁÁkÀ:k.....","...........ÃÄ::ÅÅÆkkÄÅÅ::Æk.....","............kkkkkk..kkkkkk......"], {"0":"#584a2e","1":"#c16b10","2":"#475569","3":"#8692aa","4":"#c46c0e","5":"#5d6876","6":"#747b97","7":"#caceda","8":"#343b49","9":"#abacbe","a":"#707278","b":"#704d53","c":"#faf9f1","d":"#6d4147","e":"#fa9990","f":"#f9817d","g":"#f47970","h":"#f15956","i":"#ef4444","k":"#1b1f2e","j":"#6a6d75","l":"#6f5938","m":"#f9faf8","n":"#f8fafc","o":"#ffffff","p":"#c13633","q":"#ebece9","r":"#71623f","s":"#f8b849","t":"#f59e0b","u":"#f9faf9","v":"#dddee5","w":"#d74045","x":"#e5eaed","y":"#6e532a","z":"#fcd05a","A":"#fbc63a","B":"#fbbf24","C":"#dbdbe3","D":"#bab8c7","E":"#e2e8f0","F":"#8793ab","G":"#f6a924","H":"#db8d13","I":"#686c77","J":"#9daabb","K":"#654628","L":"#de861f","M":"#bc8f2f","N":"#e0aa29","O":"#676c77","P":"#e4e9ee","Q":"#94a3b8","R":"#4f3726","S":"#a55d1a","T":"#c8ccd9","U":"#c26c0f","V":"#d97706","W":"#dea929","X":"#e2ac29","Y":"#b8bfcf","Z":"#8591a9","!":"#706125","#":"#716e51","$":"#fef08a","%":"#facc15","&":"#cbd5e1","*":"#fffcf3","+":"#ccd0dc","-":"#fffefa","=":"#fffefc","?":"#e1e0e6","@":"#dfe0e7","^":"#6f727b","_":"#b4bccc","~":"#656874","<":"#575968",">":"#b6bdcd","|":"#643a28",";":"#dc671d",":":"#f97316","À":"#6f3f25","Á":"#de681d","Â":"#653b28","Ã":"#70452e","Ä":"#fa832d","Å":"#bb5a26","Æ":"#e0691c"}],
+    pelle_0: [[".................aaaaa..........","...............bbcccccbb........","..............deefffffeed.......",".............dghhiiiiihhgk......","........jjjjjklmnkmmmmmmok......","..jpppppqqqqqqrrkksssmmmtuk.....",".vqwwwwwxxxxxxyrssssszmmAk......","vBBBBBBBrrrrrrCrssssszttk.......","DECCrrrrryyyyyFGsmmmmtAAk.......",".HIFGyyyyyyyyGkFsmmmmAkk........","..kkIJKyLLLLyFMklmmmNk..........","....OFGJPPPLGkyklQmmNk..........",".....OFFGGGJIRkkSmmmNk..........","......kkFFFFkk.TSmmmNk..........","........kkkkkkUSmmmmNk..........","...........VWXXklmmmNk..........","...........UXXXklmmmNka.........","............kkkklmmmYccZa.......",".............ac0mmmmY112cZZZ....","............ac33nnnnn4411222k...","...........ac355n66664444711k...","...........8l5n5n666699!9#9$k...","..........acmnnn66666999!9!$k...","..........8lmmnn66666999!9!92k..","..........8lmmmn6666%9999!9!1k..","..........&tzmYY%%%%%9999!*+$k..","..........-Az%%Y%%%%%Y9***=?@k..","...........&t%%Y%YYYYYY***+k?k..","...........-A^%Y%YYYY%%**^?$k...","............-A^%%YYYY%%^@?kk....",".............-AzY^^^^%%AAk......",".............._~mAAAAzzkk.......",".............._~<kkkk~~k........","............>.><<k..><<k.>......","...........><>k||k..;||k><k.....","...........:À<<ÁÁÂkkÀÁÁ<<Âk.....","............kkkkkk..kkkkkk......"], {"0":"#fffcf3","1":"#e5eaed","2":"#ebece9","3":"#fffefa","4":"#e4e9ee","5":"#fffefc","6":"#e1e0e6","7":"#a1adbc","8":"#6f727b","9":"#e2e8f0","a":"#707278","b":"#704d53","c":"#faf9f1","d":"#6d4147","e":"#fa9990","f":"#f9817d","g":"#f47970","h":"#f15956","i":"#ef4444","k":"#1b1f2e","j":"#6f5938","l":"#f9faf8","m":"#f8fafc","n":"#ffffff","o":"#c13633","p":"#71623f","q":"#f8b849","r":"#f59e0b","s":"#f9faf9","t":"#dddee5","u":"#d74045","v":"#6e532a","w":"#fcd05a","x":"#fbc63a","y":"#fbbf24","z":"#dbdbe3","A":"#bab8c7","B":"#f6a924","C":"#db8d13","D":"#654628","E":"#de861f","F":"#bc8f2f","G":"#e0aa29","H":"#4f3726","I":"#a55d1a","J":"#c26c0f","K":"#d97706","L":"#dea929","M":"#e2ac29","N":"#b8bfcf","O":"#584a2e","P":"#c16b10","Q":"#475569","R":"#c46c0e","S":"#5d6876","T":"#343b49","U":"#706125","V":"#716e51","W":"#fef08a","X":"#facc15","Y":"#cbd5e1","Z":"#6a6d75","!":"#94a3b8","#":"#9daabb","$":"#ccd0dc","%":"#b4bccc","&":"#656874","*":"#c8ccd9","+":"#8692aa","-":"#575968","=":"#8591a9","?":"#abacbe","@":"#caceda","^":"#b6bdcd","_":"#643a28","~":"#dc671d","<":"#f97316",">":"#6f3f25","|":"#de681d",";":"#653b28",":":"#70452e","À":"#fa832d","Á":"#bb5a26","Â":"#e0691c"}],
     plane: [["..............................................aaaaaaa...",".............................................abbbbbbbk..","............................................abcdddddek..","............afffffffffffffffffffffffffffffakbcgggggghk..","...........abiiiiiiiiiiiiiiiiiiiiiiiiiiiiibkcgggjjjjlk..","..........mbnnnnnnnnnnnnnnnnnnnnnnnnnnnnooobgppppppplk..",".........mccjjggggggggggggggggggggggggggqqqcjjjjjjjjrbk.","........skkggggggggggggggggggggggggggjjjjjjgjjjjjjjjrck.","......ttuuuvhhhrrrrrrrrrrrrrrrrrrrrrhrrrrrjjjjjjjjwjrxk.","...yzzAABBCDEFDDDGGGGGGGGGGGGGGGHGGGGGGGGIjjjjjjwwwwJxk.","..yKLLMMNOvDDIPDDpQQQQQppQQQQQppHpppppppIppppRRwwSSSSTUk",".akVBBWWWXDDDIDDDpYZ0YYppYYYYYppHpppppppIpppSRRRRR1RR1Uk","abbIWXXXWXDDPDIDDpY00YYppYYYYYppHppppRR2RRRRSSSSTp3443Uk","mccIWWWWWXDDDDDIDpppppppppppppppH5RppR2RRRRRSTTT44k66kk.","788IWX9XWXWwjjj2wwwwwwwwwwwwwwww!wwwj2wwwwwwj88866#kk...","$%%IWW55595JrrrJ2JJJJJJJJJJJJJJJ!JJJr&rrrr***+66kkk.....",".kk&-==9595?@@??2???????????????!@@?2^____666kkk........","..~<>>>--95pppRRpIppppppppppppppH112Rk6666kkk...........","...kkkk>>--|HH!H|||||||||||||||||;;H!ukkkk..............",".......kk666ppR166666666666666666kk=9Vk.................",".........kkk:XX<kkkkkkkkkkkkkkkkk.ÀÁXEk.................","...........Â99Ik...................ÃXXKk................","...........Â99&k...................Ä=XVk................","..........ÅÆ99<k...................ÀÁXEk................",".....aasssk:92kkssssssssssssssssssskkXXKsssszz..........","...afbbuuuupRRuuuuuuuuuuuuuuuuuuuuuuuppÇuuuuLLÈÉ........","..mbiccÊÊÊÊTSSÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊBÊÊÊÊÊÊSTTÊÊÊÊÊÊTËÌÉ......",".mcccjjHHHHHHHHHHHHHHHHHHHHHHHWHHHHHH!HHHHHHHHHHHËk.....","..78jjjjHHH!HHHHHHHHHHHHHHHHHHWHHHHHH!!HHHHHH|ËkHk......","..$%88jjHHH!HHHHHHHHHHHHHHHHHHWHHHHHHH!HHHHHH;kHk.......","...$%%88-------------------------------------kHk........","....kk;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Ëk.........","......kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk..........","........................................................"], {"0":"#1e293b","1":"#dddee5","2":"#5c6882","3":"#abacbe","4":"#caceda","5":"#8591a9","6":"#bab8c7","7":"#622b37","8":"#d53f45","9":"#434d65","a":"#6d4147","b":"#f47970","k":"#1b1f2e","c":"#f15956","d":"#fcafab","e":"#c13633","f":"#715b61","g":"#f05350","h":"#bf2e2c","i":"#fdbdb4","j":"#ef4444","l":"#a81c22","m":"#6c353d","n":"#f9817d","o":"#fde358","p":"#f8fafc","q":"#fde253","r":"#b91c1c","s":"#707278","t":"#555b66","u":"#faf9f1","v":"#f9faf9","w":"#d33f45","x":"#d74045","y":"#494e5a","z":"#646871","A":"#b4bcc2","B":"#a1adbc","C":"#fffefa","D":"#7dd3fc","E":"#717f91","F":"#88d6f9","G":"#ffffff","H":"#cbd5e1","I":"#64748b","J":"#a51c22","K":"#939ba2","L":"#dbdfde","M":"#d1d9e0","N":"#cfd8e0","O":"#566372","P":"#ecfeff","Q":"#bae6fd","R":"#dbdbe3","S":"#c8ccd9","T":"#e2e8f0","U":"#ccd0dc","V":"#778494","W":"#94a3b8","X":"#475569","Y":"#38bdf8","Z":"#f2c9a0","!":"#b4bccc","#":"#dfe0e7","$":"#552937","%":"#b43946","&":"#5c6983","*":"#a61c22","+":"#8e1d2a","-":"#8692aa","=":"#434e65","?":"#203681","@":"#1e3a8a","^":"#223277","_":"#203682","~":"#30364a","<":"#535b78",">":"#747b97","|":"#b6bdcd",";":"#9b9eb4",":":"#5d6876","À":"#282d41","Á":"#3e4560","Â":"#2a3043","Ã":"#2c3444","Ä":"#2a3143","Å":"#414651","Æ":"#7e858a","Ç":"#f9faf8","È":"#676b78","É":"#575c6b","Ê":"#e5eaed","Ë":"#b8bfcf","Ì":"#5e6472"}],
     bealin_boat: [[".abb.....ccc.............................................dbb..","aeffggggghhhbggggggggggggggggggggggggggggggggggggggggggggiffk.","jlmmnnnnnooofnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnmmmk.","jlppqqqqqrrslqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpptuk",".vwxxxxxyxxpzsyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyxxxxABk",".CAxDDDDDDDDpeDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDEkxk","..vwFFFFFFFFpepFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFGBk.","..CAxHxxxxxxxpexxxxxxxxxxxIxxxxxxxxxxxIxxxxxxxxxxxIxxxxxxwHBk.","...vwJJJKKKKKpepKKKKKKKKKKIKKKKKKKKKKKIKKKKKKKKKKKIKKKKJLMwk..","...CAwHHHHHHHHNexxxHHHHHHHOHHHHHHHHHHHOHHHPPHPHPPPOPPHHHAkAk..","....CAQQOOOOOONRNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOQkxk...",".....CAAwHHHHHORNNNHHHHHHHOHHHHHHHHHHHOHHHHHHHHHHHOHHHwABk....","......kkSTTTTTTRNNNTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTAkk.....","........CAAAAAAUtttAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAk.......",".........kkkkkkVWWWkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk........","...............kkkk..........................................."], {"a":"#5d4839","b":"#594a42","c":"#494e5a","d":"#635449","e":"#c98a4b","f":"#bd9162","g":"#72706c","h":"#939ba2","i":"#d9aa75","k":"#1b1f2e","j":"#5f4d3f","l":"#cf975c","m":"#ab7743","n":"#fff3d2","o":"#778494","p":"#a0662f","q":"#ebd7ae","r":"#ead6ac","s":"#a8723d","t":"#915d33","u":"#d1bd9d","v":"#4b2b2e","w":"#983f2e","x":"#a8442a","y":"#af5339","z":"#ce9357","A":"#823934","B":"#99402e","C":"#422930","D":"#efe0c0","E":"#d7c9b2","F":"#d9c59c","G":"#c1ae91","H":"#963f2e","I":"#7a2f1c","J":"#b1523c","K":"#c75a3a","L":"#b3523c","M":"#98483f","N":"#8f5c33","O":"#6f2d22","P":"#d3c5af","Q":"#702d22","R":"#b37b4b","S":"#4e2326","T":"#57231d","U":"#b47c4b","V":"#996a4b","W":"#7d5137"}],
     sp_jetski: [["..........kk..........",".........kaak.........","........kaabak........",".......kaabbaak.......","......kaabbaaaak......","......kabbbaaaaak.....",".....kaabbaaaaaak.....",".....kabbbaaaaaaak....","....kaababaaaaaaak....","....kabbdeeedddaaak...","....kabddddddddaaak...","...kaabdddddddddaaak..","...kabbdddddddddaaak..","...kafssaaaaaaassfgk..","...kafssfffffffssfgk..","...kabbCaaHHHaaCgggk..","...kabbCaHhhhHaCgggk..","...kabbCHhllhhHCgggk..","..kaabbCHhhhhhHCgggak.","..kaabbcHhhhhhHcgggak.","..kaabcccHhhhHcccggak.","..kaabccccHHHccccggak.","..kaabcccccccccccggak.","..kaabbCCCCCCCCCgggak.","..kaabbbicccccjagggak.","..kaabbbijjjjjjagggak.","..kaaebbijjjjjjagegak.","..kaaebbijjjjjjagegak.","...kaebbijjjjjjggekak.","...kaaebijjjjjjggeak..","...kaaebjjjjjjjgegak..","...kaaeaaaaaaaagegak..","...kaaeaaaaaaaagekak..","....kaaaggggggggaak...",".....kkaaaaaaaaakk....",".......kkkkkkkkk......"], {"k":"#1b1f2e","a":"#e11d48","b":"#fb7185","d":"#7dd3fc","e":"#f8fafc","f":"#334155","s":"#f2c9a0","g":"#9f1239","C":"#c2410c","H":"#15803d","h":"#22c55e","l":"#86efac","c":"#f59e0b","i":"#475569","j":"#1f2937"}],
@@ -3054,24 +3060,14 @@
   }
   // ------------------------------------------------------------------ Sonneninsel: Coach Pelle, Sportstationen, Stempel, Rundflug
   // Coach Pelle: a pelican with a whistle and a sweatband. P is a rect painter (px on the main canvas, sq on the sport canvas).
-  function drawPelle(P, x, y, pose = 0, flip = false, fly = 0) {
-    const R = (dx, dy, w, h, c) => P(flip ? x - dx - w : x + dx, y + dy, w, h, c), k = '#1b1f2e';
-    if (fly) { // flying: wings out, legs tucked
-      const up = Math.sin(t * 14) > 0;
-      R(-5, -6, 10, 5, k); R(-4.5, -5.5, 9, 4, '#f8fafc'); R(-4.5, -2.5, 9, 1, '#cbd5e1');
-      R(-3, up ? -11 : -4, 6, up ? 5 : 4, '#e2e8f0'); R(-3, up ? -11 : -1, 6, 1, '#94a3b8');
-      R(-9, -6, 5, 3, k); R(-8.5, -5.5, 4, 2, '#f8fafc'); R(-8, -6, 3, .8, '#ef4444');
-      R(-15, -5, 7, 1.5, '#f59e0b'); R(-14, -3.5, 5, 1, '#fbbf24'); R(-7, -5, .8, .8, k);
-      return;
-    }
-    R(-2, -2.5, 1, 2.5, '#f97316'); R(1, -2.5, 1, 2.5, '#f97316'); R(-3, 0, 3, .5, '#f97316'); R(.5, 0, 3, .5, '#f97316');
-    R(-4.5, -10, 9, 8, k); R(-4, -9.5, 8, 7, '#f8fafc'); R(-4, -4, 8, 1.5, '#cbd5e1');
-    if (pose === 1) { R(3, -15, 2.5, 6, '#e2e8f0'); R(3, -15, 2.5, 1, '#94a3b8'); } else { R(1, -8.5, 3.5, 5, '#e2e8f0'); R(3.5, -8, 1, 4, '#94a3b8'); }
-    R(-1.5, -14, 3, 4.5, '#f8fafc');
-    R(-2.5, -17.5, 5.5, 4, k); R(-2, -17, 4.5, 3, '#f8fafc'); R(-2, -16.5, 4.5, 1, '#ef4444');
-    R(-1, -15.5, 1, 1, k);
-    R(-9, -15, 7, 1.5, '#f59e0b'); R(-8, -13.5, 5.5, 1.5, '#fbbf24'); R(-8, -12, 3.5, .8, '#d97706');
-    R(-3, -11, 1.5, 1.5, '#facc15'); R(-2, -12.5, .6, 1.5, '#475569'); // whistle on a cord
+  // Coach Pelle as baked sprites (ART.pelle_*): P is px (main canvas, darkens at night) or sq (sport canvas)
+  const pelleArt = new Map();
+  const pelleImg = (name, flip) => { const k = name + flip; if (!pelleArt.has(k)) pelleArt.set(k, bake(...ART[name], flip)); return pelleArt.get(k); };
+  function drawPelle(P, x, y, pose = 0, flip = false, fly = 0, dark = 0) {
+    const img = fly ? pelleImg('pelle_fly_' + (Math.sin(t * 14) > 0 ? 0 : 1), flip) : pelleImg('pelle_' + (pose === 1 ? 1 : 0), flip);
+    const dx = fly ? (flip ? x - 5 : x - 15) : (flip ? x - 6.5 : x - 9.5), dy = fly ? y - 11 : y - 18;
+    if (P === sq) sx.drawImage(img, snap(dx), snap(dy), img.width / 2, img.height / 2);
+    else drawLit(img, dx, dy, dark);
   }
   // Kapitän Kraul: the champion, a walrus in a blue tracksuit
   function drawKraul(P, x, y, flip = false) {
@@ -3100,16 +3096,8 @@
     px(cx - 15, y - (spin ? 13.5 : 11), .8, spin ? 6 : 2, '#94a3b8'); if (spin) px(cx - 15, y - 13.5, .8, .8, '#ef4444');
   }
   // Strandbude: bamboo counter with a straw roof and a drink on the counter
-  function drawBeachHut(dark) {
-    const x0 = KIOSK.x, w = KIOSK.w, y = DOCK_Y, k = '#1b1f2e', d = c => mix(c, [40, 40, 60], dark * .55);
-    px(x0 - 1, y - 14, w + 2, 14, k); px(x0 - .5, y - 13.5, w + 1, 13.5, d([214, 163, 92]));
-    for (let i = 0; i < w; i += 3) px(x0 + i, y - 13.5, 1, 13.5, d([176, 125, 58]));
-    px(x0 - 1, y - 15, w + 2, 1.5, d([120, 80, 40]));
-    for (const sx of [x0, x0 + w - 1.5]) { px(sx - .5, y - 28, 2.5, 14, k); px(sx, y - 28, 1.5, 14, d([161, 98, 7])); }
-    for (let i = 0; i < 6; i++) { const yy = y - 32 + i * 1.5, ww = w + 8 - i * 0; px(x0 - 4, yy, ww, 1.5, i % 2 ? d([201, 154, 74]) : d([233, 199, 123])); }
-    for (let i = 0; i < w + 8; i += 2) px(x0 - 4 + i, y - 23 + (i % 4 ? .5 : 0), 1, 1.5, d([201, 154, 74]));
-    px(x0 + 5, y - 18, 2.5, 3, '#fb923c'); px(x0 + 5.5, y - 19.5, .5, 2, '#22c55e'); px(x0 + 15, y - 18, 2.5, 3, '#38bdf8');
-  }
+  const BEACHHUT = bake(...ART.beachhut);
+  function drawBeachHut(dark) { drawLit(BEACHHUT, KIOSK.x - 4, DOCK_Y - 32, dark); }
   function drawInselFx(dark) {
     drawRays('steg', (1 - dark * .85) * .62);
     for (let i = 0; i < 24; i++) {
@@ -3919,7 +3907,13 @@
     const hub = $('sport-hub'); hub.replaceChildren();
     const n = stampCount(), next = INSEL_BAYS.find(b => b.st > n);
     $('sport-title').textContent = tr('🏅 Sportstationen');
-    $('sport-sub').textContent = tr('{a} von {b} Stempeln', { a: n, b: ALL_STAMPS }) + ' · ' + (next ? tr('Noch {k} bis {b}', { k: next.st - n, b: next.name }) : tr('Alle Buchten offen')) + ' · ' + tr('Insel-Bonus +{p} % Taler', { p: Math.round(sportBonus() * 100) });
+    $('sport-sub').textContent = '';
+    const chips = document.createElement('div'); chips.className = 'sport-chips';
+    const chip = (txt, cls = '') => { const c = document.createElement('span'); c.className = 'sport-chip ' + cls; c.textContent = txt; chips.append(c); return c; };
+    chip('🔖 ' + tr('{a} von {b} Stempeln', { a: n, b: ALL_STAMPS }));
+    chip(next ? '🧭 ' + tr('Noch {k} bis {b}', { k: next.st - n, b: next.name }) : '✅ ' + tr('Alle Buchten offen'));
+    chip('🪙 ' + tr('Insel-Bonus +{p} % Taler', { p: Math.round(sportBonus() * 100) }));
+    hub.append(chips);
     if (spView.id) return renderStation(hub, SPORTS.find(s => s.id === spView.id));
     hub.append(sportMiniMap());
     const grid = document.createElement('div'); grid.className = 'sport-grid';
@@ -3931,15 +3925,18 @@
       const ic = document.createElement('span'); ic.className = 'sport-ic'; ic.textContent = s.icon;
       const nm = document.createElement('b'); nm.textContent = s.name;
       const lv = document.createElement('small'); lv.textContent = open ? `${SPORT_CLASS(r.lv)} · ${r.lv}` : tr('🔒 ab {n} Stempeln', { n: s.st });
+      const foot = document.createElement('span'); foot.className = 'sport-foot';
       const bar = document.createElement('span'); bar.className = 'bar'; const bi = document.createElement('i'); bi.style.width = (r.lv / 25) + '%'; bar.append(bi);
-      const sts = document.createElement('small'); sts.className = 'sport-dots'; sts.textContent = '●'.repeat(got) + '○'.repeat(s.stamps.length - got) + (save.trophies.includes(s.id) ? ' 🏆' : '');
-      b.append(ic, nm, lv, bar, sts);
+      const sts = document.createElement('span'); sts.className = 'sport-dots'; sts.setAttribute('aria-label', tr('{a} von {b} Stempeln', { a: got, b: s.stamps.length }));
+      for (let i = 0; i < s.stamps.length; i++) { const d = document.createElement('i'); if (i < got) d.className = 'on'; sts.append(d); }
+      if (save.trophies.includes(s.id)) { const tro = document.createElement('em'); tro.textContent = '🏆'; sts.append(tro); }
+      foot.append(bar, sts); b.append(ic, nm, lv, foot);
       if (open) b.addEventListener('click', () => { spView.id = s.id; renderSport(); });
       grid.append(b);
     }
     hub.append(grid);
-    const ladder = document.createElement('p'); ladder.className = 'sub';
-    ladder.textContent = INSEL_BAYS.map(b => `${n >= b.st ? '✅' : '🔒'} ${b.name} (${b.st})`).join(' · ');
+    const ladder = document.createElement('div'); ladder.className = 'sport-chips';
+    for (const b of INSEL_BAYS) { const c = document.createElement('span'); c.className = 'sport-chip' + (n >= b.st ? '' : ' off'); c.textContent = `${n >= b.st ? '✅' : '🔒'} ${b.name} (${b.st})`; ladder.append(c); }
     hub.append(ladder);
   }
   // the island from above with a marker for every station; bays that are still closed lie under clouds
@@ -3950,29 +3947,56 @@
     const n = stampCount();
     for (const b of INSEL_BAYS) if (n < b.st) { const [X, Y] = isleAt(b.n, 0, .9); x.globalAlpha = .85; x.fillStyle = '#f1f5f9'; for (const [dx, dy, r] of [[-10, 0, 12], [8, -4, 14], [2, 6, 11], [-2, -8, 9]]) { x.beginPath(); x.arc(X / 3 + dx, Y / 3 + dy, r, 0, 7); x.fill(); } x.globalAlpha = 1; x.font = '700 9px Poppins, sans-serif'; x.textAlign = 'center'; x.fillStyle = '#334155'; x.fillText('🔒 ' + b.st, X / 3, Y / 3 + 3); }
     x.font = '14px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-    for (const st of SPORTS) { const p = IPOINTS[STATION_AT[st.id]]; if (!p || !sportOpen(st)) continue; x.fillStyle = 'rgba(15,23,42,.7)'; x.fillRect(p.x / 3 - 9, p.y / 3 - 9, 18, 18); x.fillText(st.icon, p.x / 3, p.y / 3 + 1); }
+    // station markers: framed tiles you can tap to open that station
+    const hits = [];
+    for (const st of SPORTS) {
+      const p = IPOINTS[STATION_AT[st.id]]; if (!p || !sportOpen(st)) continue;
+      const X = Math.round(p.x / 3), Y = Math.round(p.y / 3);
+      x.fillStyle = '#0b1020'; x.fillRect(X - 12, Y - 12, 24, 24); x.fillStyle = '#0f1730'; x.fillRect(X - 10, Y - 10, 20, 20); x.fillStyle = '#b45309'; x.fillRect(X - 10, Y + 8, 20, 2);
+      x.fillText(st.icon, X, Y + 1); hits.push([X, Y, st.id]);
+    }
+    if (hits.length) {
+      c.classList.add('click');
+      c.addEventListener('click', e => {
+        const r = c.getBoundingClientRect(), mx = (e.clientX - r.left) / r.width * 384, my = (e.clientY - r.top) / r.height * 216;
+        const h = hits.find(([X, Y]) => Math.abs(mx - X) < 15 && Math.abs(my - Y) < 15);
+        if (h) { spView.id = h[2]; renderSport(); }
+      });
+    }
     return c;
   }
   function renderStation(hub, s) {
     const r = sportRec(s.id);
     $('sport-title').textContent = `${s.icon} ${s.name}`;
-    const info = document.createElement('p'); info.textContent = s.info; hub.append(info);
-    const lv = document.createElement('p'); lv.className = 'sub';
-    lv.textContent = tr('Können: {a} / 2500 · {c} · Bestwerte: {b}', { a: r.lv, c: SPORT_CLASS(r.lv), b: s.modes.map((m, i) => `${m} ${r.best[i] | 0}`).join(', ') });
-    hub.append(lv);
+    const head = document.createElement('div'); head.className = 'sport-head';
+    const info = document.createElement('p'); info.textContent = s.info;
+    const sk = document.createElement('div'); sk.className = 'sport-skill';
+    const skl = document.createElement('span'); skl.textContent = SPORT_CLASS(r.lv);
+    const bar = document.createElement('span'); bar.className = 'bar'; const bi = document.createElement('i'); bi.style.width = (r.lv / 25) + '%'; bar.append(bi);
+    const skv = document.createElement('b'); skv.textContent = `${r.lv} / 2500`;
+    sk.append(skl, bar, skv);
+    const best = document.createElement('div'); best.className = 'sport-best';
+    best.textContent = tr('Bestwerte: {b}', { b: s.modes.map((m, i) => `${m} ${r.best[i] | 0}`).join(', ') });
+    head.append(info, sk, best); hub.append(head);
     const mk = (txt, on, fn, cls = 'btn') => { const b = document.createElement('button'); b.className = cls; b.textContent = txt; b.disabled = !on; b.addEventListener('click', fn); return b; };
     for (let m = 0; m < 2; m++) {
-      const row = document.createElement('div'); row.className = 'sport-row';
+      const box = document.createElement('div'); box.className = 'sport-mode';
       const mOpen = m === 0 || (s.mode2 ? s.mode2() : r.lv >= 300);
-      const lab = document.createElement('b'); lab.textContent = s.modes[m] + (mOpen ? '' : ' ' + (s.mode2 ? tr('🔒 alle 30 Punkte') : tr('🔒 Können 300')));
-      row.append(lab);
-      for (let l = 0; l < 3; l++) { const ok = mOpen && r.lv >= SP_MIN[l]; row.append(mk(ok ? SP_LV[l] : `🔒 ${SP_LV[l]}`, ok, () => startSport(s.id, m, l), l ? 'btn ghost' : 'btn')); }
+      const lab = document.createElement('b'); lab.textContent = s.modes[m];
+      if (!mOpen) { const lk = document.createElement('small'); lk.textContent = s.mode2 ? tr('🔒 alle 30 Punkte') : tr('🔒 Können 300'); lab.append(lk); }
+      const row = document.createElement('div'); row.className = 'sport-row';
+      let first = true;
+      for (let l = 0; l < 3; l++) { const ok = mOpen && r.lv >= SP_MIN[l]; row.append(mk(ok ? SP_LV[l] : `🔒 ${SP_LV[l]}`, ok, () => startSport(s.id, m, l), ok && first ? 'btn' : 'btn ghost')); if (ok) first = false; }
       if (champOpen(s)) row.append(mk((save.trophies.includes(s.id) ? '🏆 ' : '👑 ') + tr('Kraul'), mOpen, () => startSport(s.id, m, 3), 'btn ghost'));
-      hub.append(row);
+      box.append(lab, row); hub.append(box);
     }
-    if (!champOpen(s)) { const c = document.createElement('p'); c.className = 'sub'; c.textContent = tr('👑 Champion-Duell gegen Kapitän Kraul: ab Können 1500 und {n} Stempeln.', { n: CHAMP_ST }); hub.append(c); }
+    if (!champOpen(s)) { const c = document.createElement('p'); c.className = 'sport-champ'; c.textContent = tr('👑 Champion-Duell gegen Kapitän Kraul: ab Können 1500 und {n} Stempeln.', { n: CHAMP_ST }); hub.append(c); }
     const card = document.createElement('ul'); card.className = 'sport-stamps';
-    for (const st of s.stamps) { const li = document.createElement('li'); li.textContent = (hasStamp(st.id) ? '🔖 ' : '▫️ ') + st.txt; if (hasStamp(st.id)) li.className = 'got'; card.append(li); }
+    for (const st of s.stamps) {
+      const li = document.createElement('li'), ic = document.createElement('span'), tx = document.createElement('span');
+      ic.textContent = hasStamp(st.id) ? '🔖' : '▫️'; tx.textContent = st.txt;
+      if (hasStamp(st.id)) li.className = 'got'; li.append(ic, tx); card.append(li);
+    }
     hub.append(card);
     hub.append(mk(tr('← Alle Stationen'), true, () => { spView.id = null; renderSport(); }, 'btn ghost'));
   }
@@ -3996,7 +4020,7 @@
     { id: 'wheel',  map: 'see', label: tr('⚓ Zurück zum Steg'), get x() { return wheelX(); }, get y() { return wheelY(); }, w: 15, h: 22, draw: drawWheel, open: () => travel('steg') },
     { id: 'flieger', get label() { return inselOpen() ? tr('✈️ Inselflieger · Zur Sonneninsel') : tr('✈️ Inselflieger (🔒 3× Prestige)'); }, x: 356, y: SURFACE - 13, w: 26, h: 14, draw: dark => drawPlane(369, SURFACE + 1, dark), open: () => travel('insel'), ready: () => inselOpen() && !save.inselSeen },
     { id: 'heimflug', map: 'insel', label: tr('✈️ Zurück zum Steg'), x: 356, y: SURFACE - 13, w: 26, h: 14, draw: dark => drawPlane(369, SURFACE + 1, dark), open: () => travel('steg') },
-    { id: 'pelle',  map: 'insel', label: tr('🏅 Coach Pelle · Sportstationen'), x: 18, y: DOCK_Y - 17, w: 12, h: 17, draw: () => drawPelle(px, 24, DOCK_Y, Math.sin(t * 2) > .7 ? 1 : 0), open: () => toggleModal('sport'), ready: () => sportReady() },
+    { id: 'pelle',  map: 'insel', label: tr('🏅 Coach Pelle · Sportstationen'), x: 18, y: DOCK_Y - 17, w: 12, h: 17, draw: dark => drawPelle(px, 24, DOCK_Y, Math.sin(t * 2) > .7 ? 1 : 0, false, 0, dark), open: () => toggleModal('sport'), ready: () => sportReady() },
     { id: 'strandbude', map: 'insel', label: tr('🍹 Strandbude'), x: KIOSK.x - 3, y: DOCK_Y - 30, w: KIOSK.w + 6, h: 30, draw: drawBeachHut, open: () => toggleModal('shop') },
     { id: 'pokale', get label() { return tr('🏆 Inselpokale ({n})', { n: save.trophies.length }); }, x: 79, y: DOCK_Y - 10, w: 21, h: 10, draw: drawPokale, show: () => save.trophies.length > 0,
       open: () => toast(tr('🏆 Siege gegen Kapitän Kraul: {l}', { l: save.trophies.map(id => (SPORTS.find(s => s.id === id) || {}).name || id).join(', ') })) },

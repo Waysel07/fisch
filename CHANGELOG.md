@@ -9,6 +9,7 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 - ⛵ Redrawn at the dock: Cap’n Bealin’s rowboat (planks, gunwale, an oar in the water) and the island plane (high wing with struts, windows with a pilot, floats, tail). Both now have light and shadow and get darker at night.
 - 🛟 Boat skin “David Hasselhoff” fixed: the steering wheel and the Fishdex crate now stand on his back instead of in his legs, and under water he shows through instead of looking like a grey slab.
 - 🏄 New figures at the sports stations: in Frisbee, Surfing and Beach Volleyball you now play as your own angler, with the hat, jacket, skin and hair from the wardrobe. The jet ski is redrawn, and the table-tennis paddle has a handle.
+- 🐦 Coach Pelle and the Beach Hut are redrawn and get darker at night. The sports stations now look like the rest of the game: stamps are readable, locked levels are clearly greyed out, and you can tap stations right on the map.
 - ☀️ No more snow on Sun Island: where it would snow elsewhere, the island has a heat wave.
 - 📈 Fairer sports stations: the expected score rises more slowly with skill, every medal adds extra skill (bronze +6, silver +12, gold +18), and gold and the champion duel are easier to reach. You now become a Pro after about 50 rounds instead of 100+ rounds that often never got you there.
 
