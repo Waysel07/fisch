@@ -233,6 +233,26 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-05-12', date: '05.11.2026', items: [
+      '🏝️ Mehr Insel als je zuvor: Auf der Inselkarte gibt es jetzt eine Hafenstadt mit Rathaus, Markt und Booten am Kai, eine Ferienanlage mit Pool und Wasserbungalows, einen Flugplatz, ein Stadion, Felder mit Windmühle, Obstgärten, eine glühende Lavarinne am Vulkan, Sonnenschirme, Segelboote und kleine Nachbarinseln. Im Rundflug gibt es überall etwas zu entdecken.',
+      '🏐 Schönere Minispiele: Bälle, Pins, Bojen, Ballons und die Frisbee-Scheibe haben Licht und Schatten, die Zielscheibe steht auf einem Holzgestell, und beim Beachvolleyball und Bogenschießen jubeln Zuschauer bei jedem Punkt. Die Surfwelle bricht jetzt sichtbar, mit Lippe, Gischt und Weißwasser, über den Stränden ziehen Möwen und Segler, und die Anzeigen sind auf dunklem Grund besser zu lesen.',
+    ] },
+    { id: '2026-11-05-11', date: '05.11.2026', items: [
+      '🖼️ Die Sonneninsel in neuem Pixel-Look: Alle Sportplätze haben gemalte Kulissen – Strand mit Palmen und Fernsicht beim Frisbee, Bogenschießen und Beachvolleyball, ein Holzpavillon fürs Tischtennis, eine echte Bowlingbahn im Sand und fließendes Wasser beim Jetski. Die Inselkarte im Rundflug und bei Pelle ist ganz neu gezeichnet, mit Höhenlicht, Dschungelkronen, Riff und Brandung.',
+    ] },
+    { id: '2026-11-05-10', date: '05.11.2026', items: [
+      '🎲 Neue Fang-Drills: Ab der Sonneninsel kann ein seltener, epischer oder legendärer Biss überall zu einem kurzen Sport-Minispiel werden – Frisbee, Rundflug, Jetski, Bogenschießen, Tischtennis, Surfen, Beachvolleyball oder Strand-Bowling, je nachdem, welche Stationen du schon offen hast. Schaffst du die Punktzahl, hängt der Fisch am Haken; mit einer starken Runde ist es ein sauberer Fang.',
+    ] },
+    { id: '2026-11-05-9', date: '05.11.2026', items: [
+      '🎨 Die 22 Fische der Sonneninsel sind überarbeitet: Sie haben jetzt Glanz von oben, Schatten am Bauch und weichere Umrisse. Der Riesen-Mantarochen ist ganz neu gezeichnet und zeigt sich von oben mit weiten Schwingen.',
+      '🖌️ Noch mehr Feinschliff: Badelatsche, Frisbee-Rochen, Golfball-, Tischtennis- und Wasserski-Fisch, Sonnencreme, Kanu-Hecht, Fechter- und Schnorchelfisch sind neu gezeichnet, alle Inselfische haben einen weichen Kernschatten, und der Mantarochen ist heller und auf dunklem Wasser besser zu sehen. Die Sportplätze haben jetzt Sonne, ziehende Wolken, eine Insel am Horizont, geschwungene Palmen und einen Strand mit Schaumkante.',
+      '⛵ Am Steg neu gezeichnet: Käpt’n Bealins Ruderboot (Planken, Dollbord, Riemen im Wasser) und der Inselflieger (Hochdecker mit Streben, Fenster mit Pilot, Schwimmer, Leitwerk). Beide haben jetzt Licht und Schatten und werden nachts dunkler.',
+      '🛟 Boot-Skin „David Hasselhoff“ repariert: Steuerrad und Fischdex-Kiste stehen jetzt auf seinem Rücken statt in seinen Beinen, und unter Wasser schimmert er durch statt als graue Platte.',
+      '🏄 Neue Figuren in den Sportstationen: Beim Frisbee, Surfen und Beachvolleyball spielt jetzt deine eigene Spielfigur mit, mit Hut, Jacke, Haut und Haaren aus dem Kleiderschrank. Der Jetski ist neu gezeichnet, der Tischtennisschläger hat einen Griff.',
+      '🐦 Coach Pelle und die Strandbude sind neu gezeichnet und werden nachts dunkler. Die Sportstationen sehen jetzt aus wie der Rest des Spiels: Stempel sind lesbar, gesperrte Stufen klar ausgegraut, und Stationen lassen sich direkt auf der Karte antippen.',
+      '☀️ Auf der Sonneninsel schneit es nicht mehr: Wo sonst Schnee fällt, ist auf der Insel eine Hitzewelle.',
+      '📈 Fairere Sportstationen: Das erwartete Ergebnis steigt mit dem Können langsamer, jede Medaille bringt zusätzlich Können (Bronze +6, Silber +12, Gold +18), und Gold und das Champion-Duell sind besser erreichbar. Profi wirst du jetzt nach etwa 50 statt oft nie erreichten 100+ Runden.',
+    ] },
     { id: '2026-11-05-8', date: '05.11.2026', items: [
       '🌴 Neue Welt – die Sonneninsel: Ab 3× Prestige fliegt dich der Inselflieger (Wasserflugzeug am Steg) auf eine Vulkaninsel mit fünf Buchten. Alles, was du dort schaffst, bleibt für immer – auch nach Wiedergeburt und Prestige.',
       '🏅 Neun Sportstationen bei Coach Pelle: Frisbee, Angelturnier, Rundflug, Jetski, Surfen, Bogenschießen, Beachvolleyball, Tischtennis und Strand-Bowling. Jede hat zwei Modi, drei Stufen und Medaillen in Bronze, Silber und Gold.',
@@ -655,7 +675,12 @@
   const weatherSlot = () => Math.floor(Date.now() / 1000 / WEATHER_LEN + weatherShift);
   // under the earth there is no weather: the cave has its own still "weather" without any bonus
   const CAVE_WX = { id: 'glut', icon: '🌋', get name() { return tr('Tiefe {n} · {t}', { n: caveDepth(), t: CAVE_DEPTHS[caveDepth() - 1].name }); }, get desc() { return tr('Unter der Erde gibt es kein Wetter, nur Hitze.') + ' ' + tr('Kreatur-Chance: {n} %', { n: critChance() }); } };
-  function currentWeather() { if (inLava()) return CAVE_WX; return (weatherForce && WEATHER.find(w => w.id === weatherForce)) || weatherAt(weatherSlot()); }
+  function currentWeather() {
+    if (inLava()) return CAVE_WX;
+    const w = (weatherForce && WEATHER.find(x => x.id === weatherForce)) || weatherAt(weatherSlot());
+    // no snow on the tropical island: the same slot brings a heat wave there
+    return save.map === 'insel' && w.id === 'schnee' ? WEATHER.find(x => x.id === 'hitze') : w;
+  }
   let wx = currentWeather();
   // the Wetterfrosch talent makes every weather bonus stronger
   const wBoost = x => (x ? 1 + (x - 1) * (1 + .1 * perk('wetter')) : 1);
@@ -686,7 +711,7 @@
   if (!save.sportDay || typeof save.sportDay !== 'object') save.sportDay = {};
   if (save.turnier && typeof save.turnier !== 'object') save.turnier = null;
   const stampCount = () => save.stamps.length;
-  // what the island gives back to the fishing everywhere: +2 % per Profi (skill 1000), +3 % per champion trophy, +5 % for all 30 stamps
+  // what the island gives back to the fishing everywhere: +2 % per Profi (skill 1000), +3 % per champion trophy, +5 % for all 45 stamps
   function profis() { return Object.values(save.sport).filter(r => r && (r.lv | 0) >= 1000).length; }
   function sportBonus() { return .02 * profis() + .03 * save.trophies.length + (stampCount() >= STAMP_ALL ? .05 : 0); }
   // Taler bonus while fishing on the island: +30 %, and +10 % more for every further bay that is open
@@ -885,6 +910,10 @@
     hooked = { f, ...rollSize(f), str: STRENGTH[f.r] };
     Object.assign(reel, { tension: .15, progress: .22, thrash: 0, thrashT: 1 + Math.random(), slack: 0, maxT: 0 });
     if (f.r === 'legendary' && !f.fake && Math.random() < RHYTHM_CHANCE) { sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff'); startRhythm(); return; }
+    if (DRILL_D[f.r] && !f.fake && inselOpen() && Math.random() < SPORT_DRILL_CHANCE) {
+      const pool = drillPool(f);
+      if (pool.length) { sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff'); startDrill(pool[Math.floor(Math.random() * pool.length)]); return; }
+    }
     state = 'reel'; $('reel').hidden = false; hint('');
     sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff');
   }
@@ -1860,6 +1889,16 @@
 
   // Sprites as char rows, drawn in img/pxl/code.px.js. 1 char = 1 fine pixel = 0.5 world units.
   const ART = {
+    sp_fan_1: [["..kkkkkkk..",".kshhhhhSk.",".kchssSHCk.",".kcsssSsCk.",".kcsssSsCk.",".kckssskCk.",".kcccccCCk.","..kccccCk..","..kccccCk..","..kccccCk..","..kCCCCCk..","...kpkPk...","...kpkPk...","...kpkPk...","....k.k....","..........."], {"k":"#1b1f2e","s":"#f2c9a0","h":"#7c4a24","S":"#d9a47a","c":"#ef4444","H":"#4a2a12","C":"#b91c1c","p":"#334155","P":"#1e293b"}],
+    sp_fan_0: [["...kkkkk...","..khhhhhk..","..khssSHk..","..ksssSsk..","..ksssSsk..","...ksssk...","..kccccCk..",".kcccccCCk.",".kcccccCCk.",".kcccccCCk.",".ksCCCCCSk.","..kkpkPkk..","...kpkPk...","...kpkPk...","....k.k....","..........."], {"k":"#1b1f2e","h":"#7c4a24","s":"#f2c9a0","S":"#d9a47a","H":"#4a2a12","c":"#ef4444","C":"#b91c1c","p":"#334155","P":"#1e293b"}],
+    beachhut: [["................................................................","..........abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbba.........",".........acdddddddddddddddddddddddddddddddddddddddddddca........","........aceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeck.......","........feghijjijijijjijijihjgjgjgjhihijijjijijgjjijghgek.......",".......achhghihihjgjgjgjhihihihjghgjgjhihihihjgjgjgjhghgck......",".......lmnnnnnnnnonnnnnnnnnonononnnononnnnnnnnnonnnnnnnnek......","......achhhhhhhhhhhhhhhhhhhjhjhjhhhjhjhhhhhhhhhjhhhhhhhhjck.....",".....aceghghhghghghhghghghhghghghhghghghhghghghhghghghhghpk.....",".....fejhijihghhghghghhghghghhghgjghhghghghhghghghhgjijihjck....","....achjnoooqnqnqnqnqnqnqnqnqnqnqoqnqnqnqnqnqnqnqnqnoooohjek....","....fehhjjjjrhrhrhrhrhrhrhrhrhrhrjrhrhrhrhrhrhrhrhrhjjjjhhhck...","...achghijjirsrsrhshshsrrsrgrgrhsjshshrgrgrsrrshshshjijirghek...","...fehhgjijihrgrghgrhshshshhghghgjhghghshrgrgrghhshsjijjshghtk..","..acuhuhjjjjurururururururuhuhuhujuhuhururururuhururjjjjuhuhtk..","..fevhvhjjjjvrvhvrvrvrvrvhvhvhvhvjvhvhvrvrvrvhvhvrvrjjjjvhvhhtk.","..whkukrxhytkhkukrkrkrkhkukhkhkhkhkhkhkrkrkhkukrkrkrzhytkrkhkk..","..AukBkrxhytkukBkrkrkhkukBkhChkhkhkDkhkrkhkukBkrkrkezhyEkrkrk...","..FBkkkrGhGtkBkkkhkhkukBkkkrHrkrknkIkrkhkukBkkkrkhkuGnGJkrkrk...","...k..fezhyEkk..whkukBkkkKKLMLKLKNKLKLKukBkk..OrkukBzyyPkhkuk...","......AuznyPk...AukBkk..QRSTUTSTSUSTSTRBkk....OrkBkkVyyPkukBk...","......FBzyyPk...FBkk....QRUWXWXWXXUTUTYk......Zqkk.0VyyPkBkk....",".......0VyyPk....k......QRUTUTUTUUUTUTYk......123k.0VyyPkk......",".......0VyyPk...45k.....QRUXXXXXXXXXUUYk.....672781kVyyPk.......",".......9!GGJk...45k.....#LTUTUTUTUTUTULk....672$2222GGGJk.......",".......0VyyPk..%&k......#LTXWXWXTU*UTULk...6722+-2222yyPk.......",".......0VyyPk==k?k......@Y^^^^^^^U_^^^Yk....kkkk-kkkVyyPk.......",".......0Vyy~<<<&>k......|;;;;;;;;:;;;;;k....ÀÁÁÁÂÁkkVyyPk.......",".......0Vyy~ÃÃÃÃÄk.......kkkkkkkk:kkkkk.....ÅÆÆÆÇÈkkVyyPk.......",".......0Vyy~ÉÉÉÉÊk..........ËÌÌÌÍÎk.........ÅÆÏÏÇÐkkVyyPk.......",".......9!GGGÉÉÉÉÊk.........ËÌÑÑÑÑÒÌk........ÅÆÏÏÇÐkk!GGJk.......",".......0Vyy~ÓÓÓÓÊk.........ÔÕÖÖÖÖÖÕk........×ÇÇÇÏØkkVyyPk.......",".ÙÙÙÙÙÙkVyy~ÓÓÓÓÊkÙÙÙÙÙÙÙÙÙkÕÖÖÖÖÖÎkÙÙÙÙÙÙÙÙkÇÇÇÏØkkVyyPkÙÙÙÙÙÙ.","ÙÚÚÚÚÚÚÚÛÛÛÛÜÜÜÜÜÚÚÚÚÚÚÚÚÚÚÚÛÜÜÜÜÛÛÚÚÚÚÚÚÚÚÚÚÜÜÜÛÜÚÚÛÛÛÛÚÚÚÚÚÚÚk","ÝÞÞÞÞÞÞÞßßßßààààßÞÞÞÞÞÞÞÞÞÞÞàààààßàÞÞÞÞÞÞÞÞÞÞàààßàÞÞßßßßÞÞÞÞÞÞÞk","áââßßßßßßßßßßßßßßßßßßßßßßßßßàààààßàßßßßßßßßßßßßßßßßßßßßßßßßßßßãk","äååæææææçççççççççææææææææææææææææçæææææææææææçççççææççççæææææææk",".kkxèèéxyy~zyy~zyèéxèèéxèèéxèy~zyyéxèèéxèèéxèy~zyyéxyy~zèèéxèèék","..êxèèéxyy~zyy~zyèéxèèéxèèéxyy~zyy~xèèéxèèéxèy~zyyéxyy~zèèéxèèék","..êxèèéxyëìíyy~zyèéxèèéxèèéxyy~zyë~xèèéxèèéxèy~zyyéxëëìíèèéxèèék","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..9!GGGGîîîîGGGGGGGGGGGGGGGGGGGGGîGGGGGGGGGGGGGGGGGGîîîîGGGGGGJk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zyy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zyy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zëy~zëëìíyy~zyyPk","..0Vyy~zëëìíyy~zëy~zyy~zyy~zyy~zyë~zyy~zyy~zyy~zëy~zëëìíyy~zyyPk","..0Vyy~zëëìíëëìíëy~zyy~zyy~zyëìíëë~zyy~zyy~zyëìíëë~zëëìíyy~zyyPk","..0Vyy~zëëìíëëìíëy~zyy~zyy~zëëìíëëìzyy~zyy~zyëìíëë~zëëìíyy~zyyPk","..ïîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîîk","..ðíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìíëëìk","..ðíëëìíyy~zëëìíëëìíëëìíëëìíëëìíëyìíëëìíëëìíëëìíëëìíyy~zëëìíëëìk","..ðíëëìíyy~zëëìíëëìíëëìíëëìíëëìíëyìíëëìíëëìíëëìíëëìíyy~zëëìíëëìk","..ðíëëìíyy~zëëìíëëìíëëìíëëìíëëìíëyìíëëìíëëìíëëìíëëìíyy~zëëìíëëìk","..ðíëëìíyy~zëëìíëëìíëëìíëëìíëëìíëyìíëëìíëëìíëëìíyëìíyy~zëëìíëëìk","..ðíëëìíyy~zyy~zyëìíëëìíëëìíyy~zyy~íëëìíëëìíëy~zyyìíyy~zëëìíëëìk","..9!GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGJk","..0Vyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyyPk","..0Vyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyy~zyyPk",".ñkòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôòóóôk","ñõçååååååååååååååååååååååååååååååååååååååååååååååååååååååååååååk",".kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk."], {"0":"#696051","1":"#6d3f62","2":"#f472b6","3":"#f79ac0","4":"#1e5e40","5":"#22c55e","6":"#6e4563","7":"#f582ba","8":"#dc68a9","9":"#453c33","a":"#635849","b":"#6f6b62","c":"#d9b675","d":"#f9e8b6","e":"#cfa55b","k":"#1b1f2e","f":"#5f523f","g":"#e9c77b","h":"#c99a4a","i":"#ebcb83","j":"#cea256","l":"#544838","m":"#b28a48","n":"#a87b34","o":"#af8542","p":"#eccd86","q":"#966e37","r":"#b3894a","s":"#ceaf74","t":"#b68b4a","u":"#b48a4a","v":"#99754a","w":"#5d4e39","x":"#e8c886","y":"#c9a15a","z":"#e6c47e","A":"#554839","B":"#825f3b","C":"#896b53","D":"#57301a","E":"#997037","F":"#423733","G":"#7a5726","H":"#6b4831","I":"#512e21","J":"#70502a","K":"#766753","L":"#392821","M":"#4b3b2a","N":"#3b2a1a","O":"#554739","P":"#8d6936","Q":"#302c2f","R":"#534231","S":"#3a423a","T":"#212829","U":"#1f2a24","V":"#e9ca89","W":"#c8ccd9","X":"#e2e8f0","Y":"#392920","Z":"#4a3d31","!":"#8a6a3b","#":"#262229","$":"#da67a8","%":"#37644e","&":"#64d483","*":"#ddb41c","+":"#b75996","-":"#a16207","=":"#716862","?":"#3dcb6d","@":"#262329","^":"#202929","_":"#dfb61c","~":"#9a7333","<":"#fee0b8",">":"#e5c19e","|":"#25222c",";":"#362728",":":"#facc15","À":"#5f6d78","Á":"#cfebf2","Â":"#a96e19","Ã":"#fb9e4f","Ä":"#d35113","Å":"#2f5e79","Æ":"#50c4f4","Ç":"#49c2f5","È":"#2092c9","É":"#fb923c","Ê":"#ec651d","Ë":"#4f433f","Ì":"#a37e5a","Í":"#fcd950","Î":"#724529","Ï":"#38bdf8","Ð":"#0778b8","Ñ":"#ab7743","Ò":"#a0662f","Ó":"#fb9a49","Ô":"#463733","Õ":"#8c5f3a","Ö":"#7c4a24","×":"#2c5d7a","Ø":"#178ec8","Ù":"#5d5047","Ú":"#c89f70","Û":"#b07a44","Ü":"#b78450","Ý":"#4b3d35","Þ":"#996d40","ß":"#8b5a2b","à":"#95673a","á":"#41322e","â":"#7e522f","ã":"#7f532f","ä":"#2e252b","å":"#4c2e26","æ":"#694426","ç":"#5b3416","è":"#cea865","é":"#a27e41","ê":"#695f4f","ë":"#b38f58","ì":"#8a6736","í":"#ccad77","î":"#6f4f2b","ï":"#3b312d","ð":"#5e554a","ñ":"#3b302e","ò":"#ceaf77","ó":"#b49058","ô":"#8b6836","õ":"#6f4b2d"}],
+    pelle_fly_1: [["........................................","........................................","........................................","........................................","........................................","........................................","........................................","........................................","...........aaaaa........................","..........bcccccb....aaaaaaaaa........d.",".........aefffffeaaaacccccccccaaa..dddgk",".....hhhhcijklllicccciiiiiiiiicccadgggmk",".noopqqqqrskklllliiiillttttttliiicgmmmuk","nrvvwxxxxvsllllllllllllllllllllllimyyyuk","zAssrsvvBvvCCCCCllllllllllllllllllDDDyuk",".kkxBBvvEBBFFFFFGGllyHHyyyyyyHyylCIIIDDk","...JEEBBkEEkkkkkKKCCCHHyLyyyLHMDCFkkkIIk","....kkEEvkk.....kkNNNDDHOHHHODHNFk...kk.","......kkk.........kkkFIHHOHHOIDkk.......",".....................kkDDPDDPkIk........","......................QIIRIIRuk.........",".......................kkkkkkk.........."], {"a":"#707278","b":"#6d4147","c":"#faf9f1","d":"#6a6d75","e":"#f47970","f":"#f15956","g":"#ebece9","k":"#1b1f2e","h":"#6f5938","i":"#f9faf8","j":"#ffffff","l":"#f8fafc","m":"#e5eaed","n":"#6e532a","o":"#705c2a","p":"#71623f","q":"#f8b849","r":"#f6a924","s":"#f59e0b","t":"#f9faf9","u":"#ccd0dc","v":"#fbbf24","w":"#fcd05a","x":"#fbc63a","y":"#e2e8f0","z":"#654628","A":"#de861f","B":"#e0aa29","C":"#dddee5","D":"#caceda","E":"#bc8f2f","F":"#bab8c7","G":"#dfb61c","H":"#c8ccd9","I":"#abacbe","J":"#584a2e","K":"#bc9825","L":"#94a3b8","M":"#dbdbe3","N":"#9b9eb4","O":"#8591a9","P":"#8692aa","Q":"#525565","R":"#747b97"}],
+    pelle_fly_0: [["..........................aaa...........",".........................abbbaaa........","........................abcccbbbk.......","........................dceffgcck.......",".......................abfeffehik.......",".......................dcfjhhelik.......","......................abfhjhhjmlk.......",".....................abcfhjhhnkmk.......","...........ooooo.....dcfhhjhjhbk........","..........pqqqqqp...abfhhhjhjhck......a.",".........orsssssroookchhhhjhjhiko..aaabk",".....ttttquvkwwwuqqqbhhhhhjhjhhqqoabbbck",".xyyzAAAABCkkwwwwuuuchhhhDDDDDhuuqbcccik","xBEEFGGGGECwwwwwwwwwwwwwHHHHHHwwwuchhhik","IJCCBCEEKEELLLLLwwwwwwHHHHHHHHHwwwlllhik",".kkGKKEEMKKNNNNNOOwwwHHHHHHHHHHwwLmmmllk","...PMMKKkMMkkkkkQQLLLHHHwwwwwwLLLNkkkmmk","....kkMMEkk.....kkRRRSSSSSSSSSRRNk...kk.","......kkk.........kkkNNNNNNNNNkkk.......",".....................kkkkkkkkk..........","........................................","........................................"], {"a":"#6a6d75","b":"#ebece9","c":"#e5eaed","k":"#1b1f2e","d":"#686c77","e":"#9daabb","f":"#e4e9ee","g":"#a1adbc","h":"#e2e8f0","i":"#ccd0dc","j":"#94a3b8","l":"#caceda","m":"#abacbe","n":"#8793ab","o":"#707278","p":"#6d4147","q":"#faf9f1","r":"#f47970","s":"#f15956","t":"#6f5938","u":"#f9faf8","v":"#ffffff","w":"#f8fafc","x":"#6e532a","y":"#705c2a","z":"#71623f","A":"#f8b849","B":"#f6a924","C":"#f59e0b","D":"#c8ccd9","E":"#fbbf24","F":"#fcd05a","G":"#fbc63a","H":"#dbdbe3","I":"#654628","J":"#de861f","K":"#e0aa29","L":"#dddee5","M":"#bc8f2f","N":"#bab8c7","O":"#dfb61c","P":"#584a2e","Q":"#bc9825","R":"#9b9eb4","S":"#b6bdcd"}],
+    pelle_1: [[".................aaaaa..........","...............bbcccccbb........","..............deefffffeed.......",".............dghhiiiiihhgk...jj.","........lllllkmnoknnnnnnpk..jqqk","..lrrrrrssssssttkkuuunnnvwkjqxxk",".yszzzzzAAAAAABtuuuuuCnnDkkqxEFk","yGGGGGGGttttttHtuuuuuCvvk.IxJEFk","KLHHtttttBBBBBMNunnnnvDDk.OPQEFk",".RSMNBBBBBBBBNkMunnnnDkk..IxQTFk","..kkSUVBWWWWBMXkmnnnYk...jqEQZTk","....0MNU111WNkBkm2nnYk...IxEQ3Tk",".....0MMNNNUS4kk5nnnYk...OPEZ67k","......kkMMMMkk.85nnnYk...OPQTk9k","........kkkkkk!5nnnnYk...IxZTqk.","...........#$%%kmnnnYk...IxZ7xk.","...........!%%%kmnnnYka.jqEZ97k.","............kkkkmnnn&ccakxEQk9k.",".............ac*nnnn&mmccPE7+k..","............ac--ooooouummEE9+k..","...........ac-==o????=uuun@kk...","...........^m=o=o????onnnnCk....","..........acnooo?????onnnnCck...","..........^mnnoo?????nnnnnCmk...","..........^mnnno????_&&nnCC@k...","..........~vCn&&_____&&&&CCvk...","..........<DC__&_____&&___nDk...","...........~v__&_&&&&&&__&vk....","...........<D>_&_&&&&____>Dk....","............<D>__&&&&__>>Dk.....",".............<DC&>>>>__DDk......","..............|;nDDDDCCkk.......","..............|;:kkkk;;k........","............À.À::k..À::k.À......","...........À:ÀkÁÁk..ÂÁÁkÀ:k.....","...........ÃÄ::ÅÅÆkkÄÅÅ::Æk.....","............kkkkkk..kkkkkk......"], {"0":"#584a2e","1":"#c16b10","2":"#475569","3":"#8692aa","4":"#c46c0e","5":"#5d6876","6":"#747b97","7":"#caceda","8":"#343b49","9":"#abacbe","a":"#707278","b":"#704d53","c":"#faf9f1","d":"#6d4147","e":"#fa9990","f":"#f9817d","g":"#f47970","h":"#f15956","i":"#ef4444","k":"#1b1f2e","j":"#6a6d75","l":"#6f5938","m":"#f9faf8","n":"#f8fafc","o":"#ffffff","p":"#c13633","q":"#ebece9","r":"#71623f","s":"#f8b849","t":"#f59e0b","u":"#f9faf9","v":"#dddee5","w":"#d74045","x":"#e5eaed","y":"#6e532a","z":"#fcd05a","A":"#fbc63a","B":"#fbbf24","C":"#dbdbe3","D":"#bab8c7","E":"#e2e8f0","F":"#8793ab","G":"#f6a924","H":"#db8d13","I":"#686c77","J":"#9daabb","K":"#654628","L":"#de861f","M":"#bc8f2f","N":"#e0aa29","O":"#676c77","P":"#e4e9ee","Q":"#94a3b8","R":"#4f3726","S":"#a55d1a","T":"#c8ccd9","U":"#c26c0f","V":"#d97706","W":"#dea929","X":"#e2ac29","Y":"#b8bfcf","Z":"#8591a9","!":"#706125","#":"#716e51","$":"#fef08a","%":"#facc15","&":"#cbd5e1","*":"#fffcf3","+":"#ccd0dc","-":"#fffefa","=":"#fffefc","?":"#e1e0e6","@":"#dfe0e7","^":"#6f727b","_":"#b4bccc","~":"#656874","<":"#575968",">":"#b6bdcd","|":"#643a28",";":"#dc671d",":":"#f97316","À":"#6f3f25","Á":"#de681d","Â":"#653b28","Ã":"#70452e","Ä":"#fa832d","Å":"#bb5a26","Æ":"#e0691c"}],
+    pelle_0: [[".................aaaaa..........","...............bbcccccbb........","..............deefffffeed.......",".............dghhiiiiihhgk......","........jjjjjklmnkmmmmmmok......","..jpppppqqqqqqrrkksssmmmtuk.....",".vqwwwwwxxxxxxyrssssszmmAk......","vBBBBBBBrrrrrrCrssssszttk.......","DECCrrrrryyyyyFGsmmmmtAAk.......",".HIFGyyyyyyyyGkFsmmmmAkk........","..kkIJKyLLLLyFMklmmmNk..........","....OFGJPPPLGkyklQmmNk..........",".....OFFGGGJIRkkSmmmNk..........","......kkFFFFkk.TSmmmNk..........","........kkkkkkUSmmmmNk..........","...........VWXXklmmmNk..........","...........UXXXklmmmNka.........","............kkkklmmmYccZa.......",".............ac0mmmmY112cZZZ....","............ac33nnnnn4411222k...","...........ac355n66664444711k...","...........8l5n5n666699!9#9$k...","..........acmnnn66666999!9!$k...","..........8lmmnn66666999!9!92k..","..........8lmmmn6666%9999!9!1k..","..........&tzmYY%%%%%9999!*+$k..","..........-Az%%Y%%%%%Y9***=?@k..","...........&t%%Y%YYYYYY***+k?k..","...........-A^%Y%YYYY%%**^?$k...","............-A^%%YYYY%%^@?kk....",".............-AzY^^^^%%AAk......",".............._~mAAAAzzkk.......",".............._~<kkkk~~k........","............>.><<k..><<k.>......","...........><>k||k..;||k><k.....","...........:À<<ÁÁÂkkÀÁÁ<<Âk.....","............kkkkkk..kkkkkk......"], {"0":"#fffcf3","1":"#e5eaed","2":"#ebece9","3":"#fffefa","4":"#e4e9ee","5":"#fffefc","6":"#e1e0e6","7":"#a1adbc","8":"#6f727b","9":"#e2e8f0","a":"#707278","b":"#704d53","c":"#faf9f1","d":"#6d4147","e":"#fa9990","f":"#f9817d","g":"#f47970","h":"#f15956","i":"#ef4444","k":"#1b1f2e","j":"#6f5938","l":"#f9faf8","m":"#f8fafc","n":"#ffffff","o":"#c13633","p":"#71623f","q":"#f8b849","r":"#f59e0b","s":"#f9faf9","t":"#dddee5","u":"#d74045","v":"#6e532a","w":"#fcd05a","x":"#fbc63a","y":"#fbbf24","z":"#dbdbe3","A":"#bab8c7","B":"#f6a924","C":"#db8d13","D":"#654628","E":"#de861f","F":"#bc8f2f","G":"#e0aa29","H":"#4f3726","I":"#a55d1a","J":"#c26c0f","K":"#d97706","L":"#dea929","M":"#e2ac29","N":"#b8bfcf","O":"#584a2e","P":"#c16b10","Q":"#475569","R":"#c46c0e","S":"#5d6876","T":"#343b49","U":"#706125","V":"#716e51","W":"#fef08a","X":"#facc15","Y":"#cbd5e1","Z":"#6a6d75","!":"#94a3b8","#":"#9daabb","$":"#ccd0dc","%":"#b4bccc","&":"#656874","*":"#c8ccd9","+":"#8692aa","-":"#575968","=":"#8591a9","?":"#abacbe","@":"#caceda","^":"#b6bdcd","_":"#643a28","~":"#dc671d","<":"#f97316",">":"#6f3f25","|":"#de681d",";":"#653b28",":":"#70452e","À":"#fa832d","Á":"#bb5a26","Â":"#e0691c"}],
+    plane: [["..............................................aaaaaaa...",".............................................abbbbbbbk..","............................................abcdddddek..","............afffffffffffffffffffffffffffffakbcgggggghk..","...........abiiiiiiiiiiiiiiiiiiiiiiiiiiiiibkcgggjjjjlk..","..........mbnnnnnnnnnnnnnnnnnnnnnnnnnnnnooobgppppppplk..",".........mccjjggggggggggggggggggggggggggqqqcjjjjjjjjrbk.","........skkggggggggggggggggggggggggggjjjjjjgjjjjjjjjrck.","......ttuuuvhhhrrrrrrrrrrrrrrrrrrrrrhrrrrrjjjjjjjjwjrxk.","...yzzAABBCDEFDDDGGGGGGGGGGGGGGGHGGGGGGGGIjjjjjjwwwwJxk.","..yKLLMMNOvDDIPDDpQQQQQppQQQQQppHpppppppIppppRRwwSSSSTUk",".akVBBWWWXDDDIDDDpYZ0YYppYYYYYppHpppppppIpppSRRRRR1RR1Uk","abbIWXXXWXDDPDIDDpY00YYppYYYYYppHppppRR2RRRRSSSSTp3443Uk","mccIWWWWWXDDDDDIDpppppppppppppppH5RppR2RRRRRSTTT44k66kk.","788IWX9XWXWwjjj2wwwwwwwwwwwwwwww!wwwj2wwwwwwj88866#kk...","$%%IWW55595JrrrJ2JJJJJJJJJJJJJJJ!JJJr&rrrr***+66kkk.....",".kk&-==9595?@@??2???????????????!@@?2^____666kkk........","..~<>>>--95pppRRpIppppppppppppppH112Rk6666kkk...........","...kkkk>>--|HH!H|||||||||||||||||;;H!ukkkk..............",".......kk666ppR166666666666666666kk=9Vk.................",".........kkk:XX<kkkkkkkkkkkkkkkkk.ÀÁXEk.................","...........Â99Ik...................ÃXXKk................","...........Â99&k...................Ä=XVk................","..........ÅÆ99<k...................ÀÁXEk................",".....aasssk:92kkssssssssssssssssssskkXXKsssszz..........","...afbbuuuupRRuuuuuuuuuuuuuuuuuuuuuuuppÇuuuuLLÈÉ........","..mbiccÊÊÊÊTSSÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊÊBÊÊÊÊÊÊSTTÊÊÊÊÊÊTËÌÉ......",".mcccjjHHHHHHHHHHHHHHHHHHHHHHHWHHHHHH!HHHHHHHHHHHËk.....","..78jjjjHHH!HHHHHHHHHHHHHHHHHHWHHHHHH!!HHHHHH|ËkHk......","..$%88jjHHH!HHHHHHHHHHHHHHHHHHWHHHHHHH!HHHHHH;kHk.......","...$%%88-------------------------------------kHk........","....kk;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Ëk.........","......kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk..........","........................................................"], {"0":"#1e293b","1":"#dddee5","2":"#5c6882","3":"#abacbe","4":"#caceda","5":"#8591a9","6":"#bab8c7","7":"#622b37","8":"#d53f45","9":"#434d65","a":"#6d4147","b":"#f47970","k":"#1b1f2e","c":"#f15956","d":"#fcafab","e":"#c13633","f":"#715b61","g":"#f05350","h":"#bf2e2c","i":"#fdbdb4","j":"#ef4444","l":"#a81c22","m":"#6c353d","n":"#f9817d","o":"#fde358","p":"#f8fafc","q":"#fde253","r":"#b91c1c","s":"#707278","t":"#555b66","u":"#faf9f1","v":"#f9faf9","w":"#d33f45","x":"#d74045","y":"#494e5a","z":"#646871","A":"#b4bcc2","B":"#a1adbc","C":"#fffefa","D":"#7dd3fc","E":"#717f91","F":"#88d6f9","G":"#ffffff","H":"#cbd5e1","I":"#64748b","J":"#a51c22","K":"#939ba2","L":"#dbdfde","M":"#d1d9e0","N":"#cfd8e0","O":"#566372","P":"#ecfeff","Q":"#bae6fd","R":"#dbdbe3","S":"#c8ccd9","T":"#e2e8f0","U":"#ccd0dc","V":"#778494","W":"#94a3b8","X":"#475569","Y":"#38bdf8","Z":"#f2c9a0","!":"#b4bccc","#":"#dfe0e7","$":"#552937","%":"#b43946","&":"#5c6983","*":"#a61c22","+":"#8e1d2a","-":"#8692aa","=":"#434e65","?":"#203681","@":"#1e3a8a","^":"#223277","_":"#203682","~":"#30364a","<":"#535b78",">":"#747b97","|":"#b6bdcd",";":"#9b9eb4",":":"#5d6876","À":"#282d41","Á":"#3e4560","Â":"#2a3043","Ã":"#2c3444","Ä":"#2a3143","Å":"#414651","Æ":"#7e858a","Ç":"#f9faf8","È":"#676b78","É":"#575c6b","Ê":"#e5eaed","Ë":"#b8bfcf","Ì":"#5e6472"}],
+    bealin_boat: [[".abb.....ccc.............................................dbb..","aeffggggghhhbggggggggggggggggggggggggggggggggggggggggggggiffk.","jlmmnnnnnooofnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnmmmk.","jlppqqqqqrrslqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpptuk",".vwxxxxxyxxpzsyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyxxxxABk",".CAxDDDDDDDDpeDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDEkxk","..vwFFFFFFFFpepFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFGBk.","..CAxHxxxxxxxpexxxxxxxxxxxIxxxxxxxxxxxIxxxxxxxxxxxIxxxxxxwHBk.","...vwJJJKKKKKpepKKKKKKKKKKIKKKKKKKKKKKIKKKKKKKKKKKIKKKKJLMwk..","...CAwHHHHHHHHNexxxHHHHHHHOHHHHHHHHHHHOHHHPPHPHPPPOPPHHHAkAk..","....CAQQOOOOOONRNOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOQkxk...",".....CAAwHHHHHORNNNHHHHHHHOHHHHHHHHHHHOHHHHHHHHHHHOHHHwABk....","......kkSTTTTTTRNNNTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTAkk.....","........CAAAAAAUtttAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAk.......",".........kkkkkkVWWWkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk........","...............kkkk..........................................."], {"a":"#5d4839","b":"#594a42","c":"#494e5a","d":"#635449","e":"#c98a4b","f":"#bd9162","g":"#72706c","h":"#939ba2","i":"#d9aa75","k":"#1b1f2e","j":"#5f4d3f","l":"#cf975c","m":"#ab7743","n":"#fff3d2","o":"#778494","p":"#a0662f","q":"#ebd7ae","r":"#ead6ac","s":"#a8723d","t":"#915d33","u":"#d1bd9d","v":"#4b2b2e","w":"#983f2e","x":"#a8442a","y":"#af5339","z":"#ce9357","A":"#823934","B":"#99402e","C":"#422930","D":"#efe0c0","E":"#d7c9b2","F":"#d9c59c","G":"#c1ae91","H":"#963f2e","I":"#7a2f1c","J":"#b1523c","K":"#c75a3a","L":"#b3523c","M":"#98483f","N":"#8f5c33","O":"#6f2d22","P":"#d3c5af","Q":"#702d22","R":"#b37b4b","S":"#4e2326","T":"#57231d","U":"#b47c4b","V":"#996a4b","W":"#7d5137"}],
+    sp_jetski: [["..........kk..........",".........kaak.........","........kaabak........",".......kaabbaak.......","......kaabbaaaak......","......kabbbaaaaak.....",".....kaabbaaaaaak.....",".....kabbbaaaaaaak....","....kaababaaaaaaak....","....kabbdeeedddaaak...","....kabddddddddaaak...","...kaabdddddddddaaak..","...kabbdddddddddaaak..","...kafssaaaaaaassfgk..","...kafssfffffffssfgk..","...kabbCaaHHHaaCgggk..","...kabbCaHhhhHaCgggk..","...kabbCHhllhhHCgggk..","..kaabbCHhhhhhHCgggak.","..kaabbcHhhhhhHcgggak.","..kaabcccHhhhHcccggak.","..kaabccccHHHccccggak.","..kaabcccccccccccggak.","..kaabbCCCCCCCCCgggak.","..kaabbbicccccjagggak.","..kaabbbijjjjjjagggak.","..kaaebbijjjjjjagegak.","..kaaebbijjjjjjagegak.","...kaebbijjjjjjggekak.","...kaaebijjjjjjggeak..","...kaaebjjjjjjjgegak..","...kaaeaaaaaaaagegak..","...kaaeaaaaaaaagekak..","....kaaaggggggggaak...",".....kkaaaaaaaaakk....",".......kkkkkkkkk......"], {"k":"#1b1f2e","a":"#e11d48","b":"#fb7185","d":"#7dd3fc","e":"#f8fafc","f":"#334155","s":"#f2c9a0","g":"#9f1239","C":"#c2410c","H":"#15803d","h":"#22c55e","l":"#86efac","c":"#f59e0b","i":"#475569","j":"#1f2937"}],
     bait_abyss: [[".....kkkkk......","....kaaaaak.....","...kaaaaaaak....","..kabacccaaak...",".kaaacccccaaak..",".kaaccbbbccaak..",".kaaccbdbccaak..",".kaaccbbbccaak..",".kaaacccccaaak..","..kaaacccaaak...","...kaaaaaaak....","....kaaeaak.....",".....kkekkfk....","......kekkfk....","......kfffk.....",".......kkk......"], {"k":"#1b1f2e","a":"#0e7490","b":"#ecfeff","c":"#22d3ee","d":"#0b0f19","e":"#94a3b8","f":"#cbd5e1"}],
     bait_glitzer: [["......kkk...k...","....kkaaakkkbk..","...kacccaaabdbk.","...kcccccaakbk..","..kcceccdcaak...","..kcceccccaak...","..kcceccccaak...","..kccecccfaak...","..kccccdccaak...","...kcccccaak....","...kacccaaak....","....kkaaakk.....","......kakkgk....","......kakkgk....","......kgggk.....",".......kkk......"], {"k":"#1b1f2e","a":"#94a3b8","b":"#fbbf24","c":"#e2e8f0","d":"#fde68a","e":"#ffffff","f":"#f9a8d4","g":"#cbd5e1"}],
     bait_glutkoeder: [[".....kkkkk.k....","...kkaaaaakbk...","..kcaaaaaaakk...","..kadacccaaack..",".kaaacccccaaak..",".kaaccdddccaak..",".kaaccdedccaak..",".kaaccdddccaak..",".kaaacccccaaak..","..kaaacccaaak...","...kaaaaaaak....","....kaafaak.....",".....kkfkkgk....","......kfkkgk....","......kgggk.....",".......kkk......"], {"k":"#1b1f2e","a":"#dc2626","b":"#fbbf24","c":"#f97316","d":"#fef9c3","e":"#b91c1c","f":"#94a3b8","g":"#cbd5e1"}],
@@ -2045,19 +2084,22 @@
     return c.col || ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#a855f7'][Math.floor(t * 4) % 6];
   }
   const lookFrames = new Map();
-  function playerFrames(look = myLook()) {
+  // the colours of a look (hat h H l, jacket c C y, skin s S r, hair B b) on top of PLAYER_PAL, plus a cache key
+  function lookPal(look = myLook()) {
     const tier = Math.max(0, Math.min(HATS.length - 1, look.tier | 0));
     const hat = COSM[look.hat] && COSM[look.hat].slot === 'hat' ? COSM[look.hat] : null;
     const jacket = COSM[look.jacket] && COSM[look.jacket].slot === 'jacket' ? COSM[look.jacket] : null;
     const skin = SKINS[look.skin] ? look.skin : 'hell', hair = HAIRS[look.hair] ? look.hair : 'braun';
     const key = `${hat ? hat.id : tier}|${jacket ? jacket.id : ''}|${skin}|${hair}`;
-    if (!lookFrames.has(key)) {
-      const [h, H, l] = hat ? hat.col : HATS[tier], pal = { ...PLAYER_PAL, h, H, l };
-      if (jacket) { const [c, C, y] = jacket.col; Object.assign(pal, { c, C, y }); }
-      const [s, S, r] = SKINS[skin], [B, b] = HAIRS[hair];
-      Object.assign(pal, { s, S, r, B, b });
-      lookFrames.set(key, [false, true].map(flip => PLAYER_LEGS.map(g => bake(PLAYER_BODY.concat(g), pal, flip))));
-    }
+    const [h, H, l] = hat ? hat.col : HATS[tier], pal = { ...PLAYER_PAL, h, H, l };
+    if (jacket) { const [c, C, y] = jacket.col; Object.assign(pal, { c, C, y }); }
+    const [s, S, r] = SKINS[skin], [B, b] = HAIRS[hair];
+    Object.assign(pal, { s, S, r, B, b });
+    return { key, pal };
+  }
+  function playerFrames(look = myLook()) {
+    const { key, pal } = lookPal(look);
+    if (!lookFrames.has(key)) lookFrames.set(key, [false, true].map(flip => PLAYER_LEGS.map(g => bake(PLAYER_BODY.concat(g), pal, flip))));
     return lookFrames.get(key);
   }
 
@@ -2073,6 +2115,15 @@
   // lure stuck in it, a red checked shirt and a patched olive vest. He rows his little boat out
   // on the water and is always far too excited about the fishing weather. Click him to chat.
   const BEALIN_BODY = bake(...ART.bealin);
+  // baked props that get darker at night: a cached silhouette in the night colour drawn over them
+  const nightTint = new Map();
+  function drawLit(img, x, y, dark, col = '#283246') {
+    ctx.drawImage(img, snap(x), snap(y), img.width / 2, img.height / 2);
+    if (dark <= 0) return;
+    if (!nightTint.has(img)) { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d'); g.drawImage(img, 0, 0); g.globalCompositeOperation = 'source-atop'; g.fillStyle = col; g.fillRect(0, 0, c.width, c.height); nightTint.set(img, c); }
+    ctx.globalAlpha = dark * .6; ctx.drawImage(nightTint.get(img), snap(x), snap(y), img.width / 2, img.height / 2); ctx.globalAlpha = 1;
+  }
+  const BEALIN_BOAT = bake(...ART.bealin_boat), PLANE = bake(...ART.plane);
   const BEALIN = { x: 322, w: 30, h: 22 };
   // He always says the same thing. Every second chat he lets slip a vague hint about what he
   // secretly wants; doing it (whenever, wherever) pays out and he thinks of something new.
@@ -2135,7 +2186,6 @@
   function drawBealin(dark) {
     if (onSea() || inLava() || onInsel()) return; // out at sea we are on his boat, and he never goes underground or on holiday
     const k = '#1b1f2e', x = BEALIN.x, y = SURFACE - 1 + bealinBob();
-    const hull = mix([150, 62, 40], [70, 35, 30], dark), hullD = mix([110, 42, 28], [50, 25, 22], dark), rim = mix([222, 200, 160], [100, 92, 80], dark);
     // the old man sits in the middle of the boat
     ctx.drawImage(BEALIN_BODY, snap(x + 10), snap(y - 13), 8, 9);
     // while he talks he waves with his free hand
@@ -2148,13 +2198,8 @@
     ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = .5;
     ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(fx, fy); ctx.stroke();
     px(fx - .75, fy - 1, 1.5, 1, '#ef4444'); px(fx - .75, fy, 1.5, .5, '#f8fafc');
-    // rowboat
-    px(x - .5, y - 4.5, 29, 1.5, k); px(x, y - 4, 28, 1, rim);
-    px(x + .5, y - 3, 27, 3.5, k); px(x + 1, y - 3, 26, 3, hull); px(x + 1, y - 1, 26, 1, hullD);
-    px(x + 2.5, y + .5, 23, 1, k); px(x + 3, y + .5, 22, .5, hullD);
-    px(x - 1, y - 6, 2, 3, k); px(x - .5, y - 5.5, 1, 2, rim);
-    // oar resting on the side
-    px(x + 4, y - 6, 1, 4, '#a0662f'); px(x + 3.5, y - 2, 2, 3, '#a0662f');
+    // rowboat (ART.bealin_boat)
+    drawLit(BEALIN_BOAT, x - 1.5, y - 6.5, dark);
     // lantern at the bow lights up at night
     px(x + 26, y - 7.5, 2, 2.5, k); px(x + 26.5, y - 7, 1, 1.5, dark > .3 ? '#fde68a' : '#94a3b8');
     if (dark > .3) { const a = dark - .3; ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = a * .1; disc(x + 27, y - 6.5, 9, '#f59e0b'); ctx.globalAlpha = a * .16; disc(x + 27, y - 6.5, 5, '#fde68a'); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; }
@@ -2367,6 +2412,10 @@
   // boat skin „David Hasselhoff“: a giant pixel man swimming on his belly, you stand on his back
   const hoffImg = new Image(); hoffImg.src = 'img/boot-hoff.png';
   let hoffNight = null, hoffWet = null;
+  // with the Hoff as the boat, the wheel stands on his lower back and the dex crate sits on his swim shorts
+  const hoffOn = () => onSea() && save.cosm.boat === 'boot-hoff' && hoffImg.complete && hoffImg.naturalWidth > 0;
+  const wheelX = () => (hoffOn() ? 57 : 5), wheelY = () => DOCK_Y - (hoffOn() ? 24 : 22);
+  const dexX = () => (hoffOn() ? 33 : 28.5), dexY = () => DOCK_Y - (hoffOn() ? 14 : 8.5);
   function drawHoffBoat(dark) {
     if (!hoffImg.complete || !hoffImg.naturalWidth) return false;
     const w = hoffImg.naturalWidth / 2, h = hoffImg.naturalHeight / 2;
@@ -2376,13 +2425,16 @@
       x.globalCompositeOperation = 'source-atop'; x.fillStyle = 'rgba(10, 16, 40, .65)'; x.fillRect(0, 0, hoffNight.width, hoffNight.height);
       hoffWet = document.createElement('canvas'); hoffWet.width = hoffNight.width; hoffWet.height = hoffNight.height;
       const y = hoffWet.getContext('2d'); y.drawImage(hoffImg, 0, 0);
-      y.globalCompositeOperation = 'source-atop'; y.fillStyle = '#1e3a5f'; y.fillRect(0, 0, hoffWet.width, hoffWet.height);
+      y.globalCompositeOperation = 'source-atop'; y.fillStyle = '#1f6f8b'; y.fillRect(0, 0, hoffWet.width, hoffWet.height);
     }
-    ctx.drawImage(hoffImg, -2, 62, w, h);
-    if (dark > .02) { ctx.globalAlpha = Math.min(1, dark); ctx.drawImage(hoffNight, -2, 62, w, h); ctx.globalAlpha = 1; }
-    // the part under the waterline looks wet, with foam along the body
-    ctx.save(); ctx.beginPath(); ctx.rect(-2, SURFACE + .5, w, h); ctx.clip();
-    ctx.globalAlpha = .45; ctx.drawImage(hoffWet, -2, 62, w, h); ctx.restore(); ctx.globalAlpha = .7;
+    const body = (a) => {
+      ctx.globalAlpha = a; ctx.drawImage(hoffImg, -2, 62, w, h);
+      if (dark > .02) { ctx.globalAlpha = a * Math.min(1, dark); ctx.drawImage(hoffNight, -2, 62, w, h); }
+    };
+    // above the waterline he is solid; below it the water shows through and tints him, with foam along the body
+    ctx.save(); ctx.beginPath(); ctx.rect(-2, 0, w + 2, SURFACE + .5); ctx.clip(); body(1); ctx.restore();
+    ctx.save(); ctx.beginPath(); ctx.rect(-2, SURFACE + .5, w + 2, h); ctx.clip();
+    body(.6); ctx.globalAlpha = .35; ctx.drawImage(hoffWet, -2, 62, w, h); ctx.restore(); ctx.globalAlpha = .7;
     for (let i = 0; i < 18; i++) px(2 + i * 8 + Math.sin(t * 3 + i) * 1.5, SURFACE - .5 + (i % 2) * .5, 2.5, .5, '#f8fafc');
     ctx.globalAlpha = 1;
     // his feet kick up a little spray now and then
@@ -2434,7 +2486,7 @@
     }
   }
   function drawWheel(dark) { // the steering wheel on deck: back to the dock
-    drawArt('wheel_' + Math.round((Math.sin(t * .8) + 1) * 2), 5.5, DOCK_Y - 22, dark); // five baked turns of the wheel
+    drawArt('wheel_' + Math.round((Math.sin(t * .8) + 1) * 2), wheelX() + .5, wheelY(), dark); // five baked turns of the wheel
   }
   function drawRift(dark) { // a rock in the water with a glowing crack: the way down into the Glutgrotte
     const x0 = 196, by = SURFACE + 1, open = lavaOpen();
@@ -3008,7 +3060,7 @@
     for (let i = 0; i < 3; i++) { const c = sym[(Math.floor(t * .7) + i * 2) % 4]; px(x0 + 2 + i * 2.3, y - 12, 1.5, 1.5, c); px(x0 + 1.5 + i * 2.3, y - 11.5, .5, .5, c); }
   }
   function drawDexBook(dark) {
-    drawArt('dex', 28.5, DOCK_Y - 8.5, dark);
+    drawArt('dex', dexX(), dexY(), dark);
   }
   // the "Steg-Zeitung": a bundle of newspapers on the dock that holds the patch notes
   function drawNewspaper(dark) {
@@ -3024,24 +3076,14 @@
   }
   // ------------------------------------------------------------------ Sonneninsel: Coach Pelle, Sportstationen, Stempel, Rundflug
   // Coach Pelle: a pelican with a whistle and a sweatband. P is a rect painter (px on the main canvas, sq on the sport canvas).
-  function drawPelle(P, x, y, pose = 0, flip = false, fly = 0) {
-    const R = (dx, dy, w, h, c) => P(flip ? x - dx - w : x + dx, y + dy, w, h, c), k = '#1b1f2e';
-    if (fly) { // flying: wings out, legs tucked
-      const up = Math.sin(t * 14) > 0;
-      R(-5, -6, 10, 5, k); R(-4.5, -5.5, 9, 4, '#f8fafc'); R(-4.5, -2.5, 9, 1, '#cbd5e1');
-      R(-3, up ? -11 : -4, 6, up ? 5 : 4, '#e2e8f0'); R(-3, up ? -11 : -1, 6, 1, '#94a3b8');
-      R(-9, -6, 5, 3, k); R(-8.5, -5.5, 4, 2, '#f8fafc'); R(-8, -6, 3, .8, '#ef4444');
-      R(-15, -5, 7, 1.5, '#f59e0b'); R(-14, -3.5, 5, 1, '#fbbf24'); R(-7, -5, .8, .8, k);
-      return;
-    }
-    R(-2, -2.5, 1, 2.5, '#f97316'); R(1, -2.5, 1, 2.5, '#f97316'); R(-3, 0, 3, .5, '#f97316'); R(.5, 0, 3, .5, '#f97316');
-    R(-4.5, -10, 9, 8, k); R(-4, -9.5, 8, 7, '#f8fafc'); R(-4, -4, 8, 1.5, '#cbd5e1');
-    if (pose === 1) { R(3, -15, 2.5, 6, '#e2e8f0'); R(3, -15, 2.5, 1, '#94a3b8'); } else { R(1, -8.5, 3.5, 5, '#e2e8f0'); R(3.5, -8, 1, 4, '#94a3b8'); }
-    R(-1.5, -14, 3, 4.5, '#f8fafc');
-    R(-2.5, -17.5, 5.5, 4, k); R(-2, -17, 4.5, 3, '#f8fafc'); R(-2, -16.5, 4.5, 1, '#ef4444');
-    R(-1, -15.5, 1, 1, k);
-    R(-9, -15, 7, 1.5, '#f59e0b'); R(-8, -13.5, 5.5, 1.5, '#fbbf24'); R(-8, -12, 3.5, .8, '#d97706');
-    R(-3, -11, 1.5, 1.5, '#facc15'); R(-2, -12.5, .6, 1.5, '#475569'); // whistle on a cord
+  // Coach Pelle as baked sprites (ART.pelle_*): P is px (main canvas, darkens at night) or sq (sport canvas)
+  const pelleArt = new Map();
+  const pelleImg = (name, flip) => { const k = name + flip; if (!pelleArt.has(k)) pelleArt.set(k, bake(...ART[name], flip)); return pelleArt.get(k); };
+  function drawPelle(P, x, y, pose = 0, flip = false, fly = 0, dark = 0) {
+    const img = fly ? pelleImg('pelle_fly_' + (Math.sin(t * 14) > 0 ? 0 : 1), flip) : pelleImg('pelle_' + (pose === 1 ? 1 : 0), flip);
+    const dx = fly ? (flip ? x - 5 : x - 15) : (flip ? x - 6.5 : x - 9.5), dy = fly ? y - 11 : y - 18;
+    if (P === sq) sx.drawImage(img, snap(dx), snap(dy), img.width / 2, img.height / 2);
+    else drawLit(img, dx, dy, dark);
   }
   // Kapitän Kraul: the champion, a walrus in a blue tracksuit
   function drawKraul(P, x, y, flip = false) {
@@ -3064,27 +3106,14 @@
   }
   // the seaplane that flies between the Steg and the island
   function drawPlane(cx, wy, dark = 0) {
-    const y = wy + Math.sin(t * 1.8) * .6, k = '#1b1f2e', d = c => mix(c, [40, 50, 70], dark * .6);
-    px(cx - 12, y - 2.5, 24, 2.5, k); px(cx - 11.5, y - 2, 23, 1.5, d([203, 213, 225]));
-    px(cx - 6, y - 6, 1, 4, k); px(cx + 4, y - 6, 1, 4, k);
-    px(cx - 12, y - 10, 22, 5, k); px(cx - 11.5, y - 9.5, 21, 4, d([248, 250, 252])); px(cx - 11.5, y - 7.5, 21, 1, d([239, 68, 68]));
-    px(cx - 9.5, y - 9, 3, 1.5, '#7dd3fc');
-    px(cx + 7, y - 14, 4, 5, k); px(cx + 7.5, y - 13.5, 3, 4, d([239, 68, 68]));
-    px(cx - 7, y - 11.5, 13, 2, k); px(cx - 6.5, y - 11, 12, 1, d([239, 68, 68]));
+    const y = wy + Math.sin(t * 1.8) * .6;
+    drawLit(PLANE, cx - 14, y - 16, dark);
     const spin = Math.floor(t * 20) % 2;
-    px(cx - 13, y - (spin ? 11 : 9), .8, spin ? 6 : 2, '#94a3b8');
+    px(cx - 15, y - (spin ? 13.5 : 11), .8, spin ? 6 : 2, '#94a3b8'); if (spin) px(cx - 15, y - 13.5, .8, .8, '#ef4444');
   }
   // Strandbude: bamboo counter with a straw roof and a drink on the counter
-  function drawBeachHut(dark) {
-    const x0 = KIOSK.x, w = KIOSK.w, y = DOCK_Y, k = '#1b1f2e', d = c => mix(c, [40, 40, 60], dark * .55);
-    px(x0 - 1, y - 14, w + 2, 14, k); px(x0 - .5, y - 13.5, w + 1, 13.5, d([214, 163, 92]));
-    for (let i = 0; i < w; i += 3) px(x0 + i, y - 13.5, 1, 13.5, d([176, 125, 58]));
-    px(x0 - 1, y - 15, w + 2, 1.5, d([120, 80, 40]));
-    for (const sx of [x0, x0 + w - 1.5]) { px(sx - .5, y - 28, 2.5, 14, k); px(sx, y - 28, 1.5, 14, d([161, 98, 7])); }
-    for (let i = 0; i < 6; i++) { const yy = y - 32 + i * 1.5, ww = w + 8 - i * 0; px(x0 - 4, yy, ww, 1.5, i % 2 ? d([201, 154, 74]) : d([233, 199, 123])); }
-    for (let i = 0; i < w + 8; i += 2) px(x0 - 4 + i, y - 23 + (i % 4 ? .5 : 0), 1, 1.5, d([201, 154, 74]));
-    px(x0 + 5, y - 18, 2.5, 3, '#fb923c'); px(x0 + 5.5, y - 19.5, .5, 2, '#22c55e'); px(x0 + 15, y - 18, 2.5, 3, '#38bdf8');
-  }
+  const BEACHHUT = bake(...ART.beachhut);
+  function drawBeachHut(dark) { drawLit(BEACHHUT, KIOSK.x - 4, DOCK_Y - 32, dark); }
   function drawInselFx(dark) {
     drawRays('steg', (1 - dark * .85) * .62);
     for (let i = 0; i < 24; i++) {
@@ -3125,13 +3154,14 @@
   const SP_MIN = [0, 500, 1000, 1500];      // skill needed to play that level
   const SP_CAP = [700, 1600, 2500, 2500];   // a level can only lift your skill this far
   const SP_DM = [.6, 1, 1.4, 0];            // skill gain per level (the champion duel gives no skill)
+  const SP_MEDAL_LV = 6; // extra skill per medal step (bronze 6, silver 12, gold 18), before SP_DM
   const SP_MEDAL = ['–', '🥉', '🥈', '🥇'];
   const SPORT_CLASS = lv => lv >= 2500 ? tr('Legende') : lv >= 1500 ? tr('Champion-Anwärter') : lv >= 1000 ? tr('Profi') : lv >= 500 ? tr('Fortgeschritten') : tr('Anfänger');
   const classFloor = lv => lv >= 1000 ? 1000 : lv >= 500 ? 500 : 0;
   function sportRec(id) { const r = save.sport[id] = save.sport[id] && typeof save.sport[id] === 'object' ? save.sport[id] : {}; r.lv = Math.max(0, Math.min(2500, r.lv | 0)); r.best = Array.isArray(r.best) ? r.best : [0, 0]; r.runs = r.runs | 0; return r; }
   const hasStamp = id => save.stamps.includes(id);
   const sportOpen = s => inselOpen() && stampCount() >= s.st;
-  // Champion: from skill 1500 and with 20 stamps (bay 5)
+  // Champion: from skill 1500 and with 26 stamps (bay 5)
   const champOpen = s => sportRec(s.id).lv >= 1500 && stampCount() >= CHAMP_ST;
   function sportReady() { return SPORTS.some(s => sportOpen(s) && !sportRec(s.id).runs) || SPORTS.some(s => champOpen(s) && !save.trophies.includes(s.id)); }
   // sport canvas painter
@@ -3139,18 +3169,172 @@
   const sq = (x, y, w, h, c) => { sx.fillStyle = c; sx.fillRect(snap(x), snap(y), snap(w) || .5, snap(h) || .5); };
   const sdisc = (cx, cy, r, c) => { for (let yy = -r; yy <= r; yy += .5) { const w = Math.sqrt(Math.max(0, r * r - yy * yy)); sq(cx - w, cy + yy, w * 2, .5, c); } };
   const stext = (s, x, y, c = '#fff', size = 8, al = 'center') => { sx.font = `700 ${size}px Poppins, sans-serif`; sx.textAlign = al; sx.fillStyle = '#1b1f2e'; sx.fillText(s, x + .5, y + .5); sx.fillStyle = c; sx.fillText(s, x, y); };
+  // sport actors: your own angler from the dock (sme, feet at y) and baked ART.sp_* sprites in your colours (sart, top left)
+  const sme = (x, foot, frame = 0, flip = false) => { const img = playerFrames()[flip ? 1 : 0][frame]; sx.drawImage(img, snap(x - 5.5), snap(foot - img.height / 2), img.width / 2, img.height / 2); };
+  const spArt = new Map();
+  function sart(name, x, y, flip = false) {
+    const { key, pal } = lookPal(), k = name + '|' + key + '|' + flip;
+    if (!spArt.has(k)) { const [rows, map] = ART[name]; spArt.set(k, bake(rows, { ...map, ...Object.fromEntries(Object.keys(map).filter(c => c !== 'k' && c in pal).map(c => [c, pal[c]])) }, flip)); }
+    const img = spArt.get(k); sx.drawImage(img, snap(x), snap(y), img.width / 2, img.height / 2);
+  }
   const rnd = (a, b) => a + Math.random() * (b - a);
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  // lit props for the sports, painted once into small canvases (2 px per world unit, light from the top left like the ART sprites):
+  // tone ramps light → deep with ordered dither between the bands, an ink outline and a glint
+  const spCache = new Map(), BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+  function spPaint(key, w, h, fn) {
+    let c = spCache.get(key);
+    if (!c) { c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); fn((X, Y, col) => { x.fillStyle = col; x.fillRect(X, Y, 1, 1); }, w, h); spCache.set(key, c); }
+    return c;
+  }
+  // ellipse rx × ry (world units); pick(u, v) → ramp name for the surface at u, v (−1…1), so a ball can have panels or a band
+  function litEll(key, rx, ry, ramps, pick = () => 'a', glint = true) {
+    const A = Math.round(rx * 2), B = Math.round(ry * 2);
+    return spPaint(key, A * 2 + 3, B * 2 + 3, (set) => {
+      for (let y = -B - 1; y <= B + 1; y++) for (let x = -A - 1; x <= A + 1; x++) {
+        const u = x / A, v = y / B, d = Math.hypot(u, v), X = x + A + 1, Y = y + B + 1;
+        if (d > 1 + .7 / Math.min(A, B)) continue;
+        if (d > 1 - .5 / Math.min(A, B)) { set(X, Y, '#1b1f2e'); continue; }
+        const nz = Math.sqrt(Math.max(0, 1 - d * d)), l = -u * .5 - v * .62 + nz * .6, r = ramps[pick(u, v)] || ramps.a;
+        const k = clamp(Math.floor((1 - (l + .25) / 1.25) * (r.length - .01) + (BAYER[(Y & 3) * 4 + (X & 3)] / 16 - .5) * .9), 0, r.length - 1);
+        set(X, Y, r[k]);
+      }
+      if (glint) { set(Math.round(A * .55) + 1, Math.round(B * .5) + 1, '#ffffff'); if (A > 4) set(Math.round(A * .55) + 2, Math.round(B * .5) + 1, '#ffffff'); }
+    });
+  }
+  const sspr = (c, x, y) => sx.drawImage(c, snap(x - c.width / 4), snap(y - c.height / 4), c.width / 2, c.height / 2);
+  const BALLS = {
+    volley: () => litEll('volley', 3.4, 3.4, { a: ['#fff6c2', '#fde047', '#eab308', '#a16207'], b: ['#bfdbfe', '#3b82f6', '#1d4ed8', '#1e3a8a'], w: ['#ffffff', '#f1f5f9', '#cbd5e1', '#94a3b8'] },
+      (u, v) => { const k = Math.sin((u * 1.3 + v * .6) * 3.2); return k > .45 ? 'b' : k < -.55 ? 'w' : 'a'; }),
+    tt: () => litEll('tt', 2.2, 2.2, { a: ['#ffffff', '#fff7ed', '#fed7aa', '#f59e0b'] }),
+    bowl: () => litEll('bowl', 5.5, 5.5, { a: ['#93c5fd', '#3b82f6', '#1d4ed8', '#1e3a8a', '#172554'], s: ['#c4b5fd', '#8b5cf6', '#6d28d9', '#4c1d95', '#2e1065'] },
+      (u, v) => Math.sin(u * 4 + Math.cos(v * 3) * 2) > .55 ? 's' : 'a'),
+    pin: () => litEll('pin', 3, 3, { a: ['#ffffff', '#f8fafc', '#e2e8f0', '#94a3b8'], r: ['#fca5a5', '#ef4444', '#b91c1c', '#7f1d1d'] }, (u, v) => { const d = Math.hypot(u, v); return d > .5 && d < .72 ? 'r' : 'a'; }),
+    buoyR: () => litEll('buoyR', 4, 3.6, { a: ['#fca5a5', '#ef4444', '#b91c1c', '#7f1d1d'], w: ['#ffffff', '#f1f5f9', '#cbd5e1', '#94a3b8'] }, (u, v) => Math.abs(v + u * .2) < .22 ? 'w' : 'a'),
+    buoyY: () => litEll('buoyY', 4, 3.6, { a: ['#fef08a', '#facc15', '#ca8a04', '#854d0e'], w: ['#ffffff', '#f1f5f9', '#cbd5e1', '#94a3b8'] }, (u, v) => Math.abs(v + u * .2) < .22 ? 'w' : 'a'),
+    buoyG: () => litEll('buoyG', 4, 3.6, { a: ['#cbd5e1', '#94a3b8', '#64748b', '#334155'] }),
+    disc: () => litEll('disc', 3.6, 1.4, { a: ['#fed7aa', '#fb923c', '#ea580c', '#9a3412'] }),
+  };
+  const BAL_COL = { r: ['#fecaca', '#ef4444', '#b91c1c', '#7f1d1d'], b: ['#bfdbfe', '#3b82f6', '#1d4ed8', '#1e3a8a'], g: ['#bbf7d0', '#22c55e', '#15803d', '#14532d'], p: ['#fbcfe8', '#f472b6', '#db2777', '#831843'], y: ['#fef9c3', '#facc15', '#ca8a04', '#854d0e'] };
+  function sballoon(x, y, col) { // balloon with knot and a waving string, centre at x, y
+    for (let i = 0; i < 8; i++) sq(x - .25 + Math.sin(t * 3 + i * .7 + x) * .6 * (i / 8), y + 6.5 + i, .5, 1, '#e2e8f0');
+    sq(x - 1, y + 6, 2, 1, BAL_COL[col][2]); sspr(litEll('bal' + col, 5, 6, { a: BAL_COL[col] }), x, y);
+  }
+  // spectators: ART.sp_fan_* recoloured per seat; they jump and throw their arms up for g.cheer seconds
+  const FAN_PAL = { h: ['#7c4a24', '#1b1f2e', '#f5d76e', '#b45309', '#e5e7eb', '#c2410c'], c: ['#ef4444', '#3b82f6', '#22c55e', '#f59e0b', '#a855f7', '#ec4899', '#14b8a6', '#f8fafc'], s: ['#f2c9a0', '#d9a47a', '#a0662f', '#7c4a24', '#fde3c8'] };
+  const fanArt = new Map();
+  function sfan(x, foot, i, cheer) {
+    const up = cheer && Math.sin(t * 14 + i * 1.7) > -.2, k = i % 97 + '|' + (up ? 1 : 0);
+    if (!fanArt.has(k)) {
+      const [rows, map] = ART[up ? 'sp_fan_1' : 'sp_fan_0'], dk = (c, a = .72) => '#' + [1, 3, 5].map(o => Math.round(parseInt(c.substr(o, 2), 16) * a).toString(16).padStart(2, '0')).join('');
+      const h = FAN_PAL.h[i % 6], c = FAN_PAL.c[(i * 5 + 3) % 8], sk = FAN_PAL.s[(i * 3 + 1) % 5];
+      fanArt.set(k, bake(rows, { ...map, h, H: dk(h), c, C: dk(c), s: sk, S: dk(sk, .85) }, i % 2 === 1));
+    }
+    const img = fanArt.get(k), hop = cheer ? Math.abs(Math.sin(t * 9 + i * 1.3)) * 2 : Math.sin(t * 1.5 + i) > .96 ? .5 : 0;
+    sx.globalAlpha = .22; sq(x - 2.5, foot - .5, 5, 1, '#3b2a14'); sx.globalAlpha = 1;
+    sx.drawImage(img, snap(x - img.width / 4), snap(foot - img.height / 2 - hop + .5), img.width / 2, img.height / 2);
+  }
+  // a row of spectators from x0 to x1; cheers for a second after the watched score went up
+  function crowd(g, x0, x1, foot, score, n = 8, seed = 0) {
+    if (score > (g._cs ?? score)) g._cheer = 1.2; g._cs = score; g._cheer = Math.max(0, (g._cheer || 0) - 1 / 60);
+    for (let i = 0; i < n; i++) sfan(x0 + (x1 - x0) * (i + .5) / n + Math.sin(i * 7.3) * 2, foot + (i % 2) * 1.5, i + seed, g._cheer > 0);
+  }
+  // gulls and a far sail drifting over painted skies
+  function skyLife(horizon) {
+    for (let i = 0; i < 3; i++) {
+      const gx = ((i * 131 + t * (9 + i * 3)) % (W + 40)) - 20, gy = horizon * (.25 + i * .14) + Math.sin(t * .7 + i * 2) * 3, up = Math.sin(t * 7 + i * 2) > 0;
+      sq(gx - 3, gy - (up ? 1 : 0), 2, .5, '#334155'); sq(gx - 1, gy, 1, .5, '#334155'); sq(gx, gy - (up ? 1 : 0), 2, .5, '#334155');
+      if (up) { sq(gx - 4, gy - 1.5, 1, .5, '#334155'); sq(gx + 2, gy - 1.5, 1, .5, '#334155'); } else { sq(gx - 4, gy + .5, 1, .5, '#334155'); sq(gx + 2, gy + .5, 1, .5, '#334155'); }
+    }
+    const bx = (t * 2.2 + 90) % (W + 30) - 15;
+    sq(bx - 4, horizon - 1, 8, 1, '#1e3a5f'); sq(bx - 3, horizon, 6, .5, '#2d5a7b'); for (let k = 0; k < 6; k++) sq(bx - .5 - k * .35, horizon - 2 - k, .5 + k * .35, 1, '#f8fafc'); sq(bx, horizon - 8, .5, 7, '#475569');
+  }
+  // HUD line on a dark backing so it stays readable over the busier scenes
+  function shud(s, x, y, c = '#fff', size = 8, al = 'center') {
+    sx.font = `700 ${size}px Poppins, sans-serif`; const w = sx.measureText(s).width + 8, x0 = al === 'left' ? x - 4 : al === 'right' ? x - w + 4 : x - w / 2;
+    sx.globalAlpha = .5; sq(x0, y - size * .82, w, size * 1.12, '#0b1030'); sx.globalAlpha = 1; stext(s, x, y, c, size, al);
+  }
   function skySea(horizon, dark = 0) {
     for (let i = 0; i < 8; i++) sq(0, i * horizon / 8, W, horizon / 8 + .5, mix([110, 196, 240], [190, 236, 255], i / 7));
+    if (horizon > 60) { sdisc(318, horizon * .32, 11, '#fff1b8'); sdisc(318, horizon * .32, 8, '#fde68a'); sdisc(316, horizon * .32 - 2, 4, '#fffbeb'); }
+    // clouds drift slowly: white tops, a cool shadow underneath
+    for (let i = 0; i < 3; i++) {
+      const cx = ((i * 150 + t * (3 + i)) % (W + 80)) - 40, cy = horizon * (.18 + i * .16);
+      if (cy > horizon - 8) continue;
+      for (const [dx, dy, r] of [[-9, 1, 5], [0, -2, 7], [9, 0, 6], [16, 2, 4]]) sdisc(cx + dx, cy + dy + 1.5, r, '#cfe8f5');
+      for (const [dx, dy, r] of [[-9, 1, 5], [0, -2, 7], [9, 0, 6], [16, 2, 4]]) sdisc(cx + dx, cy + dy, r, '#ffffff');
+      sq(cx - 14, cy + 4, 34, 2, '#cfe8f5');
+    }
+    // a small island far out, then the horizon
+    if (horizon > 40) {
+      for (let x = 0; x < 70; x += 1) { const h = Math.sin(x / 70 * Math.PI) * 7; sq(40 + x, horizon - h, 1, h + .5, x < 30 ? '#4f9e8a' : '#3f8a78'); }
+      sq(70, horizon - 16, 1, 9, '#6b4f2e'); for (let i = 0; i < 5; i++) sq(64 + i * 2.5, horizon - 17 + Math.abs(i - 2) * 1.2, 3, 1, '#2f7a5c');
+    }
     for (let i = 0; i < 10; i++) sq(0, horizon + i * (H - horizon) / 10, W, (H - horizon) / 10 + .5, mix([94, 220, 210], [16, 110, 150], i / 9));
+    sq(0, horizon, W, .5, '#e0fffa');
+    if (horizon > 60) for (let i = 0; i < 7; i++) sq(318 - 10 + ((i * 7 + t * 4) % 20), horizon + 2 + i * 2.5, 6 - i * .6, .5, '#fff7d1');
     for (let i = 0; i < 16; i++) { const tw = Math.sin(t * 2 + i * 2.3); if (tw > .3) sq((i * 47 + t * 6) % W, horizon + 3 + (i * 9) % (H - horizon - 6), 3 + i % 4, .5, '#e0fffa'); }
+  }
+  // painted backdrops of the stations (img/sport-*.png from img/pxl/sport.px.js); clouds and glints stay animated on top.
+  // Falls back to the drawn sky and sea while an image is still loading.
+  const SPORT_BG = ['sport-frisbee', 'sport-ufer', 'sport-bogen', 'sport-volley', 'sport-tt', 'sport-bowling', 'sport-jetski', 'sport-surf', 'insel-karte', 'insel-karte-mini'];
+  function sportBg(name) { const im = worldImg(name); if (!imgReady(im)) return false; sx.drawImage(im, 0, 0, W, H); return true; }
+  function sceneBg(name, horizon) { if (!sportBg(name)) { skySea(horizon); return false; } skyFx(horizon); return true; }
+  function skyFx(horizon) {
+    for (let i = 0; i < 3; i++) {
+      const cx = ((i * 150 + t * (3 + i)) % (W + 80)) - 40, cy = horizon * (.18 + i * .16);
+      if (cy > horizon - 8) continue;
+      for (const [dx, dy, r] of [[-9, 1, 5], [0, -2, 7], [9, 0, 6], [16, 2, 4]]) sdisc(cx + dx, cy + dy + 1.5, r, '#cfe8f5');
+      for (const [dx, dy, r] of [[-9, 1, 5], [0, -2, 7], [9, 0, 6], [16, 2, 4]]) sdisc(cx + dx, cy + dy, r, '#ffffff');
+      sq(cx - 14, cy + 4, 34, 2, '#cfe8f5');
+    }
+    if (horizon > 60) for (let i = 0; i < 7; i++) sq(318 - 10 + ((i * 7 + t * 4) % 20), horizon + 2 + i * 2.5, 6 - i * .6, .5, '#fff7d1');
+    for (let i = 0; i < 16; i++) { const tw = Math.sin(t * 2 + i * 2.3); if (tw > .3) sq((i * 47 + t * 6) % W, horizon + 3 + (i * 9) % (H - horizon - 6), 3 + i % 4, .5, '#e0fffa'); }
+    skyLife(horizon);
+  }
+  setTimeout(() => { if (inselOpen()) SPORT_BG.forEach(worldImg); }, 3000); // ready before the first catch drill
+  // beach from y down: wet edge with a foam line, then dry sand with a fixed grain pattern
+  function sand(y, x0 = 0, w = W) {
+    sq(x0, y, w, H - y, '#f2dfa8');
+    sq(x0, y, w, 3, '#d9c08a');
+    for (let x = x0; x < x0 + w; x += 2) sq(x, y - .5 + Math.sin(x * .15 + t * 1.6) * .6, 2, 1, '#ffffff');
+    for (let i = 0; i < 90; i++) { const gx = x0 + (i * 71) % w, gy = y + 5 + (i * 37) % (H - y - 5); sq(gx, gy, 1, .5, i % 3 ? '#e2c98d' : '#fbeec5'); }
+  }
+  // palm: bent, ringed trunk, drooping fronds, three coconuts
+  function palm(x, base, h, lean = 1) {
+    for (let i = 0; i < h; i += 2) { const k = i / h, px2 = x + lean * k * k * 8; sq(px2, base - i - 2, 3, 2.5, i % 4 ? '#a16207' : '#854d0e'); sq(px2, base - i - 2, 1, 2.5, '#ca8a04'); }
+    const tx = x + lean * 8 + 1.5, ty = base - h - 1;
+    for (const [dx, c] of [[-1, '#15803d'], [1, '#16a34a']]) for (let f = 0; f < 3; f++) for (let i = 0; i < 12; i++) {
+      const fx = tx + dx * i * (1.1 - f * .25), fy = ty - 2 + (i * i) / 18 + f * 1.5 - (f === 2 ? 3 : 0);
+      sq(fx, fy, 2, 1.5, f === 2 ? '#22c55e' : c);
+    }
+    for (const [dx, dy] of [[-1.5, 1], [1, 1.5], [0, 3]]) sdisc(tx + dx, ty + dy, 1.4, '#57301a');
+  }
+
+  // archery target on a wooden easel: a straw boss behind painted rings, dithered shade toward the bottom right
+  function drawTarget(R) {
+    sq(178, 100, 2, 52, '#57301a'); sq(178, 100, 1, 52, '#8b5a2b'); sq(204, 100, 2, 52, '#57301a'); sq(204, 100, 1, 52, '#8b5a2b'); sq(191, 104, 2, 46, '#6b421b');
+    sx.globalAlpha = .3; sq(172, 150, 40, 2, '#3b2a14'); sx.globalAlpha = 1;
+    const face = spPaint('target' + R, R * 4 + 9, R * 4 + 9, (set, w) => {
+      const c = w / 2, RR = R * 2;
+      for (let y = 0; y < w; y++) for (let x = 0; x < w; x++) {
+        const d = Math.hypot(x - c, y - c) / RR, sh = ((x - c) + (y - c)) / RR * .5 + BAYER[(y & 3) * 4 + (x & 3)] / 16 * .35;
+        if (d > 1.1) continue;
+        if (d > 1.04) { set(x, y, '#1b1f2e'); continue; }
+        if (d > .98) { set(x, y, sh > .2 ? '#a16207' : '#d6a85a'); continue; } // straw edge
+        const ring = [[.8, ['#ffffff', '#e2e8f0']], [.6, ['#334155', '#1e293b']], [.4, ['#60a5fa', '#2563eb']], [.2, ['#f87171', '#dc2626']], [0, ['#fde047', '#eab308']]].find(([r]) => d >= r);
+        const edge = [.8, .6, .4, .2].some(r => Math.abs(d - r) < .6 / RR);
+        set(x, y, edge ? '#1b1f2e' : ring[1][sh > .28 ? 1 : 0]);
+      }
+      set(Math.round(c - RR * .55), Math.round(c - RR * .6), '#ffffff');
+    });
+    sx.drawImage(face, snap(192 - face.width / 4), snap(100 - face.height / 4), face.width / 2, face.height / 2);
   }
   // the sports: start(g) sets up, update(g, dt, I) plays, draw(g) paints, score(g) is the result; stamps get checked on g at the end
   const SPORTS = [
     { id: 'frisbee', icon: '🥏', name: 'Frisbee', st: 0, modes: ['Zielring', 'Weitwurf'],
       info: 'Halten für Kraft, loslassen, wenn der Winkel passt. Pelle fliegt der Scheibe hinterher.',
-      exp: [lv => 12 + lv * .011, lv => 180 + lv * .07], med: [[12, 22, 32], [220, 320, 400]], champ: [40, 420],
+      exp: [lv => 12 + lv * .006, lv => 180 + lv * .07], med: [[12, 17, 22], [207, 261, 324]], champ: [25, 369],
       stamps: [['f1', 'Erster Treffer im Zielring', g => g.hits > 0], ['f2', 'Ein Volltreffer in die Mitte', g => g.bulls > 0], ['f3', '5 Treffer im Zielring hintereinander', g => g.mode === 0 && g.maxStreak >= 5],
         ['f4', '40 Punkte im Zielring', g => g.mode === 0 && g.pts >= 40], ['f5', 'Weitwurf über 300 m', g => g.mode === 1 && g.far >= 300]],
       start(g) { g.n = g.mode ? 3 : 5; g.i = 0; g.pts = 0; g.hits = 0; g.streak = 0; g.maxStreak = 0; g.bulls = 0; g.far = 0; g.pow = 0; g.dis = null; g.peX = 20; g.newThrow = true; },
@@ -3172,33 +3356,36 @@
         } else if (g.st === 'land') { g.lt += dt; if (g.lt > 1) { g.i++; if (g.i >= g.n) g.over = true; else g.newThrow = true; } }
       },
       draw(g) {
-        skySea(140);
+        sceneBg('sport-frisbee', 140);
         const cam = g.mode && g.dis ? Math.max(0, g.dis.x - 260) : 0; sx.save(); sx.translate(-cam, 0);
-        sq(0, 138, 44, 78, '#f2dfa8'); sq(0, 138, 44, 2, '#fde68a'); sq(40, 140, 6, 76, '#e9d39a');
+        { const u = worldImg('sport-ufer'); if (imgReady(u)) sx.drawImage(u, 0, 138, 46, 78); else { sand(138, 0, 44); sq(40, 140, 6, 76, '#e2c98d'); } }
         drawPelle(sq, 12, 148, 0); // the angler is Pelle's buddy: a little figure
-        sq(26, 132, 5, 12, '#1b1f2e'); sq(26.5, 132.5, 4, 11, '#3b82f6'); sq(26.5, 128, 4, 4.5, '#fcd34d');
-        if (!g.mode && g.ring) { const r = 22; for (const [w, c] of [[r, '#f8fafc'], [12, '#ef4444'], [5, '#facc15']]) sq(g.ring - w, 159, w * 2, 2, c); sq(g.ring - .5, 150, 1, 9, '#ef4444'); }
+        sme(28.5, 144, g.st === 'aim' ? 0 : 1);
+        if (!g.mode && g.ring) { // floating target: three rings of floats seen from the side, a flag in the middle
+          const bob = Math.sin(t * 2) * .4; sx.globalAlpha = .3; sq(g.ring - 23, 161.5, 46, 1.5, '#0b3d5c'); sx.globalAlpha = 1;
+          for (const [w, c, d] of [[22, '#f8fafc', '#94a3b8'], [12, '#ef4444', '#991b1b'], [5, '#facc15', '#a16207']]) for (let x = -w; x < w; x += 2) { sq(g.ring + x, 159 + bob, 2, 2, (x / 2 + w) % 4 < 2 ? c : d); sq(g.ring + x, 159 + bob, 2, .5, '#ffffff'); }
+          sq(g.ring - .5, 149 + bob, 1, 10, '#78350f'); sq(g.ring + .5, 149 + bob + Math.sin(t * 5) * .3, 5, 3, '#ef4444'); sq(g.ring + .5, 149 + bob, 5, .5, '#fca5a5'); }
         if (g.mode) for (let m = 50; m <= 450; m += 50) { const x = 30 + m * 2; sq(x, 158, .5, 4, '#f8fafc'); stext(m + ' m', x, 170, '#f8fafc', 6); }
         sx.restore();
         const wl = clamp(g.wind / 20, -1, 1); stext(tr('Wind'), 340, 14, '#fff', 7); sq(340, 18, Math.abs(wl) * 30 * Math.sign(wl) || .5, 2, '#38bdf8'); sq(340 + wl * 30 - (wl < 0 ? 0 : 1), 17, 1.5, 4, '#38bdf8');
         sx.save(); sx.translate(-cam, 0);
         if (g.st === 'aim') { for (let i = 0; i < 9; i++) sq(31 + Math.cos(g.ang) * i * 3, 128 - Math.sin(g.ang) * i * 3, 1, 1, '#facc15'); sq(14, 100, 6, 24, '#1b1f2e'); sq(15, 101 + 22 * (1 - g.pow), 4, 22 * g.pow, g.pow > .9 ? '#ef4444' : '#22c55e'); sq(31, 129, 5, 1.5, '#f97316'); }
-        if (g.dis && g.st !== 'aim') { const d = g.dis; sq(d.x - 3, d.y - 1, 6, 1.5, '#f97316'); sq(d.x - 2, d.y - 1.5, 4, .5, '#fdba74'); drawPelle(sq, g.peX, d.y + 4, 0, true, 1); }
+        if (g.dis && g.st !== 'aim') { const d = g.dis; sspr(BALLS.disc(), d.x, d.y - .5); if (Math.floor(t * 12) % 2) sq(d.x - 1, d.y - 1.5, 2, .5, '#fff7ed'); drawPelle(sq, g.peX, d.y + 4, 0, true, 1); }
         if (g.pop && g.dis) stext(g.pop, g.dis.x, 150 - g.lt * 10, '#fde047', 9);
         sx.restore();
         if (g.mode && g.dis && g.st === 'fly') stext(Math.max(0, Math.round((g.dis.x - 30) * .5)) + ' m', 192, 28, '#fde047', 9);
-        stext(tr('Wurf {a}/{b}', { a: Math.min(g.n, g.i + 1), b: g.n }), 192, 14, '#fff', 8);
+        shud(tr('Wurf {a}/{b}', { a: Math.min(g.n, g.i + 1), b: g.n }), 192, 14, '#fff', 8);
       },
       score: g => g.mode ? g.far : g.pts },
     { id: 'turnier', icon: '🎣', name: 'Angelturnier', st: 0, modes: ['Fünf Fänge', 'Größter Fang'], fishing: true,
       info: 'Die nächsten 5 Fänge auf der Insel zählen: Seltenheit × Größe, Bonus für Mutationen und Shinys.',
-      exp: [lv => 10 + lv * .016, lv => 10 + lv * .016], med: [[8, 14, 22], [9, 15, 24]], lvMed: [1, 1.7, 2.5], champ: [60, 60],
+      exp: [lv => 10 + lv * .007, lv => 10 + lv * .007], med: [[8, 14, 22], [9, 15, 24]], lvMed: [1, 1.7, 2.5], champ: [60, 60],
       stamps: [['a1', 'Erstes Turnier beendet', g => g.n >= 5], ['a2', 'Silber im Turnier', g => g.medal >= 2], ['a3', 'Gold im Turnier', g => g.medal >= 3],
         ['a4', 'Einen Legendären im Turnier gefangen', g => g.leg], ['a5', 'Einen Shiny im Turnier gefangen', g => g.shiny]],
       score: g => g.mode ? g.best * 3 : g.pts },
     { id: 'flug', icon: '✈️', name: 'Rundflug', st: 0, modes: ['Erkunden', 'Nachtflug'],
       info: 'Flieg mit dem Wasserflugzeug über die Insel und sammle Aussichtsballons: 2 Punkte pro Ballon, 5 extra für neue. Gefundene bleiben für immer.',
-      exp: [lv => 20 + lv * .014, lv => 10 + lv * .004], med: [[20, 36, 50], [10, 16, 20]], champ: [58, 20], mode2: () => save.ipoints.filter(i => i < 30).length >= 30,
+      exp: [lv => 20 + lv * .01, lv => 10 + lv * .004], med: [[20, 29, 36], [10, 14, 18]], champ: [41, 20], mode2: () => save.ipoints.filter(i => i < 30).length >= 30,
       stamps: [['r1', 'Ersten Aussichtspunkt gefunden', () => save.ipoints.length >= 1], ['r2', '10 Aussichtspunkte gefunden', () => save.ipoints.filter(i => i < 30).length >= 10],
         ['r3', '20 Aussichtspunkte gefunden', () => save.ipoints.filter(i => i < 30).length >= 20], ['r4', 'Alle 30 Aussichtspunkte gefunden', () => save.ipoints.filter(i => i < 30).length >= 30],
         ['r5', 'Nachtflug: alle 10 Nachtpunkte gefunden', () => save.ipoints.filter(i => i >= 30).length >= 10]],
@@ -3253,7 +3440,7 @@
       score: g => g.pts },
     { id: 'jetski', icon: '🚤', name: 'Jetski', st: 4, modes: ['Slalom', 'Ringjagd'],
       info: 'Lenk durch die Tore aus Bojen. Tippen = über eine Welle springen.',
-      exp: [lv => 120 + lv * .12, lv => 120 + lv * .1], med: [[150, 280, 400], [150, 250, 350]], champ: [470, 400],
+      exp: [lv => 120 + lv * .06, lv => 120 + lv * .06], med: [[138, 174, 216], [138, 174, 216]], champ: [246, 246],
       stamps: [['j1', '10 Tore in einer Runde', g => g.passed >= 10], ['j2', 'Slalom ohne verpasstes Tor (mind. 15)', g => g.mode === 0 && g.miss === 0 && g.passed >= 15],
         ['j3', '10 Wellen übersprungen', g => g.jumps >= 10], ['j4', 'Slalom: 300 Punkte', g => g.mode === 0 && g.pts >= 300], ['j5', 'Ringjagd: 30 Ringe', g => g.mode === 1 && g.rings >= 30]],
       start(g) { g.x = 192; g.time = g.mode ? 45 : 40; g.objs = []; g.spawn = 0; g.passed = 0; g.miss = 0; g.combo = 0; g.pts = 0; g.jump = 0; g.jumps = 0; g.rings = 0; g.slow = 0; g.side = 1; g.scroll = 0; g.wake = []; },
@@ -3283,26 +3470,30 @@
         g.wake.unshift({ x: g.x, y: 176 }); if (g.wake.length > 20) g.wake.pop(); for (const w of g.wake) w.y += sp * dt;
       },
       draw(g) {
-        for (let i = 0; i < 12; i++) sq(0, i * 18, W, 18.5, mix([64, 214, 206], [24, 150, 180], (i % 3) / 3));
-        for (let i = 0; i < 40; i++) { const y = ((i * 37 + g.scroll) % (H + 20)) - 10; sq((i * 73) % W, y, 4 + i % 5, .5, '#e0fffa'); }
-        sq(0, 0, 14, H, '#f2dfa8'); sq(W - 14, 0, 14, H, '#f2dfa8'); sq(14, 0, 2, H, '#ffffff'); sq(W - 16, 0, 2, H, '#ffffff');
+        const wat = worldImg('sport-jetski');
+        if (imgReady(wat)) { const y0 = snap(g.scroll % H); sx.drawImage(wat, 0, y0 - H, W, H); sx.drawImage(wat, 0, y0, W, H); } // the water tile scrolls down
+        else {
+          for (let i = 0; i < 12; i++) sq(0, i * 18, W, 18.5, mix([64, 214, 206], [24, 150, 180], (i % 3) / 3));
+          for (let i = 0; i < 40; i++) { const y = ((i * 37 + g.scroll) % (H + 20)) - 10; sq((i * 73) % W, y, 4 + i % 5, .5, '#e0fffa'); }
+          sq(0, 0, 14, H, '#f2dfa8'); sq(W - 14, 0, 14, H, '#f2dfa8'); sq(14, 0, 2, H, '#ffffff'); sq(W - 16, 0, 2, H, '#ffffff');
+        }
         for (const w of g.wake) { sx.globalAlpha = .4; sq(w.x - 2, w.y, 4, 2, '#ffffff'); sx.globalAlpha = 1; }
         for (const o of g.objs) {
-          if (o.k === 'gate') for (const s of [-1, 1]) { sdisc(o.x + s * o.w / 2, o.y, 4, o.ok === -1 ? '#64748b' : s < 0 ? '#ef4444' : '#facc15'); sq(o.x + s * o.w / 2 - 1, o.y - 2, 2, 1, '#ffffff'); }
+          if (o.k === 'gate') for (const s of [-1, 1]) { const bx = o.x + s * o.w / 2, by = o.y + Math.sin(t * 3 + bx) * .6; sx.globalAlpha = .35; sdisc(bx + 1.5, by + 2, 4, '#0b3d5c'); sx.globalAlpha = 1; for (let k = 0; k < 4; k++) sq(bx - 5 + k * 3, by + 3.5 + Math.sin(t * 4 + k) * .3, 2, .5, '#e0fffa'); sspr(BALLS[o.ok === -1 ? 'buoyG' : s < 0 ? 'buoyR' : 'buoyY'](), bx, by); }
           else if (o.k === 'wave') { for (let i = -o.w / 2; i < o.w / 2; i += 1) sq(o.x + i, o.y + Math.sin(i * .2) * 1.5, 1, 2, '#f8fafc'); }
-          else if (o.k === 'ring' && !o.ok) { for (let a = 0; a < 6.3; a += .3) sq(o.x + Math.cos(a) * 9, o.y + Math.sin(a) * 5, 1.5, 1.5, '#fde047'); }
+          else if (o.k === 'ring' && !o.ok) { for (let a = 0; a < 6.3; a += .3) { const rx = o.x + Math.cos(a) * 9, ry = o.y + Math.sin(a) * 5; sq(rx, ry + 1, 1.5, 1, '#0b3d5c'); sq(rx, ry, 1.5, 1.5, Math.floor(a / .6) % 2 ? '#fde047' : '#f97316'); sq(rx, ry, 1, .5, '#fffbeb'); } }
         }
         const j = g.jump > 0 ? Math.sin(g.jump / .6 * Math.PI) * 6 : 0, x = g.x, y = 176 - j;
         if (j) { sx.globalAlpha = .3; sdisc(x, 178, 6, '#0b3d5c'); sx.globalAlpha = 1; }
-        sq(x - 5, y - 8, 10, 16, '#1b1f2e'); sq(x - 4.5, y - 7.5, 9, 15, '#e11d48'); sq(x - 3, y - 9.5, 6, 2, '#1b1f2e'); sq(x - 4.5, y + 3, 9, 2, '#f8fafc');
-        sq(x - 2, y - 4, 4, 5, '#3b82f6'); sdisc(x, y - 5, 2, '#fcd34d');
-        stext(tr('⏱ {s} s · {p} Punkte', { s: Math.ceil(g.time), p: g.pts }), 192, 14, '#fff', 8);
-        stext(g.mode ? tr('Ringe: {n}', { n: g.rings }) : tr('Tore: {n} · verpasst: {m}', { n: g.passed, m: g.miss }), 192, 26, '#fde047', 7);
+        sart('sp_jetski', x - 5.5, y - 9.5);
+        if (Math.random() < .5) { sx.globalAlpha = .6; sq(x - 4 + Math.random() * 8, y + 8 + Math.random() * 3, 1, 1, '#ffffff'); sx.globalAlpha = 1; }
+        shud(tr('⏱ {s} s · {p} Punkte', { s: Math.ceil(g.time), p: g.pts }), 192, 14, '#fff', 8);
+        shud(g.mode ? tr('Ringe: {n}', { n: g.rings }) : tr('Tore: {n} · verpasst: {m}', { n: g.passed, m: g.miss }), 192, 26, '#fde047', 7);
       },
       score: g => g.pts },
     { id: 'bogen', icon: '🏹', name: 'Bogenschießen', st: 10, modes: ['Scheiben', 'Ballons'],
       info: 'Zielen, halten zum ruhig Atmen, loslassen zum Schießen. Achte auf den Wind.',
-      exp: [lv => 24 + lv * .012, lv => 10 + lv * .01], med: [[25, 38, 50], [14, 22, 30]], champ: [55, 36],
+      exp: [lv => 24 + lv * .012, lv => 10 + lv * .005], med: [[25, 35, 43], [12, 14, 18]], champ: [49, 20],
       stamps: [['b1', 'Ein Volltreffer (10)', g => g.bulls > 0], ['b2', '3 Volltreffer in einer Runde', g => g.bulls >= 3], ['b3', 'Scheiben: 50 Punkte', g => g.mode === 0 && g.pts >= 50],
         ['b4', 'Ballons: 25 in einer Runde', g => g.mode === 1 && g.pts >= 25], ['b5', 'Alle 6 Pfeile auf 8 oder besser', g => g.mode === 0 && g.shots.length === 6 && g.shots.every(s => s >= 8)]],
       start(g) { g.k = 0; g.shot = 0; g.pts = 0; g.bulls = 0; g.shots = []; g.breath = 1; g.arrows = []; g.ax = 192; g.ay = 100; g.wind = rnd(-1, 1); g.time = 30; g.bal = []; g.spawn = 0; g.fly = 0; },
@@ -3330,18 +3521,17 @@
         }
       },
       draw(g) {
-        skySea(120); sq(0, 150, W, 66, '#f2dfa8'); sq(0, 150, W, 2, '#fde68a');
-        for (const [x, h] of [[30, 60], [350, 70], [70, 40]]) { sq(x, 150 - h, 3, h, '#a16207'); for (let i = 0; i < 6; i++) sq(x - 12 + i * 4, 150 - h - 2 + Math.abs(i - 2.5) * 2, 6, 2, '#16a34a'); }
+        if (!sceneBg('sport-bogen', 120)) { sand(150); for (const [x, h, l] of [[30, 60, 1], [350, 70, -1], [70, 40, 1]]) palm(x, 152, h, l); }
+        crowd(g, 238, 300, 166, g.mode ? g.pts : g.bulls * 10 + g.pts, 5, 11);
         if (g.mode === 0) {
           const R = [34, 23, 14][Math.min(2, g.k)];
-          sq(190, 100 + R * .6, 4, 150 - 100 - R * .6, '#78350f');
-          for (const [f, c] of [[1, '#f8fafc'], [.8, '#1e293b'], [.6, '#3b82f6'], [.4, '#ef4444'], [.2, '#facc15']]) sdisc(192, 100, R * f, c);
-          for (const a of g.arrows) if (a.k === g.k || g.over) { sq(a.x - .5, a.y - .5, 1.5, 1.5, '#1b1f2e'); sq(a.x + .5, a.y - 2, 2, 1, '#f97316'); }
+          drawTarget(R);
+          for (const a of g.arrows) if (a.k === g.k || g.over) { sq(a.x - .5, a.y - .5, 1.5, 1.5, '#1b1f2e'); sq(a.x + .5, a.y - 1, 2.5, 1, '#78350f'); sq(a.x + 2.5, a.y - 2.5, 1.5, 1.5, '#f97316'); sq(a.x + 2.5, a.y - .5, 1.5, 1, '#fde68a'); }
           const wl = clamp(g.wind, -1, 1); stext(tr('Wind'), 340, 14, '#fff', 7); sq(340, 18, wl * 30 || .5, 2, '#38bdf8');
-          stext(tr('Scheibe {a}/3 · Pfeil {b}/2', { a: Math.min(3, g.k + 1), b: g.shot % 2 + 1 }), 192, 14, '#fff', 8);
+          shud(tr('Scheibe {a}/3 · Pfeil {b}/2', { a: Math.min(3, g.k + 1), b: g.shot % 2 + 1 }), 192, 14, '#fff', 8);
         } else {
-          for (const b of g.bal) { sdisc(b.x, b.y, 6, b.gold ? '#facc15' : ['#ef4444', '#3b82f6', '#22c55e', '#f472b6'][Math.floor(b.v) % 4]); sq(b.x - 2, b.y - 3, 1.5, 1.5, '#ffffff'); sq(b.x - .25, b.y + 6, .5, 8, '#e2e8f0'); }
-          stext(tr('⏱ {s} s · {p} Ballons', { s: Math.ceil(g.time), p: g.pts }), 192, 14, '#fff', 8);
+          for (const b of g.bal) { sballoon(b.x, b.y, b.gold ? 'y' : 'rbgp'[Math.floor(b.v) % 4]); if (b.gold) for (let i = 0; i < 3; i++) if (Math.sin(t * 6 + i * 2) > .5) sq(b.x - 7 + i * 6, b.y - 8 + (i % 2) * 3, 1, 1, '#fffbeb'); }
+          shud(tr('⏱ {s} s · {p} Ballons', { s: Math.ceil(g.time), p: g.pts }), 192, 14, '#fff', 8);
         }
         const X = g.ax + (g.sx || 0), Y = g.ay + (g.sy || 0);
         sq(X - 6, Y - .25, 4, .5, '#1b1f2e'); sq(X + 2, Y - .25, 4, .5, '#1b1f2e'); sq(X - .25, Y - 6, .5, 4, '#1b1f2e'); sq(X - .25, Y + 2, .5, 4, '#1b1f2e'); sq(X - .5, Y - .5, 1, 1, '#ef4444');
@@ -3351,7 +3541,7 @@
       score: g => g.pts },
     { id: 'tt', icon: '🏓', name: 'Tischtennis', st: 18, modes: ['Match', 'Ballwechsel'],
       info: 'Der Schläger folgt deinem Finger. Wo der Ball den Schläger trifft, bestimmt den Winkel.',
-      exp: [lv => 40 + lv * .03, lv => 10 + lv * .012], med: [[50, 100, 120], [15, 30, 50]], champ: [100, 45],
+      exp: [lv => 40 + lv * .02, lv => 10 + lv * .005], med: [[50, 100, 120], [12, 14, 18]], champ: [100, 20],
       stamps: [['t1', 'Ersten Punkt gemacht', g => g.me > 0], ['t2', 'Ein Match gewonnen', g => g.mode === 0 && g.me >= 7], ['t3', 'Ein Match auf Profi gewonnen', g => g.mode === 0 && g.me >= 7 && g.lvl >= 2],
         ['t4', 'Ballwechsel mit 30 Schlägen', g => g.mode === 1 && g.rally >= 30], ['t5', 'Ballwechsel mit 60 Schlägen', g => g.mode === 1 && g.rally >= 60]],
       start(g) { g.me = 0; g.op = 0; g.px = 192; g.ox = 192; g.rally = 0; g.best = 0; g.serve = 1; g.wait = 1; g.ball = null; },
@@ -3377,20 +3567,23 @@
         }
       },
       draw(g) {
-        sq(0, 0, W, H, '#f2dfa8'); for (let i = 0; i < 60; i++) sq((i * 71) % W, (i * 37) % H, 1, .5, '#d4b97a');
-        sq(128, 16, 128, 184, '#1b1f2e'); sq(130, 18, 124, 180, '#0e7490'); sq(130, 18, 124, 1, '#f8fafc'); sq(130, 197, 124, 1, '#f8fafc'); sq(191.5, 18, 1, 180, '#f8fafc'); sq(130, 107, 124, 2, '#e2e8f0');
-        for (let x = 132; x < 252; x += 3) sq(x, 106, 1, 4, '#94a3b8');
+        if (!sportBg('sport-tt')) {
+          sq(0, 0, W, H, '#f2dfa8'); for (let i = 0; i < 60; i++) sq((i * 71) % W, (i * 37) % H, 1, .5, '#d4b97a');
+          sq(128, 16, 128, 184, '#1b1f2e'); sq(130, 18, 124, 180, '#0e7490'); sq(130, 18, 124, 1, '#f8fafc'); sq(130, 197, 124, 1, '#f8fafc'); sq(191.5, 18, 1, 180, '#f8fafc'); sq(130, 107, 124, 2, '#e2e8f0');
+          for (let x = 132; x < 252; x += 3) sq(x, 106, 1, 4, '#94a3b8');
+        }
         if (g.lvl === 3) drawKraul(sq, g.ox, 26); else drawPelle(sq, g.ox, 24, 0, true);
         sq(g.ox - 12, 30, 24, 3, '#1b1f2e'); sq(g.ox - 11.5, 30.5, 23, 2, '#3b82f6');
-        sq(g.px - 14, 186, 28, 3, '#1b1f2e'); sq(g.px - 13.5, 186.5, 27, 2, '#ef4444');
-        if (g.ball) { sx.globalAlpha = .3; sdisc(g.ball.x + 2, g.ball.y + 3, 2, '#0b1030'); sx.globalAlpha = 1; sdisc(g.ball.x, g.ball.y, 2.2, '#ffffff'); }
+        sq(g.px - 1.5, 188.5, 3, 7, '#1b1f2e'); sq(g.px - 1, 189, 2, 6, '#b45309'); sq(g.px - 1.5, 192, 3, 3, lookPal().pal.s);
+        sq(g.px - 14, 185.5, 28, 4, '#1b1f2e'); sq(g.px - 13, 186, 26, 3, '#ef4444'); sq(g.px - 12.5, 186, 25, .5, '#fca5a5'); sq(g.px - 13, 188.5, 26, .5, '#b91c1c');
+        if (g.ball) { sx.globalAlpha = .3; sdisc(g.ball.x + 2, g.ball.y + 3, 2, '#0b1030'); sx.globalAlpha = 1; sspr(BALLS.tt(), g.ball.x, g.ball.y); }
         stext(g.mode ? tr('Ballwechsel: {n}', { n: g.rally }) : `${g.me} : ${g.op}`, 64, 108, '#1b1f2e', 12);
         if (!g.mode) stext(tr('Erster bis 7'), 64, 122, '#78350f', 7);
       },
       score: g => g.mode ? g.best : g.me * 10 + (g.me >= 7 ? 30 + (7 - g.op) * 5 : 0) },
     { id: 'surf', icon: '🏄', name: 'Surfen', st: 6, modes: ['Wellenritt', 'Trickjagd'],
       info: 'Zieh hoch und runter auf der Welle: oben gibt es mehr Punkte, über der Kante stürzt du. Tippen, wenn der Kamm glitzert = Trick. Zu tief holt dich das Weißwasser.',
-      exp: [lv => 70 + lv * .09, lv => 90 + lv * .1], med: [[80, 160, 260], [100, 200, 320]], champ: [330, 380],
+      exp: [lv => 70 + lv * .035, lv => 90 + lv * .045], med: [[80, 102, 126], [100, 130, 162]], champ: [144, 184],
       stamps: [['s1', 'Ersten Trick gestanden', g => g.tricks > 0], ['s2', '5 Tricks in einer Kombo', g => g.maxCombo >= 5], ['s3', 'Wellenritt ohne Sturz', g => g.mode === 0 && g.falls === 0 && g.time <= 0],
         ['s4', 'Wellenritt: 250 Punkte', g => g.mode === 0 && g.pts >= 250], ['s5', 'Trickjagd: 10 Treffer in Folge', g => g.mode === 1 && g.bestChain >= 10]],
       start(g) { Object.assign(g, { y: 130, time: g.mode ? 40 : 45, pts: 0, combo: 0, maxCombo: 0, tricks: 0, falls: 0, stun: 0, air: 0, foam: 20, cue: 0, nextCue: 2, chain: 0, bestChain: 0, scroll: 0, used: false, last: 0, pop: '', popT: 0 }); },
@@ -3420,34 +3613,56 @@
         g.maxCombo = Math.max(g.maxCombo, g.combo);
       },
       draw(g) {
-        skySea(56);
+        sceneBg('sport-surf', 56);
         const lipAt = x => 70 + Math.sin(x * .02 + g.scroll * .03 - 2.6) * 5 + Math.max(0, 120 - x) * .12;
-        for (let x = 0; x < W; x += 2) {
-          const top = lipAt(x);
-          for (let i = 0; i < 6; i++) { const a = top + i * (180 - top) / 6; sq(x, a, 2, (180 - top) / 6 + .5, mix([120, 232, 220], [14, 116, 144], i / 5)); }
-          sq(x, top - 1, 2, 2, '#f8fafc');
-          if (Math.sin(x * .4 + g.scroll * .2) > .7) sq(x, top + 4 + (x % 9), 2, .5, '#e0fffa');
+        // the wave face: a dithered strip from the back-lit lip (light) down to the deep trough, painted once
+        const FACE = ['#c4fff4', '#8cf2e2', '#5ad9d1', '#36bcc6', '#2399b5', '#17789b', '#105e81'];
+        const face = spPaint('surfFace', 4, 240, (set) => { for (let y = 0; y < 240; y++) for (let x = 0; x < 4; x++) set(x, y, FACE[clamp(Math.floor(Math.pow(y / 240, .8) * 7 + (BAYER[(y & 3) * 4 + x] / 16 - .5) * .9), 0, 6)]); });
+        for (let x = 0; x < W; x += 2) { const top = lipAt(x); sx.drawImage(face, (x / 2 % 2) * 2, 0, 2, 240, x, snap(top), 2, 182 - snap(top)); }
+        sq(0, 180, W, 36, '#0e6a86');
+        for (let i = 0; i < 26; i++) { const x = (i * 61 + g.scroll * 1.3) % (W + 20) - 10, y = 184 + (i * 13) % 30; sq(x, y, 6 + i % 5, .5, i % 3 ? '#1d8aa6' : '#5cc8d4'); }
+        // sun streak running down the face, and moving lines that show the wave is rolling
+        for (let y = 0; y < 100; y += 2.5) { const k = y / 100, x = 300 + Math.sin(y * .35 + t * 3) * (2 + k * 4); sx.globalAlpha = .55 * (1 - k); sq(x, lipAt(300) + 6 + y, 4 - k * 3, .5, '#fff7d1'); }
+        sx.globalAlpha = .55;
+        for (let i = 0; i < 44; i++) { const x = (i * 53 + g.scroll * 1.6) % W, top = lipAt(x), y = top + 8 + (i * 29) % Math.max(8, 170 - top - 8); if (x > g.foam + 6) sq(x, y, 3 + i % 4, .5, '#a8f7ec'); }
+        sx.globalAlpha = 1;
+        // the curl on the unbroken side: shadow under the lip, a bright lip edge and spray blown back off the crest
+        for (let x = Math.floor((g.foam + 4) / 2) * 2; x < W; x += 2) {
+          const top = lipAt(x), ph = (x + Math.floor(g.scroll * .5)) % 14;
+          sq(x, top - 7, 2, 5, '#3aa9b8'); sq(x, top - 7, 2, .5, ph < 7 ? '#6fd0d6' : '#56c2cc'); // back of the wave against the sea behind
+          sx.globalAlpha = .5; sq(x, top + 2, 2, 4, '#0a4562'); sx.globalAlpha = .28; sq(x, top + 6, 2, 6, '#0a4562'); sx.globalAlpha = .12; sq(x, top + 12, 2, 8, '#0a4562'); sx.globalAlpha = 1;
+          sq(x, top - 2.5, 2, 4, '#e8fffb'); sq(x, top - 2.5, 2, 1, '#ffffff'); sq(x, top + 1, 2, .5, '#9fe9e6');
+          if (ph < 4) sq(x, top - 3, 2, .5, '#ffffff'); if (ph === 6 || ph === 7) sq(x, top + 1.5, 2, 1 + (x % 5) * .5, '#d6fbf6');
         }
-        sq(0, 180, W, 36, '#0e7490');
-        for (let x = 0; x < g.foam + 10; x += 2) { const h = (Math.sin(x * 1.7 + g.scroll) + 1) * 4; sq(x, lipAt(x) - h, 2, 180 - lipAt(x) + h, x > g.foam ? '#cffafe' : '#f8fafc'); }
+        for (let i = 0; i < 18; i++) { const x0 = g.foam + 12 + (i * 37) % Math.max(10, W - g.foam - 12), k = (t * 1.2 + i * .37) % 1; sx.globalAlpha = 1 - k; sq(x0 - k * 14, lipAt(x0) - 2 - k * 9 + k * k * 7, 1, 1, '#ffffff'); }
+        sx.globalAlpha = 1;
+        // whitewater: lumpy white with cool shading lower down, bubbles and a churning front
+        for (let x = 0; x < g.foam + 10; x += 2) {
+          const top = lipAt(x), h = (Math.sin(x * 1.7 + g.scroll) + 1) * 4 + (Math.sin(x * .45 - g.scroll * .7) + 1) * 2, y0 = top - h, front = x > g.foam;
+          sq(x, y0, 2, 182 - y0, front ? '#cffafe' : '#f8fafc'); sq(x, y0, 2, .5, '#ffffff');
+          sq(x, y0 + 14 + Math.sin(x * .3 + g.scroll * .2) * 3, 2, 182 - y0 - 14, front ? '#a5f3fc' : '#e3f6f8'); sq(x, top + 40 + Math.sin(x * .2 - g.scroll * .1) * 4, 2, 182 - top - 40, front ? '#7fe3ef' : '#cdeef3');
+          if ((x * 7 + Math.floor(g.scroll)) % 11 < 2) sq(x, y0 + 4 + (x * 13) % 30, 1, 1, '#bfe8ee');
+        }
+        for (let i = 0; i < 6; i++) { const y = lipAt(g.foam) + 4 + i * 16, r = 3 + Math.abs(Math.sin(g.scroll * .15 + i * 1.3)) * 3; if (y < 178) { sdisc(g.foam + 8 + Math.sin(t * 4 + i) * 2, y, r, '#f8fafc'); sdisc(g.foam + 7 + Math.sin(t * 4 + i) * 2, y - 1, r * .6, '#ffffff'); } }
         const crest = Math.sin(g.scroll * .03 + 1.2) > .3;
         if (g.mode === 0 && crest && !g.used) for (let i = 0; i < 3; i++) sq(118 + i * 8, lipAt(126) - 4 - (i % 2) * 2, 1.5, 1.5, '#fde047');
         if (g.mode === 1 && g.cue > 0) { stext(tr('JETZT!'), 192, 44, '#fde047', 14); for (let a = 0; a < 6.3; a += .35) sq(130 + Math.cos(a) * 14, lipAt(130) + 10 + Math.sin(a) * 6, 1.5, 1.5, '#fde047'); }
         const jy = g.air > 0 ? Math.sin(Math.max(0, g.air) / .9 * Math.PI) * 12 : 0, x = 130, y = g.y - jy;
         if (g.stun > 0) { sq(x - 8, y + 2, 16, 2, '#f97316'); sdisc(x + 6, y + 6, 2, '#fcd34d'); }
         else {
-          sq(x - 9, y, 18, 2.5, '#1b1f2e'); sq(x - 8.5, y + .5, 17, 1.5, '#f97316'); sq(x - 3, y + .5, 6, 1.5, '#fde68a');
-          sq(x - 2, y - 9, 4, 9, '#1b1f2e'); sq(x - 1.5, y - 8.5, 3, 8, '#0ea5e9'); sdisc(x, y - 11, 2.2, '#fcd34d');
-          sq(x - 6, y - 7, 4, 1, '#fcd34d'); sq(x + 2, y - 8, 4, 1, '#fcd34d');
+          sme(x, y + .5, 1);
+          sq(x - 9, y, 18, 2.5, '#1b1f2e'); sq(x - 10, y + .5, 1.5, 1.5, '#1b1f2e'); sq(x + 8.5, y - .5, 2, 2, '#1b1f2e');
+          sq(x - 9, y + .5, 18, 1.5, '#f97316'); sq(x + 8.5, y, 1.5, 1.5, '#f97316'); sq(x - 8, y + .5, 16, .5, '#fdba74'); sq(x - 3, y + .5, 6, 1.5, '#fde68a');
+          if (Math.random() < .6) { sx.globalAlpha = .7; sq(x - 11 - Math.random() * 4, y + Math.random() * 2, 1, 1, '#ffffff'); sx.globalAlpha = 1; }
         }
         if (g.popT > 0) stext(g.pop, x, y - 18, '#fde047', 9);
-        stext(tr('⏱ {s} s · {p} Punkte', { s: Math.ceil(g.time), p: Math.round(g.pts) }), 192, 14, '#fff', 8);
-        stext(g.mode ? tr('Serie: {n}', { n: g.chain }) : tr('Kombo: {n}', { n: g.combo }), 192, 26, '#fde047', 7);
+        shud(tr('⏱ {s} s · {p} Punkte', { s: Math.ceil(g.time), p: Math.round(g.pts) }), 192, 14, '#fff', 8);
+        shud(g.mode ? tr('Serie: {n}', { n: g.chain }) : tr('Kombo: {n}', { n: g.combo }), 192, 26, '#fde047', 7);
       },
       score: g => g.pts },
     { id: 'volley', icon: '🏐', name: 'Beachvolleyball', st: 14, modes: ['Match', 'Aufschlag-Serie'],
       info: 'Lauf unter den Ball (Ring im Sand) und tippe, wenn er tief genug ist. Ganz tief getroffen wird ein Schmetterball.',
-      exp: [lv => 40 + lv * .03, lv => 12 + lv * .012], med: [[50, 100, 120], [15, 28, 40]], champ: [100, 44],
+      exp: [lv => 40 + lv * .02, lv => 12 + lv * .006], med: [[50, 100, 120], [14, 17, 22]], champ: [100, 25],
       stamps: [['v1', 'Ersten Punkt gemacht', g => g.me > 0], ['v2', 'Ein Match gewonnen', g => g.mode === 0 && g.me >= 7], ['v3', '5 Schmetterbälle in einem Match', g => g.mode === 0 && g.spikes >= 5],
         ['v4', 'Aufschlag-Serie: 30 Punkte', g => g.mode === 1 && g.pts >= 30], ['v5', 'Ein Match zu null gewonnen', g => g.mode === 0 && g.me >= 7 && g.op === 0]],
       start(g) { Object.assign(g, { me: 0, op: 0, px: 90, ox: 290, ball: null, serve: 1, wait: 1, spikes: 0, pts: 0, n: 0, pow: 0, ang: 0, pop: '', popT: 0, mark: null }); },
@@ -3459,7 +3674,7 @@
         const launch = (x, h, tx2, T) => ({ x, h, vx: (tx2 - x) / T, vh: (-h + .5 * G * T * T) / T, side: tx2 > 192 ? 1 : -1, hit: 0 });
         if (g.mode === 1) { // serve series: 10 serves into zones on Pelle's side, hold for power, release when the aim fits
           if (!g.ball) {
-            if (g.n >= 10) { g.over = true; return; }
+            if (g.n >= (g.drillN || 10)) { g.over = true; return; }
             g.ang = .5 + .5 * Math.sin(g.t * (2 + g.d * 2.5));
             if (I.down) g.pow = Math.min(1, g.pow + dt * .9);
             if (I.rel && g.pow > .05) { const land = 200 + g.pow * 190; g.ball = launch(g.px, 30, land, 1.1 - g.ang * .4); g.ball.serve = 1; g.pow = 0; sfx.whoosh(); }
@@ -3497,29 +3712,34 @@
         }
       },
       draw(g) {
-        skySea(110); sq(0, 150, W, 66, '#f2dfa8'); sq(0, 150, W, 1.5, '#fde68a');
-        for (let i = 0; i < 50; i++) sq((i * 71) % W, 152 + (i * 13) % 60, 1, .5, '#d4b97a');
-        sq(8, 176, 368, 1, '#f8fafc'); sq(191, 108, 2, 70, '#64748b'); for (let y = 110; y < 134; y += 3) sq(186, y, 12, 1, '#e2e8f0'); sq(186, 108, 12, 2, '#f8fafc');
+        if (!sceneBg('sport-volley', 110)) {
+          sand(150); palm(20, 152, 50, 1); palm(360, 152, 58, -1);
+          sq(8, 176, 368, 1, '#f8fafc'); sq(191, 108, 2, 70, '#64748b'); for (let y = 110; y < 134; y += 3) sq(186, y, 12, 1, '#e2e8f0'); sq(186, 108, 12, 2, '#f8fafc');
+        }
         if (g.mode === 1) for (const [a, b2, p, c] of [[192, 260, 1, '#fde68a'], [260, 330, 3, '#fcd34d'], [330, 376, 5, '#fbbf24']]) { sq(a, 174, b2 - a, 3, c); stext(String(p), (a + b2) / 2, 190, '#78350f', 8); }
-        const fig = (x, col) => { sq(x - 3, 160, 6, 14, '#1b1f2e'); sq(x - 2.5, 160.5, 5, 13, col); sdisc(x, 157, 3, '#fcd34d'); };
-        fig(g.px, '#ef4444');
+        crowd(g, 34, 150, 160, g.mode ? g.pts : g.me, 7, 3); for (let i = 0; i < 7; i++) sfan(236 + i * 17 + Math.sin(i * 5.1) * 2, 160 + (i % 2) * 1.5, 20 + i, g._cheer > 0);
+        const run = Math.abs(g.px - (g.lastPx ?? g.px)) > .05; g.lastPx = g.px;
+        if (run && Math.random() < .4) (g.dust = g.dust || []).push({ x: g.px + rnd(-2, 2), y: 176, l: .5 });
+        if (g.dust) { g.dust = g.dust.filter(d => (d.l -= 1 / 60) > 0); for (const d of g.dust) { sx.globalAlpha = d.l * 1.4; sq(d.x, d.y - (.5 - d.l) * 6, 1.5, 1, '#f5e6bf'); } sx.globalAlpha = 1; }
+        sx.globalAlpha = .25; sdisc(g.px, 176, 5, '#78350f'); sx.globalAlpha = 1;
+        sme(g.px, 176, run ? [0, 1, 0, 2][Math.floor(t * 10) % 4] : 0);
         if (g.mode === 0) { if (g.lvl === 3) drawKraul(sq, g.ox, 176, true); else drawPelle(sq, g.ox, 176, 0, true); }
         if (g.ball) {
           const b = g.ball, land = b.x + b.vx * ((b.vh + Math.sqrt(Math.max(0, b.vh * b.vh + 320 * b.h))) / 160);
           if (b.vx < 0 && land < 192) { for (let a = 0; a < 6.3; a += .4) sq(land + Math.cos(a) * 7, 176 + Math.sin(a) * 2, 1, 1, '#ef4444'); }
           sx.globalAlpha = .3; sdisc(b.x, 176, 3, '#0b1030'); sx.globalAlpha = 1;
-          sdisc(b.x, 172 - b.h, 3.2, '#facc15'); sq(b.x - 2, 171 - b.h, 4, 1, '#3b82f6');
+          sspr(BALLS.volley(), b.x, 172 - b.h);
         }
         if (g.mode === 1 && !g.ball && g.n < 10) { const a = g.ang; for (let i = 0; i < 8; i++) sq(g.px + 4 + i * 3, 150 - i * 3 * (.4 + a), 1, 1, '#facc15'); sq(g.px - 12, 120, 5, 24, '#1b1f2e'); sq(g.px - 11, 121 + 22 * (1 - g.pow), 3, 22 * g.pow, '#22c55e'); }
         if (g.mark && g.popT > 0) stext(g.pop || (g.mark.p ? '✓' : '✗'), g.mark.x, 166, '#fde047', 8);
         else if (g.popT > 0) stext(g.pop, g.px, 140, '#fde047', 8);
-        stext(g.mode ? tr('Aufschlag {a}/10 · {p} Punkte', { a: Math.min(10, g.n + 1), p: g.pts }) : `${g.me} : ${g.op}`, 192, 16, '#fff', 10);
-        if (!g.mode && !g.ball && g.serve > 0 && g.wait <= 0) stext(tr('Tippen = Aufschlag'), 192, 30, '#fde047', 7);
+        shud(g.mode ? tr('Aufschlag {a}/{b} · {p} Punkte', { a: Math.min(g.drillN || 10, g.n + 1), b: g.drillN || 10, p: g.pts }) : `${g.me} : ${g.op}`, 192, 16, '#fff', 10);
+        if (!g.mode && !g.ball && g.serve > 0 && g.wait <= 0) shud(tr('Tippen = Aufschlag'), 192, 30, '#fde047', 7);
       },
       score: g => g.mode ? g.pts : g.me * 10 + (g.me >= 7 ? 30 + (7 - g.op) * 5 : 0) },
     { id: 'bowling', icon: '🎳', name: 'Strand-Bowling', st: 22, modes: ['10 Frames', 'Pyramide'],
       info: 'Erstes Tippen hält die Richtung fest, zweites den Drall. Der Ball rollt, die Pins fallen.',
-      exp: [lv => 80 + lv * .06, lv => 8 + lv * .004], med: [[90, 150, 200], [10, 15, 19]], champ: [220, 20],
+      exp: [lv => 80 + lv * .04, lv => 8 + lv * .004], med: [[90, 116, 144], [9, 12, 14]], champ: [164, 16],
       stamps: [['w1', 'Ersten Strike geworfen', g => g.strikes > 0], ['w2', 'Einen Spare geworfen', g => g.spares > 0], ['w3', '3 Strikes in Folge', g => g.maxRow >= 3],
         ['w4', '10 Frames: 200 Punkte', g => g.mode === 0 && g.pts >= 200], ['w5', 'Pyramide: alle 21 Pins', g => g.mode === 1 && g.pts >= 21]],
       start(g) { Object.assign(g, { rolls: [], frame: 0, inFrame: 0, pts: 0, strikes: 0, spares: 0, row: 0, maxRow: 0, throws: 0, ph: 'aim', aim: 0, spin: 0, ball: null, pins: [], simT: 0, pop: '', popT: 0, standBefore: 0 }); bowlRack(g); },
@@ -3534,23 +3754,24 @@
         if ((b.y < -10 && still) || g.simT > 4) bowlScore(g);
       },
       draw(g) {
-        sq(0, 0, W, H, '#f2dfa8'); for (let i = 0; i < 70; i++) sq((i * 71) % W, (i * 37) % H, 1, .5, '#d4b97a');
-        for (const [x, h] of [[40, 70], [344, 80], [80, 50], [300, 55]]) { sq(x, 216 - h, 3, h, '#a16207'); for (let i = 0; i < 6; i++) sq(x - 12 + i * 4, 216 - h - 2 + Math.abs(i - 2.5) * 2, 6, 2, '#16a34a'); }
-        sq(146, 0, 92, H, '#78350f'); sq(150, 0, 84, H, '#d6a35c'); for (let x = 154; x < 232; x += 6) sq(x, 0, .5, H, '#c08a46');
-        sq(146, 0, 6, H, '#57301a'); sq(232, 0, 6, H, '#57301a'); sq(150, 186, 84, 1, '#ef4444');
-        for (let i = -2; i <= 2; i++) sq(192 + i * 10 - 1, 150 - Math.abs(i) * 4, 2, 4, '#7c2d12');
+        if (!sportBg('sport-bowling')) {
+          sq(0, 0, W, H, '#f2dfa8'); for (let i = 0; i < 70; i++) sq((i * 71) % W, (i * 37) % H, 1, .5, '#d4b97a');
+          for (const [x, h, l] of [[40, 70, 1], [344, 80, -1], [80, 50, 1], [300, 55, -1]]) palm(x, 216, h, l);
+          sq(146, 0, 92, H, '#78350f'); sq(150, 0, 84, H, '#d6a35c'); for (let x = 154; x < 232; x += 6) sq(x, 0, .5, H, '#c08a46');
+          sq(146, 0, 6, H, '#57301a'); sq(232, 0, 6, H, '#57301a'); sq(150, 186, 84, 1, '#ef4444');
+          for (let i = -2; i <= 2; i++) sq(192 + i * 10 - 1, 150 - Math.abs(i) * 4, 2, 4, '#7c2d12');
+        }
         for (const p of g.pins) {
           if (p.gone) continue;
-          if (p.down) { sx.globalAlpha = .55; sq(p.x - 3, p.y - 1, 6, 2.5, '#e2e8f0'); sx.globalAlpha = 1; continue; }
-          sdisc(p.x, p.y, 3, '#f8fafc'); sq(p.x - 2.5, p.y - .5, 5, 1, '#ef4444'); sq(p.x - 1, p.y - 2, 1, 1, '#ffffff');
+          if (p.down) { sspr(litEll('pinDown', 3.6, 1.6, { a: ['#f8fafc', '#e2e8f0', '#cbd5e1', '#94a3b8'], r: ['#fca5a5', '#ef4444', '#b91c1c', '#7f1d1d'] }, (u) => Math.abs(u + .35) < .12 ? 'r' : 'a', false), p.x, p.y); continue; }
+          sx.globalAlpha = .28; sdisc(p.x + 1.5, p.y + 2, 3, '#3b2a14'); sx.globalAlpha = 1; sspr(BALLS.pin(), p.x, p.y);
         }
-        if (g.ball) { const b = g.ball; sdisc(b.x, b.y, 5.5, '#1e3a8a'); sdisc(b.x - 1, b.y - 1.5, 2, '#3b82f6'); sq(b.x + 1, b.y - 2, 1, 1, '#0f172a'); sq(b.x + 2.5, b.y, 1, 1, '#0f172a'); }
-        else { sdisc(192, 196, 5.5, '#1e3a8a'); sdisc(191, 194.5, 2, '#3b82f6'); }
+        { const b = g.ball || { x: 192, y: 196 }; sx.globalAlpha = .3; sdisc(b.x + 2, b.y + 2.5, 5, '#3b2a14'); sx.globalAlpha = 1; sspr(BALLS.bowl(), b.x, b.y); for (const [dx, dy] of [[1, -2.5], [2.5, -1], [3, 1.5]]) sq(b.x + dx, b.y + dy, 1, 1, '#0b1030'); }
         if (g.ph === 'aim' || g.ph === 'spin') { for (let i = 1; i < 12; i++) sq(192 + Math.sin(g.aim) * i * 7 - .5, 196 - Math.cos(g.aim) * i * 7, 1.5, 1.5, '#facc15'); }
         if (g.ph === 'spin') { sq(252, 170, 70, 6, '#1b1f2e'); sq(286.5, 169, 1, 8, '#f8fafc'); sq(287 + g.spin * 33 - 1.5, 168, 3, 10, '#ef4444'); stext(tr('Drall'), 287, 164, '#78350f', 7); }
-        if (g.ph === 'aim') stext(tr('Tippen = Richtung'), 287, 164, '#78350f', 7);
+        if (g.ph === 'aim') shud(tr('Tippen = Richtung'), 287, 164, '#fde047', 7);
         if (g.popT > 0) stext(g.pop, 192, 100, '#fde047', 14);
-        stext(g.mode ? tr('Wurf {a}/3 · {p} Pins', { a: Math.min(3, g.throws + 1), p: g.pts }) : tr('Frame {a}/10 · {p} Punkte', { a: Math.min(10, g.frame + 1), p: bowlTotal(g.rolls) }), 8, 14, '#1b1f2e', 8, 'left');
+        shud(g.mode ? tr('Wurf {a}/3 · {p} Pins', { a: Math.min(3, g.throws + 1), p: g.pts }) : tr('Frame {a}/10 · {p} Punkte', { a: Math.min(10, g.frame + 1), p: bowlTotal(g.rolls) }), 8, 14, '#fff', 8, 'left');
       },
       score: g => g.pts },
   ];
@@ -3583,59 +3804,14 @@
     const fish = FISH.filter(f => f.map === 'insel' && f.bay === p.bay), f = fish[p.i % Math.max(1, fish.length)];
     return f ? tr('📍 {p} ({b}): Hier lebt der {f}.', { p: p.name, b: INSEL_BAYS[p.bay - 1].name, f: f.name }) : tr('📍 {p} ({b})', { p: p.name, b: INSEL_BAYS[p.bay - 1].name });
   }
-  let islandCv = null;
+  // the island from above is painted in img/pxl/sport.px.js (img/insel-karte.png, same geometry as isleR/LANDMARKS);
+  // until it has loaded the flight shows plain sea
+  let seaCv = null;
   function islandMap() {
-    if (islandCv) return islandCv;
-    const c = islandCv = document.createElement('canvas'); c.width = MAP_W; c.height = MAP_H;
-    const x = c.getContext('2d'), img = x.createImageData(MAP_W, MAP_H), d = img.data, cx = MAP_W / 2, cy = MAP_H / 2;
-    const n2 = (a, b) => { const v = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453; return v - Math.floor(v); };
-    // the river runs from the crater lake down to the lagoon in the west
-    const riverY = xx => cy + Math.sin((cx - xx) * .025) * 16 + (cx - xx) * .04;
-    for (let yy = 0; yy < MAP_H; yy++) for (let xx = 0; xx < MAP_W; xx++) {
-      const dx = (xx - cx) / 1.2, dy = (yy - cy) / .8, a = Math.atan2(dy, dx), r = Math.hypot(dx, dy), R = isleR(a), e = R - r, h = r / R;
-      const nz = n2(Math.floor(xx / 3), Math.floor(yy / 3));
-      let col;
-      if (e < -40) col = mix3([22, 120, 160], [14, 84, 128], Math.min(1, -e / 260));
-      else if (e < 0) col = mix3([120, 232, 218], [40, 170, 190], -e / 40);
-      else if (e < 9) col = nz > .7 ? [250, 232, 180] : [242, 223, 168];
-      else if (r < 18) col = r < 15 ? (nz > .6 ? [94, 234, 212] : [45, 212, 191]) : [87, 83, 78]; // crater lake
-      else if (r < 34) col = nz > .5 ? [120, 113, 108] : [87, 83, 78];                              // crater rim
-      else if (h < .22) col = nz > .55 ? [168, 162, 158] : [138, 130, 124];                        // bare rock up top
-      else if (h < .42) col = nz > .6 ? [101, 163, 13] : [77, 124, 15];                           // high meadows
-      else col = nz > .62 ? [22, 163, 74] : nz > .2 ? [21, 128, 61] : [20, 83, 45];                // jungle
-      if (xx < cx - 30 && e > 9 && Math.abs(yy - riverY(xx)) < 2 + (cx - xx) / 160) col = [125, 211, 252];
-      const o = (yy * MAP_W + xx) * 4; d[o] = col[0]; d[o + 1] = col[1]; d[o + 2] = col[2]; d[o + 3] = 255;
-    }
-    x.putImageData(img, 0, 0);
-    const R = (X, Y, w, h, c) => { x.fillStyle = c; x.fillRect(Math.round(X), Math.round(Y), w, h); };
-    const L = i => IPOINTS[i];
-    // paths: a ring road around the island and a trail up to the crater
-    for (let i = 0; i < 360; i++) { const a = i / 360 * Math.PI * 2, k = .82, X = cx + Math.cos(a) * isleR(a) * 1.2 * k, Y = cy + Math.sin(a) * isleR(a) * .8 * k; R(X, Y, 2, 2, '#d6b97a'); }
-    for (let i = 0; i < 60; i++) { const k = .2 + i / 60 * .6, a = BAY_ANG[0] + Math.sin(i * .5) * .12, X = cx + Math.cos(a) * isleR(a) * 1.2 * k, Y = cy + Math.sin(a) * isleR(a) * .8 * k; R(X, Y, 1.5, 1.5, '#c4a46b'); }
-    // palms along the coast
-    for (let i = 0; i < 70; i++) { const a = i / 70 * Math.PI * 2, k = .88 + n2(i, 3) * .06, X = cx + Math.cos(a) * isleR(a) * 1.2 * k, Y = cy + Math.sin(a) * isleR(a) * .8 * k; R(X - 3, Y - 2, 7, 4, '#15803d'); R(X - 1, Y - 1, 3, 2, '#4ade80'); }
-    // landmarks
-    { const [X, Y] = L(0).xy; R(X - 14, Y - 6, 28, 12, '#fde68a'); R(X - 2, Y - 2, 4, 4, '#38bdf8'); } // plaza with a fountain
-    { const [X, Y] = L(1).xy; for (let i = 0; i < 5; i++) { R(X - 20 + i * 9, Y - 4 + (i % 2) * 3, 7, 6, '#a16207'); R(X - 21 + i * 9, Y - 6 + (i % 2) * 3, 9, 3, '#e9c77b'); } }
-    { const [X, Y] = L(2).xy; R(X - 2, Y - 20, 5, 34, '#92400e'); R(X - 1, Y - 20, 3, 34, '#b45309'); }
-    { const [X, Y] = L(3).xy; R(X - 12, Y - 7, 24, 14, '#4ade80'); R(X - 1, Y - 1, 3, 3, '#f97316'); }
-    { const [X, Y] = L(4).xy; R(X - 10, Y - 5, 20, 10, '#7c2d12'); R(X - 9, Y - 4, 18, 3, '#ef4444'); }
-    { const [X, Y] = L(6).xy; for (let i = 0; i < 70; i++) R(X - 30 + n2(i, 1) * 60, Y - 26 + n2(i, 2) * 52, 3, 2, ['#f472b6', '#fb923c', '#a78bfa', '#facc15'][i % 4]); }
-    { const [X, Y] = L(9).xy; for (let i = 0; i < 6; i++) R(X - 16 + i * 6, Y + 8 + (i % 2), 4, 1, '#f8fafc'); }
-    { const [X, Y] = L(12).xy; for (let i = 0; i < 10; i++) R(X - 40 + i * 9, Y + Math.sin(i) * 10, 3, 3, i % 2 ? '#ef4444' : '#facc15'); }
-    { const [X, Y] = L(13).xy; for (const r0 of [6, 4, 2]) R(X - r0, Y - r0, r0 * 2, r0 * 2, r0 === 6 ? '#f8fafc' : r0 === 4 ? '#3b82f6' : '#ef4444'); }
-    { const [X, Y] = L(14).xy; R(X - 12, Y - 7, 24, 14, '#fde68a'); R(X - .5, Y - 7, 1, 14, '#f8fafc'); }
-    { const [X, Y] = L(15).xy; R(X - 8, Y - 6, 16, 10, '#78350f'); R(X - 9, Y - 8, 18, 3, '#b91c1c'); }
-    { const [X, Y] = L(17).xy; R(X - 2, Y - 2, 5, 5, '#a16207'); R(X - 3, Y - 4, 7, 2, '#fde68a'); }
-    { const [X, Y] = L(18).xy; for (let i = 0; i < 26; i++) R(X - 2 + Math.sin(i) * 1.5, Y - 26 + i, 5, 1, i % 3 ? '#e0f2fe' : '#ffffff'); R(X - 20, Y, 34, 18, '#5eead4'); }
-    { const [X, Y] = L(20).xy; R(X - 8, Y - 6, 16, 12, '#f8fafc'); R(X - 6, Y - 4, 12, 8, '#0e7490'); R(X - .5, Y - 4, 1, 8, '#f8fafc'); }
-    { const [X, Y] = L(21).xy; R(X - 3, Y - 12, 6, 24, '#d6a35c'); for (let i = 0; i < 3; i++) R(X - 2 + i * 1.5, Y - 10, 1, 1, '#ffffff'); }
-    { const [X, Y] = L(22).xy; for (let i = 0; i < 12; i++) R(X - 14 + i * 2.5, Y + Math.sin(i / 11 * Math.PI) * 3, 2, 1, '#92400e'); }
-    { const [X, Y] = L(24).xy; R(X - 16, Y - 10, 32, 20, '#f2dfa8'); R(X - 3, Y - 9, 6, 6, '#eab308'); R(X - 2, Y - 12, 4, 3, '#fde047'); R(X - 4, Y - 3, 8, 3, '#a16207'); }
-    { const [X, Y] = L(25).xy; R(X - 3, Y - 3, 6, 6, '#f8fafc'); R(X - 2, Y - 2, 4, 4, '#ef4444'); R(X - 1, Y - 1, 2, 2, '#fde047'); }
-    { const [X, Y] = L(26).xy; for (const [dx, h0, c0] of [[-7, 4, '#94a3b8'], [0, 7, '#facc15'], [7, 2, '#b45309']]) R(X + dx - 3, Y - h0, 6, h0 + 2, c0); }
-    { const [X, Y] = L(29).xy; for (let i = 0; i < 30; i++) R(X - 18 + n2(i, 7) * 36, Y - 12 + n2(i, 8) * 24, 3, 2, i % 3 ? '#44403c' : '#ea580c'); }
-    return c;
+    const im = worldImg('insel-karte');
+    if (imgReady(im)) return im;
+    if (!seaCv) { seaCv = document.createElement('canvas'); seaCv.width = MAP_W; seaCv.height = MAP_H; const x = seaCv.getContext('2d'); x.fillStyle = '#1e84a6'; x.fillRect(0, 0, MAP_W, MAP_H); }
+    return seaCv;
   }
 
   // Strand-Bowling: pins, a tiny physics step and the usual frame scoring
@@ -3718,6 +3894,7 @@
   const sportPlaying = () => sp && !sp.done && !$('sport').hidden;
   function sportDiff(s, lvl) { return clamp(sportRec(s.id).lv / 2500 * .7 + [0, .1, .25, .45][lvl], 0, 1); }
   function startSport(id, mode, lvl) {
+    SPORT_BG.forEach(worldImg);
     const s = SPORTS.find(x => x.id === id);
     if (!sportOpen(s)) return;
     if (s.fishing) { // the tournament runs while you fish: the next 5 island catches count
@@ -3730,6 +3907,49 @@
     $('sport').hidden = false;
     $('sport-title').textContent = `${s.icon} ${s.name} · ${s.modes[mode]}`;
     $('sport-sub').textContent = lvl === 3 ? tr('Champion-Duell gegen Kapitän Kraul: schlag {n} Punkte!', { n: s.champ[mode] }) : `${SP_LV[lvl]} · ${s.info}`;
+  }
+  // Fang-Drills: from the Sun Island on, a rare, epic or legendary bite can turn into a short round of a
+  // station you already opened (or the osu-Taktdrill for legendaries). Score `pass` and the fish is landed,
+  // `clean` counts as a clean catch. Nothing here touches skill, stamps, medals or the daily limit.
+  const SPORT_DRILL_CHANCE = .15, DRILL_D = { rare: .15, epic: .3, legendary: .45 };
+  const SPORT_DRILLS = [
+    { id: 'frisbee', mode: 1, set: g => { g.n = 2; }, pass: 170, clean: 270 },
+    { id: 'flug', mode: 0, set: g => { g.time = 45; }, pass: 4, clean: 8 },
+    { id: 'jetski', mode: 1, set: g => { g.time = 20; }, pass: 55, clean: 95 },
+    { id: 'bogen', mode: 1, set: g => { g.time = 18; }, pass: 6, clean: 10 },
+    { id: 'tt', mode: 1, set: () => {}, pass: 6, clean: 12 },
+    { id: 'surf', mode: 0, set: g => { g.time = 22; }, pass: 35, clean: 60 },
+    { id: 'volley', mode: 1, set: g => { g.drillN = 5; }, pass: 6, clean: 11 },
+    { id: 'bowling', mode: 1, set: () => {}, pass: 7, clean: 12 },
+  ];
+  function drillPool(f) {
+    const pool = SPORT_DRILLS.filter(c => sportOpen(SPORTS.find(s => s.id === c.id)));
+    return f.r === 'legendary' ? [...pool, 'osu'] : pool;
+  }
+  function startDrill(c) {
+    if (c === 'osu') return startRhythm();
+    SPORT_BG.forEach(worldImg);
+    const s = SPORTS.find(x => x.id === c.id);
+    closeModals(); state = 'sdrill'; hint(''); $('reel').hidden = true;
+    sp = { id: s.id, s, mode: c.mode, lvl: 0, t: 0, cd: 2.4, phase: 'count', drill: c, g: { mode: c.mode, lvl: 0, t: 0, d: DRILL_D[hooked.f.r] || .2 } };
+    s.start(sp.g); c.set(sp.g); Object.assign(SIN, { down: false, tap: false, rel: false, moved: 0, keys: {} });
+    $('sport-hub').hidden = true; $('sport-play').hidden = false; $('sport-result').hidden = true; $('sport-play').classList.remove('done');
+    $('sport').hidden = false;
+    $('sport-title').textContent = tr('🎣 Fang-Drill · {s}', { s: `${s.icon} ${s.name}` });
+    $('sport-sub').textContent = tr('{f} hängt an der Leine! Schaff {n} Punkte, dann ist er gefangen.', { f: hooked.f.name, n: c.pass }) + ' ' + s.info;
+  }
+  function drillEnd(score) { // score < 0: the drill was left early
+    const c = sp.drill, f = hooked && hooked.f; sp = null;
+    $('sport').hidden = true;
+    if (!f) { state = 'idle'; return; }
+    if (score >= c.pass) {
+      reel.maxT = score >= c.clean ? 0 : .8;
+      toast(tr('🎣 Geschafft! {f} gefangen ({n} Punkte)', { f: f.name, n: score }));
+      land_catch();
+    } else {
+      retract((score < 0 ? tr('Drill abgebrochen! {f} ist weg.', { f: f.name }) : tr('Nicht geschafft! {f} ist weg. ({n} / {p} Punkte)', { f: f.name, n: score, p: c.pass })) + lostXp(f));
+      bealinEvent({ type: 'lost' });
+    }
   }
   function sportTick(dt) {
     introTick(dt);
@@ -3760,7 +3980,8 @@
     const medal = lvl === 3 ? 0 : medalOf(s, mode, lvl, score); g.medal = medal;
     const before = r.lv;
     if (lvl < 3) {
-      const d = Math.round(clamp((score / s.exp[mode](r.lv) - 1) * 60, -30, 60) * SP_DM[lvl]);
+      // beating your expectation moves the skill, and every medal adds a little on top so steady play keeps climbing
+      const d = Math.round((clamp((score / s.exp[mode](r.lv) - 1) * 60, -30, 60) + SP_MEDAL_LV * medal) * SP_DM[lvl]);
       if (d > 0 && r.lv < SP_CAP[lvl]) r.lv = Math.min(SP_CAP[lvl], r.lv + d);
       else if (d < 0) r.lv = Math.max(classFloor(r.lv), r.lv + d);
     }
@@ -3787,6 +4008,7 @@
     return { score, medal, dLv: r.lv - before, lv: r.lv, newSt, coins, xp: xpGot || xp, scales, lines, half: pay.half, champ: lvl === 3 };
   }
   function sportFinish() {
+    if (sp.drill) return drillEnd(Math.max(0, Math.round(sp.s.score(sp.g))));
     sp.done = true;
     const res = sportResult(sp.s, sp.g);
     showSportResult(sp.s, sp.g, res);
@@ -3842,13 +4064,20 @@
   }
   // the hub: all stations, the stamp card and what the next stamps open
   function renderSport() {
+    SPORT_BG.forEach(worldImg);
     if (sp && !sp.done) return;
     sp = null;
     $('sport-play').hidden = true; $('sport-hub').hidden = false;
     const hub = $('sport-hub'); hub.replaceChildren();
     const n = stampCount(), next = INSEL_BAYS.find(b => b.st > n);
     $('sport-title').textContent = tr('🏅 Sportstationen');
-    $('sport-sub').textContent = tr('{a} von {b} Stempeln', { a: n, b: ALL_STAMPS }) + ' · ' + (next ? tr('Noch {k} bis {b}', { k: next.st - n, b: next.name }) : tr('Alle Buchten offen')) + ' · ' + tr('Insel-Bonus +{p} % Taler', { p: Math.round(sportBonus() * 100) });
+    $('sport-sub').textContent = '';
+    const chips = document.createElement('div'); chips.className = 'sport-chips';
+    const chip = (txt, cls = '') => { const c = document.createElement('span'); c.className = 'sport-chip ' + cls; c.textContent = txt; chips.append(c); return c; };
+    chip('🔖 ' + tr('{a} von {b} Stempeln', { a: n, b: ALL_STAMPS }));
+    chip(next ? '🧭 ' + tr('Noch {k} bis {b}', { k: next.st - n, b: next.name }) : '✅ ' + tr('Alle Buchten offen'));
+    chip('🪙 ' + tr('Insel-Bonus +{p} % Taler', { p: Math.round(sportBonus() * 100) }));
+    hub.append(chips);
     if (spView.id) return renderStation(hub, SPORTS.find(s => s.id === spView.id));
     hub.append(sportMiniMap());
     const grid = document.createElement('div'); grid.className = 'sport-grid';
@@ -3860,48 +4089,78 @@
       const ic = document.createElement('span'); ic.className = 'sport-ic'; ic.textContent = s.icon;
       const nm = document.createElement('b'); nm.textContent = s.name;
       const lv = document.createElement('small'); lv.textContent = open ? `${SPORT_CLASS(r.lv)} · ${r.lv}` : tr('🔒 ab {n} Stempeln', { n: s.st });
+      const foot = document.createElement('span'); foot.className = 'sport-foot';
       const bar = document.createElement('span'); bar.className = 'bar'; const bi = document.createElement('i'); bi.style.width = (r.lv / 25) + '%'; bar.append(bi);
-      const sts = document.createElement('small'); sts.className = 'sport-dots'; sts.textContent = '●'.repeat(got) + '○'.repeat(s.stamps.length - got) + (save.trophies.includes(s.id) ? ' 🏆' : '');
-      b.append(ic, nm, lv, bar, sts);
+      const sts = document.createElement('span'); sts.className = 'sport-dots'; sts.setAttribute('aria-label', tr('{a} von {b} Stempeln', { a: got, b: s.stamps.length }));
+      for (let i = 0; i < s.stamps.length; i++) { const d = document.createElement('i'); if (i < got) d.className = 'on'; sts.append(d); }
+      if (save.trophies.includes(s.id)) { const tro = document.createElement('em'); tro.textContent = '🏆'; sts.append(tro); }
+      foot.append(bar, sts); b.append(ic, nm, lv, foot);
       if (open) b.addEventListener('click', () => { spView.id = s.id; renderSport(); });
       grid.append(b);
     }
     hub.append(grid);
-    const ladder = document.createElement('p'); ladder.className = 'sub';
-    ladder.textContent = INSEL_BAYS.map(b => `${n >= b.st ? '✅' : '🔒'} ${b.name} (${b.st})`).join(' · ');
+    const ladder = document.createElement('div'); ladder.className = 'sport-chips';
+    for (const b of INSEL_BAYS) { const c = document.createElement('span'); c.className = 'sport-chip' + (n >= b.st ? '' : ' off'); c.textContent = `${n >= b.st ? '✅' : '🔒'} ${b.name} (${b.st})`; ladder.append(c); }
     hub.append(ladder);
   }
   // the island from above with a marker for every station; bays that are still closed lie under clouds
   function sportMiniMap() {
     const c = document.createElement('canvas'); c.className = 'sport-map'; c.width = 384; c.height = 216;
     c.setAttribute('role', 'img'); c.setAttribute('aria-label', tr('Karte der Sonneninsel mit allen Sportstationen'));
-    const x = c.getContext('2d'); x.imageSmoothingEnabled = false; x.drawImage(islandMap(), 0, 0, 384, 216);
+    const x = c.getContext('2d'); x.imageSmoothingEnabled = false; { const mini = worldImg('insel-karte-mini'); x.drawImage(imgReady(mini) ? mini : islandMap(), 0, 0, 384, 216); }
     const n = stampCount();
     for (const b of INSEL_BAYS) if (n < b.st) { const [X, Y] = isleAt(b.n, 0, .9); x.globalAlpha = .85; x.fillStyle = '#f1f5f9'; for (const [dx, dy, r] of [[-10, 0, 12], [8, -4, 14], [2, 6, 11], [-2, -8, 9]]) { x.beginPath(); x.arc(X / 3 + dx, Y / 3 + dy, r, 0, 7); x.fill(); } x.globalAlpha = 1; x.font = '700 9px Poppins, sans-serif'; x.textAlign = 'center'; x.fillStyle = '#334155'; x.fillText('🔒 ' + b.st, X / 3, Y / 3 + 3); }
     x.font = '14px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-    for (const st of SPORTS) { const p = IPOINTS[STATION_AT[st.id]]; if (!p || !sportOpen(st)) continue; x.fillStyle = 'rgba(15,23,42,.7)'; x.fillRect(p.x / 3 - 9, p.y / 3 - 9, 18, 18); x.fillText(st.icon, p.x / 3, p.y / 3 + 1); }
+    // station markers: framed tiles you can tap to open that station
+    const hits = [];
+    for (const st of SPORTS) {
+      const p = IPOINTS[STATION_AT[st.id]]; if (!p || !sportOpen(st)) continue;
+      const X = Math.round(p.x / 3), Y = Math.round(p.y / 3);
+      x.fillStyle = '#0b1020'; x.fillRect(X - 12, Y - 12, 24, 24); x.fillStyle = '#0f1730'; x.fillRect(X - 10, Y - 10, 20, 20); x.fillStyle = '#b45309'; x.fillRect(X - 10, Y + 8, 20, 2);
+      x.fillText(st.icon, X, Y + 1); hits.push([X, Y, st.id]);
+    }
+    if (hits.length) {
+      c.classList.add('click');
+      c.addEventListener('click', e => {
+        const r = c.getBoundingClientRect(), mx = (e.clientX - r.left) / r.width * 384, my = (e.clientY - r.top) / r.height * 216;
+        const h = hits.find(([X, Y]) => Math.abs(mx - X) < 15 && Math.abs(my - Y) < 15);
+        if (h) { spView.id = h[2]; renderSport(); }
+      });
+    }
     return c;
   }
   function renderStation(hub, s) {
     const r = sportRec(s.id);
     $('sport-title').textContent = `${s.icon} ${s.name}`;
-    const info = document.createElement('p'); info.textContent = s.info; hub.append(info);
-    const lv = document.createElement('p'); lv.className = 'sub';
-    lv.textContent = tr('Können: {a} / 2500 · {c} · Bestwerte: {b}', { a: r.lv, c: SPORT_CLASS(r.lv), b: s.modes.map((m, i) => `${m} ${r.best[i] | 0}`).join(', ') });
-    hub.append(lv);
+    const head = document.createElement('div'); head.className = 'sport-head';
+    const info = document.createElement('p'); info.textContent = s.info;
+    const sk = document.createElement('div'); sk.className = 'sport-skill';
+    const skl = document.createElement('span'); skl.textContent = SPORT_CLASS(r.lv);
+    const bar = document.createElement('span'); bar.className = 'bar'; const bi = document.createElement('i'); bi.style.width = (r.lv / 25) + '%'; bar.append(bi);
+    const skv = document.createElement('b'); skv.textContent = `${r.lv} / 2500`;
+    sk.append(skl, bar, skv);
+    const best = document.createElement('div'); best.className = 'sport-best';
+    best.textContent = tr('Bestwerte: {b}', { b: s.modes.map((m, i) => `${m} ${r.best[i] | 0}`).join(', ') });
+    head.append(info, sk, best); hub.append(head);
     const mk = (txt, on, fn, cls = 'btn') => { const b = document.createElement('button'); b.className = cls; b.textContent = txt; b.disabled = !on; b.addEventListener('click', fn); return b; };
     for (let m = 0; m < 2; m++) {
-      const row = document.createElement('div'); row.className = 'sport-row';
+      const box = document.createElement('div'); box.className = 'sport-mode';
       const mOpen = m === 0 || (s.mode2 ? s.mode2() : r.lv >= 300);
-      const lab = document.createElement('b'); lab.textContent = s.modes[m] + (mOpen ? '' : ' ' + (s.mode2 ? tr('🔒 alle 30 Punkte') : tr('🔒 Können 300')));
-      row.append(lab);
-      for (let l = 0; l < 3; l++) { const ok = mOpen && r.lv >= SP_MIN[l]; row.append(mk(ok ? SP_LV[l] : `🔒 ${SP_LV[l]}`, ok, () => startSport(s.id, m, l), l ? 'btn ghost' : 'btn')); }
+      const lab = document.createElement('b'); lab.textContent = s.modes[m];
+      if (!mOpen) { const lk = document.createElement('small'); lk.textContent = s.mode2 ? tr('🔒 alle 30 Punkte') : tr('🔒 Können 300'); lab.append(lk); }
+      const row = document.createElement('div'); row.className = 'sport-row';
+      let first = true;
+      for (let l = 0; l < 3; l++) { const ok = mOpen && r.lv >= SP_MIN[l]; row.append(mk(ok ? SP_LV[l] : `🔒 ${SP_LV[l]}`, ok, () => startSport(s.id, m, l), ok && first ? 'btn' : 'btn ghost')); if (ok) first = false; }
       if (champOpen(s)) row.append(mk((save.trophies.includes(s.id) ? '🏆 ' : '👑 ') + tr('Kraul'), mOpen, () => startSport(s.id, m, 3), 'btn ghost'));
-      hub.append(row);
+      box.append(lab, row); hub.append(box);
     }
-    if (!champOpen(s)) { const c = document.createElement('p'); c.className = 'sub'; c.textContent = tr('👑 Champion-Duell gegen Kapitän Kraul: ab Können 1500 und {n} Stempeln.', { n: CHAMP_ST }); hub.append(c); }
+    if (!champOpen(s)) { const c = document.createElement('p'); c.className = 'sport-champ'; c.textContent = tr('👑 Champion-Duell gegen Kapitän Kraul: ab Können 1500 und {n} Stempeln.', { n: CHAMP_ST }); hub.append(c); }
     const card = document.createElement('ul'); card.className = 'sport-stamps';
-    for (const st of s.stamps) { const li = document.createElement('li'); li.textContent = (hasStamp(st.id) ? '🔖 ' : '▫️ ') + st.txt; if (hasStamp(st.id)) li.className = 'got'; card.append(li); }
+    for (const st of s.stamps) {
+      const li = document.createElement('li'), ic = document.createElement('span'), tx = document.createElement('span');
+      ic.textContent = hasStamp(st.id) ? '🔖' : '▫️'; tx.textContent = st.txt;
+      if (hasStamp(st.id)) li.className = 'got'; li.append(ic, tx); card.append(li);
+    }
     hub.append(card);
     hub.append(mk(tr('← Alle Stationen'), true, () => { spView.id = null; renderSport(); }, 'btn ghost'));
   }
@@ -3911,7 +4170,7 @@
   const PROPS = [
     { id: 'casino', label: tr('Fischautomat'),  x: 2.5, y: DOCK_Y - 20, w: 12.5, h: 20, draw: drawSlotMachine, open: () => toggleModal('casino') },
     { id: 'patch',  label: tr('Steg-Zeitung (Patch Notes)'), x: 103.5, y: DOCK_Y - 5.5, w: 8, h: 5.5, draw: drawNewspaper, open: () => toggleModal('patch'), ready: () => save.patchSeen !== PATCH_NOTES[0].id && save.total > 0 },
-    { id: 'dex',    map: 'all', label: tr('Fischdex & Shinydex'), x: 28.5, y: DOCK_Y - 8.5, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
+    { id: 'dex',    map: 'all', label: tr('Fischdex & Shinydex'), get x() { return dexX(); }, get y() { return dexY(); }, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
     { id: 'lb',     label: tr('Bestenliste'),   x: KIOSK.x + KIOSK.w / 2 - 5, y: DOCK_Y - 48, w: 10, h: 10.5, draw: drawTrophy, open: () => toggleModal('lb') },
     { id: 'prog',   label: tr('Aufträge & Fortschritt'), x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
     { id: 'shop',   label: tr('Laden'),         x: KIOSK.x - 3, y: DOCK_Y - 37.5, w: KIOSK.w + 6, h: 37.5, open: () => toggleModal('shop') },
@@ -3922,10 +4181,10 @@
     { id: 'glimm',  map: 'lava', label: tr('⛏️ Glimm · Aufträge'), x: 19, y: DOCK_Y - 11, w: 10, h: 11, draw: () => drawGlimm(20, DOCK_Y, 1), open: () => talkGlimm(), ready: () => save.glimmQ.some(q => q.p >= q.n) || canDig() },
     { id: 'lavashop', map: 'lava', label: tr('🌋 Glutflosses Lava-Laden'), x: KIOSK.x - 3, y: DOCK_Y - 30, w: KIOSK.w + 6, h: 30, draw: drawLavaStall, open: () => toggleModal('shop') },
     { id: 'ladder', map: 'lava', label: tr('🪜 Zurück zum Steg'), x: 4, y: DOCK_Y - 28, w: 12, h: 28, draw: drawLadder, open: () => travel('steg') },
-    { id: 'wheel',  map: 'see', label: tr('⚓ Zurück zum Steg'), x: 5, y: DOCK_Y - 22, w: 15, h: 22, draw: drawWheel, open: () => travel('steg') },
+    { id: 'wheel',  map: 'see', label: tr('⚓ Zurück zum Steg'), get x() { return wheelX(); }, get y() { return wheelY(); }, w: 15, h: 22, draw: drawWheel, open: () => travel('steg') },
     { id: 'flieger', get label() { return inselOpen() ? tr('✈️ Inselflieger · Zur Sonneninsel') : tr('✈️ Inselflieger (🔒 3× Prestige)'); }, x: 356, y: SURFACE - 13, w: 26, h: 14, draw: dark => drawPlane(369, SURFACE + 1, dark), open: () => travel('insel'), ready: () => inselOpen() && !save.inselSeen },
     { id: 'heimflug', map: 'insel', label: tr('✈️ Zurück zum Steg'), x: 356, y: SURFACE - 13, w: 26, h: 14, draw: dark => drawPlane(369, SURFACE + 1, dark), open: () => travel('steg') },
-    { id: 'pelle',  map: 'insel', label: tr('🏅 Coach Pelle · Sportstationen'), x: 18, y: DOCK_Y - 17, w: 12, h: 17, draw: () => drawPelle(px, 24, DOCK_Y, Math.sin(t * 2) > .7 ? 1 : 0), open: () => toggleModal('sport'), ready: () => sportReady() },
+    { id: 'pelle',  map: 'insel', label: tr('🏅 Coach Pelle · Sportstationen'), x: 18, y: DOCK_Y - 17, w: 12, h: 17, draw: dark => drawPelle(px, 24, DOCK_Y, Math.sin(t * 2) > .7 ? 1 : 0, false, 0, dark), open: () => toggleModal('sport'), ready: () => sportReady() },
     { id: 'strandbude', map: 'insel', label: tr('🍹 Strandbude'), x: KIOSK.x - 3, y: DOCK_Y - 30, w: KIOSK.w + 6, h: 30, draw: drawBeachHut, open: () => toggleModal('shop') },
     { id: 'pokale', get label() { return tr('🏆 Inselpokale ({n})', { n: save.trophies.length }); }, x: 79, y: DOCK_Y - 10, w: 21, h: 10, draw: drawPokale, show: () => save.trophies.length > 0,
       open: () => toast(tr('🏆 Siege gegen Kapitän Kraul: {l}', { l: save.trophies.map(id => (SPORTS.find(s => s.id === id) || {}).name || id).join(', ') })) },
@@ -4289,6 +4548,7 @@
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
     for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'sport']) $(id).hidden = true;
+    if (sp && sp.drill) drillEnd(-1); // leaving a catch drill loses the fish
     if (sp && !sp.done) sp = null; // leaving a running station ends it without a result
     if (window.speechSynthesis) window.speechSynthesis.cancel();
   }
@@ -4314,14 +4574,14 @@
   $('patch-more').addEventListener('click', () => { const y = $('patch-list').parentElement.scrollTop; renderPatch(patchShown + 5); $('patch-list').parentElement.scrollTop = y; });
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
-    if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'boss', 'summon', 'crit'].includes(state)) return;
+    if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'sdrill', 'boss', 'summon', 'crit'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
     if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings, muschel: renderMuschel, sport: () => { spView.id = null; sp = null; renderSport(); } })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
-    if (e.target === m && m.id !== 'title' && m.id !== 'catch') closeModals();
+    if (e.target === m && m.id !== 'title' && m.id !== 'catch' && !(m.id === 'sport' && sp && sp.drill)) closeModals(); // a stray tap must not lose the fish in a catch drill
   }));
   $('btn-dex').addEventListener('click', () => toggleModal('dex'));
   $('btn-shop').addEventListener('click', () => toggleModal('shop'));
@@ -6215,7 +6475,7 @@
     return j;
   }
   function lobbyMe() {
-    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'boss', 'crit'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: Math.min(99, save.rebirthsTotal | 0), pr: save.prestige, ti: myTitle() ? save.title : '', bs: bossStage(), sp: profis() };
+    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'sdrill', 'boss', 'crit'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: Math.min(99, save.rebirthsTotal | 0), pr: save.prestige, ti: myTitle() ? save.title : '', bs: bossStage(), sp: profis() };
   }
   async function lobbySync() {
     if (!save.lobby || LOBBY.busy || document.hidden) return;
@@ -6510,5 +6770,6 @@
     bossSolo: () => { const st = bossStage(); save.lobby ? summonBoss() : enterBoss({ id: 'solo-test', max: stageHp(st), hp: stageHp(st), ends: Date.now() + BOSS_TIME, n: 1, st }, true); },
     bossHit, pick: () => pickFish(), get wx() { return wx.id; },
     // Sonneninsel: start a station, end it now, peek at the running game
-    sport: (id, mode = 0, lvl = 0) => startSport(id, mode, lvl), sportOver: () => { if (sp && sp.g) sp.g.over = true; }, get sportG() { return sp && sp.g; }, sportRec, inselMult: () => inselMult(), sportBonus: () => sportBonus() };
+    sport: (id, mode = 0, lvl = 0) => startSport(id, mode, lvl),
+    drill: (id, fid = 'spezi1') => { const f = FISH.find(x => x.id === fid); hooked = { f, ...rollSize(f), str: STRENGTH[f.r] }; reel.maxT = 0; startDrill(id === "osu" ? "osu" : SPORT_DRILLS.find(c => c.id === id)); }, sportOver: () => { if (sp && sp.g) sp.g.over = true; }, get sportG() { return sp && sp.g; }, sportRec, inselMult: () => inselMult(), sportBonus: () => sportBonus() };
 })();

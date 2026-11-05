@@ -327,7 +327,11 @@ From the 3rd prestige the seaplane at the end of the dock (`flieger`) flies you 
 | 🏓 Tischtennis | 18 | Match, Ballwechsel |
 | 🎳 Strand-Bowling | 22 | 10 Frames, Pyramide |
 
-- **Skill** (`sport[id].lv`, 0–2500): after each round it moves by round(clamp((score / expected − 1) × 60, −30, 60) × level factor), and it never drops below the floor of the current class (Anfänger 0, Fortgeschritten 500, Profi 1000, Champion-Anwärter 1500, Legende 2500). Levels 2 and 3 open at 500 and 1000 and pay more.
+**Fang-Drills** (since `2026-11-05-10`): once the island is open (`inselOpen()`), `hook()` turns 15 % of rare, epic and legendary bites on every map into a short round of a station the player has already opened (`SPORT_DRILLS`, `startDrill`, state `sdrill`). Legendaries can also get the osu-Taktdrill. Reaching `pass` points lands the fish, and `clean` counts as a clean catch. Missing the target or closing the modal loses it. Drills never change skill, stamps, medals, coins or the daily limit.
+
+The expected score of every mode grows by about half its base per 1000 skill (`exp`). Medals sit at about 1.15, 1.45 and 1.8 times the base, the champion duel at about 2× (the volleyball and table-tennis matches: bronze 5 points, silver a win, gold a win by 4, the duel a win against Kraul).
+
+- **Skill** (`sport[id].lv`, 0–2500): after each round it moves by round((clamp((score / expected − 1) × 60, −30, 60) + 6 × medal) × level factor) (medal 0–3, `SP_MEDAL_LV`), and it never drops below the floor of the current class (Anfänger 0, Fortgeschritten 500, Profi 1000, Champion-Anwärter 1500, Legende 2500). Levels 2 and 3 open at 500 and 1000 and pay more.
 - **Profi** at 1000 gives +2 % Taler everywhere per station.
 - **Champion duel** against Kapitän Kraul, a walrus in a tracksuit, opens at skill 1500 and 26 stamps. A win gives a trophy (`trophies`, shown on a shelf at the dock), a pearl and +3 % Taler everywhere.
 - **Stamps** (`stamps`): 5 per station, 45 in total. Each pays Taler, XP and Schuppen. All 45 give the title Inselchampion and +5 % Taler everywhere.
@@ -420,7 +424,8 @@ It only makes cheating harder. Every save carries a checksum (`sig`, with `fisch
 
 ### Art
 
-- **Sprites:** the original pixel sprites are drawn as code in `img/pxl/` for the pxl tool.
+- **Sport scenes and island map:** `img/pxl/sport.px.js` paints the station backdrops (`img/sport-*.png`) and the island map (`img/insel-karte.png`, `insel-karte-mini.png`) with the shared painter `img/pxl/maler.inc.js`: `node img/pxl/render.js sport`. The game draws moving things on top and falls back to drawn shapes while an image loads. The map has towns and places between the 30 viewpoints (`areas()`: harbour town at the Strandplatz, resort, airstrip, stadium, fields, orchards, lava channel, coast with umbrellas, boats and islets); `miniAreas()` copies them into the small map. Moving props in the scenes are lit sprites painted once at runtime (`litEll`, `BALLS`, `drawTarget`), spectators are `ART.sp_fan_0/1` recoloured per seat (`sfan`, `crowd`), and `skyLife()` adds gulls and a far sail.
+- **Sprites:** the original pixel sprites are drawn as code in `img/pxl/` (pxl DSL). `node img/pxl/render.js fisch <name …>` renders them to `img/<name>.png` without any npm packages; sprites with `lit: true` (the Sun Island fish) get the shared top light, belly shade and tinted outline from `light()`/`selout()`.
   - `fisch.px.js` renders the PNGs in `img/`.
   - `code.px.js` renders the player, NPCs, dock props, baits and snacks, which are inlined as character rows in `js/fischen.js` (`ART`, `PLAYER_BODY`, `PLAYER_LEGS`).
   - `welt.px.js` renders the worlds.

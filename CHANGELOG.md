@@ -2,6 +2,30 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 05.11.2026 · `2026-11-05-12`
+
+- 🏝️ More island than ever: the island map now has a harbour town with a town hall, a market and boats at the quay, a resort with a pool and water bungalows, an airstrip, a stadium, fields with a windmill, orchards, a glowing lava channel on the volcano, beach umbrellas, sailboats and small neighbouring islets. There is something to discover everywhere in the Island Flight.
+- 🏐 Better-looking minigames: balls, pins, buoys, balloons and the frisbee have light and shadow, the archery target stands on a wooden easel, and spectators cheer every point in Beach Volleyball and Archery. The surf wave now visibly breaks, with a lip, spray and whitewater, gulls and sailboats pass over the beaches, and the HUD is easier to read on a dark backing.
+
+## 05.11.2026 · `2026-11-05-11`
+
+- 🖼️ Sun Island in a new pixel look: every sports ground has a painted backdrop – a beach with palms and a sea view for Frisbee, Archery and Beach Volleyball, a wooden pavilion for Table Tennis, a real bowling lane in the sand and flowing water for the Jet Ski. The island map in the Island Flight and at Pelle’s is fully redrawn, with hill shading, jungle canopy, reef and surf.
+
+## 05.11.2026 · `2026-11-05-10`
+
+- 🎲 New catch drills: once you have reached Sun Island, a rare, epic or legendary bite can turn into a short sports minigame anywhere – Frisbee, Island Flight, Jet Ski, Archery, Table Tennis, Surfing, Beach Volleyball or Beach Bowling, depending on which stations you have opened. Hit the target score and the fish is yours; a strong round counts as a clean catch.
+
+## 05.11.2026 · `2026-11-05-9`
+
+- 🎨 The 22 Sun Island fish have been reworked: they now have a shine on top, shading on the belly and softer outlines. The Giant Manta Ray is fully redrawn and shows itself from above with wide wings.
+- 🖌️ Even more polish: the flip-flop, Frisbee Ray, golf-ball, table-tennis and water-ski fish, sunscreen, Canoe Pike, fencer and snorkel fish are redrawn, all island fish have a soft core shadow, and the manta ray is brighter and easier to see on dark water. The sports grounds now have a sun, drifting clouds, an island on the horizon, curved palms and a beach with a foam line.
+- ⛵ Redrawn at the dock: Cap’n Bealin’s rowboat (planks, gunwale, an oar in the water) and the island plane (high wing with struts, windows with a pilot, floats, tail). Both now have light and shadow and get darker at night.
+- 🛟 Boat skin “David Hasselhoff” fixed: the steering wheel and the Fishdex crate now stand on his back instead of in his legs, and under water he shows through instead of looking like a grey slab.
+- 🏄 New figures at the sports stations: in Frisbee, Surfing and Beach Volleyball you now play as your own angler, with the hat, jacket, skin and hair from the wardrobe. The jet ski is redrawn, and the table-tennis paddle has a handle.
+- 🐦 Coach Pelle and the Beach Hut are redrawn and get darker at night. The sports stations now look like the rest of the game: stamps are readable, locked levels are clearly greyed out, and you can tap stations right on the map.
+- ☀️ No more snow on Sun Island: where it would snow elsewhere, the island has a heat wave.
+- 📈 Fairer sports stations: the expected score rises more slowly with skill, every medal adds extra skill (bronze +6, silver +12, gold +18), and gold and the champion duel are easier to reach. You now become a Pro after about 50 rounds instead of 100+ rounds that often never got you there.
+
 ## 05.11.2026 · `2026-11-05-8`
 
 - 🌴 New world – Sun Island: from 3 prestiges the island plane (seaplane at the dock) flies you to a volcano island with five bays. Everything you achieve there stays forever – even after rebirth and prestige.
