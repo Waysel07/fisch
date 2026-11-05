@@ -1098,3 +1098,38 @@ button#btn-boss:hover { background: #be123c; }
 .wd-title.locked { opacity: .55; }
 .card .muts.smuts span { position: relative; padding: 0 .1rem; }
 .card .muts.smuts i { font-style: normal; font-family: 'Poppins', sans-serif; font-size: .6rem; font-weight: 700; color: var(--gold); margin-left: .05rem; }
+
+/* Sonneninsel: Coach Pelles Sportstationen */
+.sport-sheet { max-width: 46rem; }
+#sport-play { position: relative; }
+#sport-cv { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; image-rendering: pixelated; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); touch-action: none; background: #0e7490; }
+#sport-result { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .15rem; padding: .75rem; text-align: center; background: rgba(15, 23, 42, .86); color: #fff; overflow-y: auto; }
+#sport-result[hidden] { display: none; }
+#sport-result p { margin: 0; }
+.sport-medal { font-size: 2.6rem; line-height: 1.1; }
+.sport-score { font-family: 'Silkscreen', monospace; font-size: 1.1rem; color: var(--gold); }
+.sport-stamp { color: #fde68a; font-weight: 600; }
+.sport-line { color: #bbf7d0; font-size: .9rem; }
+#sport-result .sub { color: #cbd5e1; }
+.sport-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: .5rem; margin: .5rem 0; }
+.sport-card { display: flex; flex-direction: column; align-items: center; gap: .2rem; padding: .6rem .4rem; font: inherit; color: var(--ink); background: #fff7e6; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); cursor: pointer; }
+.sport-card:hover:not(:disabled) { transform: translateY(-1px); }
+.sport-card:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 var(--ink); }
+.sport-card.locked { opacity: .55; cursor: default; }
+.sport-card .sport-ic { font-size: 1.8rem; line-height: 1; }
+.sport-card small { font-size: .78rem; }
+.sport-card .bar { width: 100%; }
+.sport-dots { letter-spacing: .1em; color: #b45309; }
+.sport-row { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin: .45rem 0; }
+.sport-row > b { flex: 1 0 100%; }
+.sport-row .btn { padding: .35rem .6rem; font-size: .85rem; }
+.sport-stamps { list-style: none; padding: 0; margin: .5rem 0; display: grid; gap: .2rem; }
+.sport-stamps li { padding: .25rem .5rem; border: 2px solid var(--ink); background: #f1f5f9; font-size: .88rem; }
+.sport-stamps li.got { background: #fef3c7; }
+.sport-card .bar { height: 8px; } .sport-card .bar i { background: var(--gold); }
+@media (max-width: 600px) {
+  #sport-result { position: static; margin-top: .5rem; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); }
+  #sport-play.done #sport-cv { display: none; }
+  .sport-medal { font-size: 2rem; }
+}
+.sport-medal.none { font-size: 1rem; font-family: "Silkscreen", monospace; color: #cbd5e1; }

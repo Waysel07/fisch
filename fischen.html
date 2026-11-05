@@ -29,6 +29,7 @@
         <span class="pill" id="playtime" title="Spielzeit">⏱</span>
         <button class="pill" id="weather" title="Wetter">☀️ <span class="lbl" id="weather-name">Sonnig</span></button>
         <button class="pill" id="buffs" title="Aktive Snacks" hidden></button>
+        <span class="pill" id="turnier-pill" title="Angelturnier" hidden></span>
         <span class="pill saved" id="saved" title="Spielstand wird in deinem Browser gespeichert">💾 <span class="lbl">Gespeichert</span></span>
       </div>
       <div class="hud-right">
@@ -190,6 +191,20 @@
           <button class="btn" type="submit">🪢 An der Schnur ziehen</button>
         </form>
         <div class="catch-actions"><button class="btn ghost" data-close>Zurück</button></div>
+      </div>
+    </div>
+
+    <!-- Sonneninsel: Coach Pelles Sportstationen -->
+    <div class="modal" id="sport" hidden>
+      <div class="sheet sport-sheet" role="dialog" aria-modal="true" aria-labelledby="sport-title">
+        <button class="close" data-close aria-label="Schließen">✕</button>
+        <h2 id="sport-title">🏅 Sportstationen</h2>
+        <p class="sub" id="sport-sub"></p>
+        <div id="sport-hub"></div>
+        <div id="sport-play" hidden>
+          <canvas id="sport-cv" width="768" height="432" aria-label="Sportstation"></canvas>
+          <div id="sport-result" hidden></div>
+        </div>
       </div>
     </div>
 
