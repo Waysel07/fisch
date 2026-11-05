@@ -420,7 +420,7 @@ It only makes cheating harder. Every save carries a checksum (`sig`, with `fisch
 
 ### Art
 
-- **Sprites:** the original pixel sprites are drawn as code in `img/pxl/` for the pxl tool.
+- **Sprites:** the original pixel sprites are drawn as code in `img/pxl/` (pxl DSL). `node img/pxl/render.js fisch <name …>` renders them to `img/<name>.png` without any npm packages; sprites with `lit: true` (the Sun Island fish) get the shared top light, belly shade and tinted outline from `light()`/`selout()`.
   - `fisch.px.js` renders the PNGs in `img/`.
   - `code.px.js` renders the player, NPCs, dock props, baits and snacks, which are inlined as character rows in `js/fischen.js` (`ART`, `PLAYER_BODY`, `PLAYER_LEGS`).
   - `welt.px.js` renders the worlds.

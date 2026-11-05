@@ -233,6 +233,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-05-9', date: '05.11.2026', items: [
+      '🎨 Die 22 Fische der Sonneninsel sind überarbeitet: Sie haben jetzt Glanz von oben, Schatten am Bauch und weichere Umrisse. Der Riesen-Mantarochen ist ganz neu gezeichnet und zeigt sich von oben mit weiten Schwingen.',
+    ] },
     { id: '2026-11-05-8', date: '05.11.2026', items: [
       '🌴 Neue Welt – die Sonneninsel: Ab 3× Prestige fliegt dich der Inselflieger (Wasserflugzeug am Steg) auf eine Vulkaninsel mit fünf Buchten. Alles, was du dort schaffst, bleibt für immer – auch nach Wiedergeburt und Prestige.',
       '🏅 Neun Sportstationen bei Coach Pelle: Frisbee, Angelturnier, Rundflug, Jetski, Surfen, Bogenschießen, Beachvolleyball, Tischtennis und Strand-Bowling. Jede hat zwei Modi, drei Stufen und Medaillen in Bronze, Silber und Gold.',

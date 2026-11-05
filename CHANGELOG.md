@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 05.11.2026 · `2026-11-05-9`
+
+- 🎨 The 22 Sun Island fish have been reworked: they now have a shine on top, shading on the belly and softer outlines. The Giant Manta Ray is fully redrawn and shows itself from above with wide wings.
+
 ## 05.11.2026 · `2026-11-05-8`
 
 - 🌴 New world – Sun Island: from 3 prestiges the island plane (seaplane at the dock) flies you to a volcano island with five bays. Everything you achieve there stays forever – even after rebirth and prestige.

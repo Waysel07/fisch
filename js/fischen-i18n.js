@@ -1309,6 +1309,7 @@
     "⛵ Hohe See": "⛵ High Seas",
     "🌋 Glutgrotte": "🌋 Ember Cave",
     "🌴 Sonneninsel": "🌴 Sun Island",
+    "🎨 Die 22 Fische der Sonneninsel sind überarbeitet: Sie haben jetzt Glanz von oben, Schatten am Bauch und weichere Umrisse. Der Riesen-Mantarochen ist ganz neu gezeichnet und zeigt sich von oben mit weiten Schwingen.": "🎨 The 22 Sun Island fish have been reworked: they now have a shine on top, shading on the belly and softer outlines. The Giant Manta Ray is fully redrawn and shows itself from above with wide wings.",
     "💫 Shinydex": "💫 Shinydex",
     "🔎 Fisch suchen …": "🔎 Search fish …",
     "Fisch suchen": "Search fish",
