@@ -145,7 +145,7 @@ function sprite(name, opt, fn) {
   if (opt.flip) g = g.map((r) => r.slice().reverse());
   if (opt.outline) g = outline(g, col(opt.outline));
   if (opt.edge) g = opt.edge(g);
-  out.push({ name, g, scale: opt.scale || 2, file: opt.file || path.join('img', name + '.png') });
+  out.push({ name, g, keys: opt.keys, scale: opt.scale || 2, file: opt.file || path.join('img', name + '.png') });
 }
 const ctx = { sprite, light, selout, pal: (p) => Object.assign(PAL, p), mix, lum, rgb, hex, Math, console };
 vm.createContext(ctx);
@@ -155,18 +155,22 @@ if (which === 'code') {
   // Raster als Zeichenreihen: Farben bekommen Buchstaben, k bleibt der Umriss
   const file = path.join(ROOT, 'js', 'fischen.js');
   let src = fs.readFileSync(file, 'utf8');
-  for (const { name, g } of out) {
-    const map = {}, inv = {}, keys = 'kabcdefghijlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  for (const { name, g, keys: fixed = {} } of out) {
+    // opt.keys = { Zeichen: Farbe } legt Buchstaben fest, die das Spiel umfärbt (z. B. Hut h H l wie bei PLAYER_PAL)
+    const map = {}, inv = {}, keys = 'kabcdefghijlmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('').filter((ch) => !(ch in fixed));
+    for (const [ch, v] of Object.entries(fixed)) inv[col(v)] = ch;
     let n = 0;
     const rows = g.map((r) => r.map((v) => {
       if (!v) return '.';
-      if (!(v in inv)) { const ch = v === PAL.k ? 'k' : keys[1 + n++]; inv[v] = ch; map[ch] = v; }
+      if (!(v in inv)) { const ch = v === PAL.k ? 'k' : keys[1 + n++]; inv[v] = ch; }
+      map[inv[v]] = v;
       return inv[v];
     }).join(''));
-    const line = `    ${name}: [${JSON.stringify(rows).replace(/","/g, '","')}, ${JSON.stringify(map)}],`;
+    const line = `    ${name}: [${JSON.stringify(rows)}, ${JSON.stringify(map)}],`;
     const re = new RegExp(`^    ${name}: \\[.*\\],$`, 'm');
-    if (!re.test(src)) { console.log('nicht in ART:', name); continue; }
-    src = src.replace(re, () => line);
+    if (re.test(src)) src = src.replace(re, () => line);
+    else if (src.includes('\n  const ART = {\n')) src = src.replace('\n  const ART = {\n', () => '\n  const ART = {\n' + line + '\n');
+    else console.log('kein ART-Block für', name);
   }
   fs.writeFileSync(file, src);
 } else {

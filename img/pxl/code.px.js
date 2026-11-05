@@ -4,9 +4,9 @@
 pal({ k: '#1b1f2e' })
 const INK = '#1b1f2e'
 
-function S(name, W, H, fn, outline = true) {
+function S(name, W, H, fn, outline = true, keys) {
   const o = outline ? 1 : 0
-  const opt = { w: W - 2 * o, h: H - 2 * o }
+  const opt = { w: W - 2 * o, h: H - 2 * o, keys }
   if (outline) opt.outline = 'k'
   sprite(name, opt, (c) => fn({
     px: (x, y, col) => c.px(x - o, y - o, col),
@@ -347,3 +347,25 @@ S('snack_limo', 16, 16, (c) => {
   c.px(7, 11, '#ffffff'); c.px(9, 13, '#ffffff'); c.px(8, 8, '#ffffff'); c.px(6, 13, '#fae8ff')
   c.px(13, 3, '#fff7cc'); c.px(12, 3, '#fde047'); c.px(14, 3, '#fde047'); c.px(13, 2, '#fde047'); c.px(13, 4, '#fde047'); c.px(2, 5, '#fde047')
 })
+
+// ---------------------------------------------------------------- Sonneninsel: Sportstationen
+// Der Jetski von oben, Bug nach oben. Fahrer mit Hut (h H l), Jacke (c C y) und Haut (s S) wie die Spielfigur;
+// das Spiel färbt diese Buchstaben in deinen Look um (sportLook).
+const LOOK = { h: '#22c55e', H: '#15803d', l: '#86efac', c: '#f59e0b', C: '#c2410c', y: '#fcd34d', s: '#f2c9a0', S: '#d9a47a' }
+S('sp_jetski', 22, 36, (c) => {
+  const A = '#e11d48', D = '#9f1239', L = '#fb7185', W = '#f8fafc', G = '#334155', M = '#7dd3fc'
+  c.poly([11, 1, 15, 5, 18, 12, 19, 24, 18, 32, 15, 34, 7, 34, 4, 32, 3, 24, 4, 12, 7, 5], A)
+  c.poly([11, 2, 8, 6, 5, 13, 5, 24, 6, 30, 8, 30, 7, 24, 7, 13, 9, 7], L)
+  c.poly([18, 13, 18, 24, 17, 31, 15, 33, 16, 24, 16, 13], D)
+  c.line(5, 26, 6, 32, W); c.line(17, 26, 16, 32, W); c.hline(8, 33, 7, D)
+  // Windschild und Lenker
+  c.poly([8, 9, 14, 9, 15, 12, 7, 12], M); c.hline(9, 9, 3, W)
+  c.hline(5, 14, 13, G); c.px(5, 13, G); c.px(17, 13, G)
+  // Sitzbank
+  c.rect(8, 21, 7, 10, '#1f2937'); c.vline(8, 22, 8, '#475569')
+  // Fahrer: Arme zum Lenker, Schultern, Hut von oben
+  c.line(7, 15, 7, 19, LOOK.C); c.line(15, 15, 15, 19, LOOK.C)
+  c.rect(6, 13, 2, 2, LOOK.s); c.rect(15, 13, 2, 2, LOOK.s)
+  c.ellipse(11, 21, 5, 3, LOOK.c); c.hline(8, 19, 7, LOOK.y); c.hline(7, 23, 9, LOOK.C)
+  c.ellipse(11, 18, 3, 3, LOOK.H); c.ellipse(11, 18, 2, 2, LOOK.h); c.px(10, 17, LOOK.l); c.px(11, 17, LOOK.l)
+}, true, LOOK)

@@ -1170,7 +1170,7 @@ sprite('spezifischfischer-pixel', { w: 20, h: 44 }, (c) => {
 // Boot-Skin: ein riesiger Schwimmer auf dem Bauch, Füße links, Kopf rechts; die Spielfigur steht auf dem Rücken (y≈33)
 F('boot-hoff', 158, 52, {}, (c) => {
   const S = '#c98a55', L = '#e0a870', D = '#a86a3c', DD = '#7c4a28'
-  const H = '#3a2210', HL = '#5c3a1c', R = '#dc2626', RD = '#991b1b', RL = '#f87171', W = '#f8fafc', W2 = '#bfdbfe'
+  const H = '#3a2210', HL = '#5c3a1c', R = '#dc2626', RD = '#991b1b', RL = '#f87171', W = '#f8fafc'
   // Füße
   c.poly([0, 32, 4, 29, 11, 31, 11, 38, 3, 38], D); c.poly([1, 32, 4, 30, 10, 32, 10, 34, 2, 34], S)
   for (let i = 0; i < 4; i++) c.px(1 + i * 2, 32 - (i > 1 ? 1 : 0), L)
@@ -1217,9 +1217,7 @@ F('boot-hoff', 158, 52, {}, (c) => {
   c.hline(129, 32, 8, D); c.line(123, 30, 128, 35, D)
   // Hals
   c.rect(117, 32, 8, 5, S); c.hline(118, 36, 7, D)
-  // Schaumkante: gestuft, liegt auf dem Wasser
-  const foam = [[0, 41, 12], [8, 44, 18], [24, 46, 22], [44, 47, 34], [76, 46, 26], [100, 47, 24], [122, 45, 18], [138, 43, 18]]
-  for (const [x, y, w] of foam) { c.rect(x, y, w, 2, W); c.hline(x + 2, y + 2, Math.max(0, w - 4), W2) }
+  // Kein Schaum im Bild: Das Spiel zeichnet die Schaumkante selbst auf die Wasserlinie (drawHoffBoat)
 })
 
 // ---------------------------------------------------------------- Neu 2026-11-05: Glutgrotte

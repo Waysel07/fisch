@@ -235,6 +235,10 @@
   const PATCH_NOTES = [
     { id: '2026-11-05-9', date: '05.11.2026', items: [
       '🎨 Die 22 Fische der Sonneninsel sind überarbeitet: Sie haben jetzt Glanz von oben, Schatten am Bauch und weichere Umrisse. Der Riesen-Mantarochen ist ganz neu gezeichnet und zeigt sich von oben mit weiten Schwingen.',
+      '🛟 Boot-Skin „David Hasselhoff“ repariert: Steuerrad und Fischdex-Kiste stehen jetzt auf seinem Rücken statt in seinen Beinen, und unter Wasser schimmert er durch statt als graue Platte.',
+      '🏄 Neue Figuren in den Sportstationen: Beim Frisbee, Surfen und Beachvolleyball spielt jetzt deine eigene Spielfigur mit, mit Hut, Jacke, Haut und Haaren aus dem Kleiderschrank. Der Jetski ist neu gezeichnet, der Tischtennisschläger hat einen Griff.',
+      '☀️ Auf der Sonneninsel schneit es nicht mehr: Wo sonst Schnee fällt, ist auf der Insel eine Hitzewelle.',
+      '📈 Fairere Sportstationen: Das erwartete Ergebnis steigt mit dem Können langsamer, jede Medaille bringt zusätzlich Können (Bronze +6, Silber +12, Gold +18), und Gold und das Champion-Duell sind besser erreichbar. Profi wirst du jetzt nach etwa 50 statt oft nie erreichten 100+ Runden.',
     ] },
     { id: '2026-11-05-8', date: '05.11.2026', items: [
       '🌴 Neue Welt – die Sonneninsel: Ab 3× Prestige fliegt dich der Inselflieger (Wasserflugzeug am Steg) auf eine Vulkaninsel mit fünf Buchten. Alles, was du dort schaffst, bleibt für immer – auch nach Wiedergeburt und Prestige.',
@@ -658,7 +662,12 @@
   const weatherSlot = () => Math.floor(Date.now() / 1000 / WEATHER_LEN + weatherShift);
   // under the earth there is no weather: the cave has its own still "weather" without any bonus
   const CAVE_WX = { id: 'glut', icon: '🌋', get name() { return tr('Tiefe {n} · {t}', { n: caveDepth(), t: CAVE_DEPTHS[caveDepth() - 1].name }); }, get desc() { return tr('Unter der Erde gibt es kein Wetter, nur Hitze.') + ' ' + tr('Kreatur-Chance: {n} %', { n: critChance() }); } };
-  function currentWeather() { if (inLava()) return CAVE_WX; return (weatherForce && WEATHER.find(w => w.id === weatherForce)) || weatherAt(weatherSlot()); }
+  function currentWeather() {
+    if (inLava()) return CAVE_WX;
+    const w = (weatherForce && WEATHER.find(x => x.id === weatherForce)) || weatherAt(weatherSlot());
+    // no snow on the tropical island: the same slot brings a heat wave there
+    return save.map === 'insel' && w.id === 'schnee' ? WEATHER.find(x => x.id === 'hitze') : w;
+  }
   let wx = currentWeather();
   // the Wetterfrosch talent makes every weather bonus stronger
   const wBoost = x => (x ? 1 + (x - 1) * (1 + .1 * perk('wetter')) : 1);
@@ -689,7 +698,7 @@
   if (!save.sportDay || typeof save.sportDay !== 'object') save.sportDay = {};
   if (save.turnier && typeof save.turnier !== 'object') save.turnier = null;
   const stampCount = () => save.stamps.length;
-  // what the island gives back to the fishing everywhere: +2 % per Profi (skill 1000), +3 % per champion trophy, +5 % for all 30 stamps
+  // what the island gives back to the fishing everywhere: +2 % per Profi (skill 1000), +3 % per champion trophy, +5 % for all 45 stamps
   function profis() { return Object.values(save.sport).filter(r => r && (r.lv | 0) >= 1000).length; }
   function sportBonus() { return .02 * profis() + .03 * save.trophies.length + (stampCount() >= STAMP_ALL ? .05 : 0); }
   // Taler bonus while fishing on the island: +30 %, and +10 % more for every further bay that is open
@@ -1863,6 +1872,7 @@
 
   // Sprites as char rows, drawn in img/pxl/code.px.js. 1 char = 1 fine pixel = 0.5 world units.
   const ART = {
+    sp_jetski: [["..........kk..........",".........kaak.........","........kaabak........",".......kaabbaak.......","......kaabbaaaak......","......kabbbaaaaak.....",".....kaabbaaaaaak.....",".....kabbbaaaaaaak....","....kaababaaaaaaak....","....kabbdeeedddaaak...","....kabddddddddaaak...","...kaabdddddddddaaak..","...kabbdddddddddaaak..","...kafssaaaaaaassfgk..","...kafssfffffffssfgk..","...kabbCaaHHHaaCgggk..","...kabbCaHhhhHaCgggk..","...kabbCHhllhhHCgggk..","..kaabbCHhhhhhHCgggak.","..kaabbcHhhhhhHcgggak.","..kaabcccHhhhHcccggak.","..kaabccccHHHccccggak.","..kaabcccccccccccggak.","..kaabbCCCCCCCCCgggak.","..kaabbbicccccjagggak.","..kaabbbijjjjjjagggak.","..kaaebbijjjjjjagegak.","..kaaebbijjjjjjagegak.","...kaebbijjjjjjggekak.","...kaaebijjjjjjggeak..","...kaaebjjjjjjjgegak..","...kaaeaaaaaaaagegak..","...kaaeaaaaaaaagekak..","....kaaaggggggggaak...",".....kkaaaaaaaaakk....",".......kkkkkkkkk......"], {"k":"#1b1f2e","a":"#e11d48","b":"#fb7185","d":"#7dd3fc","e":"#f8fafc","f":"#334155","s":"#f2c9a0","g":"#9f1239","C":"#c2410c","H":"#15803d","h":"#22c55e","l":"#86efac","c":"#f59e0b","i":"#475569","j":"#1f2937"}],
     bait_abyss: [[".....kkkkk......","....kaaaaak.....","...kaaaaaaak....","..kabacccaaak...",".kaaacccccaaak..",".kaaccbbbccaak..",".kaaccbdbccaak..",".kaaccbbbccaak..",".kaaacccccaaak..","..kaaacccaaak...","...kaaaaaaak....","....kaaeaak.....",".....kkekkfk....","......kekkfk....","......kfffk.....",".......kkk......"], {"k":"#1b1f2e","a":"#0e7490","b":"#ecfeff","c":"#22d3ee","d":"#0b0f19","e":"#94a3b8","f":"#cbd5e1"}],
     bait_glitzer: [["......kkk...k...","....kkaaakkkbk..","...kacccaaabdbk.","...kcccccaakbk..","..kcceccdcaak...","..kcceccccaak...","..kcceccccaak...","..kccecccfaak...","..kccccdccaak...","...kcccccaak....","...kacccaaak....","....kkaaakk.....","......kakkgk....","......kakkgk....","......kgggk.....",".......kkk......"], {"k":"#1b1f2e","a":"#94a3b8","b":"#fbbf24","c":"#e2e8f0","d":"#fde68a","e":"#ffffff","f":"#f9a8d4","g":"#cbd5e1"}],
     bait_glutkoeder: [[".....kkkkk.k....","...kkaaaaakbk...","..kcaaaaaaakk...","..kadacccaaack..",".kaaacccccaaak..",".kaaccdddccaak..",".kaaccdedccaak..",".kaaccdddccaak..",".kaaacccccaaak..","..kaaacccaaak...","...kaaaaaaak....","....kaafaak.....",".....kkfkkgk....","......kfkkgk....","......kgggk.....",".......kkk......"], {"k":"#1b1f2e","a":"#dc2626","b":"#fbbf24","c":"#f97316","d":"#fef9c3","e":"#b91c1c","f":"#94a3b8","g":"#cbd5e1"}],
@@ -2048,19 +2058,22 @@
     return c.col || ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#a855f7'][Math.floor(t * 4) % 6];
   }
   const lookFrames = new Map();
-  function playerFrames(look = myLook()) {
+  // the colours of a look (hat h H l, jacket c C y, skin s S r, hair B b) on top of PLAYER_PAL, plus a cache key
+  function lookPal(look = myLook()) {
     const tier = Math.max(0, Math.min(HATS.length - 1, look.tier | 0));
     const hat = COSM[look.hat] && COSM[look.hat].slot === 'hat' ? COSM[look.hat] : null;
     const jacket = COSM[look.jacket] && COSM[look.jacket].slot === 'jacket' ? COSM[look.jacket] : null;
     const skin = SKINS[look.skin] ? look.skin : 'hell', hair = HAIRS[look.hair] ? look.hair : 'braun';
     const key = `${hat ? hat.id : tier}|${jacket ? jacket.id : ''}|${skin}|${hair}`;
-    if (!lookFrames.has(key)) {
-      const [h, H, l] = hat ? hat.col : HATS[tier], pal = { ...PLAYER_PAL, h, H, l };
-      if (jacket) { const [c, C, y] = jacket.col; Object.assign(pal, { c, C, y }); }
-      const [s, S, r] = SKINS[skin], [B, b] = HAIRS[hair];
-      Object.assign(pal, { s, S, r, B, b });
-      lookFrames.set(key, [false, true].map(flip => PLAYER_LEGS.map(g => bake(PLAYER_BODY.concat(g), pal, flip))));
-    }
+    const [h, H, l] = hat ? hat.col : HATS[tier], pal = { ...PLAYER_PAL, h, H, l };
+    if (jacket) { const [c, C, y] = jacket.col; Object.assign(pal, { c, C, y }); }
+    const [s, S, r] = SKINS[skin], [B, b] = HAIRS[hair];
+    Object.assign(pal, { s, S, r, B, b });
+    return { key, pal };
+  }
+  function playerFrames(look = myLook()) {
+    const { key, pal } = lookPal(look);
+    if (!lookFrames.has(key)) lookFrames.set(key, [false, true].map(flip => PLAYER_LEGS.map(g => bake(PLAYER_BODY.concat(g), pal, flip))));
     return lookFrames.get(key);
   }
 
@@ -2370,6 +2383,10 @@
   // boat skin „David Hasselhoff“: a giant pixel man swimming on his belly, you stand on his back
   const hoffImg = new Image(); hoffImg.src = 'img/boot-hoff.png';
   let hoffNight = null, hoffWet = null;
+  // with the Hoff as the boat, the wheel stands on his lower back and the dex crate sits on his swim shorts
+  const hoffOn = () => onSea() && save.cosm.boat === 'boot-hoff' && hoffImg.complete && hoffImg.naturalWidth > 0;
+  const wheelX = () => (hoffOn() ? 57 : 5), wheelY = () => DOCK_Y - (hoffOn() ? 24 : 22);
+  const dexX = () => (hoffOn() ? 33 : 28.5), dexY = () => DOCK_Y - (hoffOn() ? 14 : 8.5);
   function drawHoffBoat(dark) {
     if (!hoffImg.complete || !hoffImg.naturalWidth) return false;
     const w = hoffImg.naturalWidth / 2, h = hoffImg.naturalHeight / 2;
@@ -2379,13 +2396,16 @@
       x.globalCompositeOperation = 'source-atop'; x.fillStyle = 'rgba(10, 16, 40, .65)'; x.fillRect(0, 0, hoffNight.width, hoffNight.height);
       hoffWet = document.createElement('canvas'); hoffWet.width = hoffNight.width; hoffWet.height = hoffNight.height;
       const y = hoffWet.getContext('2d'); y.drawImage(hoffImg, 0, 0);
-      y.globalCompositeOperation = 'source-atop'; y.fillStyle = '#1e3a5f'; y.fillRect(0, 0, hoffWet.width, hoffWet.height);
+      y.globalCompositeOperation = 'source-atop'; y.fillStyle = '#1f6f8b'; y.fillRect(0, 0, hoffWet.width, hoffWet.height);
     }
-    ctx.drawImage(hoffImg, -2, 62, w, h);
-    if (dark > .02) { ctx.globalAlpha = Math.min(1, dark); ctx.drawImage(hoffNight, -2, 62, w, h); ctx.globalAlpha = 1; }
-    // the part under the waterline looks wet, with foam along the body
-    ctx.save(); ctx.beginPath(); ctx.rect(-2, SURFACE + .5, w, h); ctx.clip();
-    ctx.globalAlpha = .45; ctx.drawImage(hoffWet, -2, 62, w, h); ctx.restore(); ctx.globalAlpha = .7;
+    const body = (a) => {
+      ctx.globalAlpha = a; ctx.drawImage(hoffImg, -2, 62, w, h);
+      if (dark > .02) { ctx.globalAlpha = a * Math.min(1, dark); ctx.drawImage(hoffNight, -2, 62, w, h); }
+    };
+    // above the waterline he is solid; below it the water shows through and tints him, with foam along the body
+    ctx.save(); ctx.beginPath(); ctx.rect(-2, 0, w + 2, SURFACE + .5); ctx.clip(); body(1); ctx.restore();
+    ctx.save(); ctx.beginPath(); ctx.rect(-2, SURFACE + .5, w + 2, h); ctx.clip();
+    body(.6); ctx.globalAlpha = .35; ctx.drawImage(hoffWet, -2, 62, w, h); ctx.restore(); ctx.globalAlpha = .7;
     for (let i = 0; i < 18; i++) px(2 + i * 8 + Math.sin(t * 3 + i) * 1.5, SURFACE - .5 + (i % 2) * .5, 2.5, .5, '#f8fafc');
     ctx.globalAlpha = 1;
     // his feet kick up a little spray now and then
@@ -2437,7 +2457,7 @@
     }
   }
   function drawWheel(dark) { // the steering wheel on deck: back to the dock
-    drawArt('wheel_' + Math.round((Math.sin(t * .8) + 1) * 2), 5.5, DOCK_Y - 22, dark); // five baked turns of the wheel
+    drawArt('wheel_' + Math.round((Math.sin(t * .8) + 1) * 2), wheelX() + .5, wheelY(), dark); // five baked turns of the wheel
   }
   function drawRift(dark) { // a rock in the water with a glowing crack: the way down into the Glutgrotte
     const x0 = 196, by = SURFACE + 1, open = lavaOpen();
@@ -3011,7 +3031,7 @@
     for (let i = 0; i < 3; i++) { const c = sym[(Math.floor(t * .7) + i * 2) % 4]; px(x0 + 2 + i * 2.3, y - 12, 1.5, 1.5, c); px(x0 + 1.5 + i * 2.3, y - 11.5, .5, .5, c); }
   }
   function drawDexBook(dark) {
-    drawArt('dex', 28.5, DOCK_Y - 8.5, dark);
+    drawArt('dex', dexX(), dexY(), dark);
   }
   // the "Steg-Zeitung": a bundle of newspapers on the dock that holds the patch notes
   function drawNewspaper(dark) {
@@ -3128,13 +3148,14 @@
   const SP_MIN = [0, 500, 1000, 1500];      // skill needed to play that level
   const SP_CAP = [700, 1600, 2500, 2500];   // a level can only lift your skill this far
   const SP_DM = [.6, 1, 1.4, 0];            // skill gain per level (the champion duel gives no skill)
+  const SP_MEDAL_LV = 6; // extra skill per medal step (bronze 6, silver 12, gold 18), before SP_DM
   const SP_MEDAL = ['–', '🥉', '🥈', '🥇'];
   const SPORT_CLASS = lv => lv >= 2500 ? tr('Legende') : lv >= 1500 ? tr('Champion-Anwärter') : lv >= 1000 ? tr('Profi') : lv >= 500 ? tr('Fortgeschritten') : tr('Anfänger');
   const classFloor = lv => lv >= 1000 ? 1000 : lv >= 500 ? 500 : 0;
   function sportRec(id) { const r = save.sport[id] = save.sport[id] && typeof save.sport[id] === 'object' ? save.sport[id] : {}; r.lv = Math.max(0, Math.min(2500, r.lv | 0)); r.best = Array.isArray(r.best) ? r.best : [0, 0]; r.runs = r.runs | 0; return r; }
   const hasStamp = id => save.stamps.includes(id);
   const sportOpen = s => inselOpen() && stampCount() >= s.st;
-  // Champion: from skill 1500 and with 20 stamps (bay 5)
+  // Champion: from skill 1500 and with 26 stamps (bay 5)
   const champOpen = s => sportRec(s.id).lv >= 1500 && stampCount() >= CHAMP_ST;
   function sportReady() { return SPORTS.some(s => sportOpen(s) && !sportRec(s.id).runs) || SPORTS.some(s => champOpen(s) && !save.trophies.includes(s.id)); }
   // sport canvas painter
@@ -3142,6 +3163,14 @@
   const sq = (x, y, w, h, c) => { sx.fillStyle = c; sx.fillRect(snap(x), snap(y), snap(w) || .5, snap(h) || .5); };
   const sdisc = (cx, cy, r, c) => { for (let yy = -r; yy <= r; yy += .5) { const w = Math.sqrt(Math.max(0, r * r - yy * yy)); sq(cx - w, cy + yy, w * 2, .5, c); } };
   const stext = (s, x, y, c = '#fff', size = 8, al = 'center') => { sx.font = `700 ${size}px Poppins, sans-serif`; sx.textAlign = al; sx.fillStyle = '#1b1f2e'; sx.fillText(s, x + .5, y + .5); sx.fillStyle = c; sx.fillText(s, x, y); };
+  // sport actors: your own angler from the dock (sme, feet at y) and baked ART.sp_* sprites in your colours (sart, top left)
+  const sme = (x, foot, frame = 0, flip = false) => { const img = playerFrames()[flip ? 1 : 0][frame]; sx.drawImage(img, snap(x - 5.5), snap(foot - img.height / 2), img.width / 2, img.height / 2); };
+  const spArt = new Map();
+  function sart(name, x, y, flip = false) {
+    const { key, pal } = lookPal(), k = name + '|' + key + '|' + flip;
+    if (!spArt.has(k)) { const [rows, map] = ART[name]; spArt.set(k, bake(rows, { ...map, ...Object.fromEntries(Object.keys(map).filter(c => c !== 'k' && c in pal).map(c => [c, pal[c]])) }, flip)); }
+    const img = spArt.get(k); sx.drawImage(img, snap(x), snap(y), img.width / 2, img.height / 2);
+  }
   const rnd = (a, b) => a + Math.random() * (b - a);
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   function skySea(horizon, dark = 0) {
@@ -3153,7 +3182,7 @@
   const SPORTS = [
     { id: 'frisbee', icon: '🥏', name: 'Frisbee', st: 0, modes: ['Zielring', 'Weitwurf'],
       info: 'Halten für Kraft, loslassen, wenn der Winkel passt. Pelle fliegt der Scheibe hinterher.',
-      exp: [lv => 12 + lv * .011, lv => 180 + lv * .07], med: [[12, 22, 32], [220, 320, 400]], champ: [40, 420],
+      exp: [lv => 12 + lv * .006, lv => 180 + lv * .07], med: [[12, 17, 22], [207, 261, 324]], champ: [25, 369],
       stamps: [['f1', 'Erster Treffer im Zielring', g => g.hits > 0], ['f2', 'Ein Volltreffer in die Mitte', g => g.bulls > 0], ['f3', '5 Treffer im Zielring hintereinander', g => g.mode === 0 && g.maxStreak >= 5],
         ['f4', '40 Punkte im Zielring', g => g.mode === 0 && g.pts >= 40], ['f5', 'Weitwurf über 300 m', g => g.mode === 1 && g.far >= 300]],
       start(g) { g.n = g.mode ? 3 : 5; g.i = 0; g.pts = 0; g.hits = 0; g.streak = 0; g.maxStreak = 0; g.bulls = 0; g.far = 0; g.pow = 0; g.dis = null; g.peX = 20; g.newThrow = true; },
@@ -3179,7 +3208,7 @@
         const cam = g.mode && g.dis ? Math.max(0, g.dis.x - 260) : 0; sx.save(); sx.translate(-cam, 0);
         sq(0, 138, 44, 78, '#f2dfa8'); sq(0, 138, 44, 2, '#fde68a'); sq(40, 140, 6, 76, '#e9d39a');
         drawPelle(sq, 12, 148, 0); // the angler is Pelle's buddy: a little figure
-        sq(26, 132, 5, 12, '#1b1f2e'); sq(26.5, 132.5, 4, 11, '#3b82f6'); sq(26.5, 128, 4, 4.5, '#fcd34d');
+        sme(28.5, 144, g.st === 'aim' ? 0 : 1);
         if (!g.mode && g.ring) { const r = 22; for (const [w, c] of [[r, '#f8fafc'], [12, '#ef4444'], [5, '#facc15']]) sq(g.ring - w, 159, w * 2, 2, c); sq(g.ring - .5, 150, 1, 9, '#ef4444'); }
         if (g.mode) for (let m = 50; m <= 450; m += 50) { const x = 30 + m * 2; sq(x, 158, .5, 4, '#f8fafc'); stext(m + ' m', x, 170, '#f8fafc', 6); }
         sx.restore();
@@ -3195,13 +3224,13 @@
       score: g => g.mode ? g.far : g.pts },
     { id: 'turnier', icon: '🎣', name: 'Angelturnier', st: 0, modes: ['Fünf Fänge', 'Größter Fang'], fishing: true,
       info: 'Die nächsten 5 Fänge auf der Insel zählen: Seltenheit × Größe, Bonus für Mutationen und Shinys.',
-      exp: [lv => 10 + lv * .016, lv => 10 + lv * .016], med: [[8, 14, 22], [9, 15, 24]], lvMed: [1, 1.7, 2.5], champ: [60, 60],
+      exp: [lv => 10 + lv * .007, lv => 10 + lv * .007], med: [[8, 14, 22], [9, 15, 24]], lvMed: [1, 1.7, 2.5], champ: [60, 60],
       stamps: [['a1', 'Erstes Turnier beendet', g => g.n >= 5], ['a2', 'Silber im Turnier', g => g.medal >= 2], ['a3', 'Gold im Turnier', g => g.medal >= 3],
         ['a4', 'Einen Legendären im Turnier gefangen', g => g.leg], ['a5', 'Einen Shiny im Turnier gefangen', g => g.shiny]],
       score: g => g.mode ? g.best * 3 : g.pts },
     { id: 'flug', icon: '✈️', name: 'Rundflug', st: 0, modes: ['Erkunden', 'Nachtflug'],
       info: 'Flieg mit dem Wasserflugzeug über die Insel und sammle Aussichtsballons: 2 Punkte pro Ballon, 5 extra für neue. Gefundene bleiben für immer.',
-      exp: [lv => 20 + lv * .014, lv => 10 + lv * .004], med: [[20, 36, 50], [10, 16, 20]], champ: [58, 20], mode2: () => save.ipoints.filter(i => i < 30).length >= 30,
+      exp: [lv => 20 + lv * .01, lv => 10 + lv * .004], med: [[20, 29, 36], [10, 14, 18]], champ: [41, 20], mode2: () => save.ipoints.filter(i => i < 30).length >= 30,
       stamps: [['r1', 'Ersten Aussichtspunkt gefunden', () => save.ipoints.length >= 1], ['r2', '10 Aussichtspunkte gefunden', () => save.ipoints.filter(i => i < 30).length >= 10],
         ['r3', '20 Aussichtspunkte gefunden', () => save.ipoints.filter(i => i < 30).length >= 20], ['r4', 'Alle 30 Aussichtspunkte gefunden', () => save.ipoints.filter(i => i < 30).length >= 30],
         ['r5', 'Nachtflug: alle 10 Nachtpunkte gefunden', () => save.ipoints.filter(i => i >= 30).length >= 10]],
@@ -3256,7 +3285,7 @@
       score: g => g.pts },
     { id: 'jetski', icon: '🚤', name: 'Jetski', st: 4, modes: ['Slalom', 'Ringjagd'],
       info: 'Lenk durch die Tore aus Bojen. Tippen = über eine Welle springen.',
-      exp: [lv => 120 + lv * .12, lv => 120 + lv * .1], med: [[150, 280, 400], [150, 250, 350]], champ: [470, 400],
+      exp: [lv => 120 + lv * .06, lv => 120 + lv * .06], med: [[138, 174, 216], [138, 174, 216]], champ: [246, 246],
       stamps: [['j1', '10 Tore in einer Runde', g => g.passed >= 10], ['j2', 'Slalom ohne verpasstes Tor (mind. 15)', g => g.mode === 0 && g.miss === 0 && g.passed >= 15],
         ['j3', '10 Wellen übersprungen', g => g.jumps >= 10], ['j4', 'Slalom: 300 Punkte', g => g.mode === 0 && g.pts >= 300], ['j5', 'Ringjagd: 30 Ringe', g => g.mode === 1 && g.rings >= 30]],
       start(g) { g.x = 192; g.time = g.mode ? 45 : 40; g.objs = []; g.spawn = 0; g.passed = 0; g.miss = 0; g.combo = 0; g.pts = 0; g.jump = 0; g.jumps = 0; g.rings = 0; g.slow = 0; g.side = 1; g.scroll = 0; g.wake = []; },
@@ -3297,15 +3326,15 @@
         }
         const j = g.jump > 0 ? Math.sin(g.jump / .6 * Math.PI) * 6 : 0, x = g.x, y = 176 - j;
         if (j) { sx.globalAlpha = .3; sdisc(x, 178, 6, '#0b3d5c'); sx.globalAlpha = 1; }
-        sq(x - 5, y - 8, 10, 16, '#1b1f2e'); sq(x - 4.5, y - 7.5, 9, 15, '#e11d48'); sq(x - 3, y - 9.5, 6, 2, '#1b1f2e'); sq(x - 4.5, y + 3, 9, 2, '#f8fafc');
-        sq(x - 2, y - 4, 4, 5, '#3b82f6'); sdisc(x, y - 5, 2, '#fcd34d');
+        sart('sp_jetski', x - 5.5, y - 9.5);
+        if (Math.random() < .5) { sx.globalAlpha = .6; sq(x - 4 + Math.random() * 8, y + 8 + Math.random() * 3, 1, 1, '#ffffff'); sx.globalAlpha = 1; }
         stext(tr('⏱ {s} s · {p} Punkte', { s: Math.ceil(g.time), p: g.pts }), 192, 14, '#fff', 8);
         stext(g.mode ? tr('Ringe: {n}', { n: g.rings }) : tr('Tore: {n} · verpasst: {m}', { n: g.passed, m: g.miss }), 192, 26, '#fde047', 7);
       },
       score: g => g.pts },
     { id: 'bogen', icon: '🏹', name: 'Bogenschießen', st: 10, modes: ['Scheiben', 'Ballons'],
       info: 'Zielen, halten zum ruhig Atmen, loslassen zum Schießen. Achte auf den Wind.',
-      exp: [lv => 24 + lv * .012, lv => 10 + lv * .01], med: [[25, 38, 50], [14, 22, 30]], champ: [55, 36],
+      exp: [lv => 24 + lv * .012, lv => 10 + lv * .005], med: [[25, 35, 43], [12, 14, 18]], champ: [49, 20],
       stamps: [['b1', 'Ein Volltreffer (10)', g => g.bulls > 0], ['b2', '3 Volltreffer in einer Runde', g => g.bulls >= 3], ['b3', 'Scheiben: 50 Punkte', g => g.mode === 0 && g.pts >= 50],
         ['b4', 'Ballons: 25 in einer Runde', g => g.mode === 1 && g.pts >= 25], ['b5', 'Alle 6 Pfeile auf 8 oder besser', g => g.mode === 0 && g.shots.length === 6 && g.shots.every(s => s >= 8)]],
       start(g) { g.k = 0; g.shot = 0; g.pts = 0; g.bulls = 0; g.shots = []; g.breath = 1; g.arrows = []; g.ax = 192; g.ay = 100; g.wind = rnd(-1, 1); g.time = 30; g.bal = []; g.spawn = 0; g.fly = 0; },
@@ -3354,7 +3383,7 @@
       score: g => g.pts },
     { id: 'tt', icon: '🏓', name: 'Tischtennis', st: 18, modes: ['Match', 'Ballwechsel'],
       info: 'Der Schläger folgt deinem Finger. Wo der Ball den Schläger trifft, bestimmt den Winkel.',
-      exp: [lv => 40 + lv * .03, lv => 10 + lv * .012], med: [[50, 100, 120], [15, 30, 50]], champ: [100, 45],
+      exp: [lv => 40 + lv * .02, lv => 10 + lv * .005], med: [[50, 100, 120], [12, 14, 18]], champ: [100, 20],
       stamps: [['t1', 'Ersten Punkt gemacht', g => g.me > 0], ['t2', 'Ein Match gewonnen', g => g.mode === 0 && g.me >= 7], ['t3', 'Ein Match auf Profi gewonnen', g => g.mode === 0 && g.me >= 7 && g.lvl >= 2],
         ['t4', 'Ballwechsel mit 30 Schlägen', g => g.mode === 1 && g.rally >= 30], ['t5', 'Ballwechsel mit 60 Schlägen', g => g.mode === 1 && g.rally >= 60]],
       start(g) { g.me = 0; g.op = 0; g.px = 192; g.ox = 192; g.rally = 0; g.best = 0; g.serve = 1; g.wait = 1; g.ball = null; },
@@ -3385,7 +3414,8 @@
         for (let x = 132; x < 252; x += 3) sq(x, 106, 1, 4, '#94a3b8');
         if (g.lvl === 3) drawKraul(sq, g.ox, 26); else drawPelle(sq, g.ox, 24, 0, true);
         sq(g.ox - 12, 30, 24, 3, '#1b1f2e'); sq(g.ox - 11.5, 30.5, 23, 2, '#3b82f6');
-        sq(g.px - 14, 186, 28, 3, '#1b1f2e'); sq(g.px - 13.5, 186.5, 27, 2, '#ef4444');
+        sq(g.px - 1.5, 188.5, 3, 7, '#1b1f2e'); sq(g.px - 1, 189, 2, 6, '#b45309'); sq(g.px - 1.5, 192, 3, 3, lookPal().pal.s);
+        sq(g.px - 14, 185.5, 28, 4, '#1b1f2e'); sq(g.px - 13, 186, 26, 3, '#ef4444'); sq(g.px - 12.5, 186, 25, .5, '#fca5a5'); sq(g.px - 13, 188.5, 26, .5, '#b91c1c');
         if (g.ball) { sx.globalAlpha = .3; sdisc(g.ball.x + 2, g.ball.y + 3, 2, '#0b1030'); sx.globalAlpha = 1; sdisc(g.ball.x, g.ball.y, 2.2, '#ffffff'); }
         stext(g.mode ? tr('Ballwechsel: {n}', { n: g.rally }) : `${g.me} : ${g.op}`, 64, 108, '#1b1f2e', 12);
         if (!g.mode) stext(tr('Erster bis 7'), 64, 122, '#78350f', 7);
@@ -3393,7 +3423,7 @@
       score: g => g.mode ? g.best : g.me * 10 + (g.me >= 7 ? 30 + (7 - g.op) * 5 : 0) },
     { id: 'surf', icon: '🏄', name: 'Surfen', st: 6, modes: ['Wellenritt', 'Trickjagd'],
       info: 'Zieh hoch und runter auf der Welle: oben gibt es mehr Punkte, über der Kante stürzt du. Tippen, wenn der Kamm glitzert = Trick. Zu tief holt dich das Weißwasser.',
-      exp: [lv => 70 + lv * .09, lv => 90 + lv * .1], med: [[80, 160, 260], [100, 200, 320]], champ: [330, 380],
+      exp: [lv => 70 + lv * .035, lv => 90 + lv * .045], med: [[80, 102, 126], [100, 130, 162]], champ: [144, 184],
       stamps: [['s1', 'Ersten Trick gestanden', g => g.tricks > 0], ['s2', '5 Tricks in einer Kombo', g => g.maxCombo >= 5], ['s3', 'Wellenritt ohne Sturz', g => g.mode === 0 && g.falls === 0 && g.time <= 0],
         ['s4', 'Wellenritt: 250 Punkte', g => g.mode === 0 && g.pts >= 250], ['s5', 'Trickjagd: 10 Treffer in Folge', g => g.mode === 1 && g.bestChain >= 10]],
       start(g) { Object.assign(g, { y: 130, time: g.mode ? 40 : 45, pts: 0, combo: 0, maxCombo: 0, tricks: 0, falls: 0, stun: 0, air: 0, foam: 20, cue: 0, nextCue: 2, chain: 0, bestChain: 0, scroll: 0, used: false, last: 0, pop: '', popT: 0 }); },
@@ -3439,9 +3469,10 @@
         const jy = g.air > 0 ? Math.sin(Math.max(0, g.air) / .9 * Math.PI) * 12 : 0, x = 130, y = g.y - jy;
         if (g.stun > 0) { sq(x - 8, y + 2, 16, 2, '#f97316'); sdisc(x + 6, y + 6, 2, '#fcd34d'); }
         else {
-          sq(x - 9, y, 18, 2.5, '#1b1f2e'); sq(x - 8.5, y + .5, 17, 1.5, '#f97316'); sq(x - 3, y + .5, 6, 1.5, '#fde68a');
-          sq(x - 2, y - 9, 4, 9, '#1b1f2e'); sq(x - 1.5, y - 8.5, 3, 8, '#0ea5e9'); sdisc(x, y - 11, 2.2, '#fcd34d');
-          sq(x - 6, y - 7, 4, 1, '#fcd34d'); sq(x + 2, y - 8, 4, 1, '#fcd34d');
+          sme(x, y + .5, 1);
+          sq(x - 9, y, 18, 2.5, '#1b1f2e'); sq(x - 10, y + .5, 1.5, 1.5, '#1b1f2e'); sq(x + 8.5, y - .5, 2, 2, '#1b1f2e');
+          sq(x - 9, y + .5, 18, 1.5, '#f97316'); sq(x + 8.5, y, 1.5, 1.5, '#f97316'); sq(x - 8, y + .5, 16, .5, '#fdba74'); sq(x - 3, y + .5, 6, 1.5, '#fde68a');
+          if (Math.random() < .6) { sx.globalAlpha = .7; sq(x - 11 - Math.random() * 4, y + Math.random() * 2, 1, 1, '#ffffff'); sx.globalAlpha = 1; }
         }
         if (g.popT > 0) stext(g.pop, x, y - 18, '#fde047', 9);
         stext(tr('⏱ {s} s · {p} Punkte', { s: Math.ceil(g.time), p: Math.round(g.pts) }), 192, 14, '#fff', 8);
@@ -3450,7 +3481,7 @@
       score: g => g.pts },
     { id: 'volley', icon: '🏐', name: 'Beachvolleyball', st: 14, modes: ['Match', 'Aufschlag-Serie'],
       info: 'Lauf unter den Ball (Ring im Sand) und tippe, wenn er tief genug ist. Ganz tief getroffen wird ein Schmetterball.',
-      exp: [lv => 40 + lv * .03, lv => 12 + lv * .012], med: [[50, 100, 120], [15, 28, 40]], champ: [100, 44],
+      exp: [lv => 40 + lv * .02, lv => 12 + lv * .006], med: [[50, 100, 120], [14, 17, 22]], champ: [100, 25],
       stamps: [['v1', 'Ersten Punkt gemacht', g => g.me > 0], ['v2', 'Ein Match gewonnen', g => g.mode === 0 && g.me >= 7], ['v3', '5 Schmetterbälle in einem Match', g => g.mode === 0 && g.spikes >= 5],
         ['v4', 'Aufschlag-Serie: 30 Punkte', g => g.mode === 1 && g.pts >= 30], ['v5', 'Ein Match zu null gewonnen', g => g.mode === 0 && g.me >= 7 && g.op === 0]],
       start(g) { Object.assign(g, { me: 0, op: 0, px: 90, ox: 290, ball: null, serve: 1, wait: 1, spikes: 0, pts: 0, n: 0, pow: 0, ang: 0, pop: '', popT: 0, mark: null }); },
@@ -3504,8 +3535,9 @@
         for (let i = 0; i < 50; i++) sq((i * 71) % W, 152 + (i * 13) % 60, 1, .5, '#d4b97a');
         sq(8, 176, 368, 1, '#f8fafc'); sq(191, 108, 2, 70, '#64748b'); for (let y = 110; y < 134; y += 3) sq(186, y, 12, 1, '#e2e8f0'); sq(186, 108, 12, 2, '#f8fafc');
         if (g.mode === 1) for (const [a, b2, p, c] of [[192, 260, 1, '#fde68a'], [260, 330, 3, '#fcd34d'], [330, 376, 5, '#fbbf24']]) { sq(a, 174, b2 - a, 3, c); stext(String(p), (a + b2) / 2, 190, '#78350f', 8); }
-        const fig = (x, col) => { sq(x - 3, 160, 6, 14, '#1b1f2e'); sq(x - 2.5, 160.5, 5, 13, col); sdisc(x, 157, 3, '#fcd34d'); };
-        fig(g.px, '#ef4444');
+        const run = Math.abs(g.px - (g.lastPx ?? g.px)) > .05; g.lastPx = g.px;
+        sx.globalAlpha = .25; sdisc(g.px, 176, 5, '#78350f'); sx.globalAlpha = 1;
+        sme(g.px, 176, run ? [0, 1, 0, 2][Math.floor(t * 10) % 4] : 0);
         if (g.mode === 0) { if (g.lvl === 3) drawKraul(sq, g.ox, 176, true); else drawPelle(sq, g.ox, 176, 0, true); }
         if (g.ball) {
           const b = g.ball, land = b.x + b.vx * ((b.vh + Math.sqrt(Math.max(0, b.vh * b.vh + 320 * b.h))) / 160);
@@ -3522,7 +3554,7 @@
       score: g => g.mode ? g.pts : g.me * 10 + (g.me >= 7 ? 30 + (7 - g.op) * 5 : 0) },
     { id: 'bowling', icon: '🎳', name: 'Strand-Bowling', st: 22, modes: ['10 Frames', 'Pyramide'],
       info: 'Erstes Tippen hält die Richtung fest, zweites den Drall. Der Ball rollt, die Pins fallen.',
-      exp: [lv => 80 + lv * .06, lv => 8 + lv * .004], med: [[90, 150, 200], [10, 15, 19]], champ: [220, 20],
+      exp: [lv => 80 + lv * .04, lv => 8 + lv * .004], med: [[90, 116, 144], [9, 12, 14]], champ: [164, 16],
       stamps: [['w1', 'Ersten Strike geworfen', g => g.strikes > 0], ['w2', 'Einen Spare geworfen', g => g.spares > 0], ['w3', '3 Strikes in Folge', g => g.maxRow >= 3],
         ['w4', '10 Frames: 200 Punkte', g => g.mode === 0 && g.pts >= 200], ['w5', 'Pyramide: alle 21 Pins', g => g.mode === 1 && g.pts >= 21]],
       start(g) { Object.assign(g, { rolls: [], frame: 0, inFrame: 0, pts: 0, strikes: 0, spares: 0, row: 0, maxRow: 0, throws: 0, ph: 'aim', aim: 0, spin: 0, ball: null, pins: [], simT: 0, pop: '', popT: 0, standBefore: 0 }); bowlRack(g); },
@@ -3763,7 +3795,8 @@
     const medal = lvl === 3 ? 0 : medalOf(s, mode, lvl, score); g.medal = medal;
     const before = r.lv;
     if (lvl < 3) {
-      const d = Math.round(clamp((score / s.exp[mode](r.lv) - 1) * 60, -30, 60) * SP_DM[lvl]);
+      // beating your expectation moves the skill, and every medal adds a little on top so steady play keeps climbing
+      const d = Math.round((clamp((score / s.exp[mode](r.lv) - 1) * 60, -30, 60) + SP_MEDAL_LV * medal) * SP_DM[lvl]);
       if (d > 0 && r.lv < SP_CAP[lvl]) r.lv = Math.min(SP_CAP[lvl], r.lv + d);
       else if (d < 0) r.lv = Math.max(classFloor(r.lv), r.lv + d);
     }
@@ -3914,7 +3947,7 @@
   const PROPS = [
     { id: 'casino', label: tr('Fischautomat'),  x: 2.5, y: DOCK_Y - 20, w: 12.5, h: 20, draw: drawSlotMachine, open: () => toggleModal('casino') },
     { id: 'patch',  label: tr('Steg-Zeitung (Patch Notes)'), x: 103.5, y: DOCK_Y - 5.5, w: 8, h: 5.5, draw: drawNewspaper, open: () => toggleModal('patch'), ready: () => save.patchSeen !== PATCH_NOTES[0].id && save.total > 0 },
-    { id: 'dex',    map: 'all', label: tr('Fischdex & Shinydex'), x: 28.5, y: DOCK_Y - 8.5, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
+    { id: 'dex',    map: 'all', label: tr('Fischdex & Shinydex'), get x() { return dexX(); }, get y() { return dexY(); }, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
     { id: 'lb',     label: tr('Bestenliste'),   x: KIOSK.x + KIOSK.w / 2 - 5, y: DOCK_Y - 48, w: 10, h: 10.5, draw: drawTrophy, open: () => toggleModal('lb') },
     { id: 'prog',   label: tr('Aufträge & Fortschritt'), x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
     { id: 'shop',   label: tr('Laden'),         x: KIOSK.x - 3, y: DOCK_Y - 37.5, w: KIOSK.w + 6, h: 37.5, open: () => toggleModal('shop') },
@@ -3925,7 +3958,7 @@
     { id: 'glimm',  map: 'lava', label: tr('⛏️ Glimm · Aufträge'), x: 19, y: DOCK_Y - 11, w: 10, h: 11, draw: () => drawGlimm(20, DOCK_Y, 1), open: () => talkGlimm(), ready: () => save.glimmQ.some(q => q.p >= q.n) || canDig() },
     { id: 'lavashop', map: 'lava', label: tr('🌋 Glutflosses Lava-Laden'), x: KIOSK.x - 3, y: DOCK_Y - 30, w: KIOSK.w + 6, h: 30, draw: drawLavaStall, open: () => toggleModal('shop') },
     { id: 'ladder', map: 'lava', label: tr('🪜 Zurück zum Steg'), x: 4, y: DOCK_Y - 28, w: 12, h: 28, draw: drawLadder, open: () => travel('steg') },
-    { id: 'wheel',  map: 'see', label: tr('⚓ Zurück zum Steg'), x: 5, y: DOCK_Y - 22, w: 15, h: 22, draw: drawWheel, open: () => travel('steg') },
+    { id: 'wheel',  map: 'see', label: tr('⚓ Zurück zum Steg'), get x() { return wheelX(); }, get y() { return wheelY(); }, w: 15, h: 22, draw: drawWheel, open: () => travel('steg') },
     { id: 'flieger', get label() { return inselOpen() ? tr('✈️ Inselflieger · Zur Sonneninsel') : tr('✈️ Inselflieger (🔒 3× Prestige)'); }, x: 356, y: SURFACE - 13, w: 26, h: 14, draw: dark => drawPlane(369, SURFACE + 1, dark), open: () => travel('insel'), ready: () => inselOpen() && !save.inselSeen },
     { id: 'heimflug', map: 'insel', label: tr('✈️ Zurück zum Steg'), x: 356, y: SURFACE - 13, w: 26, h: 14, draw: dark => drawPlane(369, SURFACE + 1, dark), open: () => travel('steg') },
     { id: 'pelle',  map: 'insel', label: tr('🏅 Coach Pelle · Sportstationen'), x: 18, y: DOCK_Y - 17, w: 12, h: 17, draw: () => drawPelle(px, 24, DOCK_Y, Math.sin(t * 2) > .7 ? 1 : 0), open: () => toggleModal('sport'), ready: () => sportReady() },

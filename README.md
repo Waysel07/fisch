@@ -327,7 +327,9 @@ From the 3rd prestige the seaplane at the end of the dock (`flieger`) flies you 
 | 🏓 Tischtennis | 18 | Match, Ballwechsel |
 | 🎳 Strand-Bowling | 22 | 10 Frames, Pyramide |
 
-- **Skill** (`sport[id].lv`, 0–2500): after each round it moves by round(clamp((score / expected − 1) × 60, −30, 60) × level factor), and it never drops below the floor of the current class (Anfänger 0, Fortgeschritten 500, Profi 1000, Champion-Anwärter 1500, Legende 2500). Levels 2 and 3 open at 500 and 1000 and pay more.
+The expected score of every mode grows by about half its base per 1000 skill (`exp`). Medals sit at about 1.15, 1.45 and 1.8 times the base, the champion duel at about 2× (the volleyball and table-tennis matches: bronze 5 points, silver a win, gold a win by 4, the duel a win against Kraul).
+
+- **Skill** (`sport[id].lv`, 0–2500): after each round it moves by round((clamp((score / expected − 1) × 60, −30, 60) + 6 × medal) × level factor) (medal 0–3, `SP_MEDAL_LV`), and it never drops below the floor of the current class (Anfänger 0, Fortgeschritten 500, Profi 1000, Champion-Anwärter 1500, Legende 2500). Levels 2 and 3 open at 500 and 1000 and pay more.
 - **Profi** at 1000 gives +2 % Taler everywhere per station.
 - **Champion duel** against Kapitän Kraul, a walrus in a tracksuit, opens at skill 1500 and 26 stamps. A win gives a trophy (`trophies`, shown on a shelf at the dock), a pearl and +3 % Taler everywhere.
 - **Stamps** (`stamps`): 5 per station, 45 in total. Each pays Taler, XP and Schuppen. All 45 give the title Inselchampion and +5 % Taler everywhere.
