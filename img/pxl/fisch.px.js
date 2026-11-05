@@ -1458,7 +1458,14 @@ F('megalodon', 120, 56, {}, (c) => {
 })
 
 // ---------------------------------------------------------------- Neu 2026-11-05: Talerfisch
-F('talerfisch', 66, 40, {}, (c) => {
+F('talerfisch', 74, 40, {}, (c0) => {
+  // alles 8 Pixel nach rechts, damit links Platz für die Vape und die Dampfwolke ist
+  const D = 8, c = {
+    px: (x, y, k) => c0.px(x + D, y, k), rect: (x, y, w, h, k) => c0.rect(x + D, y, w, h, k),
+    hline: (x, y, l, k) => c0.hline(x + D, y, l, k), vline: (x, y, l, k) => c0.vline(x + D, y, l, k),
+    line: (a, b, x, y, k) => c0.line(a + D, b, x + D, y, k), poly: (pts, k) => c0.poly(pts.map((v, i) => i % 2 ? v : v + D), k),
+    circ: (x, y, r, k) => c0.circ(x + D, y, r, k), ellipse: (x, y, rx, ry, k) => c0.ellipse(x + D, y, rx, ry, k),
+  }
   // Talerfisch: goldener Fisch im schwarzen Tech-Trainingsanzug, gegelte Haare, Strich in der Braue,
   // Goldkette mit Taler, Bauchtasche quer über der Brust
   const p = P({ x0: 2, x1: 50, cy: 21, up: 14, dn: 14, peak: 0.34, hp: 0.55, tp: 1.0, end: 0.16 })
@@ -1496,4 +1503,9 @@ F('talerfisch', 66, 40, {}, (c) => {
   for (let y = 26; y < 31; y += 2) for (let x = 34 + (y % 4 === 0 ? 1 : 0); x < 43; x += 3) c.px(x, y, '#6b4f2e')
   c.rect(37, 27, 3, 2, '#facc15'); c.px(37, 27, '#fef08a')
   sprk(c, 24, 33)
+  // Vape im Mundwinkel, LED an, Dampfwolke nach oben
+  c.rect(-7, 22, 7, 3, '#7c3aed'); c.hline(-7, 22, 7, '#a78bfa'); c.hline(-7, 24, 7, '#5b21b6')
+  c.rect(0, 22, 3, 2, '#71717a'); c.hline(0, 22, 3, '#a1a1aa'); c.px(-6, 23, '#22d3ee')
+  c.circ(-4, 16, 3, '#cbd5e1'); c.circ(-2, 12, 3, '#e2e8f0'); c.circ(-6, 9, 2, '#f1f5f9'); c.circ(1, 8, 2, '#e2e8f0')
+  c.px(-3, 11, '#ffffff'); c.px(-6, 8, '#ffffff')
 })

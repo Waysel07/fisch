@@ -234,7 +234,7 @@ Fish that moved to a harder area are worth more Taler there, in line with the ot
 
 The buoy next to Bealin takes you onto the boat, and the steering wheel takes you back. Every cast out here counts as far out.
 
-Talerfisch (since `2026-11-05-5`): rare, at the dock and on the High Seas, worth 90 Taler, a golden fish in a tracksuit with a gold chain and a crossbody bag.
+Talerfisch (since `2026-11-05-5`): rare, at the dock and on the High Seas, worth 90 Taler, a golden fish in a tracksuit with a gold chain, a crossbody bag and a vape.
 
 Deep-sea catches (since `2026-11-05-3`): Beilfisch, Alter Taucherhelm (junk), Riesenassel, Leuchtqualle (night), Fangzahnfisch (far), Pelikanaal (night) and the legendary Megalodon (very far).
 
