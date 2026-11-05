@@ -6,6 +6,7 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 
 - 🖤 New epic fish: the Playboi Carti Fish in a vamp look with a leather jacket, red-tipped dreads, big shades, vampire fangs and silver chains. It headbangs to the beat and bites at the dock and on the high seas, best at night.
 - 🧲 New at the kiosk from 1 prestige: the Magnet Rod (20,000 coins). It catches no fish, only things: everything from “No fish” is worth three times as much with it, and three finds only hang on it – Rusty Anchor, Old Bicycle and the legendary Treasure Chest.
+- 👕 New cosmetics in the wardrobe: the kiosk has 9 new pieces, including the yellow fisher jacket and the camo hat, plus the Diamond Jacket (75,000) and the Diamond Bobber (60,000). You earn 5 more by catching things: Vamp Jacket and Vamp Hat for the Carti Fish, the Scrap Helmet for the anchor, the Treasure Bobber for the chest and the Shell Hat for the Magic Conch.
 
 ## 04.11.2026 · `2026-11-04-19`
 

@@ -187,6 +187,7 @@
     { id: '2026-11-05-1', date: '05.11.2026', items: [
       '🖤 Neuer epischer Fisch: der Playboi-Carti-Fisch im Vamp-Look mit Lederjacke, Dreads mit roten Spitzen, großer Sonnenbrille, Vampirzähnen und Silberketten. Er headbangt im Takt und beißt am Steg und auf Hoher See, am liebsten nachts.',
       '🧲 Neu im Kiosk ab 1× Prestige: die Magnet-Angel (20 000 Taler). Sie fängt keine Fische, nur Dinge: Alles aus „Kein Fisch“ ist damit dreimal so viel wert, und drei Funde hängen nur an ihr – Rostiger Anker, Altes Fahrrad und die legendäre Schatztruhe.',
+      '👕 Neue Kosmetik im Kleiderschrank: Im Kiosk gibt es 9 neue Teile, darunter die gelbe Fischerjacke und der Tarnhut, dazu die Diamantjacke (75 000) und die Diamantpose (60 000). 5 weitere bekommst du für Fänge: Vamp-Jacke und Vamp-Hut für den Carti-Fisch, den Schrotthelm für den Anker, die Schatzpose für die Truhe und den Muschelhut für die Miesmuschel.',
     ] },
     { id: '2026-11-04-19', date: '04.11.2026', items: [
       '🐟 Der Schatten am Köder verwandelt sich nicht mehr: Schon wenn er heranschwimmt, zeigt er ungefähr, was gleich anbeißt.',
@@ -1809,6 +1810,15 @@
     { id: 'pose-blau',   slot: 'bob',    name: 'Blaue Pose',         price: 150,  col: '#3b82f6', desc: 'Schwimmt genauso gut, nur blauer.' },
     { id: 'pose-gruen',  slot: 'bob',    name: 'Grüne Pose',         price: 150,  col: '#22c55e', desc: 'Für Angler mit Gartenliebe.' },
     { id: 'pose-pink',   slot: 'bob',    name: 'Pinke Pose',         price: 250,  col: '#f472b6', desc: 'Unübersehbar.' },
+    { id: 'hut-orange',  slot: 'hat',    name: 'Oranger Hut',        price: 500,  col: ['#f97316', '#c2410c', '#fed7aa'], desc: 'Warnfarbe. Die Möwen halten Abstand.' },
+    { id: 'hut-lila',    slot: 'hat',    name: 'Lila Hut',           price: 750,  col: ['#a855f7', '#7e22ce', '#e9d5ff'], desc: 'Ein bisschen Zauberer, ein bisschen Angler.' },
+    { id: 'hut-tarn',    slot: 'hat',    name: 'Tarnhut',            price: 1200, col: ['#65a30d', '#3f6212', '#a3a35a'], desc: 'Die Fische sehen dich nicht. Sagt der Verkäufer.' },
+    { id: 'jacke-gelb',  slot: 'jacket', name: 'Gelbe Regenjacke',   price: 800,  col: ['#facc15', '#ca8a04', '#fef9c3'], desc: 'Die echte Fischerjacke. Fehlt nur noch der Bart.' },
+    { id: 'jacke-schwarz', slot: 'jacket', name: 'Schwarze Regenjacke', price: 1200, col: ['#27272a', '#09090b', '#71717a'], desc: 'Schlicht, dunkel, wasserdicht.' },
+    { id: 'jacke-pink',  slot: 'jacket', name: 'Pinke Regenjacke',   price: 1000, col: ['#ec4899', '#9d174d', '#fbcfe8'], desc: 'Für Angler mit Selbstbewusstsein.' },
+    { id: 'pose-gelb',   slot: 'bob',    name: 'Gelbe Pose',         price: 200,  col: '#facc15', desc: 'Wie eine kleine Sonne auf dem Wasser.' },
+    { id: 'pose-lila',   slot: 'bob',    name: 'Lila Pose',          price: 300,  col: '#a855f7', desc: 'Schaukelt ganz geheimnisvoll.' },
+    { id: 'pose-weiss',  slot: 'bob',    name: 'Weiße Pose',         price: 400,  col: '#f8fafc', desc: 'Sieht man sogar bei Nacht.' },
     // luxury: for anglers who have more coins than ideas
     { id: 'pose-kristall', slot: 'bob',  name: 'Kristallpose',       price: 10000, col: '#a5f3fc', desc: 'Klar wie Eis. Die Fische sehen sich darin.' },
     { id: 'jacke-kapitaen', slot: 'jacket', name: 'Kapitänsjacke',   price: 20000, col: ['#1e3a8a', '#172554', '#facc15'], desc: 'Dunkelblau mit Goldknöpfen. Für Leute mit eigenem Boot.' },
@@ -1817,6 +1827,8 @@
     { id: 'jacke-galaxie', slot: 'jacket', name: 'Galaxiemantel',    price: 1000000, pres: 2, col: ['#312e81', '#0f0a2e', '#f0abfc'], desc: 'Voller Sterne. Ab 2× Prestige.' },
     // boat skins: replace Bealin's boat on the open sea (drawBoat)
     { id: 'boot-hoff',   slot: 'boat',   name: 'David Hasselhoff',   price: 30000, reb: 3, desc: 'Der Mann, die Locken, das Boot. Schwimmt auf dem Bauch durchs Meer und trägt dich auf dem Rücken über die Hohe See.' },
+    { id: 'jacke-diamant', slot: 'jacket', name: 'Diamantjacke',   price: 75000, col: ['#67e8f9', '#0e7490', '#ecfeff'], desc: 'Besetzt mit lauter kleinen Steinen. Schwer, aber schön.' },
+    { id: 'pose-diamant', slot: 'bob',   name: 'Diamantpose',        price: 60000, col: '#cffafe', desc: 'Die teuerste Pose am Steg. Bitte nicht verlieren.' },
     { id: 'hut-krone',   slot: 'hat',    name: 'Kronen-Hut',         price: 100000, col: ['#fde047', '#a16207', '#ffffff'], sparkle: true, desc: 'Für Angler, die wirklich alles haben.' },
     // unlocked by achievements
     { id: 'hut-gold',    slot: 'hat',    name: 'Goldener Hut',       col: ['#facc15', '#b45309', '#fef08a'], desc: 'Für alle, die einen legendären Fisch gelandet haben.', ach: 'Fange einen legendären Fisch.', got: () => FISH.some(f => f.r === 'legendary' && save.dex[f.id]) },
@@ -1832,6 +1844,11 @@
     { id: 'hut-perle',   slot: 'hat',    name: 'Perlenkrone',        col: ['#f5f3ff', '#a78bfa', '#ffffff'], sparkle: true, desc: 'Für alle, die ganz von vorn angefangen haben.', ach: 'Mach einmal Prestige.', got: () => save.prestige >= 1 },
     { id: 'pose-perle',  slot: 'bob',    name: 'Perlen-Pose',        col: '#ede9fe', desc: 'Schimmert wie Perlmutt.', ach: 'Mach 2× Prestige.', got: () => save.prestige >= 2 },
     { id: 'jacke-prestige', slot: 'jacket', name: 'Prestige-Mantel', col: ['#1e1b4b', '#0f0a2e', '#fbbf24'], desc: 'Nachtblau mit Goldsaum. Schon dreimal alles verloren und trotzdem hier.', ach: 'Mach 3× Prestige.', got: () => save.prestige >= 3 },
+    { id: 'jacke-vamp',  slot: 'jacket', name: 'Vamp-Jacke',         col: ['#1c1917', '#0c0a09', '#dc2626'], desc: 'Schwarzes Leder mit roten Nähten. Fweh!', ach: 'Fange den Playboi-Carti-Fisch.', got: () => !!save.dex.carti },
+    { id: 'hut-vamp',    slot: 'hat',    name: 'Vamp-Hut',           col: ['#18181b', '#09090b', '#ef4444'], desc: 'Schwarz mit rotem Band. Fwe fwe fwe.', ach: 'Fange den Playboi-Carti-Fisch 5×.', got: () => ((save.dex.carti || {}).n || 0) >= 5 },
+    { id: 'hut-schrott', slot: 'hat',    name: 'Schrotthelm',        col: ['#a16207', '#713f12', '#d6d3d1'], desc: 'Aus einem rostigen Eimer gebogen. Hält trotzdem.', ach: 'Fange den rostigen Anker.', got: () => !!save.dex.anker },
+    { id: 'pose-schatz', slot: 'bob',    name: 'Schatzpose',         col: '#eab308', desc: 'Aus dem Gold der Schatztruhe gegossen.', ach: 'Fange eine Schatztruhe.', got: () => !!save.dex.truhe },
+    { id: 'hut-muschel', slot: 'hat',    name: 'Muschelhut',         col: ['#fbcfe8', '#db2777', '#fdf2f8'], sparkle: true, desc: 'Die Muschel hat gesagt, er steht dir.', ach: 'Fange die Magische Miesmuschel.', got: () => !!save.dex.muschel },
     // codes (settings): FISCH-BETA-TEST-RWRD unlocks the beta set
     { id: 'hut-beta',    slot: 'hat',    name: 'Beta-Kappe',         col: ['#22d3ee', '#0e7490', '#f0abfc'], sparkle: true, desc: 'Für alle, die von Anfang an dabei waren.', ach: 'Löse den Beta-Code in den Einstellungen ein.', got: () => (save.codes || []).includes('beta') },
     { id: 'jacke-beta',  slot: 'jacket', name: 'Beta-Jacke',         col: ['#7c3aed', '#3b0764', '#22d3ee'], desc: 'Lila mit Türkis. Steht „BETA“ drauf, man sieht es nur nicht.', ach: 'Löse den Beta-Code in den Einstellungen ein.', got: () => (save.codes || []).includes('beta') },
