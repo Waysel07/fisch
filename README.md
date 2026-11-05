@@ -58,8 +58,8 @@ Glutsteine can't be turned into Taler.
 
 Catches, lost fish, quests and Fischdex rewards give XP toward angler levels, which unlock gear. Catch bonuses add up rather than multiply: catch streaks, clean catches (tension under 70 %), mutations, shinies, night fishing and the first catches of each day. Every 5 levels a milestone gives Schuppen, and every 10 levels a mystery box.
 
-- **Rebirth** is available from level 12, and each one needs 2 more levels. It gives Schuppen and a permanent +20 % Taler, and resets level, Taler, rods, bait, quests, the forge, Glutsteine and the cave depth. The Fischdex, records and talents stay.
-- **Prestige** needs 7 rebirths the first time, then one fewer each time (6, 5, then always 4, `presReb()`). It also resets rebirths, Schuppen and talents. It gives Perlen, a permanent +100 % Taler and +25 % XP. 40 % of the rebirths before it stay in the Taler bonus as an Erbe (`rebHeir`). Ranks count `rebirthsTotal`, so ranks and rebirth cosmetics stay.
+- **Rebirth** is available from level 12, and each one needs 2 more levels, plus 2 more per prestige (`rebirthLvl()`), so the prestige XP bonus doesn't make every run shorter. It gives Schuppen and a permanent +20 % Taler, and resets level, Taler, rods, bait, quests, the forge, Glutsteine and the cave depth. The Fischdex, records and talents stay.
+- **Prestige** needs 7 rebirths the first time, then 6, then 5 for prestiges 3–5, and from the 6th one more every three prestiges, at most 10 (`presReb()`). It also resets rebirths, Schuppen and talents. It gives Perlen, a permanent +100 % Taler and +25 % XP. 40 % of the rebirths before it stay in the Taler bonus as an Erbe (`rebHeir`). Ranks count `rebirthsTotal`, so ranks and rebirth cosmetics stay.
 
 | Rebirth | Unlocks |
 |---|---|
