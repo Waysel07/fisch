@@ -159,7 +159,10 @@ function sprite(name, opt, fn) {
 }
 const ctx = { sprite, light, selout, spec, ramp, pal: (p) => Object.assign(PAL, p), mix, lum, rgb, hex, Math, console };
 vm.createContext(ctx);
-vm.runInContext(fs.readFileSync(path.join(__dirname, which + '.px.js'), 'utf8'), ctx, { filename: which + '.px.js' });
+const src = fs.readFileSync(path.join(__dirname, which + '.px.js'), 'utf8');
+// Szenen-Quellen teilen sich das Malwerkzeug (FB, bands, ridge, rock, palm …) aus maler.inc.js
+if (/^'use maler'$/m.test(src)) vm.runInContext(fs.readFileSync(path.join(__dirname, 'maler.inc.js'), 'utf8'), ctx, { filename: 'maler.inc.js' });
+vm.runInContext(src, ctx, { filename: which + '.px.js' });
 
 if (which === 'code') {
   // Raster als Zeichenreihen: Farben bekommen Buchstaben, k bleibt der Umriss

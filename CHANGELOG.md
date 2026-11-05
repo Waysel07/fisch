@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 05.11.2026 · `2026-11-05-11`
+
+- 🖼️ Sun Island in a new pixel look: every sports ground has a painted backdrop – a beach with palms and a sea view for Frisbee, Archery and Beach Volleyball, a wooden pavilion for Table Tennis, a real bowling lane in the sand and flowing water for the Jet Ski. The island map in the Island Flight and at Pelle’s is fully redrawn, with hill shading, jungle canopy, reef and surf.
+
 ## 05.11.2026 · `2026-11-05-10`
 
 - 🎲 New catch drills: once you have reached Sun Island, a rare, epic or legendary bite can turn into a short sports minigame anywhere – Frisbee, Island Flight, Jet Ski, Archery, Table Tennis, Surfing, Beach Volleyball or Beach Bowling, depending on which stations you have opened. Hit the target score and the fish is yours; a strong round counts as a clean catch.

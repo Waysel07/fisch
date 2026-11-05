@@ -233,6 +233,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-05-11', date: '05.11.2026', items: [
+      '🖼️ Die Sonneninsel in neuem Pixel-Look: Alle Sportplätze haben gemalte Kulissen – Strand mit Palmen und Fernsicht beim Frisbee, Bogenschießen und Beachvolleyball, ein Holzpavillon fürs Tischtennis, eine echte Bowlingbahn im Sand und fließendes Wasser beim Jetski. Die Inselkarte im Rundflug und bei Pelle ist ganz neu gezeichnet, mit Höhenlicht, Dschungelkronen, Riff und Brandung.',
+    ] },
     { id: '2026-11-05-10', date: '05.11.2026', items: [
       '🎲 Neue Fang-Drills: Ab der Sonneninsel kann ein seltener, epischer oder legendärer Biss überall zu einem kurzen Sport-Minispiel werden – Frisbee, Rundflug, Jetski, Bogenschießen, Tischtennis, Surfen, Beachvolleyball oder Strand-Bowling, je nachdem, welche Stationen du schon offen hast. Schaffst du die Punktzahl, hängt der Fisch am Haken; mit einer starken Runde ist es ein sauberer Fang.',
     ] },
@@ -3191,6 +3194,23 @@
     if (horizon > 60) for (let i = 0; i < 7; i++) sq(318 - 10 + ((i * 7 + t * 4) % 20), horizon + 2 + i * 2.5, 6 - i * .6, .5, '#fff7d1');
     for (let i = 0; i < 16; i++) { const tw = Math.sin(t * 2 + i * 2.3); if (tw > .3) sq((i * 47 + t * 6) % W, horizon + 3 + (i * 9) % (H - horizon - 6), 3 + i % 4, .5, '#e0fffa'); }
   }
+  // painted backdrops of the stations (img/sport-*.png from img/pxl/sport.px.js); clouds and glints stay animated on top.
+  // Falls back to the drawn sky and sea while an image is still loading.
+  const SPORT_BG = ['sport-frisbee', 'sport-ufer', 'sport-bogen', 'sport-volley', 'sport-tt', 'sport-bowling', 'sport-jetski', 'sport-surf', 'insel-karte', 'insel-karte-mini'];
+  function sportBg(name) { const im = worldImg(name); if (!imgReady(im)) return false; sx.drawImage(im, 0, 0, W, H); return true; }
+  function sceneBg(name, horizon) { if (!sportBg(name)) { skySea(horizon); return false; } skyFx(horizon); return true; }
+  function skyFx(horizon) {
+    for (let i = 0; i < 3; i++) {
+      const cx = ((i * 150 + t * (3 + i)) % (W + 80)) - 40, cy = horizon * (.18 + i * .16);
+      if (cy > horizon - 8) continue;
+      for (const [dx, dy, r] of [[-9, 1, 5], [0, -2, 7], [9, 0, 6], [16, 2, 4]]) sdisc(cx + dx, cy + dy + 1.5, r, '#cfe8f5');
+      for (const [dx, dy, r] of [[-9, 1, 5], [0, -2, 7], [9, 0, 6], [16, 2, 4]]) sdisc(cx + dx, cy + dy, r, '#ffffff');
+      sq(cx - 14, cy + 4, 34, 2, '#cfe8f5');
+    }
+    if (horizon > 60) for (let i = 0; i < 7; i++) sq(318 - 10 + ((i * 7 + t * 4) % 20), horizon + 2 + i * 2.5, 6 - i * .6, .5, '#fff7d1');
+    for (let i = 0; i < 16; i++) { const tw = Math.sin(t * 2 + i * 2.3); if (tw > .3) sq((i * 47 + t * 6) % W, horizon + 3 + (i * 9) % (H - horizon - 6), 3 + i % 4, .5, '#e0fffa'); }
+  }
+  setTimeout(() => { if (inselOpen()) SPORT_BG.forEach(worldImg); }, 3000); // ready before the first catch drill
   // beach from y down: wet edge with a foam line, then dry sand with a fixed grain pattern
   function sand(y, x0 = 0, w = W) {
     sq(x0, y, w, H - y, '#f2dfa8');
@@ -3235,9 +3255,9 @@
         } else if (g.st === 'land') { g.lt += dt; if (g.lt > 1) { g.i++; if (g.i >= g.n) g.over = true; else g.newThrow = true; } }
       },
       draw(g) {
-        skySea(140);
+        sceneBg('sport-frisbee', 140);
         const cam = g.mode && g.dis ? Math.max(0, g.dis.x - 260) : 0; sx.save(); sx.translate(-cam, 0);
-        sand(138, 0, 44); sq(40, 140, 6, 76, '#e2c98d');
+        { const u = worldImg('sport-ufer'); if (imgReady(u)) sx.drawImage(u, 0, 138, 46, 78); else { sand(138, 0, 44); sq(40, 140, 6, 76, '#e2c98d'); } }
         drawPelle(sq, 12, 148, 0); // the angler is Pelle's buddy: a little figure
         sme(28.5, 144, g.st === 'aim' ? 0 : 1);
         if (!g.mode && g.ring) { const r = 22; for (const [w, c] of [[r, '#f8fafc'], [12, '#ef4444'], [5, '#facc15']]) sq(g.ring - w, 159, w * 2, 2, c); sq(g.ring - .5, 150, 1, 9, '#ef4444'); }
@@ -3346,9 +3366,13 @@
         g.wake.unshift({ x: g.x, y: 176 }); if (g.wake.length > 20) g.wake.pop(); for (const w of g.wake) w.y += sp * dt;
       },
       draw(g) {
-        for (let i = 0; i < 12; i++) sq(0, i * 18, W, 18.5, mix([64, 214, 206], [24, 150, 180], (i % 3) / 3));
-        for (let i = 0; i < 40; i++) { const y = ((i * 37 + g.scroll) % (H + 20)) - 10; sq((i * 73) % W, y, 4 + i % 5, .5, '#e0fffa'); }
-        sq(0, 0, 14, H, '#f2dfa8'); sq(W - 14, 0, 14, H, '#f2dfa8'); sq(14, 0, 2, H, '#ffffff'); sq(W - 16, 0, 2, H, '#ffffff');
+        const wat = worldImg('sport-jetski');
+        if (imgReady(wat)) { const y0 = snap(g.scroll % H); sx.drawImage(wat, 0, y0 - H, W, H); sx.drawImage(wat, 0, y0, W, H); } // the water tile scrolls down
+        else {
+          for (let i = 0; i < 12; i++) sq(0, i * 18, W, 18.5, mix([64, 214, 206], [24, 150, 180], (i % 3) / 3));
+          for (let i = 0; i < 40; i++) { const y = ((i * 37 + g.scroll) % (H + 20)) - 10; sq((i * 73) % W, y, 4 + i % 5, .5, '#e0fffa'); }
+          sq(0, 0, 14, H, '#f2dfa8'); sq(W - 14, 0, 14, H, '#f2dfa8'); sq(14, 0, 2, H, '#ffffff'); sq(W - 16, 0, 2, H, '#ffffff');
+        }
         for (const w of g.wake) { sx.globalAlpha = .4; sq(w.x - 2, w.y, 4, 2, '#ffffff'); sx.globalAlpha = 1; }
         for (const o of g.objs) {
           if (o.k === 'gate') for (const s of [-1, 1]) { sdisc(o.x + s * o.w / 2, o.y, 4, o.ok === -1 ? '#64748b' : s < 0 ? '#ef4444' : '#facc15'); sq(o.x + s * o.w / 2 - 1, o.y - 2, 2, 1, '#ffffff'); }
@@ -3393,8 +3417,7 @@
         }
       },
       draw(g) {
-        skySea(120); sand(150);
-        for (const [x, h, l] of [[30, 60, 1], [350, 70, -1], [70, 40, 1]]) palm(x, 152, h, l);
+        if (!sceneBg('sport-bogen', 120)) { sand(150); for (const [x, h, l] of [[30, 60, 1], [350, 70, -1], [70, 40, 1]]) palm(x, 152, h, l); }
         if (g.mode === 0) {
           const R = [34, 23, 14][Math.min(2, g.k)];
           sq(190, 100 + R * .6, 4, 150 - 100 - R * .6, '#78350f');
@@ -3440,9 +3463,11 @@
         }
       },
       draw(g) {
-        sq(0, 0, W, H, '#f2dfa8'); for (let i = 0; i < 60; i++) sq((i * 71) % W, (i * 37) % H, 1, .5, '#d4b97a');
-        sq(128, 16, 128, 184, '#1b1f2e'); sq(130, 18, 124, 180, '#0e7490'); sq(130, 18, 124, 1, '#f8fafc'); sq(130, 197, 124, 1, '#f8fafc'); sq(191.5, 18, 1, 180, '#f8fafc'); sq(130, 107, 124, 2, '#e2e8f0');
-        for (let x = 132; x < 252; x += 3) sq(x, 106, 1, 4, '#94a3b8');
+        if (!sportBg('sport-tt')) {
+          sq(0, 0, W, H, '#f2dfa8'); for (let i = 0; i < 60; i++) sq((i * 71) % W, (i * 37) % H, 1, .5, '#d4b97a');
+          sq(128, 16, 128, 184, '#1b1f2e'); sq(130, 18, 124, 180, '#0e7490'); sq(130, 18, 124, 1, '#f8fafc'); sq(130, 197, 124, 1, '#f8fafc'); sq(191.5, 18, 1, 180, '#f8fafc'); sq(130, 107, 124, 2, '#e2e8f0');
+          for (let x = 132; x < 252; x += 3) sq(x, 106, 1, 4, '#94a3b8');
+        }
         if (g.lvl === 3) drawKraul(sq, g.ox, 26); else drawPelle(sq, g.ox, 24, 0, true);
         sq(g.ox - 12, 30, 24, 3, '#1b1f2e'); sq(g.ox - 11.5, 30.5, 23, 2, '#3b82f6');
         sq(g.px - 1.5, 188.5, 3, 7, '#1b1f2e'); sq(g.px - 1, 189, 2, 6, '#b45309'); sq(g.px - 1.5, 192, 3, 3, lookPal().pal.s);
@@ -3484,7 +3509,7 @@
         g.maxCombo = Math.max(g.maxCombo, g.combo);
       },
       draw(g) {
-        skySea(56);
+        sceneBg('sport-surf', 56);
         const lipAt = x => 70 + Math.sin(x * .02 + g.scroll * .03 - 2.6) * 5 + Math.max(0, 120 - x) * .12;
         for (let x = 0; x < W; x += 2) {
           const top = lipAt(x);
@@ -3562,8 +3587,10 @@
         }
       },
       draw(g) {
-        skySea(110); sand(150); palm(20, 152, 50, 1); palm(360, 152, 58, -1);
-        sq(8, 176, 368, 1, '#f8fafc'); sq(191, 108, 2, 70, '#64748b'); for (let y = 110; y < 134; y += 3) sq(186, y, 12, 1, '#e2e8f0'); sq(186, 108, 12, 2, '#f8fafc');
+        if (!sceneBg('sport-volley', 110)) {
+          sand(150); palm(20, 152, 50, 1); palm(360, 152, 58, -1);
+          sq(8, 176, 368, 1, '#f8fafc'); sq(191, 108, 2, 70, '#64748b'); for (let y = 110; y < 134; y += 3) sq(186, y, 12, 1, '#e2e8f0'); sq(186, 108, 12, 2, '#f8fafc');
+        }
         if (g.mode === 1) for (const [a, b2, p, c] of [[192, 260, 1, '#fde68a'], [260, 330, 3, '#fcd34d'], [330, 376, 5, '#fbbf24']]) { sq(a, 174, b2 - a, 3, c); stext(String(p), (a + b2) / 2, 190, '#78350f', 8); }
         const run = Math.abs(g.px - (g.lastPx ?? g.px)) > .05; g.lastPx = g.px;
         sx.globalAlpha = .25; sdisc(g.px, 176, 5, '#78350f'); sx.globalAlpha = 1;
@@ -3599,11 +3626,13 @@
         if ((b.y < -10 && still) || g.simT > 4) bowlScore(g);
       },
       draw(g) {
-        sq(0, 0, W, H, '#f2dfa8'); for (let i = 0; i < 70; i++) sq((i * 71) % W, (i * 37) % H, 1, .5, '#d4b97a');
-        for (const [x, h, l] of [[40, 70, 1], [344, 80, -1], [80, 50, 1], [300, 55, -1]]) palm(x, 216, h, l);
-        sq(146, 0, 92, H, '#78350f'); sq(150, 0, 84, H, '#d6a35c'); for (let x = 154; x < 232; x += 6) sq(x, 0, .5, H, '#c08a46');
-        sq(146, 0, 6, H, '#57301a'); sq(232, 0, 6, H, '#57301a'); sq(150, 186, 84, 1, '#ef4444');
-        for (let i = -2; i <= 2; i++) sq(192 + i * 10 - 1, 150 - Math.abs(i) * 4, 2, 4, '#7c2d12');
+        if (!sportBg('sport-bowling')) {
+          sq(0, 0, W, H, '#f2dfa8'); for (let i = 0; i < 70; i++) sq((i * 71) % W, (i * 37) % H, 1, .5, '#d4b97a');
+          for (const [x, h, l] of [[40, 70, 1], [344, 80, -1], [80, 50, 1], [300, 55, -1]]) palm(x, 216, h, l);
+          sq(146, 0, 92, H, '#78350f'); sq(150, 0, 84, H, '#d6a35c'); for (let x = 154; x < 232; x += 6) sq(x, 0, .5, H, '#c08a46');
+          sq(146, 0, 6, H, '#57301a'); sq(232, 0, 6, H, '#57301a'); sq(150, 186, 84, 1, '#ef4444');
+          for (let i = -2; i <= 2; i++) sq(192 + i * 10 - 1, 150 - Math.abs(i) * 4, 2, 4, '#7c2d12');
+        }
         for (const p of g.pins) {
           if (p.gone) continue;
           if (p.down) { sx.globalAlpha = .55; sq(p.x - 3, p.y - 1, 6, 2.5, '#e2e8f0'); sx.globalAlpha = 1; continue; }
@@ -3648,59 +3677,14 @@
     const fish = FISH.filter(f => f.map === 'insel' && f.bay === p.bay), f = fish[p.i % Math.max(1, fish.length)];
     return f ? tr('📍 {p} ({b}): Hier lebt der {f}.', { p: p.name, b: INSEL_BAYS[p.bay - 1].name, f: f.name }) : tr('📍 {p} ({b})', { p: p.name, b: INSEL_BAYS[p.bay - 1].name });
   }
-  let islandCv = null;
+  // the island from above is painted in img/pxl/sport.px.js (img/insel-karte.png, same geometry as isleR/LANDMARKS);
+  // until it has loaded the flight shows plain sea
+  let seaCv = null;
   function islandMap() {
-    if (islandCv) return islandCv;
-    const c = islandCv = document.createElement('canvas'); c.width = MAP_W; c.height = MAP_H;
-    const x = c.getContext('2d'), img = x.createImageData(MAP_W, MAP_H), d = img.data, cx = MAP_W / 2, cy = MAP_H / 2;
-    const n2 = (a, b) => { const v = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453; return v - Math.floor(v); };
-    // the river runs from the crater lake down to the lagoon in the west
-    const riverY = xx => cy + Math.sin((cx - xx) * .025) * 16 + (cx - xx) * .04;
-    for (let yy = 0; yy < MAP_H; yy++) for (let xx = 0; xx < MAP_W; xx++) {
-      const dx = (xx - cx) / 1.2, dy = (yy - cy) / .8, a = Math.atan2(dy, dx), r = Math.hypot(dx, dy), R = isleR(a), e = R - r, h = r / R;
-      const nz = n2(Math.floor(xx / 3), Math.floor(yy / 3));
-      let col;
-      if (e < -40) col = mix3([22, 120, 160], [14, 84, 128], Math.min(1, -e / 260));
-      else if (e < 0) col = mix3([120, 232, 218], [40, 170, 190], -e / 40);
-      else if (e < 9) col = nz > .7 ? [250, 232, 180] : [242, 223, 168];
-      else if (r < 18) col = r < 15 ? (nz > .6 ? [94, 234, 212] : [45, 212, 191]) : [87, 83, 78]; // crater lake
-      else if (r < 34) col = nz > .5 ? [120, 113, 108] : [87, 83, 78];                              // crater rim
-      else if (h < .22) col = nz > .55 ? [168, 162, 158] : [138, 130, 124];                        // bare rock up top
-      else if (h < .42) col = nz > .6 ? [101, 163, 13] : [77, 124, 15];                           // high meadows
-      else col = nz > .62 ? [22, 163, 74] : nz > .2 ? [21, 128, 61] : [20, 83, 45];                // jungle
-      if (xx < cx - 30 && e > 9 && Math.abs(yy - riverY(xx)) < 2 + (cx - xx) / 160) col = [125, 211, 252];
-      const o = (yy * MAP_W + xx) * 4; d[o] = col[0]; d[o + 1] = col[1]; d[o + 2] = col[2]; d[o + 3] = 255;
-    }
-    x.putImageData(img, 0, 0);
-    const R = (X, Y, w, h, c) => { x.fillStyle = c; x.fillRect(Math.round(X), Math.round(Y), w, h); };
-    const L = i => IPOINTS[i];
-    // paths: a ring road around the island and a trail up to the crater
-    for (let i = 0; i < 360; i++) { const a = i / 360 * Math.PI * 2, k = .82, X = cx + Math.cos(a) * isleR(a) * 1.2 * k, Y = cy + Math.sin(a) * isleR(a) * .8 * k; R(X, Y, 2, 2, '#d6b97a'); }
-    for (let i = 0; i < 60; i++) { const k = .2 + i / 60 * .6, a = BAY_ANG[0] + Math.sin(i * .5) * .12, X = cx + Math.cos(a) * isleR(a) * 1.2 * k, Y = cy + Math.sin(a) * isleR(a) * .8 * k; R(X, Y, 1.5, 1.5, '#c4a46b'); }
-    // palms along the coast
-    for (let i = 0; i < 70; i++) { const a = i / 70 * Math.PI * 2, k = .88 + n2(i, 3) * .06, X = cx + Math.cos(a) * isleR(a) * 1.2 * k, Y = cy + Math.sin(a) * isleR(a) * .8 * k; R(X - 3, Y - 2, 7, 4, '#15803d'); R(X - 1, Y - 1, 3, 2, '#4ade80'); }
-    // landmarks
-    { const [X, Y] = L(0).xy; R(X - 14, Y - 6, 28, 12, '#fde68a'); R(X - 2, Y - 2, 4, 4, '#38bdf8'); } // plaza with a fountain
-    { const [X, Y] = L(1).xy; for (let i = 0; i < 5; i++) { R(X - 20 + i * 9, Y - 4 + (i % 2) * 3, 7, 6, '#a16207'); R(X - 21 + i * 9, Y - 6 + (i % 2) * 3, 9, 3, '#e9c77b'); } }
-    { const [X, Y] = L(2).xy; R(X - 2, Y - 20, 5, 34, '#92400e'); R(X - 1, Y - 20, 3, 34, '#b45309'); }
-    { const [X, Y] = L(3).xy; R(X - 12, Y - 7, 24, 14, '#4ade80'); R(X - 1, Y - 1, 3, 3, '#f97316'); }
-    { const [X, Y] = L(4).xy; R(X - 10, Y - 5, 20, 10, '#7c2d12'); R(X - 9, Y - 4, 18, 3, '#ef4444'); }
-    { const [X, Y] = L(6).xy; for (let i = 0; i < 70; i++) R(X - 30 + n2(i, 1) * 60, Y - 26 + n2(i, 2) * 52, 3, 2, ['#f472b6', '#fb923c', '#a78bfa', '#facc15'][i % 4]); }
-    { const [X, Y] = L(9).xy; for (let i = 0; i < 6; i++) R(X - 16 + i * 6, Y + 8 + (i % 2), 4, 1, '#f8fafc'); }
-    { const [X, Y] = L(12).xy; for (let i = 0; i < 10; i++) R(X - 40 + i * 9, Y + Math.sin(i) * 10, 3, 3, i % 2 ? '#ef4444' : '#facc15'); }
-    { const [X, Y] = L(13).xy; for (const r0 of [6, 4, 2]) R(X - r0, Y - r0, r0 * 2, r0 * 2, r0 === 6 ? '#f8fafc' : r0 === 4 ? '#3b82f6' : '#ef4444'); }
-    { const [X, Y] = L(14).xy; R(X - 12, Y - 7, 24, 14, '#fde68a'); R(X - .5, Y - 7, 1, 14, '#f8fafc'); }
-    { const [X, Y] = L(15).xy; R(X - 8, Y - 6, 16, 10, '#78350f'); R(X - 9, Y - 8, 18, 3, '#b91c1c'); }
-    { const [X, Y] = L(17).xy; R(X - 2, Y - 2, 5, 5, '#a16207'); R(X - 3, Y - 4, 7, 2, '#fde68a'); }
-    { const [X, Y] = L(18).xy; for (let i = 0; i < 26; i++) R(X - 2 + Math.sin(i) * 1.5, Y - 26 + i, 5, 1, i % 3 ? '#e0f2fe' : '#ffffff'); R(X - 20, Y, 34, 18, '#5eead4'); }
-    { const [X, Y] = L(20).xy; R(X - 8, Y - 6, 16, 12, '#f8fafc'); R(X - 6, Y - 4, 12, 8, '#0e7490'); R(X - .5, Y - 4, 1, 8, '#f8fafc'); }
-    { const [X, Y] = L(21).xy; R(X - 3, Y - 12, 6, 24, '#d6a35c'); for (let i = 0; i < 3; i++) R(X - 2 + i * 1.5, Y - 10, 1, 1, '#ffffff'); }
-    { const [X, Y] = L(22).xy; for (let i = 0; i < 12; i++) R(X - 14 + i * 2.5, Y + Math.sin(i / 11 * Math.PI) * 3, 2, 1, '#92400e'); }
-    { const [X, Y] = L(24).xy; R(X - 16, Y - 10, 32, 20, '#f2dfa8'); R(X - 3, Y - 9, 6, 6, '#eab308'); R(X - 2, Y - 12, 4, 3, '#fde047'); R(X - 4, Y - 3, 8, 3, '#a16207'); }
-    { const [X, Y] = L(25).xy; R(X - 3, Y - 3, 6, 6, '#f8fafc'); R(X - 2, Y - 2, 4, 4, '#ef4444'); R(X - 1, Y - 1, 2, 2, '#fde047'); }
-    { const [X, Y] = L(26).xy; for (const [dx, h0, c0] of [[-7, 4, '#94a3b8'], [0, 7, '#facc15'], [7, 2, '#b45309']]) R(X + dx - 3, Y - h0, 6, h0 + 2, c0); }
-    { const [X, Y] = L(29).xy; for (let i = 0; i < 30; i++) R(X - 18 + n2(i, 7) * 36, Y - 12 + n2(i, 8) * 24, 3, 2, i % 3 ? '#44403c' : '#ea580c'); }
-    return c;
+    const im = worldImg('insel-karte');
+    if (imgReady(im)) return im;
+    if (!seaCv) { seaCv = document.createElement('canvas'); seaCv.width = MAP_W; seaCv.height = MAP_H; const x = seaCv.getContext('2d'); x.fillStyle = '#1e84a6'; x.fillRect(0, 0, MAP_W, MAP_H); }
+    return seaCv;
   }
 
   // Strand-Bowling: pins, a tiny physics step and the usual frame scoring
@@ -3783,6 +3767,7 @@
   const sportPlaying = () => sp && !sp.done && !$('sport').hidden;
   function sportDiff(s, lvl) { return clamp(sportRec(s.id).lv / 2500 * .7 + [0, .1, .25, .45][lvl], 0, 1); }
   function startSport(id, mode, lvl) {
+    SPORT_BG.forEach(worldImg);
     const s = SPORTS.find(x => x.id === id);
     if (!sportOpen(s)) return;
     if (s.fishing) { // the tournament runs while you fish: the next 5 island catches count
@@ -3816,6 +3801,7 @@
   }
   function startDrill(c) {
     if (c === 'osu') return startRhythm();
+    SPORT_BG.forEach(worldImg);
     const s = SPORTS.find(x => x.id === c.id);
     closeModals(); state = 'sdrill'; hint(''); $('reel').hidden = true;
     sp = { id: s.id, s, mode: c.mode, lvl: 0, t: 0, cd: 2.4, phase: 'count', drill: c, g: { mode: c.mode, lvl: 0, t: 0, d: DRILL_D[hooked.f.r] || .2 } };
@@ -3951,6 +3937,7 @@
   }
   // the hub: all stations, the stamp card and what the next stamps open
   function renderSport() {
+    SPORT_BG.forEach(worldImg);
     if (sp && !sp.done) return;
     sp = null;
     $('sport-play').hidden = true; $('sport-hub').hidden = false;
@@ -3993,7 +3980,7 @@
   function sportMiniMap() {
     const c = document.createElement('canvas'); c.className = 'sport-map'; c.width = 384; c.height = 216;
     c.setAttribute('role', 'img'); c.setAttribute('aria-label', tr('Karte der Sonneninsel mit allen Sportstationen'));
-    const x = c.getContext('2d'); x.imageSmoothingEnabled = false; x.drawImage(islandMap(), 0, 0, 384, 216);
+    const x = c.getContext('2d'); x.imageSmoothingEnabled = false; { const mini = worldImg('insel-karte-mini'); x.drawImage(imgReady(mini) ? mini : islandMap(), 0, 0, 384, 216); }
     const n = stampCount();
     for (const b of INSEL_BAYS) if (n < b.st) { const [X, Y] = isleAt(b.n, 0, .9); x.globalAlpha = .85; x.fillStyle = '#f1f5f9'; for (const [dx, dy, r] of [[-10, 0, 12], [8, -4, 14], [2, 6, 11], [-2, -8, 9]]) { x.beginPath(); x.arc(X / 3 + dx, Y / 3 + dy, r, 0, 7); x.fill(); } x.globalAlpha = 1; x.font = '700 9px Poppins, sans-serif'; x.textAlign = 'center'; x.fillStyle = '#334155'; x.fillText('🔒 ' + b.st, X / 3, Y / 3 + 3); }
     x.font = '14px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
