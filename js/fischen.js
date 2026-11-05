@@ -207,6 +207,10 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-05-4', date: '05.11.2026', items: [
+      '📜 Aufträge neu ausbalanciert: Die Taler-Belohnung wächst jetzt mit deinem Taler-Bonus, die EP mit deinem Level. Aufträge verlangen nur noch Fische, die du gerade fangen kannst, und Größen, die dort auch vorkommen.',
+      '📅 Wochenziele neu ausbalanciert: Wie viel du schaffen musst, hängt von deinem Fortschritt ab (Anfang, ab 3× Wiedergeburt, ab Prestige). Jedes Ziel gibt jetzt auch Taler und mehr Schuppen, alle drei zusammen eine Goldkiste. Neu sind „Fische mit Mutation“ und „Aufträge erledigen“.',
+    ] },
     { id: '2026-11-05-3', date: '05.11.2026', items: [
       '🌋 6 neue Fänge in der Glutgrotte, vor allem in den tiefen Ebenen: die Schmelzente, der Lavalampenfisch, der Feuerkoi, der Hortbarsch im Drachenhort und im Phönixnest das Phönixküken und der legendäre Glutwal.',
       '🌊 7 neue Fänge aus der Tiefsee auf Hoher See: Beilfisch, Alter Taucherhelm, Riesenassel, Leuchtqualle (nachts), Fangzahnfisch (weit draußen), Pelikanaal (nachts) und der legendäre Megalodon ganz weit draußen.',
@@ -4587,22 +4591,33 @@
     const kinds = ['count', 'rar', 'size', 'coins', 'fish'].filter(k => !used.includes(k));
     const kind = kinds[Math.floor(Math.random() * kinds.length)];
     const q = { kind, p: 0 };
-    if (kind === 'count') { q.n = 4 + Math.floor(Math.random() * 3) + Math.floor(L / 3); }
+    if (kind === 'count') { q.n = Math.min(30, 4 + Math.floor(Math.random() * 3) + Math.floor(L / 4)); }
     if (kind === 'rar') {
       q.r = L >= 8 && Math.random() < .4 ? 'epic' : L >= 3 && Math.random() < .6 ? 'rare' : 'uncommon';
       q.n = { uncommon: 3, rare: 2, epic: 1 }[q.r];
     }
-    if (kind === 'size') { q.n = 1; q.cm = [40, 60, 80, 120, 160][Math.min(4, Math.floor(L / 3))]; }
+    if (kind === 'size') { // a size that a fish you can catch right now actually reaches
+      const big = questPool().map(f => f.max).sort((a, b) => b - a), top = big[Math.min(big.length - 1, 4)] || 60;
+      q.n = 1; q.cm = Math.max(30, Math.min(Math.round(top * .8 / 10) * 10, [40, 60, 80, 100, 120, 160][Math.min(5, Math.floor(L / 4))]));
+    }
     if (kind === 'coins') { q.n = Math.round((60 + L * 45) * coinMult() / 10) * 10; }
     if (kind === 'fish') {
-      const pool = FISH.filter(f => ['common', 'uncommon', 'rare'].includes(f.r) && (L >= 5 || f.r !== 'rare') && !f.far);
-      q.id = pool[Math.floor(Math.random() * pool.length)].id; q.n = 1 + (Math.random() < .5 ? 1 : 0);
+      const pool = questPool().filter(f => ['common', 'uncommon', 'rare'].includes(f.r) && (L >= 5 || f.r !== 'rare'));
+      const f = pool[Math.floor(Math.random() * pool.length)] || FISH[0];
+      q.id = f.id; q.n = f.r === 'rare' ? 1 : 1 + (Math.random() < .5 ? 1 : 0);
     }
     const tier = { count: 1, rar: q.r === 'epic' ? 4 : q.r === 'rare' ? 2.5 : 1.5, size: 2, coins: 1.5, fish: 1.5 }[kind];
-    q.xp = Math.round((20 + L * 6) * tier);
-    q.coins = Math.round((30 + L * 12) * tier / 5) * 5;
+    // rewards keep up with the game: XP about a tenth of a level, Taler with the permanent bonus
+    q.xp = Math.round(Math.max(20 + L * 6, xpNeed(L) * .1) * tier);
+    q.coins = Math.round((30 + L * 12) * tier * coinMult() / 5) * 5;
     return q;
   }
+  // fish a quest may ask for: in an area that is open and without special conditions
+  function questPool() {
+    return FISH.filter(f => !f.far && !f.boss && !f.item && !f.magnet && !f.weather && !f.bait && !f.hours && !f.needs && !f.crits && !f.minRod && !f.dayOff && !f.fullHour
+      && ({ steg: true, see: seaOpen(), lava: lavaOpen() && !(f.depth > caveDepth()) })[f.map || 'steg']);
+  }
+  const rerollCost = () => Math.round((10 + save.lvl * 2) * Math.sqrt(coinMult()));
   function questText(q) {
     switch (q.kind) {
       case 'count': return tr('Fange {n} Fische', { n: q.n });
@@ -4613,12 +4628,22 @@
     }
   }
   // Wochenziele: three bigger goals per week, the same for everyone (picked from the week number like the weather)
+  // n per stage: new players, after the 3rd rebirth, after a prestige
   const WEEK_POOL = [
-    { k: 'count', n: 150, t: 'Fange {n} Fische' }, { k: 'rare', n: 30, t: 'Fange {n}× selten oder besser' },
-    { k: 'epic', n: 6, t: 'Fange {n}× episch oder besser' }, { k: 'legend', n: 2, t: 'Fange {n} legendäre Fische' },
-    { k: 'night', n: 40, t: 'Fange {n} Fische bei Nacht' }, { k: 'shiny', n: 1, t: 'Fange einen Shiny' },
-    { k: 'sea', n: 50, t: 'Fange {n} Fische auf Hoher See', need: () => seaOpen() }, { k: 'lava', n: 60, t: 'Fange {n} Fische in der Glutgrotte', need: () => lavaOpen() },
+    { k: 'count', n: [100, 150, 220], t: 'Fange {n} Fische' }, { k: 'rare', n: [12, 25, 40], t: 'Fange {n}× selten oder besser' },
+    { k: 'epic', n: [3, 6, 10], t: 'Fange {n}× episch oder besser' }, { k: 'legend', n: [1, 2, 4], t: 'Fange {n} legendäre Fische', t1: 'Fange einen legendären Fisch' },
+    { k: 'night', n: [25, 40, 60], t: 'Fange {n} Fische bei Nacht' }, { k: 'shiny', n: [1, 1, 2], t: 'Fange {n} Shinys', t1: 'Fange einen Shiny' },
+    { k: 'mut', n: [4, 8, 12], t: 'Fange {n} Fische mit Mutation' }, { k: 'quest', n: [8, 12, 15], t: 'Erledige {n} Aufträge' },
+    { k: 'sea', n: [40, 50, 80], t: 'Fange {n} Fische auf Hoher See', need: () => seaOpen() }, { k: 'lava', n: [40, 60, 100], t: 'Fange {n} Fische in der Glutgrotte', need: () => lavaOpen() },
   ];
+  const weekStage = () => save.prestige ? 2 : (save.rebirthsTotal | 0) >= 3 ? 1 : 0;
+  const weekN = g => g.n[weekStage()];
+  // rewards per goal grow with the player; all three in one week give a Goldkiste on top
+  function weekReward() {
+    const st = weekStage();
+    return { sc: 6 + 3 * st + Math.min(12, Math.floor((save.rebirthsTotal | 0) / 2)), coins: Math.round((800 + save.lvl * 120) * coinMult() / 50) * 50, pearl: save.prestige ? 1 : 0, glut: lavaOpen() ? 40 + 20 * caveDepth() : 0 };
+  }
+  function weekText(g) { const n = weekN(g); return n === 1 && g.t1 ? tr(g.t1) : tr(g.t, { n }); }
   const weekId = () => Math.floor((Date.now() / 864e5 + 3) / 7); // weeks start on Monday
   function weekGoals() {
     const id = weekId(), pool = WEEK_POOL.filter(g => !g.need || g.need()), out = [];
@@ -4629,20 +4654,25 @@
     if (!save.week || save.week.id !== weekId()) save.week = { id: weekId(), p: {}, done: {} };
     return save.week;
   }
-  function weekProgress(f, shiny) {
-    const w = weekState();
-    for (const g of weekGoals()) {
+  function weekProgress(f, shiny, mut, quest) {
+    const w = weekState(), goals = weekGoals();
+    for (const g of goals) {
       if (w.done[g.k]) continue;
-      const hit = { count: f.r !== 'junk', rare: ['rare', 'wii', 'epic', 'legendary'].includes(f.r), epic: ['epic', 'legendary'].includes(f.r), legend: f.r === 'legendary',
-        night: isNight() && f.r !== 'junk', shiny: !!shiny, sea: onSea() && f.r !== 'junk', lava: inLava() && f.r !== 'junk' }[g.k];
+      const hit = quest ? g.k === 'quest' : { count: f.r !== 'junk', rare: ['rare', 'wii', 'epic', 'legendary'].includes(f.r), epic: ['epic', 'legendary'].includes(f.r), legend: f.r === 'legendary',
+        night: isNight() && f.r !== 'junk', shiny: !!shiny, mut: !!mut, sea: onSea() && f.r !== 'junk', lava: inLava() && f.r !== 'junk' }[g.k];
       if (!hit) continue;
       w.p[g.k] = (w.p[g.k] || 0) + 1;
-      if (w.p[g.k] >= g.n) {
+      if (w.p[g.k] >= weekN(g)) {
         w.done[g.k] = true;
-        const sc = 6, pearl = save.prestige ? 1 : 0, glut = lavaOpen() ? 40 : 0;
-        save.scales += sc; save.pearls += pearl; save.glut = (save.glut | 0) + glut;
-        setTimeout(() => toast(tr('📅 Wochenziel geschafft: {t}! +{s} 🐚', { t: tr(g.t, { n: g.n }), s: sc }) + (pearl ? ' · +1 🦪' : '') + (glut ? ` · +${glut} 🔥` : '')), 2200);
+        const r = weekReward();
+        save.scales += r.sc; save.pearls += r.pearl; save.glut = (save.glut | 0) + r.glut;
+        save.coins += r.coins; save.lifeCoins += r.coins; save.totalEarned += r.coins;
+        const all = goals.every(x => w.done[x.k]);
+        if (all) save.boxes.boxgold = (save.boxes.boxgold || 0) + 1;
+        setTimeout(() => toast(tr('📅 Wochenziel geschafft: {t}! +{s} 🐚', { t: weekText(g), s: r.sc }) + ' · ' + tr('+{n} Taler', { n: r.coins.toLocaleString(I18N.locale) }) + (r.pearl ? ' · +1 🦪' : '') + (r.glut ? ` · +${r.glut} 🔥` : '')), 2200);
+        if (all) setTimeout(() => toast(tr('📅 Alle drei Wochenziele geschafft! Bonus: eine Goldkiste – öffnen im Laden.')), 4200);
         [523, 659, 784, 1047].forEach((n, i) => setTimeout(() => tone(n, .14, 'triangle', .07), 2200 + i * 90));
+        updateCoins();
       }
     }
   }
@@ -4744,7 +4774,7 @@
     return tr(' (+{n} EP)', { n });
   }
   function progressCatch(f, size, val, first, mut, newMut, clean, shiny, newShiny) {
-    weekProgress(f, shiny);
+    weekProgress(f, shiny, mut);
     const c = catchXp(f, size, first, mut, newMut, clean, shiny, newShiny);
     const gain = { xp: gainXp(Math.round(c.n * nightMult())), tags: c.tags };
     for (const q of save.quests) {
@@ -4769,7 +4799,7 @@
   }
   function claimQuest(i) {
     const q = save.quests[i]; if (!q || q.p < q.n) return;
-    save.quests.splice(i, 1); save.questsDone++;
+    save.quests.splice(i, 1); save.questsDone++; weekProgress(null, false, null, true);
     save.coins += q.coins; save.lifeCoins += q.coins; save.totalEarned += q.coins;
     sfx.coin(); toast(tr('📜 +{c} Taler · +{x} EP', { c: q.coins, x: q.xp }));
     gainXp(q.xp); fillQuests(); persist(); updateCoins(); renderProg();
@@ -4787,7 +4817,7 @@
     if (n > 1) setTimeout(() => toast(tr('📜 {n} Aufträge auf einmal abgeholt!', { n })), 300);
   }
   function rerollQuest(i) {
-    const cost = 10 + save.lvl * 2;
+    const cost = rerollCost();
     if (save.coins < cost) return;
     spend(cost); save.quests.splice(i, 1); save.quests.splice(i, 0, makeQuest()); persist(); updateCoins(); renderProg();
   }
@@ -4913,13 +4943,14 @@
       const w = weekState(), left = Math.ceil((weekId() + 1) * 7 - 3 - Date.now() / 864e5);
       $('week-left').textContent = tr('noch {n} Tage', { n: Math.max(1, left) });
       $('week-goals').replaceChildren(...weekGoals().map(g => {
-        const p = Math.min(g.n, w.p[g.k] || 0), done = !!w.done[g.k], d = document.createElement('div');
+        const n = weekN(g), p = Math.min(n, w.p[g.k] || 0), done = !!w.done[g.k], d = document.createElement('div');
         d.className = 'quest' + (done ? ' done' : '');
         const txt = document.createElement('div');
-        const b = document.createElement('b'); b.textContent = (done ? '✅ ' : '') + tr(g.t, { n: g.n });
+        const b = document.createElement('b'); b.textContent = (done ? '✅ ' : '') + weekText(g);
         const bar = document.createElement('div'); bar.className = 'qbar';
-        const fill = document.createElement('i'); fill.style.width = p / g.n * 100 + '%'; bar.append(fill);
-        const sm = document.createElement('small'); sm.textContent = tr('{a} / {b} · Belohnung 6 🐚', { a: p, b: g.n }) + (save.prestige ? tr(', 1 Perle') : '') + (lavaOpen() ? ', 40 🔥' : '');
+        const fill = document.createElement('i'); fill.style.width = p / n * 100 + '%'; bar.append(fill);
+        const r = weekReward(), sm = document.createElement('small');
+        sm.textContent = tr('{a} / {b} · Belohnung {s} 🐚, {c} Taler', { a: p, b: n, s: r.sc, c: r.coins.toLocaleString(I18N.locale) }) + (r.pearl ? tr(', 1 Perle') : '') + (r.glut ? `, ${r.glut} 🔥` : '');
         txt.append(b, bar, sm); d.append(txt); return d;
       }));
     }
@@ -4931,7 +4962,7 @@
       const lvlNext = Math.ceil((save.lvl + 1) / 5) * 5; parts.push(tr('🎁 Meilenstein bei Level {n}', { n: lvlNext }));
       $('prog-next').textContent = parts.join(' · ');
     }
-    $('prog-quests').replaceChildren(...save.quests.map((q, i) => questRow(q, questText(q), 10 + save.lvl * 2, () => claimQuest(i), () => rerollQuest(i))));
+    $('prog-quests').replaceChildren(...save.quests.map((q, i) => questRow(q, questText(q), rerollCost(), () => claimQuest(i), () => rerollQuest(i))));
     $('glimm-sec').hidden = !lavaOpen();
     if (lavaOpen()) {
       fillQuests();

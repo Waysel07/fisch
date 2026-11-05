@@ -96,7 +96,13 @@ Bait, snacks and mystery boxes cost their base price × √(Taler bonus), so pri
 ### Goals
 
 - **Quests:** three rotating quests pay Taler and XP.
-- **Wochenziele:** three bigger goals per week, the same for everyone (`week`). Each gives 6 Schuppen, a pearl after a prestige, and 40 Glutsteine once the cave is open.
+  - Taler are (30 + 12 × level) × tier × `coinMult()`, and XP is the larger of 20 + 6 × level or a tenth of the level's XP, × tier.
+  - Fish and size quests only use `questPool()`: fish in an open area without special conditions (far, weather, bait, hours, needs …). The size target is capped at 80 % of the 5th-biggest fish in that pool.
+  - A reroll costs (10 + 2 × level) × √(Taler bonus).
+- **Wochenziele:** three bigger goals per week, picked the same for everyone (`week`). How many you need comes from `weekStage()`: start, from 3 rebirths, or from prestige.
+  - Each goal gives `weekReward()`: 6 + 3 × stage Schuppen plus 1 per 2 rebirths (up to +12), (800 + 120 × level) × `coinMult()` Taler, a pearl after a prestige, and 40 + 20 × depth Glutsteine once the cave is open.
+  - All three in one week add a Goldkiste.
+  - Goals: fish, rare, epic, legendary, night, shiny, fish with a mutation, finished quests, Hohe See and Glutgrotte (the last two only once they are open).
 - **Fisch-Meisterschaft:** bronze, silver, gold and diamond medals per fish for repeat catches, with thresholds by rarity (`dex[id].m`, `MASTERY`). Medals give XP and Schuppen. Each gold fish adds a permanent +1 % Taler, up to +40 %, and each diamond fish another +1 %, up to +40 %. Ten diamonds unlock the Diamant-Zylinder.
 - **Fischdex rewards:** milestones pay Taler, Schuppen and permanent bonuses.
 - **Sammlungen:** themed sets in the Fischdex rewards (Alles Spezi, Haifischbecken, Nachtschicht, Alle Wetter, Schrottplatz, Feuerfest, 10 Monster, 50 Odfisch wins, Alles in Diamant). Each gives a title for the name tag, picked in the wardrobe (`save.title`) and shown in the lobby.

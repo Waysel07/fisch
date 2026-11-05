@@ -2,9 +2,14 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 05.11.2026 · `2026-11-05-4`
+
+- 📜 Quests rebalanced: the coin reward now grows with your coin bonus, the XP with your level. Quests only ask for fish you can catch right now, and for sizes that actually occur there.
+- 📅 Weekly goals rebalanced: how much you need depends on your progress (start, from 3 rebirths, from prestige). Every goal now also gives coins and more Schuppen, all three together a Gold Chest. New goals: “fish with a mutation” and “finish quests”.
+
 ## 05.11.2026 · `2026-11-05-3`
 
-- 🌋 6 new catches in the Ember Grotto, mostly in the deep levels: the Melted Duck, the Lava Lamp Fish, the Fire Koi, the Hoard Perch in the Dragon Hoard, and in the Phoenix Nest the Phoenix Chick and the legendary Ember Whale.
+- 🌋 6 new catches in the Ember Cave, mostly in the deep levels: the Melted Duck, the Lava Lamp Fish, the Fire Koi, the Hoard Perch in the Dragon Hoard, and in the Phoenix Nest the Phoenix Chick and the legendary Ember Whale.
 - 🌊 7 new deep-sea catches on the High Seas: Hatchetfish, Old Diving Helmet, Giant Isopod, Glow Jelly (at night), Fangtooth (far out), Gulper Eel (at night) and the legendary Megalodon, very far out.
 - 💫 Shinydex: Every card now shows which mutations you caught that fish with as a shiny, with a count. Counting starts with this update.
 
