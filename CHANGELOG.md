@@ -2,6 +2,37 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 05.11.2026 · `2026-11-05-4`
+
+- 📜 Quests rebalanced: the coin reward now grows with your coin bonus, the XP with your level. Quests only ask for fish you can catch right now, and for sizes that actually occur there.
+- 📅 Weekly goals rebalanced: how much you need depends on your progress (start, from 3 rebirths, from prestige). Every goal now also gives coins and more Schuppen, all three together a Gold Chest. New goals: “fish with a mutation” and “finish quests”.
+
+## 05.11.2026 · `2026-11-05-3`
+
+- 🌋 6 new catches in the Ember Cave, mostly in the deep levels: the Melted Duck, the Lava Lamp Fish, the Fire Koi, the Hoard Perch in the Dragon Hoard, and in the Phoenix Nest the Phoenix Chick and the legendary Ember Whale.
+- 🌊 7 new deep-sea catches on the High Seas: Hatchetfish, Old Diving Helmet, Giant Isopod, Glow Jelly (at night), Fangtooth (far out), Gulper Eel (at night) and the legendary Megalodon, very far out.
+- 💫 Shinydex: Every card now shows which mutations you caught that fish with as a shiny, with a count. Counting starts with this update.
+
+## 05.11.2026 · `2026-11-05-2`
+
+- 🧬 Shinydex with mutations: at the top you now see all 7 mutations – which ones you have caught and which of them also as a shiny. Every card shows the fish’s mutations, shiny ones with a gold frame. Plus two new shiny rewards.
+- ✦ Prestige gets faster: every prestige needs one rebirth fewer than the last – first 7, then 6, then 5, after that always 4.
+- 💠 New pearl talent Pearl Polish: +2 % coins per level, with no cap. Pearls never become useless again.
+- 🔥 Ember Forge: from 1 prestige you can forge the rod in your hand past +15, up to +25, with coins and embers.
+- 💎 New at the kiosk: Treasures. Five expensive pieces from 500,000 to 5 million coins that stay forever, even after prestige – for example the Golden Trophy (+5 % coins) and the Pearl Oyster (1 more pearl per prestige).
+- 💎 Diamond mastery: after gold now comes diamond. Every diamond fish gives +1 % coins for good (up to +40 %). If you already have enough catches, you get diamond right away.
+- 🏷️ Collections and titles: new Fishdex rewards for sets like Shark Tank, Night Shift or Scrapyard. Each gives a title for your name tag – wear it in the wardrobe.
+- 🐟 The Odfisch grows stronger: after 10, 25 and 50 wins he comes back as stage 2, 3 and 4, with more HP and more loot. From stage 3 he also gives pearls if you have prestige.
+- 🎖️ New ranks after Fish God: Wave Emperor (13×), Ocean Legend (16×), Heir of Poseidon (20×) and Eternal Angler (25 rebirths). Plus the Wave Emperor Crown and the Diamond Top Hat.
+- 🏆 Leaderboard: new are “Fish of the week” (biggest catch of the week, new every Monday; the top 3 get the Weekly Winner Cap) and “Diamond”. “Rebirths” now counts all of them in total, and “Smallest fish” is gone.
+
+## 05.11.2026 · `2026-11-05-1`
+
+- 🖤 New epic fish: the Playboi Carti Fish in a vamp look with a leather jacket, red-tipped dreads, big shades, vampire fangs and silver chains. It headbangs to the beat and bites at the dock and on the high seas, best at night.
+- 🧲 New at the kiosk from 1 prestige: the Magnet Rod (20,000 coins). It catches no fish, only things: everything from “No fish” is worth three times as much with it, and three finds only hang on it – Rusty Anchor, Old Bicycle and the legendary Treasure Chest.
+- 🎰 Jackpot cosmetics: hit a JACKPOT on the fish slot machine to get the Jackpot Jacket. Take the whole Odfisch pot to get the sparkling Jackpot Hat.
+- 👕 New cosmetics in the wardrobe: the kiosk has 9 new pieces, including the yellow fisher jacket and the camo hat, plus the Diamond Jacket (75,000) and the Diamond Bobber (60,000). You earn 5 more by catching things: Vamp Jacket and Vamp Hat for the Carti Fish, the Scrap Helmet for the anchor, the Treasure Bobber for the chest and the Shell Hat for the Magic Conch.
+
 ## 04.11.2026 · `2026-11-04-19`
 
 - 🐟 The shadow at your bait no longer changes shape: as it swims in, it already shows roughly what is about to bite.

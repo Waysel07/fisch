@@ -73,6 +73,8 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   - Alle Laden-Ausgaben laufen über `spend(n)`; das zählt für die Bestenliste „Ausgegeben“. Einsätze am Automaten laufen nicht darüber.
   - Zeit-Buffs prüft `buffOn(id)` (Werte in `save.buffs`).
   - `rod()` liefert die geschmiedete Rute (`forged()`, `save.forge`); `bait()` liefert den aktuellen Köder.
+  - Spätes Spiel: Prestige-Leiter `presReb()` (7, 6, 5, dann 4 Wiedergeburten); Schätze `TREASURES` (einmal kaufen, bleiben für immer, Abfrage `hasT(id)`); die Glutschmiede (ab `FORGE_TALER` = +15 kostet jede Stufe zusätzlich `forgeGlut(k)` Glutsteine, bis `FORGE_MAX`); Odfisch-Stufen `bossStage()` nach Siegen (`BOSS_STAGES`, Lobby-Feld `bs`).
+  - Titel: Einträge in `DEX_REWARDS` mit Feld `title`. Getragen wird `save.title` (ID der Belohnung, `myTitle()`), in der Lobby als Feld `ti`.
 - **Zeit und Wetter** sind deterministisch aus der echten Uhr (`worldTime`, `weatherAt(slot)`, `WEATHER_LEN`). Sie sind für alle Spieler gleich, ohne Server.
 - **Lobby:**
   - `lobbySync()` fragt den Server alle 3 s ab, im Bossfight alle 1,5 s.
@@ -87,7 +89,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
 
 ## Server (`api/`)
 
-- **`leaderboard.js`:** In `BOARDS` steht pro Liste ein Maximalwert `max` und ein Plausibilitätsschritt `step(dt)`. Normale Listen speichern nur Verbesserungen (`ZADD GT`), `live: true` (Wiedergeburten) speichert den aktuellen Wert und darf sinken. Eine neue Liste braucht drei Einträge:
+- **`leaderboard.js`:** In `BOARDS` steht pro Liste ein Maximalwert `max` und ein Plausibilitätsschritt `step(dt)`. Alle Listen speichern nur Verbesserungen (`ZADD GT`), eine 0 wird nicht eingetragen. `week: true` (Fisch der Woche) liegt pro Woche unter `lb:<liste>:<woche>` und läuft nach drei Wochen ab; das GET liefert dazu in `prev` die Top 3 der Vorwoche. Eine Liste, die ein bekannter Spieler zum ersten Mal schickt, prüft nur `max`, nicht den Sprung. Admin-Auswertung: `POST {action: 'stats', admin}` (nur Gesamtzahlen). Eine neue Liste braucht drei Einträge:
   - `BOARDS` auf dem Server;
   - `LB_TABS` im Client;
   - `lbScores()` im Client.

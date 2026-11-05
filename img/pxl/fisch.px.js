@@ -1219,3 +1219,240 @@ F('boot-hoff', 158, 52, {}, (c) => {
   const foam = [[0, 41, 12], [8, 44, 18], [24, 46, 22], [44, 47, 34], [76, 46, 26], [100, 47, 24], [122, 45, 18], [138, 43, 18]]
   for (const [x, y, w] of foam) { c.rect(x, y, w, 2, W); c.hline(x + 2, y + 2, Math.max(0, w - 4), W2) }
 })
+
+// ---------------------------------------------------------------- Neu 2026-11-05: Glutgrotte
+F('lava-schmelzente', 44, 30, { flip: true }, (c) => {
+  // Quietscheente, halb geschmolzen: oben noch Ente, unten eine gelbe Pfütze mit Tropfen
+  c.ellipse(20, 23, 19, 4, '#ca8a04'); c.ellipse(20, 22, 18, 3, '#eab308'); c.ellipse(16, 21, 8, 1, '#fde047')
+  c.ellipse(22, 16, 12, 7, '#eab308'); c.ellipse(21, 15, 11, 6, '#facc15'); c.ellipse(18, 13, 6, 2, '#fde68a')
+  for (const [x, l] of [[13, 6], [19, 8], [26, 5], [31, 7]]) { c.vline(x, 19, l, '#eab308'); c.vline(x + 1, 19, l - 2, '#facc15'); c.px(x, 19 + l, '#ca8a04') }
+  c.circ(10, 8, 6, '#eab308'); c.circ(10, 7, 5, '#facc15'); c.ellipse(8, 4, 2, 1, '#fde68a')
+  c.poly([2, 8, -1, 10, 2, 12, 5, 11], '#ea580c'); c.hline(0, 10, 4, '#c2410c')
+  c.rect(8, 6, 2, 2, INK); c.px(8, 6, '#ffffff')
+  c.ellipse(30, 13, 4, 2, '#ca8a04') // Flügelrest
+  for (const [x, y] of [[36, 4], [39, 9], [3, 18]]) c.px(x, y, '#cbd5e1')
+  c.px(37, 3, '#e2e8f0'); c.px(38, 8, '#e2e8f0')
+})
+
+F('lava-lavalampe', 58, 30, { flip: true }, (c) => {
+  // Lavalampe als Fisch: Glaskörper mit wabernden Blasen, Metallkappen an Maul und Schwanz
+  const p = P({ x0: 6, x1: 44, cy: 14, up: 11, dn: 11, peak: 0.5, hp: 0.7, tp: 1, end: 0.35 })
+  tail(c, 46, 14, 10, 9, 3, '#9ca3af', '#4b5563')
+  c.rect(44, 9, 4, 11, '#6b7280'); c.vline(45, 9, 11, '#d1d5db')
+  paint(c, p, (u, v, x, y) => {
+    const blob = [[14, 9, 4], [24, 17, 5], [33, 8, 3], [38, 17, 3], [19, 21, 2]].some(([bx, by, r]) => Math.hypot(x - bx, (y - by) * 1.2) < r)
+    if (blob) return v < 0.3 ? '#fdba74' : '#f97316'
+    return v < 0.18 ? '#c084fc' : v > 0.82 ? '#6b21a8' : '#9333ea'
+  })
+  for (let y = 5; y < 13; y++) c.px(10 + (y >> 2), y, '#e9d5ff') // Glanz auf dem Glas
+  c.rect(0, 8, 7, 13, '#6b7280'); c.vline(2, 8, 13, '#d1d5db'); c.hline(0, 8, 7, '#9ca3af'); c.hline(0, 20, 7, '#4b5563')
+  c.rect(3, 11, 3, 3, '#fef08a'); c.px(4, 12, INK)
+  c.hline(0, 16, 3, INK)
+})
+
+F('lava-feuerkoi', 70, 36, { flip: true }, (c) => {
+  // Koi: weiß mit flammenden Flecken in Rot und Orange, lange, wehende Flossen
+  const p = P({ x0: 2, x1: 50, cy: 17, up: 10, dn: 10, peak: 0.32, hp: 0.55, end: 0.16 })
+  fan(c, [18, 8], [[22, 1], [30, 2], [38, 9]], '#fb923c', '#ea580c')
+  fan(c, [20, 25], [[17, 33], [25, 34], [28, 26]], '#fdba74', '#f97316')
+  tail(c, 48, 17, 19, 15, 7, '#fb923c', '#dc2626')
+  paint(c, p, (u, v, x, y) => {
+    const fl = Math.sin(x * 0.42) * 2.4 + Math.sin(x * 0.17 + 1) * 3
+    const patch = (u > 0.12 && v < 0.55 + fl * 0.04 && ((x > 9 && x < 21) || (x > 27 && x < 41))) || (u > 0.04 && u < 0.18 && v < 0.35)
+    if (patch) return v < 0.18 ? '#b91c1c' : (y + x) % 7 === 0 ? '#fde047' : '#dc2626'
+    if (v > 0.8) return '#e5e7eb'
+    return scale(x, y, 5) ? '#fed7aa' : '#fff7ed'
+  })
+  // Flammenzungen auf dem Rücken
+  for (const x of [12, 16, 31, 35, 39]) { const t = Math.round(p.top(x)); c.vline(x, t - 2, 2, '#f97316'); c.px(x, t - 3, '#fde047') }
+  gill(c, p, 0.22, '#fdba74')
+  eye(c, 6, 13)
+  c.line(1, 20, 5, 21, '#b91c1c'); c.line(2, 22, 0, 26, '#fb923c'); c.line(3, 22, 2, 25, '#fb923c') // Barteln
+  sprk(c, 62, 4)
+})
+
+F('lava-hortbarsch', 70, 40, { flip: true }, (c) => {
+  // Lebt im Drachenhort und frisst Gold: Schuppen wie Münzen, Rubinauge, eine kleine Krone
+  const p = P({ x0: 3, x1: 52, cy: 21, up: 14, dn: 13, peak: 0.34, hp: 0.5, end: 0.16 })
+  fan(c, [18, 8], [[22, 2], [32, 2], [42, 10]], '#ca8a04', '#92400e')
+  fan(c, [24, 33], [[24, 38], [32, 38], [35, 32]], '#ca8a04', '#92400e')
+  tail(c, 50, 21, 16, 14, 6, '#eab308', '#a16207')
+  paint(c, p, (u, v, x, y) => {
+    if (v > 0.78) return v > 0.92 ? '#ca8a04' : '#fde68a'
+    if (v < 0.1) return '#a16207'
+    const cx = ((x + (Math.floor(y / 4) % 2) * 2) % 4), cy = y % 4
+    if (u > 0.22 && (cx === 0 || cy === 0)) return '#b45309' // Münzrand
+    if (u > 0.22 && cx === 1 && cy === 1) return '#fef9c3'
+    return v < 0.4 ? '#eab308' : '#facc15'
+  })
+  gill(c, p, 0.22, '#92400e')
+  c.rect(8, 15, 5, 5, '#7f1d1d'); c.rect(9, 16, 3, 3, '#ef4444'); c.px(9, 16, '#fecaca')
+  c.line(3, 26, 9, 27, '#92400e')
+  // Krone
+  c.rect(10, 5, 9, 3, '#facc15'); c.hline(10, 7, 9, '#a16207')
+  for (const x of [10, 14, 18]) { c.vline(x, 2, 3, '#facc15'); c.px(x, 1, '#fef08a') }
+  c.px(14, 6, '#ef4444'); c.px(11, 6, '#38bdf8'); c.px(17, 6, '#22c55e')
+  sprk(c, 30, 14, '#fde047', '#ffffff'); sprk(c, 41, 25, '#fde047', '#ffffff'); sprk(c, 64, 5)
+})
+
+F('lava-phoenixkueken', 50, 38, { flip: true }, (c) => {
+  // Frisch geschlüpft im Phönixnest: rund, flaumig, mit kleiner Flammenhaube
+  for (const [x, h, col] of [[14, 9, '#f97316'], [18, 12, '#fb923c'], [22, 10, '#f97316'], [26, 7, '#ef4444']]) {
+    c.poly([x - 3, 13, x, 13 - h, x + 3, 13], col); c.line(x, 13 - h + 2, x, 12, '#fde047')
+  }
+  tail(c, 34, 23, 12, 9, 4, '#f97316', '#fde047')
+  c.circ(20, 23, 13, '#ea580c'); c.circ(19, 22, 12, '#f97316'); c.circ(18, 21, 10, '#fb923c')
+  c.ellipse(19, 28, 8, 5, '#fde68a'); c.ellipse(19, 27, 6, 3, '#fef3c7')
+  for (const [x, y] of [[10, 15], [26, 16], [29, 22], [8, 24], [15, 33], [25, 32]]) c.px(x, y, '#fdba74') // Flaum
+  c.poly([22, 22, 33, 18, 31, 25, 25, 27], '#ef4444'); c.line(24, 23, 31, 20, '#fde047') // Flügelchen
+  c.rect(10, 17, 4, 4, '#fef9c3'); c.rect(11, 18, 2, 3, INK); c.px(11, 18, '#ffffff')
+  c.poly([6, 22, 1, 24, 6, 26], '#facc15'); c.hline(2, 24, 4, '#ca8a04')
+  c.px(9, 23, '#fca5a5'); c.px(8, 23, '#fca5a5')
+  // Eierschale klebt noch am Bauch
+  c.poly([12, 33, 14, 30, 16, 33, 19, 30, 22, 33, 25, 30, 27, 33, 27, 36, 12, 36], '#fef3c7'); c.hline(12, 35, 16, '#e7e5e4')
+  sprk(c, 40, 6); sprk(c, 4, 6)
+})
+
+F('lava-glutwal', 104, 52, { flip: true }, (c) => {
+  // Riesiger Wal aus Basalt, Bauchfurchen glühen, aus dem Blasloch spritzt Lava
+  const p = P({ x0: 4, x1: 82, cy: 30, up: 17, dn: 15, peak: 0.24, hp: 0.6, tp: 1.2, end: 0.1, arch: -1 })
+  // Fluke
+  c.poly([80, 30, 90, 22, 101, 15, 98, 25, 93, 30, 98, 35, 101, 45, 90, 38], '#44403c'); c.line(84, 30, 99, 18, '#57534e'); c.line(84, 30, 99, 42, '#292524')
+  paint(c, p, (u, v, x, y) => {
+    if (v > 0.56) { // Bauchfurchen
+      if (u < 0.6 && y % 3 === 0) return v > 0.85 ? '#fde047' : '#f97316'
+      return u < 0.6 ? '#c2410c' : '#7c2d12'
+    }
+    if (v < 0.1) return '#78716c'
+    const crack = ((x * 7 + y * 11) % 53 === 0) || ((x * 3 - y * 5) % 47 === 0)
+    if (crack && u > 0.15) return '#f97316'
+    return v < 0.3 ? '#57534e' : '#44403c'
+  })
+  // Brustflosse
+  c.poly([30, 38, 26, 49, 34, 50, 42, 39], '#44403c'); c.line(33, 40, 30, 48, '#f97316')
+  // Rückenhöcker
+  c.poly([58, Math.round(p.top(58)) + 1, 64, Math.round(p.top(62)) - 4, 68, Math.round(p.top(68)) + 1], '#44403c')
+  // Auge und Maul
+  c.rect(14, 30, 4, 3, '#fde047'); c.rect(15, 31, 2, 2, INK)
+  c.line(3, 35, 24, 38, '#1c1917'); c.line(4, 36, 24, 39, '#fb923c')
+  // Lavafontäne
+  const bx = 24, by = Math.round(p.top(24))
+  for (let i = 0; i < 9; i++) { c.px(bx + (i % 2), by - 1 - i, i < 4 ? '#f97316' : '#fde047') }
+  for (const [dx, dy] of [[-4, -9], [-6, -6], [-7, -2], [5, -9], [7, -6], [8, -2], [-2, -11], [3, -11]]) c.rect(bx + dx, by + dy, 2, 2, dy < -7 ? '#fde047' : '#f97316')
+  sprk(c, 50, 4); sprk(c, 95, 6)
+})
+
+// ---------------------------------------------------------------- Neu 2026-11-05: Tiefsee (Hohe See)
+F('beilfisch', 40, 26, {}, (c) => {
+  // Silbriger Tiefsee-Beilfisch: vorn hoch wie eine Axt, hinten schmal, Leuchtpunkte am Bauch
+  c.poly([3, 6, 12, 2, 20, 3, 28, 9, 30, 12, 28, 15, 20, 20, 12, 23, 6, 21, 2, 14], '#94a3b8')
+  c.poly([4, 7, 12, 3, 19, 4, 27, 9, 27, 11, 4, 12], '#cbd5e1')
+  c.poly([4, 13, 27, 12, 27, 14, 20, 19, 12, 22, 6, 20], '#e2e8f0')
+  c.line(4, 7, 18, 4, '#475569')
+  tail(c, 29, 12, 8, 6, 3, '#94a3b8', '#64748b')
+  for (let x = 7; x < 22; x += 3) c.px(x, Math.round(20 - (x - 7) * 0.42), '#38bdf8')
+  for (let x = 8; x < 20; x += 3) c.px(x, Math.round(22 - (x - 8) * 0.5), '#7dd3fc')
+  c.rect(5, 7, 6, 6, '#e2e8f0'); c.rect(6, 8, 4, 4, INK); c.px(6, 8, '#ffffff'); c.px(9, 11, '#38bdf8')
+  c.line(1, 14, 5, 16, '#475569')
+  c.poly([14, 2, 17, -1, 19, 3], '#64748b')
+})
+
+F('taucherhelm', 34, 34, {}, (c) => {
+  // Alter Messing-Taucherhelm mit rundem Fenster, ein bisschen Seetang
+  c.circ(15, 14, 13, '#92400e'); c.circ(15, 13, 12, '#b45309'); c.circ(13, 11, 9, '#d97706'); c.ellipse(10, 6, 4, 2, '#fbbf24')
+  c.rect(2, 25, 26, 6, '#92400e'); c.hline(2, 25, 26, '#d97706'); c.hline(2, 30, 26, '#78350f')
+  for (const x of [5, 11, 17, 23]) c.px(x, 27, '#fde68a')
+  c.circ(15, 14, 6, '#78350f'); c.circ(15, 14, 5, '#1e3a5f'); c.circ(14, 13, 3, '#2563eb')
+  c.line(12, 11, 14, 10, '#bfdbfe')
+  for (const [x, y] of [[15, 8], [15, 20], [9, 14], [21, 14]]) c.px(x, y, '#fde68a')
+  c.circ(28, 15, 2, '#78350f'); c.px(28, 15, '#fbbf24')
+  // Seetang
+  for (let i = 0; i < 9; i++) c.px(3 + Math.round(Math.sin(i * 0.8) * 1.2), 24 - i, i % 2 ? '#15803d' : '#22c55e')
+  for (let i = 0; i < 6; i++) c.px(26 + Math.round(Math.sin(i) * 1.2), 31 - i, '#16a34a')
+})
+
+F('riesenassel', 56, 28, {}, (c) => {
+  // Riesenassel von der Seite: gewölbter Panzer aus Platten, viele Beinchen, lange Fühler
+  for (let x = 6; x < 46; x += 4) for (let k = 0; k < 5; k++) c.px(x + (k > 2 ? 1 : 0) - (k > 3 ? 1 : 0), 18 + k, '#a78b7a')
+  c.ellipse(26, 14, 21, 8, '#78716c'); c.ellipse(26, 13, 20, 7, '#a8a29e')
+  for (let x = 10; x < 46; x += 4) { c.vline(x, 7, 12, '#78716c'); c.vline(x + 1, 7, 4, '#d6d3d1') }
+  c.hline(8, 19, 36, '#57534e'); c.ellipse(22, 9, 10, 2, '#d6d3d1')
+  // Kopf links mit großem Facettenauge
+  c.ellipse(7, 15, 5, 5, '#a8a29e'); c.rect(3, 12, 4, 3, '#1c1917'); c.px(4, 12, '#a3e635'); c.px(5, 13, '#4d7c0f')
+  c.line(4, 11, 0, 3, '#78716c'); c.line(5, 11, 3, 1, '#a8a29e'); c.line(2, 17, 0, 23, '#78716c')
+  // Schwanzfächer
+  c.poly([46, 10, 53, 9, 54, 18, 46, 19], '#78716c'); c.line(48, 11, 53, 12, '#a8a29e'); c.line(48, 17, 53, 16, '#57534e')
+})
+
+F('leuchtqualle', 32, 44, {}, (c) => {
+  // Leuchtqualle: türkiser Schirm, pinkes Innenleben, wehende Tentakel mit Leuchtpunkten
+  for (const [x0, l, col] of [[7, 22, '#67e8f9'], [11, 26, '#f0abfc'], [15, 24, '#67e8f9'], [19, 27, '#f0abfc'], [23, 21, '#67e8f9']]) {
+    for (let i = 0; i < l; i++) { const x = x0 + Math.round(Math.sin(i * 0.45 + x0) * 1.5); c.px(x, 16 + i, i % 5 === 4 ? '#ffffff' : col) }
+  }
+  c.ellipse(15, 11, 13, 9, '#0891b2'); c.ellipse(15, 10, 12, 8, '#22d3ee'); c.rect(2, 12, 27, 6, null)
+  for (let x = 2; x < 29; x++) c.px(x, 17 + (x % 3 === 0 ? 1 : 0), '#0891b2')
+  for (let y = 12; y < 18; y++) for (let x = 2; x < 29; x++) if ((x - 15) ** 2 / 169 + (y - 11) ** 2 / 81 <= 1) c.px(x, y, '#22d3ee')
+  c.ellipse(15, 11, 6, 4, '#e879f9'); c.ellipse(14, 10, 3, 2, '#fae8ff')
+  c.ellipse(9, 5, 3, 1, '#cffafe'); c.px(20, 4, '#cffafe')
+  c.rect(9, 9, 2, 2, INK); c.rect(20, 9, 2, 2, INK); c.hline(13, 14, 4, '#0e7490')
+})
+
+F('fangzahn', 54, 34, {}, (c) => {
+  // Fangzahnfisch: riesiger Kopf, winziger Körper, Zähne länger als gut für ihn ist
+  const p = P({ x0: 2, x1: 40, cy: 17, up: 14, dn: 14, peak: 0.22, hp: 0.4, tp: 0.8, end: 0.2 })
+  tail(c, 38, 17, 13, 9, 4, '#1e293b', '#0f172a')
+  fan(c, [22, 6], [[25, 2], [31, 4], [34, 9]], '#1e293b', '#0f172a')
+  paint(c, p, (u, v, x, y) => {
+    if (v < 0.12) return '#475569'
+    return scale(x, y, 4) && u > 0.35 ? '#1e293b' : v > 0.7 ? '#1e293b' : '#334155'
+  })
+  // Maul offen, rote Kehle
+  c.poly([1, 17, 16, 15, 16, 25, 2, 27], '#7f1d1d'); c.poly([3, 19, 14, 17, 14, 23, 4, 25], '#450a0a')
+  for (const x of [3, 7, 11]) { c.line(x, 16, x + 1, 24, '#f8fafc'); c.px(x + 1, 25, '#cbd5e1') }
+  for (const x of [5, 9, 13]) c.line(x, 26, x, 20, '#e2e8f0')
+  c.rect(11, 9, 4, 4, '#cbd5e1'); c.rect(12, 10, 2, 2, INK)
+  gill(c, p, 0.42, '#0f172a')
+  for (const [x, y] of [[24, 20], [28, 18], [32, 19]]) c.px(x, y, '#38bdf8')
+})
+
+F('pelikanaal', 80, 40, {}, (c) => {
+  // Pelikanaal: ein Maul wie ein Sack, dahinter ein peitschendünner Körper mit leuchtender Spitze
+  // Körper als Peitsche
+  let lx = 26, ly = 20
+  for (let x = 26; x < 76; x++) {
+    const y = 20 + Math.round(Math.sin((x - 26) * 0.15) * 5 * (x - 26) / 50), t = x < 44 ? 2 : x < 62 ? 1 : 0
+    c.line(lx, ly, x, y, '#1e1b4b'); for (let k = 1; k <= t; k++) { c.px(x, y + k, '#312e81'); c.px(x, y - k, '#1e1b4b') }
+    lx = x; ly = y
+  }
+  const tx = lx, ty = ly
+  c.rect(tx, ty - 1, 2, 3, '#f472b6'); c.px(tx + 2, ty, '#fbcfe8'); sprk(c, tx + 1, ty - 4, '#f472b6', '#fdf2f8')
+  // Kopf und Sackmaul
+  c.poly([2, 10, 26, 15, 28, 22, 4, 36, 0, 33, 20, 22, 1, 13], '#312e81')
+  c.poly([3, 14, 20, 20, 22, 21, 4, 33, 2, 31, 16, 22, 2, 16], '#1e1b4b')
+  c.ellipse(13, 28, 10, 5, '#3730a3'); c.ellipse(12, 28, 8, 3, '#4338ca')
+  c.line(1, 12, 24, 16, '#6366f1')
+  c.rect(22, 13, 3, 3, '#e0e7ff'); c.px(23, 14, INK)
+  for (const x of [4, 9, 14]) c.px(x, 13 + Math.round(x / 6), '#a5b4fc')
+})
+
+F('megalodon', 120, 56, {}, (c) => {
+  // Riesenhai aus der Urzeit: graues Schwergewicht, offenes Maul mit Zahnreihen, Narben
+  const p = P({ x0: 4, x1: 92, cy: 28, up: 17, dn: 16, peak: 0.3, hp: 0.6, tp: 1.2, end: 0.1 })
+  fan(c, [40, Math.round(p.top(40)) + 2], [[48, 0], [54, 1], [60, Math.round(p.top(60)) + 2]], '#475569', '#334155')
+  fan(c, [44, 40], [[38, 53], [46, 54], [56, 41]], '#475569', '#334155')
+  fan(c, [76, Math.round(p.bot(76)) - 1], [[78, 43], [82, 42], [83, Math.round(p.bot(83)) - 1]], '#475569', '#334155')
+  c.poly([90, 28, 104, 10, 117, 2, 108, 24, 116, 51, 104, 40], '#475569'); c.line(94, 26, 114, 5, '#64748b'); c.line(94, 30, 112, 47, '#334155')
+  paint(c, p, (u, v, x, y) => {
+    if (v > 0.6 + 0.05 * Math.sin(x * 0.3)) return v > 0.9 ? '#cbd5e1' : '#e2e8f0'
+    if (v < 0.1) return '#334155'
+    return v < 0.35 ? '#475569' : '#64748b'
+  })
+  for (let i = 0; i < 5; i++) gill(c, p, 0.24 + i * 0.025, '#334155', 1)
+  // Narben
+  c.line(52, 18, 60, 22, '#94a3b8'); c.line(55, 16, 62, 20, '#94a3b8'); c.line(70, 24, 74, 30, '#94a3b8')
+  // Maul
+  c.poly([2, 31, 26, 33, 24, 42, 6, 40], '#7f1d1d'); c.poly([4, 33, 22, 34, 21, 40, 7, 38], '#450a0a')
+  for (let x = 4; x < 25; x += 3) { c.poly([x, 32, x + 2, 32, x + 1, 35], '#f8fafc'); c.poly([x + 1, 41, x + 3, 41, x + 2, 38], '#e2e8f0') }
+  c.rect(14, 22, 5, 4, INK); c.px(15, 22, '#ffffff'); c.line(12, 20, 20, 21, '#334155')
+  for (const [x, y] of [[96, 50], [100, 54], [8, 8]]) drop(c, x, y)
+})
