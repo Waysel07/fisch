@@ -157,6 +157,7 @@
     'Eintrag aus der Bestenliste löschen? Dein Spielstand bleibt erhalten.': 'Delete your leaderboard entry? Your save stays.',
     'Aus der Bestenliste ausgetragen.': 'Removed from the leaderboard.',
     'Cloud-Speicher gerade nicht erreichbar.': 'Cloud save not reachable right now.',
+    'Server wird kurz gewartet.': 'Server maintenance, back in a moment.',
     'Zuletzt gesichert: {d}': 'Last backed up: {d}',
     'Noch nicht gesichert.': 'Not backed up yet.',
     '☁️ Schlüssel erstellt – schreib ihn dir auf!': '☁️ Key created – write it down!',

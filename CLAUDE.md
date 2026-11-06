@@ -10,7 +10,8 @@
 ## Projekt in Kürze
 
 - Statische Seite ohne Build-Schritt und ohne npm-Pakete, gehostet auf Vercel (Framework „Other“).
-- `api/*.js` sind Vercel Functions (Node, CommonJS). Sie sprechen Upstash Redis über die REST-Pipeline an (`fetch` auf `${URL}/pipeline`).
+- `api/*.js` sind Handler im Stil von Vercel Functions (Node, CommonJS). Sie laufen auf einem eigenen Server unter `api.fisch.ing` und sprechen dort Redis über eine Upstash-kompatible REST-Pipeline an (`fetch` auf `${URL}/pipeline`). Neue Commits auf `main` werden dort automatisch ausgerollt; Vercel leitet `/api/*` für alte Tabs dorthin um.
+- Der Client ruft die API live direkt auf `https://api.fisch.ing` auf (`API_BASE` in `js/fischen.js`, `API` in `js/admin.js`), lokal auf demselben Origin.
 - Umgebungsvariablen: `KV_REST_API_URL`/`KV_REST_API_TOKEN` oder `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN`, optional `ADMIN_TOKEN`.
 - Das Spiel besteht aus:
   - `fischen.html`, mit allen Modals als statisches HTML;

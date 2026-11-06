@@ -1,9 +1,10 @@
-// Admin-Panel (seiten/admin.html). Spricht nur mit /api/admin.
+// Admin-Panel (seiten/admin.html). Spricht nur mit /api/admin (live auf api.fisch.ing).
 // Die Sitzung liegt nur im Speicher dieser Seite (nicht im localStorage); neu laden heißt neu anmelden.
 // Alles vom Server wird mit textContent eingesetzt, nie als HTML.
 (() => {
   'use strict';
   const $ = (id) => document.getElementById(id);
+  const API = location.hostname === 'www.fisch.ing' ? 'https://api.fisch.ing' : '';
   const IDLE_MS = 25 * 60 * 1000; // etwas vor dem Server abmelden
   let session = '', idleTimer = 0, sessEnd = 0, clock = 0;
   let boards = [], lbBoard = '', lbFrom = 0, lbTotal = 0;
@@ -30,7 +31,7 @@
   async function call(action, data = {}, auth = session) {
     let r, j = {};
     try {
-      r = await fetch('/api/admin', {
+      r = await fetch(API + '/api/admin', {
         method: 'POST', cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + auth },
         body: JSON.stringify({ action, ...data }),
@@ -80,7 +81,7 @@
   });
   $('logout').addEventListener('click', () => logout(false));
   // Seite zu: Sitzung auch auf dem Server beenden
-  addEventListener('pagehide', () => { if (session) fetch('/api/admin', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session }, body: '{"action":"logout"}' }).catch(() => {}); });
+  addEventListener('pagehide', () => { if (session) fetch(API + '/api/admin', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session }, body: '{"action":"logout"}' }).catch(() => {}); });
 
   // --- Tabs ---
   const LOAD = { ov: overview, lb: leaderboard, id: ideas, gi: jackpotNow, lg: fullLog };
