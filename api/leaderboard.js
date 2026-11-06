@@ -6,9 +6,9 @@
 //                                                  und größter Fisch …), Werte und Plätze in jeder Liste
 //   POST   /api/leaderboard {id, token, name, scores, prof?}  → eintragen/aktualisieren, liefert eigene Plätze
 //   DELETE /api/leaderboard {id, token}         → eigenen Eintrag löschen
-//   DELETE /api/leaderboard {id, admin}         → Eintrag als Admin löschen (ADMIN_TOKEN)
-//   POST   /api/leaderboard {action:'stats', admin} → anonyme Zahlen für Admins: Einträge pro Liste,
-//                                                  Verteilung von Prestige und Wiedergeburten
+//
+// Admin-Aufgaben (Auswertung, Einträge löschen) laufen nur noch über /api/admin (siehe dort);
+// dafür exportiert diese Datei unten `lib`.
 //
 // Zugangsdaten kommen aus der Vercel-Upstash-Integration (KV_REST_API_* oder UPSTASH_REDIS_REST_*).
 'use strict';
@@ -17,7 +17,6 @@ const { cleanName } = require('./_names');
 
 const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-const ADMIN = process.env.ADMIN_TOKEN || '';
 
 // Listen und was ein Wert höchstens sein kann (grobe Plausibilitätsprüfung; das Spiel läuft im
 // Browser, echtes Schummeln lässt sich nicht verhindern, nur eindämmen).
@@ -144,6 +143,15 @@ async function stats() {
   };
 }
 
+// einen Eintrag mit allem, was dazugehört, löschen (eigener Austrag und Admin)
+async function removeEntry(id) {
+  await redis([
+    ...Object.keys(BOARDS).map((b) => ['ZREM', keyOf(b), id]),
+    ['HDEL', 'lb:names', id], ['DEL', 'lb:tok:' + id, 'lb:last:' + id, 'lb:prof:' + pubOf(id)],
+    ['HDEL', 'lb:pubid', pubOf(id)], ['HDEL', 'lb:since', pubOf(id)],
+  ]);
+}
+
 module.exports = async function handler(req, res) {
   if (!URL_ || !TOKEN) return send(res, 503, { error: 'Die Bestenliste ist noch nicht eingerichtet.' });
   try {
@@ -158,24 +166,13 @@ module.exports = async function handler(req, res) {
     }
 
     const body = await readBody(req);
-    if (req.method === 'POST' && body.action === 'stats') {
-      if (!(ADMIN && typeof body.admin === 'string' && body.admin.length >= 16 && body.admin === ADMIN)) return send(res, 403, { error: 'Nicht erlaubt.' });
-      return send(res, 200, await stats());
-    }
     const id = String(body.id || '');
     if (!ID_RE.test(id)) return send(res, 400, { error: 'Ungültige ID.' });
 
     if (req.method === 'DELETE') {
-      const isAdmin = ADMIN && typeof body.admin === 'string' && body.admin.length >= 16 && body.admin === ADMIN;
-      if (!isAdmin) {
-        const [stored] = await redis([['GET', 'lb:tok:' + id]]);
-        if (!stored || stored !== sha(String(body.token || ''))) return send(res, 403, { error: 'Nicht erlaubt.' });
-      }
-      await redis([
-        ...Object.keys(BOARDS).map((b) => ['ZREM', keyOf(b), id]),
-        ['HDEL', 'lb:names', id], ['DEL', 'lb:tok:' + id, 'lb:last:' + id, 'lb:prof:' + pubOf(id)],
-        ['HDEL', 'lb:pubid', pubOf(id)], ['HDEL', 'lb:since', pubOf(id)],
-      ]);
+      const [stored] = await redis([['GET', 'lb:tok:' + id]]);
+      if (!stored || stored !== sha(String(body.token || ''))) return send(res, 403, { error: 'Nicht erlaubt.' });
+      await removeEntry(id);
       return send(res, 200, { ok: true });
     }
 
@@ -239,3 +236,6 @@ module.exports = async function handler(req, res) {
     return send(res, 502, { error: 'Bestenliste gerade nicht erreichbar.' });
   }
 };
+
+// für /api/admin
+module.exports.lib = { BOARDS, keyOf, weekId, pubOf, PUB_RE, stats, profile, removeEntry };

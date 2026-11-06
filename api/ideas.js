@@ -5,7 +5,7 @@
 //   POST   /api/ideas {action: 'list', voter}           → { ideas, mine: {id: 1|-1} }
 //   POST   /api/ideas {action: 'post', voter, text, name?} → { idea }
 //   POST   /api/ideas {action: 'vote', voter, idea, v}  → { idea, v }   (v: 1 hoch, -1 runter, 0 zurücknehmen)
-//   DELETE /api/ideas {id, admin}                       → { ok }        (nur mit ADMIN_TOKEN)
+//   Löschen geht nur über /api/admin (Aktion 'delete_idea').
 //
 // `voter` ist eine zufällige Geheim-ID des Spielers; gespeichert wird nur ein Kürzel ihres Hashs.
 // Schlüssel: ideas (ZSET id → Zeitpunkt), idea:<id> (JSON: Text, Name, Zeitpunkt), idea:<id>:c (Hash up/dn),
@@ -16,7 +16,6 @@ const { cleanName, cleanText, isBad } = require('./_names');
 
 const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-const ADMIN = process.env.ADMIN_TOKEN;
 
 const LIST = 'ideas';
 const KEEP = 200, SHOW = 100;
@@ -99,14 +98,6 @@ module.exports = async function handler(req, res) {
     if (req.method === 'GET') return send(res, 200, { ideas: (await list(null)).ideas });
 
     const body = await readBody(req);
-    if (req.method === 'DELETE') {
-      if (!ADMIN || typeof body.admin !== 'string' || body.admin.length !== ADMIN.length
-        || !crypto.timingSafeEqual(Buffer.from(body.admin), Buffer.from(ADMIN))) return send(res, 403, { error: 'Nicht erlaubt.' });
-      const id = String(body.id || '');
-      if (!IDEA_RE.test(id)) return send(res, 400, { error: 'Unbekannte Idee.' });
-      await redis([['ZREM', LIST, id], ['DEL', 'idea:' + id, 'idea:' + id + ':c', 'idea:' + id + ':v']]);
-      return send(res, 200, { ok: true });
-    }
     if (req.method !== 'POST') return send(res, 405, { error: 'Methode nicht erlaubt.' });
 
     const voter = String(body.voter || '');
@@ -164,3 +155,6 @@ module.exports = async function handler(req, res) {
     return send(res, 500, { error: 'Serverfehler – bitte später nochmal.' });
   }
 };
+
+// für /api/admin
+module.exports.lib = { list, IDEA_RE, LIST };

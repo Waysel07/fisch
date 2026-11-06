@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Admin – Fischen!</title>
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+
+  <main id="login" class="box login">
+    <h1>Admin</h1>
+    <p class="muted">Nur für den Betreiber von fisch.ing. Das Token steht in der Vercel-Umgebungsvariable <code>ADMIN_TOKEN</code>.</p>
+    <form id="login-form" autocomplete="off">
+      <label for="tok">Admin-Token</label>
+      <input id="tok" type="password" autocomplete="current-password" spellcheck="false" required minlength="24" maxlength="256">
+      <button class="btn gold" type="submit">Anmelden</button>
+      <p id="login-msg" class="msg" role="alert"></p>
+    </form>
+    <p class="muted small">Nach 5 Fehlversuchen ist der Login 15 Minuten gesperrt. Die Sitzung endet nach 30 Minuten ohne Aktion und gilt nur von dieser IP.</p>
+    <nav class="links"><a href="../fischen.html">Zurück zum Spiel</a></nav>
+  </main>
+
+  <div id="app" class="app" hidden>
+    <header class="top">
+      <h1>Admin</h1>
+      <span id="sess" class="pill"></span>
+      <button id="logout" class="btn" type="button">Abmelden</button>
+    </header>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-tab="ov" aria-selected="true">Übersicht</button>
+      <button class="tab" role="tab" data-tab="lb">Bestenliste</button>
+      <button class="tab" role="tab" data-tab="id">Ideen</button>
+      <button class="tab" role="tab" data-tab="gi">Geschenke</button>
+      <button class="tab" role="tab" data-tab="lg">Protokoll</button>
+    </nav>
+    <p id="msg" class="msg" role="status"></p>
+
+    <section id="tab-ov" class="pane">
+      <div id="ov-tiles" class="tiles"></div>
+      <div class="cols">
+        <div class="box"><h2>Einträge pro Liste</h2><table id="ov-boards" class="tbl"></table></div>
+        <div class="box"><h2>Prestige</h2><table id="ov-pres" class="tbl"></table><h2>Wiedergeburten</h2><table id="ov-reb" class="tbl"></table></div>
+      </div>
+      <div class="box"><h2>Zuletzt im Protokoll</h2><ul id="ov-log" class="log"></ul></div>
+    </section>
+
+    <section id="tab-lb" class="pane" hidden>
+      <div class="box">
+        <form id="find-form" class="row">
+          <input id="find-q" type="search" placeholder="Name oder Kürzel suchen" minlength="2" maxlength="32">
+          <button class="btn" type="submit">Suchen</button>
+        </form>
+        <div class="row">
+          <label for="lb-board">Liste</label>
+          <select id="lb-board"></select>
+          <button id="lb-prev" class="btn" type="button">‹</button>
+          <button id="lb-next" class="btn" type="button">›</button>
+          <span id="lb-pos" class="muted"></span>
+        </div>
+      </div>
+      <div class="box"><table id="lb-rows" class="tbl rows"></table></div>
+      <div id="player" class="box" hidden></div>
+    </section>
+
+    <section id="tab-id" class="pane" hidden>
+      <div class="box"><ul id="id-list" class="ideas"></ul></div>
+    </section>
+
+    <section id="tab-gi" class="pane" hidden>
+      <div class="cols">
+        <form id="gift-form" class="box">
+          <h2>Spielzeit schenken</h2>
+          <p class="muted small">Der Spieler gibt dir seinen Cloud-Schlüssel; das Spiel holt das Geschenk bei der nächsten Sicherung ab. Im Protokoll steht nur ein Kürzel des Schlüssels.</p>
+          <label for="gift-key">Cloud-Schlüssel</label>
+          <input id="gift-key" type="text" placeholder="XXXX-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" maxlength="19" required>
+          <label for="gift-h">Stunden (bis 1000)</label>
+          <input id="gift-h" type="number" min="0.1" max="1000" step="0.1" value="1" required>
+          <button class="btn gold" type="submit">Schenken</button>
+        </form>
+        <form id="jp-form" class="box">
+          <h2>Jackpot-Topf</h2>
+          <p id="jp-now" class="big"></p>
+          <p id="jp-last" class="muted small"></p>
+          <label for="jp-add">Aufstocken um</label>
+          <input id="jp-add" type="number" min="1" max="100000000" step="1" value="10000" required>
+          <button class="btn gold" type="submit">Aufstocken</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="tab-lg" class="pane" hidden>
+      <div class="box"><ul id="lg-list" class="log"></ul></div>
+    </section>
+  </div>
+
+  <dialog id="confirm" class="box">
+    <p id="confirm-text"></p>
+    <div class="row end">
+      <button id="confirm-no" class="btn" type="button">Abbrechen</button>
+      <button id="confirm-yes" class="btn red" type="button">Löschen</button>
+    </div>
+  </dialog>
+
+<script src="../js/admin.js" defer></script>
+</body>
+</html>

@@ -411,7 +411,7 @@ Import the repo on Vercel with Framework Preset "Other" and leave the build and 
 |---|---|
 | `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Upstash Redis connection |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | The same connection under the alternative names |
-| `ADMIN_TOKEN` | Optional, enables the admin actions below |
+| `ADMIN_TOKEN` | Optional, enables the admin panel. At least 24 characters, otherwise the panel stays off. Use a long random value. |
 
 ### API
 
@@ -419,13 +419,27 @@ All functions use Upstash Redis through its REST pipeline.
 
 | Endpoint | Purpose |
 |---|---|
-| `api/leaderboard.js` | Scores with plausibility limits per board. `DELETE {id, admin}` removes an entry (and its profile). `GET ?p=<pub>` returns one player's profile with every board score and place. `POST {action: 'stats', admin}` returns totals only: entries per board and how prestige and rebirths are spread. |
-| `api/save.js` | Cloud saves. `POST {action: 'gift', key, hours, admin}` gifts up to 1 000 h of play time, stored under `sv:gift:<hash>`. The game claims it on its next sync (`put` with `claim: true`). |
+| `api/leaderboard.js` | Scores with plausibility limits per board. `DELETE {id, token}` removes your own entry (and its profile). `GET ?p=<pub>` returns one player's profile with every board score and place. |
+| `api/save.js` | Cloud saves. Gifted play time waits under `sv:gift:<hash>` until the game claims it on its next sync (`put` with `claim: true`). |
 | `api/lobby.js` | Lobbies, chat, catch feed and the shared boss fight |
 | `api/jackpot.js` | The slot machine's shared jackpot pot. `GET` returns `{pot, last}`; `POST {action: 'spin', stake, name?}` adds half of the stake, rolls the jackpot and empties the pot atomically (`GETSET`) when it is cracked. 60 spins per minute per hashed IP. |
-| `api/ideas.js` | The Ideenbrett. `GET` lists the newest 100 ideas; `POST {action: 'list'|'post'|'vote', voter, …}`; `DELETE {id, admin}` removes an idea. |
+| `api/ideas.js` | The Ideenbrett. `GET` lists the newest 100 ideas; `POST {action: 'list'|'post'|'vote', voter, …}`. |
+| `api/admin.js` | The admin panel's API (see below). No other function accepts `ADMIN_TOKEN`. |
 | `api/_names.js` | Name and text filter for the leaderboard, lobbies, chat and ideas: a short substring list plus the word list in `_badwords.js`, matched as whole words, with exceptions in `ALLOW` |
 | `api/_badwords.js` | Word list in 28 languages from [List of Dirty, Naughty, Obscene, and Otherwise Bad Words](https://github.com/Hesham-Elbadawi/list-of-banned-words) by Shutterstock and contributors, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); lower-cased and de-duplicated |
+
+### Admin panel
+
+`/admin` (served from `seiten/admin.html`, `js/admin.js`, `css/admin.css`) shows totals, browses and searches the leaderboard, opens player profiles, deletes entries and ideas, gifts play time by cloud key, tops up the jackpot and shows an audit log.
+
+How it is secured:
+
+- **Login:** `ADMIN_TOKEN` is sent once, in the `Authorization: Bearer` header (never in a URL or body), and compared in constant time. It only buys a session.
+- **Lockout:** 5 failed logins per hashed IP lock that IP for 15 minutes. 100 failures per hour lock the login for everyone.
+- **Session:** a random 32-byte value, kept only in the page's memory (no `localStorage`, no cookie). The server stores only its hash, bound to the hashed IP. It expires after 30 minutes idle, after 8 hours at most, or on logout or closing the page. At most 120 actions per minute.
+- **Audit log:** logins, failed logins and every change go to `adm:log` (last 200 entries). The log holds the first 8 hex digits of the IP hash and, for gifts, only a short hash of the cloud key.
+- **Page:** strict CSP (`script-src 'self'`, no inline code, `frame-ancestors 'none'`), `X-Frame-Options: DENY`, `no-referrer`, `noindex`, `no-store` (see `vercel.json`). Server data is rendered with `textContent` only. Deletes ask first, and the server requires `confirm: true`.
+- **API:** `POST /api/admin` only, JSON only, 2 KB body limit.
 
 One-time gifts by player name are listed in `NAME_GIFTS` in `js/fischen.js` and matched against the leaderboard and lobby name. Arrived ones are saved in `gifts`.
 
