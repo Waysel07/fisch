@@ -1551,7 +1551,7 @@
     "Das Ideenbrett ist noch nicht eingerichtet.": "The idea board isn’t set up yet.",
     "Ungültige Spieler-ID.": "Invalid player ID.",
     "Bitte ohne Schimpfwörter.": "Please no swear words.",
-    "Heute hast du schon genug Ideen eingereicht.": "You’ve already posted enough ideas today.",
+    "Du hast schon genug Ideen eingereicht – in ein paar Stunden wieder.": "You’ve posted enough ideas for now – try again in a few hours.",
     "Unbekannte Idee.": "Unknown idea.",
     "💡 Neuer Fisch am Steg: der Ideenfisch (selten). Wer ihn fängt, bekommt einen Ideen-Zettel und darf eine Idee ans neue Ideenbrett am Steg hängen (Taste I).": "💡 New fish at the dock: the Idea Fish (rare). Catching it gives you an idea slip, and you can pin an idea to the new idea board on the dock (key I).",
     "👍 Am Ideenbrett stimmen alle öffentlich mit ▲ und ▼ über die Ideen ab, sortiert nach „Beliebt“ oder „Neu“.": "👍 On the idea board everyone votes publicly with ▲ and ▼, sorted by “Popular” or “New”.",

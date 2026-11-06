@@ -22,7 +22,7 @@ const LIST = 'ideas';
 const KEEP = 200, SHOW = 100;
 const TTL = 180 * 86400;
 const MIN_LEN = 8, MAX_LEN = 160;
-const POSTS_PER_DAY = 3;         // je Spieler
+const POSTS = 6, WINDOW = 8 * 3600; // je Spieler höchstens 6 Ideen in 8 Stunden
 const ID_RE = /^[a-f0-9]{32,64}$/;
 const IDEA_RE = /^[a-z0-9]{8,16}$/;
 
@@ -124,9 +124,9 @@ module.exports = async function handler(req, res) {
       if (isBad(raw)) return send(res, 400, { error: 'Bitte ohne Schimpfwörter.' });
       const text = cleanText(raw, MAX_LEN);
       if (text.length < MIN_LEN) return send(res, 400, { error: 'Die Idee ist zu kurz.' });
-      const per = 'ideas:by:' + me + ':' + day();
-      const [n] = await redis([['INCR', per], ['EXPIRE', per, 86400]]);
-      if (n > POSTS_PER_DAY) return send(res, 429, { error: 'Heute hast du schon genug Ideen eingereicht.' });
+      const per = 'ideas:by:' + me + ':' + Math.floor(Date.now() / 1000 / WINDOW);
+      const [n] = await redis([['INCR', per], ['EXPIRE', per, WINDOW]]);
+      if (n > POSTS) return send(res, 429, { error: 'Du hast schon genug Ideen eingereicht – in ein paar Stunden wieder.' });
       const id = crypto.randomBytes(6).toString('hex');
       const at = Date.now(), name = cleanName(body.name) || '';
       await redis([
