@@ -237,6 +237,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-07-1', date: '07.11.2026', items: [
+      '👥 Lobbys laufen jetzt live: Andere Angler, Chat, Fänge und der Lebensbalken des Odfischs aktualisieren sich in etwa einer Sekunde statt alle drei.',
+    ] },
     { id: '2026-11-06-10', date: '06.11.2026', items: [
       '✈️ Rundflug in neuer Pracht: Die Insel ist jetzt doppelt so fein gemalt – mit Badegästen, Handtüchern, Kajaks, Schnorchlern, Fischschwärmen, Schildkröten und Blumenwiesen.',
       '🌊 Unterwegs bewegt sich alles: Brandung, Glitzern, Segel- und Motorboote, Jetskis, Autos auf der Ringstraße, Möwenschwärme, springende Delfine, Wale mit Fontäne, Rauch über dem Krater und Wolken mit Schatten.',
@@ -7071,10 +7074,12 @@
 
   // ------------------------------------------------------------------ multiplayer lobby
   // Up to 8 anglers share a lobby (4-letter code): everyone sees the others on the dock, their
-  // catches and who has fished the most Taler since joining. No sockets: the game syncs with
-  // api/lobby.js every 3 seconds while the tab is visible.
-  const LOBBY_API = API_BASE + '/api/lobby', LOBBY_EVERY = 3000;
-  const LOBBY = { code: null, me: null, players: [], feed: [], chat: [], outbox: [], seenChat: 0, err: '', busy: false, pending: [], seenFeed: 0, timer: 0 };
+  // catches and who has fished the most Taler since joining. While the tab is visible the game sends
+  // its state to api/lobby.js (once a second if it changed, otherwise every 3 s) and holds a live
+  // stream open that delivers the others' changes straight away. Without the stream the syncs still
+  // bring everything, just later.
+  const LOBBY_API = API_BASE + '/api/lobby', LOBBY_EVERY = 3000, LOBBY_TICK = 1000, LOBBY_RETRY = 5000;
+  const LOBBY = { code: null, me: null, players: [], feed: [], chat: [], outbox: [], seenChat: 0, err: '', busy: false, pending: [], seenFeed: 0, timer: 0, stream: null, streamAt: 0, sent: '', syncedAt: 0 };
   async function lobbyFetch(body) {
     const r = await fetch(LOBBY_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     let j = {}; try { j = await r.json(); } catch { /* not json */ }
@@ -7090,20 +7095,17 @@
     const ev = LOBBY.pending.shift(), msg = LOBBY.outbox.shift();
     const bossId = boss.on && !boss.solo ? boss.id : '', dmg = bossId ? Math.min(400, Math.round(boss.pend)) : 0; // the server takes at most 400 per sync
     if (dmg) boss.pend -= dmg;
+    const me = lobbyMe();
+    LOBBY.syncedAt = Date.now();
     try {
-      const j = await lobbyFetch({ action: 'sync', code: save.lobby.code, id: save.lobby.id, me: lobbyMe(), ev, msg, dmg, boss: bossId });
+      const j = await lobbyFetch({ action: 'sync', code: save.lobby.code, id: save.lobby.id, me, ev, msg, dmg, boss: bossId });
+      LOBBY.sent = JSON.stringify(me);
       bossFromServer(j.boss || null);
       receiveChat(j.chat || [], j.me);
       LOBBY.code = save.lobby.code; LOBBY.me = j.me; LOBBY.err = '';
       const old = new Map(LOBBY.players.map(p => [p.k, p]));
       LOBBY.players = j.players.map(p => Object.assign(p, { dx: old.has(p.k) ? old.get(p.k).dx : undefined }));
-      // announce good catches of the others
-      for (const e of j.feed.slice().reverse()) {
-        if (e.t <= LOBBY.seenFeed) continue;
-        if (LOBBY.seenFeed && e.k !== j.me && ['rare', 'wii', 'epic', 'legendary'].includes(e.r)) toast(tr('🎣 {n} hat {f} gefangen ({cm} cm)!', { n: e.n, f: e.f, cm: e.cm }));
-      }
-      if (j.feed.length) LOBBY.seenFeed = Math.max(LOBBY.seenFeed || 1, j.feed[0].t);
-      LOBBY.feed = j.feed;
+      receiveFeed(j.feed, j.me);
     } catch (e) {
       if (dmg && boss.on && boss.id === bossId) boss.pend += dmg;
       if (ev && e.status !== 404 && e.status !== 410) LOBBY.pending.unshift(ev);
@@ -7115,14 +7117,72 @@
     if (!$('lobby').hidden) renderLobby();
     updateLobbyPill();
   }
+  function receiveFeed(feed, me) { // announces good catches of the others
+    for (const e of feed.slice().reverse()) {
+      if (e.t <= LOBBY.seenFeed) continue;
+      if (LOBBY.seenFeed && e.k !== me && ['rare', 'wii', 'epic', 'legendary'].includes(e.r)) toast(tr('🎣 {n} hat {f} gefangen ({cm} cm)!', { n: e.n, f: e.f, cm: e.cm }));
+    }
+    LOBBY.seenFeed = Math.max(LOBBY.seenFeed || 1, feed.length ? feed[0].t : 0); // 0 only until the first answer: that backlog stays silent
+    LOBBY.feed = feed;
+  }
+  function lobbyTick() {
+    if (!save.lobby || document.hidden) return;
+    if (!LOBBY.stream && Date.now() - LOBBY.streamAt > LOBBY_RETRY) lobbyStream();
+    if (boss.on && !boss.solo) return; // the game loop syncs on its own during a boss fight
+    const changed = JSON.stringify(lobbyMe()) !== LOBBY.sent || LOBBY.pending.length || LOBBY.outbox.length;
+    if (changed || Date.now() - LOBBY.syncedAt > LOBBY_EVERY - 500) lobbySync();
+  }
+  // ---- live stream: a POST kept open, so the secret player id stays out of the URL
+  async function lobbyStream() {
+    if (!save.lobby || LOBBY.stream || document.hidden) return;
+    const ctl = LOBBY.stream = new AbortController();
+    LOBBY.streamAt = Date.now();
+    try {
+      const r = await fetch(LOBBY_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'stream', code: save.lobby.code, id: save.lobby.id }), signal: ctl.signal });
+      if (!r.ok || !r.body) throw new Error('no stream');
+      const reader = r.body.getReader(), dec = new TextDecoder();
+      let buf = '';
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done || LOBBY.stream !== ctl) break;
+        buf += dec.decode(value, { stream: true });
+        const parts = buf.split('\n\n');
+        buf = parts.pop();
+        for (const part of parts) if (part.startsWith('data: ')) lobbyPush(JSON.parse(part.slice(6)));
+      }
+    } catch { /* lobbyTick tries again; the syncs keep the lobby going meanwhile */ }
+    if (LOBBY.stream === ctl) LOBBY.stream = null;
+  }
+  function lobbyStreamStop() {
+    if (LOBBY.stream) LOBBY.stream.abort();
+    LOBBY.stream = null; LOBBY.streamAt = 0;
+  }
+  function lobbyPush(j) {
+    if (!save.lobby || !LOBBY.me) return; // the first sync tells us who we are and marks the backlog as read
+    if (j.boss) bossFromServer(j.boss);
+    if (j.chat) receiveChat(j.chat, LOBBY.me);
+    if (j.feed) receiveFeed(j.feed, LOBBY.me);
+    let roster = false;
+    if (j.gone) { LOBBY.players = LOBBY.players.filter(p => !j.gone.includes(p.k)); roster = true; }
+    if (j.p) {
+      const old = LOBBY.players.find(p => p.k === j.p.k);
+      if (old) Object.assign(old, j.p);
+      else { LOBBY.players.push(j.p); roster = true; }
+    }
+    if (roster) updateLobbyPill();
+    if ((roster || j.chat || j.feed) && !$('lobby').hidden) renderLobby();
+  }
   function lobbyStart() {
     clearInterval(LOBBY.timer);
-    LOBBY.code = save.lobby.code; LOBBY.seenFeed = 0; LOBBY.chatReady = false;
-    LOBBY.timer = setInterval(lobbySync, LOBBY_EVERY);
+    lobbyStreamStop();
+    LOBBY.code = save.lobby.code; LOBBY.seenFeed = 0; LOBBY.chatReady = false; LOBBY.sent = '';
+    LOBBY.timer = setInterval(lobbyTick, LOBBY_TICK);
     lobbySync();
+    lobbyStream();
   }
   function lobbyReset() {
     clearInterval(LOBBY.timer);
+    lobbyStreamStop();
     if (boss.on && !boss.solo) bossEnd(tr('👥 Lobby verlassen – der Kampf ist für dich vorbei.'));
     boss.invite = null; $('btn-boss').hidden = true;
     delete save.lobby; persist();
@@ -7258,7 +7318,10 @@
     const url = `${location.origin}${location.pathname}?lobby=${save.lobby.code}`;
     try { await navigator.clipboard.writeText(url); toast(tr('🔗 Link kopiert!')); } catch { prompt(tr('Link zum Beitreten:'), url); }
   });
-  document.addEventListener('visibilitychange', () => { if (!document.hidden && save.lobby) lobbySync(); });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { lobbyStreamStop(); return; }
+    if (save.lobby) { lobbySync(); lobbyStream(); }
+  });
   // back in the lobby after a reload; a ?lobby=CODE link pre-fills the code
   if (save.lobby) lobbyStart();
   try {

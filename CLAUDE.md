@@ -88,7 +88,8 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   - Titel: Einträge in `DEX_REWARDS` mit Feld `title`. Getragen wird `save.title` (ID der Belohnung, `myTitle()`), in der Lobby als Feld `ti`.
 - **Zeit und Wetter** sind deterministisch aus der echten Uhr (`worldTime`, `weatherAt(slot)`, `WEATHER_LEN`). Sie sind für alle Spieler gleich, ohne Server. `currentWeather()` passt sie je Map an: kein Wetter in der Grotte (`CAVE_WX`), auf der Sonneninsel wird Schnee zur Hitzewelle.
 - **Lobby:**
-  - `lobbySync()` fragt den Server alle 3 s ab, im Bossfight alle 1,5 s.
+  - `lobbyTick()` läuft jede Sekunde und ruft `lobbySync()` auf, wenn sich `lobbyMe()` geändert hat oder etwas zu senden ist, sonst alle 3 s. Im Bossfight synct die Spielschleife alle 1,5 s.
+  - `lobbyStream()` hält den Live-Stream offen, `lobbyPush()` wendet dessen Nachrichten an. Der Server (`publish` in `api/lobby.js`) hält die Streams im Speicher, die API darf also nur als ein Prozess laufen. Ohne Stream funktioniert die Lobby weiter, nur langsamer.
   - `lobbyMe()` ist alles, was andere von dir sehen.
   - Boss: `summonBoss`, `bossHit`, `bossFromServer`, `bossWin`. Im Solo-Kampf läuft alles im Client, in der Lobby liegen die HP auf dem Server.
 - **Test-Hooks** liegen in `window.__fischen`, aber nur auf localhost (oder mit `?debug`, dann wird der Spielstand als `tampered` markiert). Spielstände tragen eine Prüfsumme `sig` (`signSave`); wer eine Migration oder ein Feld ändert, muss nichts tun, solange er über `persist()` speichert. Beispiele:

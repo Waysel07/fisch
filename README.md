@@ -355,7 +355,7 @@ All of these are opt-in. Without them, progress stays in the browser's `localSto
 - **Cloud save** (☁️): a secret key stores a copy of the save, so it can be loaded on another device. It's stored under the key's SHA-256 with a 180-day TTL.
 - **Lobbies** (👥): up to 8 anglers share a 4-letter code or a `?lobby=CODE` link. Everyone sees the others on the dock, a feed of catches and a scoreboard of Taler fished since joining. Chat messages ride along with each sync and appear as speech bubbles. The server keeps the last 30 per lobby and stars out words from the name blocklist.
 
-Lobbies use polling, not sockets. Clients sync every 3 s while the tab is visible, or every 1.5 s in a boss fight. Players disappear after 20 s without a sync and are removed after 90 s, and lobbies expire 2 h after the last activity. The current lobby is saved as `lobby`, so a reload rejoins it.
+While the tab is visible, a client syncs once a second if something about it changed and otherwise every 3 s, or every 1.5 s in a boss fight. It also holds a live stream open (`action: 'stream'`, members only), and the server pushes each change to the rest of the lobby straight away. If the stream drops, the syncs carry on alone and the client reconnects. Streams live in the API process's memory, so the API must run as a single process. Players disappear after 20 s without a sync and are removed after 90 s, and lobbies expire 2 h after the last activity. The current lobby is saved as `lobby`, so a reload rejoins it.
 
 ## Interface
 
