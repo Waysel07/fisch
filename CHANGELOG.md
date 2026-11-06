@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 06.11.2026 · `2026-11-06-4`
+
+- 💰 The jackpot pot at the slot machine now belongs to everyone: every spin by every player pays 2 % of its stake into the same pot. Whoever spins three Odfische takes all of it. The machine shows who cracked it last (your name only if you are on the leaderboard).
+
 ## 06.11.2026 · `2026-11-06-3`
 
 - 🎀 New fish at the dock: the Fischeln Velvet Fish (rare). It comes from Fischeln in Krefeld, the city of velvet and silk, shines like velvet and wears a tie of Krefeld silk. It has its own page in the Fishdex.

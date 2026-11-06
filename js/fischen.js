@@ -234,6 +234,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-06-4', date: '06.11.2026', items: [
+      '💰 Der Jackpot-Topf am Fischautomaten gehört jetzt allen: Jeder Dreh von jedem Spieler zahlt 2 % seines Einsatzes in denselben Topf. Wer drei Odfische dreht, räumt ihn komplett ab. Im Automaten steht, wer ihn zuletzt geknackt hat (dein Name nur, wenn du in der Bestenliste stehst).',
+    ] },
     { id: '2026-11-06-3', date: '06.11.2026', items: [
       '🎀 Neuer Fisch am Steg: der Fischelner Samtfisch (selten). Er kommt aus Fischeln in Krefeld, der Samt- und Seidenstadt, glänzt wie Samt und trägt eine Krawatte aus Krefelder Seide. Mit eigener Seite im Fischdex.',
     ] },
@@ -512,6 +515,7 @@
     dex: {}, total: 0, sound: true, seen: false,
     boxes: {}, dexClaimed: [], lvl: 1, xp: 0, daily: { d: '', n: 0 }, bestStreak: 0, rebirths: 0, scales: 0, perks: {}, prestige: 0, pearls: 0, pperks: {}, quests: [], questsDone: 0, lifeCoins: 0, totalEarned: 0,
   }, load());
+  delete save.jackpot; // the pot used to be per player; now it lives on the server for everyone
   save.baits.wurm = Infinity;
   if (sigBroken || (DEBUG && !DEV_HOST)) save.tampered = true;
   if (sigBroken) setTimeout(() => toast(tr('⚠️ Dieser Spielstand wurde von Hand verändert. Du kannst weiterspielen, aber nicht mehr in die Bestenliste.')), 2500);
@@ -4787,7 +4791,7 @@
     if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'sdrill', 'boss', 'summon', 'crit'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: renderCasino, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings, muschel: renderMuschel, sport: () => { spView.id = null; sp = null; renderSport(); } })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: () => { renderCasino(); loadPot(); }, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings, muschel: renderMuschel, sport: () => { spView.id = null; sp = null; renderSport(); } })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -4874,14 +4878,39 @@
     { id: 'odfisch', img: 'img/odfish.jpg',           w: 3,  pay: 150 },
     { id: 'ratte',   img: 'img/rat.gif',              w: 6,  pay: 0 },
   ];
-  // the highest stake grows with the rebirths; 2 % of every stake goes into the jackpot pot,
-  // three Odfische win it on top of the ×150
-  const PAIR = 1.5, MIN_BET = 50, BET_CAPS = [2000, 5000, 10000, 25000, 50000], POT_CUT = .02, POT_SEED = 1000;
+  // the highest stake grows with the rebirths; 2 % of every stake goes into one jackpot pot shared
+  // by all players (api/jackpot.js). The server decides whether a spin cracks it, at the odds of
+  // three Odfische; then the reels show three Odfische and pay the pot on top of the ×150.
+  const PAIR = 1.5, MIN_BET = 50, BET_CAPS = [2000, 5000, 10000, 25000, 50000];
   const capIdx = () => save.prestige ? BET_CAPS.length - 1 : Math.min(BET_CAPS.length - 1, save.rebirths | 0); // after a prestige the cap stays at the top
   const betCap = () => BET_CAPS[capIdx()];
   const betStep = v => v < 1000 ? 50 : v < 10000 ? 500 : 2500;
   const fmtN = n => Math.round(n).toLocaleString(I18N.locale);
-  const pot = () => Math.max(POT_SEED, Math.round(save.jackpot || 0));
+  const JP_API = '/api/jackpot';
+  let potVal = null, potLast = null, potAt = 0; // null until the server answered
+  const potName = () => (save.lb && save.lb.name) || ''; // only a name that is already public on the leaderboard
+  async function jpFetch(opt, ms) {
+    const ac = new AbortController(), t = setTimeout(() => ac.abort(), ms);
+    try {
+      const r = await fetch(JP_API, { ...opt, signal: ac.signal });
+      const j = await r.json();
+      return r.ok ? j : null;
+    } catch { return null; } finally { clearTimeout(t); }
+  }
+  function takePot(j) {
+    if (!j) return;
+    if (Number.isFinite(j.pot)) potVal = j.pot;
+    if ('last' in j) potLast = j.last;
+    potAt = Date.now();
+  }
+  async function loadPot() {
+    if (Date.now() - potAt < 5000) return;
+    potAt = Date.now();
+    takePot(await jpFetch({ cache: 'no-store' }, 4000));
+    if (!$('casino').hidden) renderCasino();
+  }
+  // asks the server for this spin; null when offline (then the spin runs locally without the pot)
+  const jpSpin = stake => jpFetch({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'spin', stake, name: potName() }) }, 1500);
   let bet = 100, spinning = false;
   const maxBet = () => Math.min(betCap(), Math.max(MIN_BET, Math.floor(save.coins / 50) * 50));
   function setBet(v) {
@@ -4918,7 +4947,10 @@
   function renderCasino() {
     if (bet > betCap()) bet = betCap();
     $('casino-coins').textContent = save.coins;
-    $('jackpot-val').textContent = fmtN(pot());
+    $('jackpot-val').textContent = potVal == null ? '…' : fmtN(potVal);
+    const lw = $('jackpot-last');
+    lw.hidden = !potLast || !potLast.amount;
+    if (potLast && potLast.amount) lw.textContent = tr('Zuletzt geknackt von {name}: {n} Taler', { name: potLast.name || tr('jemandem'), n: fmtN(potLast.amount) });
     $('bet-input').disabled = spinning;
     $('bet-input').max = betCap();
     if (document.activeElement !== $('bet-input')) $('bet-input').value = bet;
@@ -4952,33 +4984,41 @@
     }
   }
   $('reels').querySelectorAll('.slot').forEach((el, i) => setSlot(el, SYMBOLS[[5, 4, 3][i]]));
-  $('spin').addEventListener('click', () => {
+  const ODF = SYMBOLS.find(s => s.id === 'odfisch');
+  $('spin').addEventListener('click', async () => {
     if (spinning || save.coins < bet) return;
     spinning = true;
-    const stake = bet;
-    save.coins -= stake; save.jackpot = pot() + stake * POT_CUT; persist(); updateCoins();
-    const forced = window.__fischen && window.__fischen.forceSlot;
-    const result = forced ? forced.map(id => SYMBOLS.find(sy => sy.id === id)) : [rollSymbol(), rollSymbol(), rollSymbol()];
+    const stake = bet, t0 = performance.now();
+    save.coins -= stake; persist(); updateCoins();
     const slots = [...$('reels').querySelectorAll('.slot')];
     slots.forEach(s => s.classList.remove('hit'));
     $('slot-result').className = 'result'; $('slot-result').textContent = '…';
     renderCasino();
     sfx.whoosh();
-    slots.forEach((el, i) => {
+    const ivs = slots.map(el => {
       el.classList.add('spinning');
-      const iv = setInterval(() => setSlot(el, SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]), 70);
-      setTimeout(() => {
-        clearInterval(iv); el.classList.remove('spinning'); setSlot(el, result[i]);
-        tone(300 + i * 120, .08, 'square', .06);
-        if (i === 2) finishSpin(result, stake, slots);
-      }, 700 + i * 450);
+      return setInterval(() => setSlot(el, SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]), 70);
     });
+    // the reels keep spinning while the server decides about the shared pot
+    const srv = await jpSpin(stake);
+    takePot(srv);
+    const forced = window.__fischen && window.__fischen.forceSlot;
+    let result;
+    if (srv && srv.jack) result = [ODF, ODF, ODF];
+    else if (forced) result = forced.map(id => SYMBOLS.find(sy => sy.id === id));
+    else do result = [rollSymbol(), rollSymbol(), rollSymbol()]; while (srv && result.every(s => s === ODF)); // online, three Odfische only come from the server
+    const jack = srv && srv.jack ? Math.max(0, Math.round(srv.win) || 0) : 0;
+    const spent = performance.now() - t0;
+    slots.forEach((el, i) => setTimeout(() => {
+      clearInterval(ivs[i]); el.classList.remove('spinning'); setSlot(el, result[i]);
+      tone(300 + i * 120, .08, 'square', .06);
+      if (i === 2) finishSpin(result, stake, slots, jack);
+    }, Math.max(150 + i * 300, 700 + i * 450 - spent)));
   });
-  function finishSpin(result, stake, slots) {
+  function finishSpin(result, stake, slots, jack) {
     const { mult, hits, rat } = slotPayout(result);
-    const jack = mult && result[0].id === 'odfisch' && hits.length === 3 ? Math.round(pot()) : 0;
     const win = Math.round(stake * mult) + jack;
-    if (jack) save.jackpot = POT_SEED;
+    if (jack) potLast = { name: potName(), amount: jack, at: Date.now() };
     if (jack || mult >= 40) cosmCount('jackpot');
     if (jack) cosmCount('pot');
     save.coins += win;
