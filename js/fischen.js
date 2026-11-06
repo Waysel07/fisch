@@ -235,6 +235,11 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-06-10', date: '06.11.2026', items: [
+      '✈️ Rundflug in neuer Pracht: Die Insel ist jetzt doppelt so fein gemalt – mit Badegästen, Handtüchern, Kajaks, Schnorchlern, Fischschwärmen, Schildkröten und Blumenwiesen.',
+      '🌊 Unterwegs bewegt sich alles: Brandung, Glitzern, Segel- und Motorboote, Jetskis, Autos auf der Ringstraße, Möwenschwärme, springende Delfine, Wale mit Fontäne, Rauch über dem Krater und Wolken mit Schatten.',
+      '🛩️ Neues Wasserflugzeug mit Schwimmern, Propeller, Positionslichtern und Schatten, dazu Heißluftballons, Ortsnamen und eine Minikarte. Nachts leuchten Fenster, Boote und der Leuchtturm.',
+    ] },
     { id: '2026-11-06-9', date: '06.11.2026', items: [
       '🏝️ Sonneninsel: Alle fünf Buchten sind neu gemalt – ferne Inseln im Dunst, Spiegelungen im Wasser, Lichtnetze unter der Oberfläche und ein Riff voller Korallen, Seesterne und Seeigel.',
       '🗺️ Die Inselkarte (Rundflug und Pelles Karte) hat jetzt Riffe im Flachwasser, doppelte Brandung, nassen Sand, mehr Höhenlicht und dichteren Dschungel mit Schatten.',
@@ -3338,7 +3343,7 @@
   }
   // painted backdrops of the stations (img/sport-*.png from img/pxl/sport.px.js); clouds and glints stay animated on top.
   // Falls back to the drawn sky and sea while an image is still loading.
-  const SPORT_BG = ['sport-frisbee', 'sport-ufer', 'sport-bogen', 'sport-volley', 'sport-tt', 'sport-bowling', 'sport-jetski', 'sport-surf', 'insel-karte', 'insel-karte-mini'];
+  const SPORT_BG = ['sport-frisbee', 'sport-ufer', 'sport-bogen', 'sport-volley', 'sport-tt', 'sport-bowling', 'sport-jetski', 'sport-surf', 'insel-karte', 'insel-karte-mini', 'insel-flug'];
   function sportBg(name) { const im = worldImg(name); if (!imgReady(im)) return false; sx.drawImage(im, 0, 0, W, H); return true; }
   function sceneBg(name, horizon) { if (!sportBg(name)) { skySea(horizon); return false; } skyFx(horizon); return true; }
   function skyFx(horizon) {
@@ -3508,12 +3513,12 @@
       start(g) { g.x = MAP_W / 2; g.y = MAP_H - 40; g.a = -Math.PI / 2; g.time = g.mode ? 90 : 110; g.pts = 0; g.got = new Set(); g.chain = 0; g.lastGet = -9; g.boost = 0; g.cool = 0; g.msg = ''; g.msgT = 0; islandMap(); },
       update(g, dt, I) {
         g.time -= dt; if (g.time <= 0) { g.over = true; return; }
-        let want = null;
+        const a0 = g.a; let want = null;
         if (I.down || I.moved > 0) want = Math.atan2(I.y - 108, I.x - 192);
         if (I.keys.arrowleft) g.a -= 2 * dt; if (I.keys.arrowright) g.a += 2 * dt;
         if (want !== null) { let da = want - g.a; while (da > Math.PI) da -= Math.PI * 2; while (da < -Math.PI) da += Math.PI * 2; g.a += clamp(da, -2 * dt, 2 * dt); }
         if (I.tap && g.cool <= 0) { g.boost = 1.4; g.cool = 2.5; sfx.whoosh(); shake(1); }
-        g.boost -= dt; g.cool -= dt; g.msgT -= dt;
+        g.da = dt > 0 ? (g.a - a0) / dt / 60 : 0; g.boost -= dt; g.cool -= dt; g.msgT -= dt;
         const v = g.boost > 0 ? 125 : 72; g.x += Math.cos(g.a) * v * dt; g.y += Math.sin(g.a) * v * dt;
         if (g.x < 10 || g.x > MAP_W - 10 || g.y < 10 || g.y > MAP_H - 10) { g.x = clamp(g.x, 10, MAP_W - 10); g.y = clamp(g.y, 10, MAP_H - 10); g.a += Math.PI * dt * 3; }
         for (const p of IPOINTS) {
@@ -3530,27 +3535,37 @@
       },
       draw(g) {
         const cxm = clamp(g.x - W / 2, 0, MAP_W - W), cym = clamp(g.y - H / 2, 0, MAP_H - H);
-        sx.save(); sx.setTransform(2, 0, 0, 2, 0, 0); sx.drawImage(islandMap(), cxm, cym, W, H, 0, 0, W, H); sx.restore();
-        for (let i = 0; i < 6; i++) { const k = (t * .25 + i / 6) % 1; sx.globalAlpha = .5 * (1 - k); sdisc(MAP_W / 2 - cxm + Math.sin(t + i) * 4 + k * 20, MAP_H / 2 - 6 - cym - k * 50, 4 + k * 10, '#e2e8f0'); } sx.globalAlpha = 1;
+        sx.save(); sx.setTransform(2, 0, 0, 2, 0, 0); { const fi = flightImg(); if (fi) sx.drawImage(fi, cxm * 2, cym * 2, W * 2, H * 2, 0, 0, W, H); else sx.drawImage(islandMap(), cxm, cym, W, H, 0, 0, W, H); } sx.restore();
+        flWorld(g, cxm, cym);
         for (const p of IPOINTS) {
           if ((p.night ? 1 : 0) !== g.mode) continue;
           const X = p.x - cxm, Y = p.y - cym; if (X < -10 || X > W + 10 || Y < -10 || Y > H + 10) continue;
           const locked = stampCount() < INSEL_BAYS[p.bay - 1].st, got = g.got.has(p.i), known = save.ipoints.includes(p.i);
           if (locked) { for (const [dx, dy, r] of [[-4, 0, 5], [3, -1, 6], [0, 3, 5]]) sdisc(X + dx, Y + dy, r, '#e2e8f0'); continue; }
           if (got) continue;
-          const bob = Math.sin(t * 3 + p.i) * 1.2;
-          sdisc(X, Y - 3 + bob, 3.5, known ? '#94a3b8' : p.night ? '#fde047' : '#f43f5e'); sq(X - .5, Y + bob, 1, 4, '#f8fafc'); sq(X - 1, Y - 5 + bob, 1, 1, '#ffffff');
-          if (!known) sq(X - .5, Y - 4.5 + bob, 1, 2.5, '#ffffff');
+          if (!g.mode) flBalloon(X, Y, p.i, known ? 'known' : 'new');
+          if (known && Math.hypot(p.x - g.x, p.y - g.y) < 60) stext(p.name, X, Y - 19, '#fff', 6);
         }
-        if (g.mode) { sx.globalAlpha = .55; sq(0, 0, W, H, '#0b1030'); sx.globalAlpha = 1; for (const p of IPOINTS) if (p.night && !g.got.has(p.i)) { const X = p.x - cxm, Y = p.y - cym; sx.globalAlpha = .35; sdisc(X, Y - 3, 8, '#fde047'); sx.globalAlpha = 1; sdisc(X, Y - 3, 3.5, '#fde047'); } }
-        // the plane from above
+        if (g.mode) { // night: dark overlay, then the lights of the island
+          sx.globalAlpha = .58; sq(0, 0, W, H, '#0b1030'); sx.globalAlpha = 1;
+          for (const [x, y, ph] of flLights()) { const X = x - cxm, Y = y - cym; if (X < -4 || X > W + 4 || Y < -4 || Y > H + 4 || ph < .25) continue; sx.globalAlpha = .28; sdisc(X, Y, 2.2, '#fbbf24'); sx.globalAlpha = 1; sq(X - .25, Y - .25, .5 + (Math.sin(t * 2 + ph * 40) > .9 ? 0 : .5), .5, '#fde68a'); }
+          { const lh = IPOINTS[25], X = lh.x - cxm, Y = lh.y - cym, a = t * 1.6; sx.globalAlpha = .16; sx.fillStyle = '#fef9c3'; sx.beginPath(); sx.moveTo(X, Y); sx.arc(X, Y, 90, a - .16, a + .16); sx.closePath(); sx.fill(); sx.globalAlpha = .5; sdisc(X, Y, 3, '#fef9c3'); sx.globalAlpha = 1; }
+          for (const [x, y, r] of [[MCX, MCY, 14], [IPOINTS[29].x, IPOINTS[29].y, 18]]) { sx.globalAlpha = .22 + Math.sin(t * 3) * .05; sdisc(x - cxm, y - cym, r, '#f97316'); sx.globalAlpha = 1; }
+          for (const p of IPOINTS) if (p.night && !g.got.has(p.i) && stampCount() >= INSEL_BAYS[p.bay - 1].st) flBalloon(p.x - cxm, p.y - cym, p.i, save.ipoints.includes(p.i) ? 'known' : 'night');
+        }
+        // the seaplane: shadow far below, crisp sprite, spinning propeller, wingtip lights, trails when boosting; clouds pass above
         const X = g.x - cxm, Y = g.y - cym, ca = Math.cos(g.a), sa = Math.sin(g.a), at = (u, v) => [X + ca * u - sa * v, Y + sa * u + ca * v];
-        sx.globalAlpha = .25; sdisc(X + 6, Y + 8, 6, '#0b1030'); sx.globalAlpha = 1;
-        for (let u = -8; u <= 8; u += .5) { const [a, b] = at(u, 0); sq(a - 1, b - 1, 2, 2, '#f8fafc'); }
-        for (let v = -9; v <= 9; v += .5) { const [a, b] = at(1, v); sq(a - 1, b - 1, 2, 2, '#ef4444'); }
-        for (let v = -4; v <= 4; v += .5) { const [a, b] = at(-7, v); sq(a - .5, b - .5, 1.5, 1.5, '#ef4444'); }
-        { const [a, b] = at(9, 0); sq(a - .5, b - .5, 1.5, 1.5, Math.floor(t * 20) % 2 ? '#94a3b8' : '#e2e8f0'); }
-        if (g.boost > 0) for (let i = 1; i < 6; i++) { const [a, b] = at(-8 - i * 3, rnd(-1, 1)); sx.globalAlpha = .6 - i * .1; sq(a - 1, b - .5, 2, 1, '#ffffff'); sx.globalAlpha = 1; }
+        const hi = ((Math.round(g.a / (Math.PI * 2) * 64) % 64) + 64) % 64, turn = clamp((g.da || 0) * 30, -1, 1);
+        sx.globalAlpha = .26; sx.drawImage(planeSprite(hi, true), X + 9 + turn * 2 - 13, Y + 13 - 13, 26, 26); sx.globalAlpha = 1;
+        g.trail = g.trail || []; g.trail.push([g.x, g.y, g.a, g.boost > 0]); if (g.trail.length > 26) g.trail.shift();
+        g.trail.forEach(([x, y, a, b], k) => { if (!b && k < 18) return; const c = Math.cos(a), s2 = Math.sin(a); sx.globalAlpha = k / 26 * (b ? .7 : .25); for (const v of [-10.5, 10.5]) sq(x - cxm - s2 * v - c * 2, y - cym + c * v - s2 * 2, 1, .5, '#ffffff'); });
+        sx.globalAlpha = 1;
+        sx.drawImage(planeSprite(hi, false), X - 13, Y - 13, 26, 26);
+        { const L = 4.5 * (.6 + .4 * Math.abs(Math.sin(t * 40))); sx.globalAlpha = .55; for (let v = -L; v <= L; v += .5) { const [a, b] = at(9.5, v); sq(a - .25, b - .25, .5, .5, '#cbd5e1'); } sx.globalAlpha = 1; }
+        if (Math.floor(t * 2.5) % 2) { const [a, b] = at(1, -10.5), [c2, d2] = at(1, 10.5); sq(a - .5, b - .5, 1, 1, '#ef4444'); sq(c2 - .5, d2 - .5, 1, 1, '#22c55e'); if (g.mode) { sx.globalAlpha = .35; sdisc(a, b, 2, '#ef4444'); sdisc(c2, d2, 2, '#22c55e'); sx.globalAlpha = 1; } }
+        if (g.boost > 0) for (let i = 1; i < 6; i++) { const [a, b] = at(-11 - i * 3, rnd(-1, 1)); sx.globalAlpha = .6 - i * .1; sq(a - 1, b - .5, 2, 1, '#ffffff'); sx.globalAlpha = 1; }
+        for (const c of flPrep().clouds) { const cx = ((c.x + t * 5) % (MAP_W + 260)) - 130, PX = (cx - (cxm + W / 2)) * 1.3 + W / 2, PY = (c.y - (cym + H / 2)) * 1.3 + H / 2; if (PX < -60 || PX > W + 60 || PY < -30 || PY > H + 30) continue; flCloud(c, PX, PY, Math.hypot(PX - X, PY - Y) < 30 * c.s ? .4 : .82, !!g.mode); }
+        flMini(g);
         // compass: an arrow at the screen edge toward the nearest balloon still to get
         { let best = null, bd = 1e9; for (const p of IPOINTS) { if ((p.night ? 1 : 0) !== g.mode || g.got.has(p.i) || stampCount() < INSEL_BAYS[p.bay - 1].st) continue; const d = Math.hypot(p.x - g.x, p.y - g.y); if (d < bd) { bd = d; best = p; } }
           if (best) { const PX = best.x - cxm, PY = best.y - cym;
@@ -4014,6 +4029,155 @@
     if (imgReady(im)) return im;
     if (!seaCv) { seaCv = document.createElement('canvas'); seaCv.width = MAP_W; seaCv.height = MAP_H; const x = seaCv.getContext('2d'); x.fillStyle = '#1e84a6'; x.fillRect(0, 0, MAP_W, MAP_H); }
     return seaCv;
+  }
+
+  // Rundflug in fein: img/insel-flug.png is the same island at twice the resolution (1 image pixel = half a game pixel).
+  // Everything that moves is drawn on top in map coordinates: surf, glints, boats, cars, birds, dolphins, whales, smoke,
+  // clouds with their shadows, the seaplane and at night the lights of the houses.
+  function flightImg() { const im = worldImg('insel-flug'); return imgReady(im) ? im : null; }
+  const MCX = MAP_W / 2, MCY = MAP_H / 2;
+  const landE = (x, y) => { const dx = (x - MCX) / 1.2, dy = (y - MCY) / .8; return isleR(Math.atan2(dy, dx)) - Math.hypot(dx, dy); }; // > 0 on land
+  const coastPt = (a, k) => [MCX + Math.cos(a) * isleR(a) * 1.2 * k, MCY + Math.sin(a) * isleR(a) * .8 * k];
+  const riverAt = xx => MCY + Math.sin((MCX - xx) * .025) * 16 + (MCX - xx) * .04;
+  const hsh = (i, s = 0) => { const v = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return v - Math.floor(v); };
+  let FL = null;
+  function flPrep() {
+    if (FL) return FL;
+    FL = { coast: [], glints: [], road: [], lights: null, clouds: [], flocks: [], boats: [], pods: [], whales: [], cars: [] };
+    for (let i = 0; i < 900; i++) { const a = i / 900 * Math.PI * 2 - Math.PI; FL.coast.push({ a, R: isleR(a), ph: hsh(i, 1) }); }
+    for (let i = 0; FL.glints.length < 520 && i < 4000; i++) { const x = hsh(i, 2) * MAP_W, y = hsh(i, 3) * MAP_H, e = landE(x, y); if (e < -10) FL.glints.push([x, y, hsh(i, 4) * 6.3, e > -50]); }
+    for (let i = 0; i < 1200; i++) { const a = i / 1200 * Math.PI * 2 - Math.PI, [x, y] = coastPt(a, .82); FL.road.push([x, y, landE(x, y) >= 4]); }
+    for (let i = 0; i < 16; i++) FL.cars.push({ p: hsh(i, 5), v: (hsh(i, 6) < .5 ? -1 : 1) * (.006 + hsh(i, 7) * .005), c: ['#ef4444', '#2563eb', '#facc15', '#f8fafc', '#10b981', '#f97316', '#a855f7', '#0f172a'][i % 8] });
+    for (let i = 0; i < 13; i++) FL.clouds.push({ x: hsh(i, 8) * (MAP_W + 260) - 130, y: 30 + hsh(i, 9) * (MAP_H - 60), s: .7 + hsh(i, 10) * .8, n: 5 + Math.floor(hsh(i, 11) * 4), seed: i });
+    for (let i = 0; i < 6; i++) FL.flocks.push({ cx: 200 + hsh(i, 12) * (MAP_W - 400), cy: 120 + hsh(i, 13) * (MAP_H - 240), r: 60 + hsh(i, 14) * 140, v: (hsh(i, 15) < .5 ? -1 : 1) * (.08 + hsh(i, 16) * .06), n: 3 + Math.floor(hsh(i, 17) * 4), ph: hsh(i, 18) * 6.3 });
+    // boats: sail and motor boats on rings around the island, jetskis weaving off their start, a ferry to the trophy islet
+    const BK = [['segel', '#ef4444'], ['motor', '#2563eb'], ['segel', '#facc15'], ['motor', '#f59e0b'], ['segel', '#10b981'], ['motor', '#ef4444'], ['segel', '#a855f7'], ['motor', '#0ea5e9'], ['segel', '#f97316'], ['motor', '#10b981'], ['segel', '#f43f5e'], ['motor', '#facc15']];
+    BK.forEach(([kind, col], i) => FL.boats.push({ kind, col, a: hsh(i, 19) * 6.3 - Math.PI, k: 1.22 + hsh(i, 20) * .35, v: (i % 2 ? 1 : -1) * (kind === 'motor' ? .035 : .016) * (.8 + hsh(i, 21) * .4) }));
+    for (let i = 0; i < 4; i++) FL.boats.push({ kind: 'jetski', col: ['#e11d48', '#facc15', '#22c55e', '#0ea5e9'][i], a: BAY_ANG[1] - .3 + i * .05, k: 1.1, v: 0, ph: i * 1.7 });
+    for (let i = 0; i < 6; i++) { let x, y, n = 0; do { x = hsh(i * 9 + n, 22) * MAP_W; y = hsh(i * 9 + n, 23) * MAP_H; n++; } while (landE(x, y) > -40 && n < 60); FL.pods.push({ x, y, d: hsh(i, 24) * 6.3, off: hsh(i, 25) * 5 }); }
+    for (const [x, y] of [[90, 70], [1070, 600], [1080, 300], [70, 380]]) FL.whales.push({ x, y, off: hsh(x, 26) * 7 });
+    return FL;
+  }
+  // window lights for the night flight: the house windows in the image (#3d6ea8), found once when it has loaded
+  function flLights() {
+    if (FL.lights) return FL.lights;
+    const im = flightImg(); if (!im) return [];
+    const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0);
+    let d; try { d = x.getImageData(0, 0, c.width, c.height).data; } catch (e) { return (FL.lights = []); }
+    const out = [];
+    for (let y = 0; y < c.height; y += 2) for (let X = 0; X < c.width; X += 2) { const k = (y * c.width + X) * 4; if (d[k] === 0x3d && d[k + 1] === 0x6e && d[k + 2] === 0xa8) out.push([X / 2, y / 2, hsh(out.length, 27)]); }
+    return (FL.lights = out.length > 900 ? out.filter((_, i) => i % 2 === 0) : out);
+  }
+  // the seaplane from above, painted once per heading (64 headings, smoothing off: crisp pixel rotation); shadow as silhouette
+  const FLPLANE = new Map();
+  function planeSprite(i, shadow) {
+    const key = i + (shadow ? 's' : ''); let c = FLPLANE.get(key); if (c) return c;
+    const S = 52, src = document.createElement('canvas'); src.width = src.height = S; const x = src.getContext('2d');
+    const P = (X, Y, w, h, col) => { x.fillStyle = shadow ? '#0b1030' : col; x.fillRect(S / 2 + Math.round(X), S / 2 + Math.round(Y), Math.round(w), Math.round(h)); };
+    for (const sd of [-1, 1]) { // floats below the wing, with struts
+      const y0 = sd < 0 ? -10 : 8;
+      P(-12, y0, 21, 3, '#cbd5e1'); P(-12, y0, 21, 1, '#f8fafc'); P(-12, y0 + 2, 21, 1, '#94a3b8'); P(9, y0, 2, 3, '#e2e8f0'); P(11, y0 + 1, 1, 1, '#94a3b8'); P(-13, y0 + 1, 1, 1, '#64748b');
+      P(-2, y0 + (sd < 0 ? 3 : -2), 1, 2, '#475569'); P(4, y0 + (sd < 0 ? 3 : -2), 1, 2, '#475569');
+    }
+    // fuselage: white with a red spine, tapering to the tail
+    for (let X = -19; X <= 15; X++) {
+      const hw = X > 11 ? 3 - (X - 11) * .5 : X < -7 ? 1 + (X + 19) * .17 : 3;
+      P(X, -hw, 1, hw * 2, '#e2e8f0'); P(X, -hw, 1, Math.max(1, hw), '#ffffff'); P(X, hw - 1, 1, 1, '#94a3b8');
+      if (X < 4) P(X, -.5, 1, 1, '#ef4444');
+    }
+    P(-19, -8, 5, 16, '#dc2626'); P(-19, -8, 5, 8, '#ef4444'); P(-15, -8, 1, 16, '#f87171'); P(-19, -8, 1, 16, '#991b1b'); P(-21, -1, 7, 2, '#991b1b'); P(-21, -1, 7, 1, '#ef4444'); // tail
+    P(-3, -22, 9, 44, '#dc2626'); P(-3, -22, 9, 22, '#ef4444'); P(5, -22, 1, 44, '#fca5a5'); P(-3, -22, 1, 44, '#7f1d1d'); // wing, lit from the top left
+    P(-3, -22, 9, 3, '#f8fafc'); P(-3, 19, 9, 3, '#e2e8f0'); P(-2, -18, 1, 9, '#991b1b'); P(-2, 9, 1, 9, '#991b1b'); // white tips, ailerons
+    P(-1, -1, 4, 2, '#7f1d1d');
+    P(5, -2, 5, 4, '#0369a1'); P(5, -2, 5, 2, '#38bdf8'); P(6, -2, 2, 1, '#e0f2fe'); P(10, -2, 1, 4, '#0f172a'); // cockpit glass
+    P(13, -2, 3, 4, '#334155'); P(13, -2, 3, 1, '#64748b'); P(16, -1, 2, 2, '#fbbf24'); // cowl and spinner
+    c = document.createElement('canvas'); c.width = c.height = S; const r = c.getContext('2d'); r.imageSmoothingEnabled = false;
+    r.translate(S / 2, S / 2); r.rotate(i / 64 * Math.PI * 2); r.drawImage(src, -S / 2, -S / 2);
+    FLPLANE.set(key, c); return c;
+  }
+  function flBoat(x, y, dir, kind, col, night) {
+    const ca = Math.cos(dir), sa = Math.sin(dir), at = (u, v) => [x + ca * u - sa * v, y + sa * u + ca * v];
+    const L = kind === 'motor' ? 20 : kind === 'jetski' ? 16 : 11, len = kind === 'jetski' ? 2 : 3.5;
+    for (let k = 1; k < L; k++) for (const sd of [-1, 1]) { const [a, b] = at(-len - k * .9, sd * (.6 + k * .35)); sx.globalAlpha = .75 * (1 - k / L); sq(a, b, 1, .5, '#ffffff'); }
+    sx.globalAlpha = 1;
+    for (let u = -len; u <= len; u += .5) { const w = u > len - 1.5 ? Math.max(.3, (len - u) * .7) : 1.3; for (let v = -w; v <= w; v += .5) { const [a, b] = at(u, v); sq(a, b, .5, .5, Math.abs(v) > w - .5 ? col : v < 0 ? '#ffffff' : '#e2e8f0'); } }
+    if (kind === 'segel') for (let u = -2; u <= 2; u += .5) for (let v = .5; v <= 2.6 - Math.abs(u) * .9; v += .5) { const [a, b] = at(u, v); sq(a, b, .5, .5, v > 1.5 ? '#f1f5f9' : '#ffffff'); }
+    if (kind === 'jetski') { const [a, b] = at(-.5, 0); sq(a, b, .5, .5, '#f5d0b5'); }
+    if (night) { const [a, b] = at(0, 0); sx.globalAlpha = .4; sdisc(a, b, 2.5, '#fde68a'); sx.globalAlpha = 1; sq(a - .25, b - .25, .5, .5, '#fffbeb'); }
+  }
+  function flCloud(c, X, Y, alpha, night) {
+    sx.globalAlpha = alpha;
+    for (let k = 0; k < c.n; k++) { const ox = (hsh(k, c.seed + 40) - .5) * 34 * c.s, oy = (hsh(k, c.seed + 41) - .5) * 12 * c.s, r = (6 + hsh(k, c.seed + 42) * 7) * c.s; sdisc(X + ox + 1, Y + oy + 2, r, night ? '#334155' : '#cbd5e1'); }
+    for (let k = 0; k < c.n; k++) { const ox = (hsh(k, c.seed + 40) - .5) * 34 * c.s, oy = (hsh(k, c.seed + 41) - .5) * 12 * c.s, r = (6 + hsh(k, c.seed + 42) * 7) * c.s; sdisc(X + ox, Y + oy, r - .5, night ? '#475569' : '#f8fafc'); sdisc(X + ox - r * .3, Y + oy - r * .35, r * .45, night ? '#64748b' : '#ffffff'); }
+    sx.globalAlpha = 1;
+  }
+  function flBalloon(X, Y, i, kind) {
+    const bob = Math.sin(t * 2.2 + i) * 1.3, y = Y - 9 + bob;
+    sx.globalAlpha = .22; sdisc(X + 6, Y + 6, 3.5, '#0b1030'); sx.globalAlpha = 1; // shadow on the ground
+    const A = kind === 'known' ? ['#e2e8f0', '#94a3b8', '#64748b'] : kind === 'night' ? ['#fef9c3', '#fde047', '#ca8a04'] : [['#fb7185', '#f43f5e', '#be123c'], ['#fde047', '#f59e0b', '#b45309'], ['#7dd3fc', '#0ea5e9', '#0369a1']][i % 3];
+    const B = kind === 'known' ? '#ffffff' : '#fff7ed';
+    for (let yy = -5; yy <= 5; yy += .5) { const w = Math.sqrt(Math.max(0, 25 - yy * yy)) * (yy > 0 ? 1 - yy * .06 : 1); for (let xx = -w; xx < w; xx += .5) { const st = Math.floor((xx + 6) / 2.4) % 2, l = -xx / 5 - yy / 5; sq(X + xx, y + yy, .5, .5, l > .7 ? B : st ? (l > -.4 ? A[0] : A[1]) : (l > -.4 ? A[1] : A[2])); } }
+    sq(X - 1.5, y + 5, .5, 2.5, '#78350f'); sq(X + 1, y + 5, .5, 2.5, '#78350f'); sq(X - 1.5, y + 7.5, 3, 2, '#a16207'); sq(X - 1.5, y + 7.5, 3, .5, '#ca8a04');
+    if (kind === 'night') { sx.globalAlpha = .25 + Math.sin(t * 5 + i) * .08; sdisc(X, y, 9, '#fde047'); sx.globalAlpha = 1; }
+  }
+  // everything below the plane: surf, glints, river, waterfall, roads, boats, sea life, smoke, cloud shadows, birds
+  function flWorld(g, cxm, cym) {
+    const F = flPrep(), vis = (x, y, m = 12) => x > cxm - m && x < cxm + W + m && y > cym - m && y < cym + H + m, night = !!g.mode;
+    for (const c of F.coast) { // surf rolling in: two lines per stretch, brightest when they break
+      const [x0, y0] = coastPt(c.a, 1); if (!vis(x0, y0, 20)) continue;
+      for (let j = 0; j < 2; j++) { const p = (t * .32 + c.ph + j * .5) % 1, [x, y] = coastPt(c.a, 1 + (1 - p) * 12 / c.R); sx.globalAlpha = p * .9; sq(x - cxm, y - cym, 1.5, .5, '#ffffff'); }
+    }
+    sx.globalAlpha = 1;
+    for (const [x, y, ph, shallow] of F.glints) { if (!vis(x, y)) continue; const k = Math.sin(t * 2.4 + ph * 3); if (k < .82) continue; const X = x - cxm, Y = y - cym; sq(X - .5, Y, 1.5, .5, shallow ? '#ffffff' : '#e0fffa'); if (k > .96) { sq(X, Y - .5, .5, 1.5, '#ffffff'); } }
+    for (let xx = MCX - 40; xx > 90; xx -= 6) { const ph = (xx * .13 - t * 3) % 6.3; if (Math.sin(ph) < .7) continue; const y = riverAt(xx); if (vis(xx, y)) sq(xx - cxm, y - cym - .5, 2, .5, '#e0f2fe'); }
+    { const p = IPOINTS[18], X = p.x - cxm, Y = p.y - cym; if (vis(p.x, p.y, 30)) for (let i = 0; i < 6; i++) { const k = (t * 28 + i * 4.4) % 26; sq(X - 1.5 + Math.sin(k) * .7, Y - 26 + k, 3, .5, '#ffffff'); } }
+    for (const car of F.cars) { // cars on the ring road
+      const cp = (((car.p + car.v * t) % 1) + 1) % 1, r = F.road[Math.floor(cp * F.road.length) % F.road.length]; if (!r[2] || !vis(r[0], r[1])) continue;
+      const X = r[0] - cxm, Y = r[1] - cym; sx.globalAlpha = .35; sq(X, Y + .5, 2, 1, '#0d2a1c'); sx.globalAlpha = 1; sq(X - .5, Y - .5, 2, 1.5, car.c); sq(X, Y - .5, 1, .5, '#e0f2fe');
+      if (night) { sx.globalAlpha = .5; sdisc(X + (car.v > 0 ? 1.5 : -1.5), Y, 1.5, '#fde68a'); sx.globalAlpha = 1; }
+    }
+    for (const b of F.boats) {
+      let x, y, d, x2, y2;
+      if (b.kind === 'jetski') { const at2 = s => coastPt(b.a + Math.sin(s) * .18, b.k + .05 + Math.sin(s * 2.3) * .04), s0 = t * .35 + b.ph; [x, y] = at2(s0); [x2, y2] = at2(s0 + .02); d = Math.atan2(y2 - y, x2 - x); }
+      else { const a = ((((b.a + b.v * t / 6) + Math.PI) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) - Math.PI; [x, y] = coastPt(a, b.k); const a2 = a + Math.sign(b.v) * .01; [x2, y2] = coastPt(a2 > Math.PI ? a2 - Math.PI * 2 : a2 < -Math.PI ? a2 + Math.PI * 2 : a2, b.k); d = Math.atan2(y2 - y, x2 - x); }
+      if (vis(x, y, 30)) flBoat(x - cxm, y - cym, d, b.kind, b.col, night);
+    }
+    for (const p of F.pods) { // dolphins: three arcs in a row, a ring where they dive
+      const ph = ((t + p.off) % 5) / 1.4; if (!vis(p.x, p.y, 30)) continue;
+      for (let k = 0; k < 3; k++) { const q = ph - k * .18; if (q < 0 || q > 1) continue; const X = p.x - cxm + Math.cos(p.d) * (q * 14 + k * 5), Y = p.y - cym + Math.sin(p.d) * (q * 14 + k * 5) - Math.sin(q * Math.PI) * 3;
+        sq(X - 1.5, Y - .5, 3, 1.5, '#64748b'); sq(X - 1, Y - .5, 2, .5, '#94a3b8'); sq(X + 1.5 * Math.cos(p.d), Y - .5, .5, .5, '#475569');
+        if (q < .15 || q > .85) { sx.globalAlpha = .7; sdisc(X, Y + 1.5, 2.5 * (q < .15 ? q / .15 : (1 - q) / .15) + .5, '#ffffff'); sx.globalAlpha = 1; } }
+    }
+    for (const w of F.whales) { // a whale under the surface, blowing now and then
+      if (!vis(w.x, w.y, 40)) continue; const X = w.x - cxm + Math.sin(t * .1 + w.off) * 20, Y = w.y - cym;
+      sx.globalAlpha = .3; for (let u = -10; u <= 10; u += .5) sq(X + u, Y - Math.sqrt(Math.max(0, 1 - u * u / 100)) * 3, .5, Math.sqrt(Math.max(0, 1 - u * u / 100)) * 6, '#0b3d55'); sx.globalAlpha = 1;
+      const ph = (t + w.off) % 7; if (ph < 1.4) for (let i = 0; i < 6; i++) { sx.globalAlpha = .8 * (1 - ph / 1.4); sdisc(X + 6 + (i - 2.5) * ph * 1.4, Y - 2 - ph * 6 + Math.abs(i - 2.5) * ph, 1 + ph, '#ffffff'); } sx.globalAlpha = 1;
+    }
+    for (const [x, y, sz] of [[MCX, MCY, 1], [IPOINTS[29].x, IPOINTS[29].y, .7]]) { // smoke from the crater and the lava fields, drifting with the wind
+      if (!vis(x, y, 60)) continue;
+      for (let i = 0; i < 9; i++) { const k = (t * .12 + i / 9) % 1; sx.globalAlpha = (1 - k) * .4; sdisc(x - cxm + k * 34 + Math.sin(t + i) * 2, y - cym - k * 26, (2 + k * 8) * sz, night ? '#57534e' : '#d6d3d1'); }
+      sx.globalAlpha = 1;
+    }
+    for (const c of F.clouds) { const cx = ((c.x + t * 5) % (MAP_W + 260)) - 130; if (!vis(cx + 16, c.y + 20, 60)) continue; sx.globalAlpha = .14; for (let k = 0; k < c.n; k++) sdisc(cx + 16 - cxm + (hsh(k, c.seed + 40) - .5) * 34 * c.s, c.y + 20 - cym + (hsh(k, c.seed + 41) - .5) * 12 * c.s, (6 + hsh(k, c.seed + 42) * 7) * c.s, '#0b3d55'); }
+    sx.globalAlpha = 1;
+    for (const fl of F.flocks) { // gulls in a loose V with their shadows below
+      const a = t * fl.v + fl.ph, x = fl.cx + Math.cos(a) * fl.r * 1.4, y = fl.cy + Math.sin(a) * fl.r * .7, d = a + (fl.v > 0 ? Math.PI / 2 : -Math.PI / 2), ca = Math.cos(d), sa = Math.sin(d);
+      if (!vis(x, y, 30)) continue;
+      for (let i = 0; i < fl.n; i++) { const row = Math.ceil(i / 2), side = i % 2 ? 1 : -1, u = -row * 4, v = side * row * 3.5, X = x - cxm + ca * u - sa * v, Y = y - cym + sa * u + ca * v, fp = Math.sin(t * 9 + i) > 0 ? .5 : 0;
+        sx.globalAlpha = .2; sq(X + 8, Y + 10, 2.5, .5, '#0b1030'); sx.globalAlpha = 1;
+        sq(X - 1.5, Y - fp, 1, .5, night ? '#94a3b8' : '#f8fafc'); sq(X + .5, Y - fp, 1, .5, night ? '#94a3b8' : '#f8fafc'); sq(X - .5, Y + .5 - fp * .5, 1, .5, night ? '#64748b' : '#cbd5e1'); }
+    }
+  }
+  // the minimap in the corner: island, balloons still to get, you
+  function flMini(g) {
+    const im = worldImg('insel-karte-mini'), w = 62, h = 35, x0 = W - w - 6, y0 = 22;
+    sq(x0 - 1, y0 - 1, w + 2, h + 2, '#1b1f2e'); if (imgReady(im)) sx.drawImage(im, x0, y0, w, h); else sq(x0, y0, w, h, '#1e84a6');
+    if (g.mode) { sx.globalAlpha = .45; sq(x0, y0, w, h, '#0b1030'); sx.globalAlpha = 1; }
+    for (const p of IPOINTS) { if ((p.night ? 1 : 0) !== g.mode || g.got.has(p.i) || stampCount() < INSEL_BAYS[p.bay - 1].st) continue; sq(x0 + p.x / MAP_W * w - .5, y0 + p.y / MAP_H * h - .5, 1, 1, save.ipoints.includes(p.i) ? '#cbd5e1' : g.mode ? '#fde047' : '#f43f5e'); }
+    const cxm = clamp(g.x - W / 2, 0, MAP_W - W), cym = clamp(g.y - H / 2, 0, MAP_H - H);
+    sx.globalAlpha = .7; sq(x0 + cxm / MAP_W * w, y0 + cym / MAP_H * h, W / MAP_W * w, .5, '#fff'); sq(x0 + cxm / MAP_W * w, y0 + (cym + H) / MAP_H * h - .5, W / MAP_W * w, .5, '#fff');
+    sq(x0 + cxm / MAP_W * w, y0 + cym / MAP_H * h, .5, H / MAP_H * h, '#fff'); sq(x0 + (cxm + W) / MAP_W * w - .5, y0 + cym / MAP_H * h, .5, H / MAP_H * h, '#fff'); sx.globalAlpha = 1;
+    sdisc(x0 + g.x / MAP_W * w, y0 + g.y / MAP_H * h, 1.2, Math.floor(t * 4) % 2 ? '#ffffff' : '#ef4444');
   }
 
   // Strand-Bowling: pins, a tiny physics step and the usual frame scoring

@@ -2,6 +2,12 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 06.11.2026 · `2026-11-06-10`
+
+- ✈️ Island flight in full glory: the island is now painted twice as finely – with bathers, towels, kayaks, snorkellers, fish shoals, turtles and flower meadows.
+- 🌊 Everything moves as you fly: surf, glints, sail and motor boats, jet skis, cars on the ring road, flocks of gulls, leaping dolphins, spouting whales, smoke over the crater and clouds with their shadows.
+- 🛩️ A new seaplane with floats, propeller, navigation lights and a shadow, plus hot-air balloons, place names and a minimap. At night windows, boats and the lighthouse light up.
+
 ## 06.11.2026 · `2026-11-06-9`
 
 - 🏝️ Sun Island: all five bays are freshly painted – hazy distant islands, reflections in the water, light patterns under the surface and a reef full of corals, starfish and sea urchins.
