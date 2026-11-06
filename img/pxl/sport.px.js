@@ -260,7 +260,7 @@ const mixHex = (a, b, t) => { const x = mixI(C(a), C(b), t); return '#' + (x & 0
 const MEADOW = ['#bef264', '#a3e635', '#84cc16', '#65a30d', '#4d7c0f']
 const ROCK = ['#d6d3d1', '#a8a29e', '#8a8580', '#6b6560', '#4f4a45']
 
-function paintMap(f, s, detail) {
+function paintMap(f, s, detail, u = f) { // u zeichnet in Kartenkoordinaten (bei der Flugkarte das 2×-Raster Up2)
   const W2 = Math.round(MW * s), H2 = Math.round(MH * s), at = (X, Y) => [X / s, Y / s]
   for (let Y = 0; Y < H2; Y++) for (let X = 0; X < W2; X++) {
     const [xx, yy] = at(X, Y), g = geo(xx, yy), n = vn2(X * .5, Y * .5, 70)
@@ -308,27 +308,29 @@ function paintMap(f, s, detail) {
   if (detail) for (let i = 0; i < 1800; i++) {
     const a = i / 1800 * Math.PI * 2 - Math.PI, [X, Y] = coastAt(a, .82)
     if (geo(X, Y).e < 4) continue
-    f.rect(X - 1, Y - 1, 3, 3, C('#e8d3a0')); f.set(X + 1, Y + 1, C('#b99a62')); if (hash(i, 99) > .93) f.set(X, Y, C('#c9ab72'))
+    u.rect(X - 1, Y - 1, 3, 3, C('#e8d3a0')); u.set(X + 1, Y + 1, C('#b99a62')); if (hash(i, 99) > .93) u.set(X, Y, C('#c9ab72'))
   }
   for (let i = 0; i < 120; i++) { const k = .2 + i / 120 * .6, a = BAY_ANG[0] + Math.sin(i * .25) * .12, X = (cx + Math.cos(a) * isleR(a) * 1.2 * k) * s, Y = (cy + Math.sin(a) * isleR(a) * .8 * k) * s; if (i % 3) f.set(X, Y, C('#d6b97a')) }
   // Baumkronen im Dschungel: runde Tupfen mit Licht oben links
-  const blobs = detail ? 2600 : 0
+  const blobs = detail ? (s === 2 ? 4200 : 2600) : 0
   for (let i = 0; i < blobs; i++) {
     const xx = hash(i, 78) * MW, yy = hash(i, 79) * MH, g = geo(xx, yy)
     if (g.e < 14 || g.h + (hash(i, 83) - .5) * .12 < .42 || g.r < 40) continue
     if (xx < cx - 30 && Math.abs(yy - riverY(xx)) < 8 + (cx - xx) / 140) continue
     const r = 3 + Math.round(hash(i, 80) * 3)
     const P = hash(i, 84) < .25 ? CANOPY_B : hash(i, 84) < .4 ? CANOPY_C : JUNGLE
+    if (s === 2) { crownN(f, xx * 2, yy * 2, r * 2 + hash(i, 85), P, i); continue }
     shadowEll(f, xx + 2, yy + 3, r, r - 1, .3); f.ell(xx, yy, r, r - 1, C(P[3])); f.ell(xx - 1, yy - 1, r - 1, r - 2, C(P[2])); f.ell(xx - 1, yy - 2, Math.max(1, r - 3), Math.max(1, r - 3), C(P[1])); f.set(xx - 2, yy - 2, C(P[0])); f.set(xx + r - 1, yy + 1, C(P[4]))
   }
   // Palmen an der Küste
   for (let i = 0; i < 90; i++) {
     const a = i / 90 * Math.PI * 2 - Math.PI, k = .88 + hash(i, 81) * .06, xx = cx + Math.cos(a) * isleR(a) * 1.2 * k, yy = cy + Math.sin(a) * isleR(a) * .8 * k
-    if (detail) palmTop(f, Math.round(xx), Math.round(yy), 6, i); else { f.set(xx * s, yy * s, C(JUNGLE[3])); f.set(xx * s - 1, yy * s, C(JUNGLE[1])) }
+    if (detail && s === 2) palmTop(f, Math.round(xx * 2), Math.round(yy * 2), 12, i); else if (detail) palmTop(f, Math.round(xx), Math.round(yy), 6, i); else { f.set(xx * s, yy * s, C(JUNGLE[3])); f.set(xx * s - 1, yy * s, C(JUNGLE[1])) }
   }
   if (!detail) return miniAreas(f, s)
-  areas(f)
-  props(f)
+  areas(u)
+  props(u)
+  if (s === 2) fineDetail(f)
 }
 // kleine Hilfen für Gebäude von oben
 function roof(f, x, y, w, h, a, b) { f.rect(x + 2, y + 2, w, h, C('#3f6212')); for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) f.set(x + i, y + j, C(j < h / 2 ? (i % 3 ? a : '#fff7d1') : b)); f.rect(x, y + Math.floor(h / 2), w, 1, C('#78350f')) }
@@ -596,7 +598,7 @@ function areas(f) {
   for (const a of [-2.75, -1.95, -.95, .6, 1.25, 2.3, 2.85]) { const [X, Y] = coastAt(a, 1.0); if (!nearMark(X, Y, 20)) rocks(f, X, Y, 8, Math.round(a * 100)) }
   for (const [a0, n] of [[1.75, 6], [2.05, 4], [-1.25, 5], [.95, 5], [-2.45, 4]]) for (let i = 0; i < n; i++) { const a = a0 + i * .028, [x, y] = coastAt(a, 1 - 6 / isleR(a)); if (!nearMark(x, y, 14)) umbrellaTop(f, x, y, ['#f43f5e', '#0ea5e9', '#facc15', '#a855f7'][(i + n) % 4], '#ffffff') }
   for (const [x, y, d, k, c] of [[640, 600, -.3, 'segel'], [470, 610, 3.3, 'motor', '#2563eb'], [1010, 250, -1.2, 'segel'], [1040, 400, 1.9, 'motor', '#f59e0b'], [200, 200, -.6, 'segel'], [160, 470, 2.6, 'segel'],
-    [780, 70, .2, 'motor', '#10b981'], [330, 60, 3.0, 'segel'], [880, 560, -2.6, 'segel'], [960, 160, -2.2, 'motor', '#ef4444']]) if (geo(x, y).e < -20) boat(f, x, y, d, k, c || '#ef4444')
+    [780, 70, .2, 'motor', '#10b981'], [330, 60, 3.0, 'segel'], [880, 560, -2.6, 'segel'], [960, 160, -2.2, 'motor', '#ef4444']]) if (!FLIGHT && geo(x, y).e < -20) boat(f, x, y, d, k, c || '#ef4444')
   islet(f, 136, 120, 12, 7, 131); islet(f, 1040, 560, 9, 5, 132); islet(f, 1072, 110, 7, 4, 133); islet(f, 96, 560, 6, 4, 134)
   for (let i = -30; i <= 30; i++) { const X = 300 + i * 2, Y = 588 + i * i * .022, t = Math.round(3.4 * (1 - Math.abs(i) / 31)); for (let j = -1; j <= t + 1; j++) f.set(X, Y + j, C(j < 0 || j > t ? SHALLOW[0] : SAND[j === t ? 2 : (h2(X, Y + j, 138) > .6 ? 0 : 1)])); f.set(X + 1, Y + t + 2, C('#ffffff')) }
   for (let i = 0; i < 900; i++) { const X = hash(i, 135) * MW, Y = hash(i, 136) * MH, g = geo(X, Y); if (g.e < -70 && g.e > -170 && vn2(X * .03, Y * .03, 137) > .62) { const v = f.get(X, Y); if (v >= 0) f.set(X, Y, mixI(v, C('#0b3f57'), .45)); f.set(X + 1, Y - 1, mixI(f.get(X + 1, Y - 1), C('#0b3f57'), .3)) } }
@@ -610,6 +612,81 @@ function miniAreas(f, s) {
   }
 }
 let BIG = null
+// ---------------------------------------------------------------- Flugkarte für den Rundflug (img/insel-flug.png, 2304×1296)
+// Dieselbe Insel wie insel-karte, aber jedes Bildpixel ist ein halbes Spielpixel: Gelände, Wasser, Kronen und Palmen
+// werden in voller Auflösung gemalt, Orte und Aussichtspunkte über Up2 (Formen fein, Einzelpixel 2×2).
+// Boote fehlen hier, sie fahren im Spiel. Kleinkram (Badegäste, Kajaks, Schwärme, Blumen …) kommt aus fineDetail.
+let FLIGHT = false
+class Up2 {
+  constructor(f) { this.f = f; this.w = f.w / 2; this.h = f.h / 2 }
+  set(x, y, c) { this.f.rect(Math.round(x) * 2, Math.round(y) * 2, 2, 2, c) }
+  get(x, y) { return this.f.get(Math.round(x) * 2, Math.round(y) * 2) }
+  rect(x, y, w, h, c) { this.f.rect(Math.round(x) * 2, Math.round(y) * 2, Math.round(w) * 2, Math.round(h) * 2, c) }
+  line(x0, y0, x1, y1, c, wd = 1) { this.f.line(x0 * 2 + 1, y0 * 2 + 1, x1 * 2 + 1, y1 * 2 + 1, c, wd * 2) }
+  poly(pts, c) { this.f.poly(pts.map(([x, y]) => [x * 2 + .5, y * 2 + .5]), typeof c === 'function' ? (x, y) => c(Math.floor(x / 2), Math.floor(y / 2)) : c) }
+  ell(cx, cy, a, b, c) {
+    cx = Math.round(cx); cy = Math.round(cy); const CX = cx * 2 + 1, CY = cy * 2 + 1, A = a * 2 + 1, B = b * 2 + 1
+    for (let Y = Math.floor(CY - B); Y < Math.ceil(CY + B); Y++) for (let X = Math.floor(CX - A); X < Math.ceil(CX + A); X++) {
+      const p = (X + .5 - CX) / A, q = (Y + .5 - CY) / B
+      if (p * p + q * q <= 1) this.f.set(X, Y, typeof c === 'function' ? c(Math.floor(X / 2), Math.floor(Y / 2)) : c)
+    }
+  }
+}
+// Baumkrone im feinen Raster: Licht von links oben, Blattbüschel, Schlagschatten nach rechts unten
+function crownN(f, x, y, r, P, seed) {
+  x = Math.round(x); y = Math.round(y); const ry = r * .85, t = C('#0d2a1c')
+  for (let Y = -ry - 1; Y <= ry + 1; Y++) for (let X = -r - 1; X <= r + 1; X++) { const d = Math.hypot(X / r, Y / ry); if (d > 1) continue; const v = f.get(x + X + 4, y + Y + 5); if (v >= 0 && (d < .8 || (X + Y) % 2 === 0)) f.set(x + X + 4, y + Y + 5, mixI(v, t, .34)) }
+  for (let Y = Math.floor(-ry); Y <= ry; Y++) for (let X = -r; X <= r; X++) {
+    const lump = (vn2((x + X) * .45, (y + Y) * .45, seed % 7) - .5) * .35, d = Math.hypot(X / r, Y / ry) + lump * .5
+    if (d > 1) continue
+    const nx = X / r, ny = Y / ry, nz = Math.sqrt(Math.max(0, 1 - nx * nx - ny * ny)), l = -nx * .55 - ny * .65 + nz * .5 + lump
+    const k = l > .78 ? 0 : l > .45 ? 1 : l > .1 ? 2 : l > -.3 ? 3 : 4
+    f.set(x + X, y + Y, C(P[k]))
+  }
+  // Blattbüschel: kleine helle Bögen auf der Lichtseite
+  for (let i = 0; i < r * .8; i++) { const a = hash(i, seed) * 6.28, rr = hash(i + 9, seed) * r * .7, X = Math.round(x + Math.cos(a) * rr), Y = Math.round(y + Math.sin(a) * rr * .85); if (X - x + Y - y < 2) { f.set(X, Y, C(P[0])); f.set(X + 1, Y, C(P[1])) } else f.set(X, Y, C(P[4])) }
+}
+// Kleinkram im feinen Raster, nur auf freien Flächen (Sand, Flachwasser, Wiese, Fels)
+function fineDetail(f) {
+  const N = (x, y) => f.get(x, y)
+  const SANDS = new Set([...SAND, '#e3c98f', '#c9a96a'].map(C)), SHAL = new Set(SHALLOW.map(C)), MEAD = new Set(MEADOW.map(C)), RK = new Set(ROCK.map(C))
+  const free = (set, x, y, w, h) => { for (let j = -1; j <= h; j++) for (let i = -1; i <= w; i++) if (!set.has(N(x + i, y + j))) return false; return true }
+  const SKIN = ['#f5d0b5', '#e0a97f', '#a86b45', '#7a4a2c'], SUIT = ['#ef4444', '#2563eb', '#facc15', '#ec4899', '#10b981', '#f97316', '#111827']
+  // Badegäste, Handtücher und Liegen am Strand
+  for (let i = 0; i < 2600; i++) {
+    const a = hash(i, 201) * Math.PI * 2 - Math.PI, k = 1 - (3 + hash(i, 202) * 6) / isleR(a), [mx, my] = coastAt(a, k), x = Math.round(mx * 2), y = Math.round(my * 2)
+    if (nearMark(mx, my, 10) || !free(SANDS, x, y, 6, 4)) continue
+    const r = hash(i, 203)
+    if (r < .35) { const c1 = SUIT[i % 7], c2 = i % 3 ? '#ffffff' : '#fde047'; for (let q = 0; q < 6; q++) f.rect(x + q, y, 1, 3, C(q % 2 ? c1 : c2)); f.rect(x + 6, y + 1, 1, 3, C('#b08a52')) } // Handtuch mit Schatten
+    else if (r < .7) { f.set(x, y, C(SKIN[i % 4])); f.rect(x, y + 1, 1, 2, C(SUIT[(i * 3) % 7])); f.set(x, y + 3, C(SKIN[i % 4])); f.set(x + 1, y + 2, C('#b08a52')) } // stehender Badegast
+    else if (r < .82) { f.rect(x, y, 5, 2, C('#f8fafc')); f.rect(x, y, 1, 2, C(SKIN[i % 4])); f.rect(x + 1, y, 2, 2, C(SUIT[i % 7])); f.rect(x + 1, y + 2, 5, 1, C('#b08a52')) } // Liege
+    else if (r < .9) { f.rect(x, y, 3, 2, C('#e2c08a')); f.set(x + 1, y - 1, C('#f2d9a8')); f.set(x + 3, y + 1, C('#b08a52')) } // Sandburg
+    else { f.set(x, y, C(['#f472b6', '#38bdf8', '#facc15'][i % 3])); f.set(x + 1, y + 1, C('#b08a52')) } // Ball
+  }
+  // Im Flachwasser: Kajaks, Schnorchler, Luftmatratzen, Fischschwärme, Schildkröten, Seesterne
+  for (let i = 0; i < 1500; i++) {
+    const a = hash(i, 211) * Math.PI * 2 - Math.PI, k = 1 + (6 + hash(i, 212) * 36) / isleR(a), [mx, my] = coastAt(a, k), x = Math.round(mx * 2), y = Math.round(my * 2)
+    if (nearMark(mx, my, 8) || !free(SHAL, x, y, 8, 4)) continue
+    const r = hash(i, 213)
+    if (r < .12) { const c = ['#f97316', '#facc15', '#ef4444', '#22c55e'][i % 4]; f.rect(x + 1, y + 1, 7, 2, C('#2b8f95')); f.rect(x, y, 7, 2, C(c)); f.set(x, y, C('#ffffff')); f.set(x + 3, y, C(SKIN[i % 4])); f.line(x + 1, y + 2, x + 6, y - 1, C('#334155')) } // Kajak mit Paddel
+    else if (r < .24) { f.set(x, y, C('#f97316')); f.set(x + 1, y, C(SKIN[i % 4])); f.set(x - 1, y + 1, C('#e0fffa')); f.set(x + 2, y + 1, C('#e0fffa')) } // Schnorchler
+    else if (r < .32) { f.rect(x + 1, y + 1, 5, 3, C('#2b8f95')); f.rect(x, y, 5, 3, C(['#f472b6', '#facc15', '#38bdf8'][i % 3])); f.rect(x, y + 1, 5, 1, C('#ffffff')) } // Luftmatratze
+    else if (r < .62) { for (let q = 0; q < 9; q++) f.set(x + Math.round(hash(q, i) * 8), y + Math.round(hash(q + 5, i) * 4), C('#2a8a8a')) } // Fischschwarm als Schatten
+    else if (r < .7) { f.ell(x + 2, y + 2, 2, 1, C('#2a8a8a')); f.ell(x + 1, y + 1, 2, 1, C('#3f7a3a')); f.set(x, y + 1, C('#86b86a')); f.set(x + 4, y + 1, C('#5b8f4a')); f.set(x + 1, y, C('#86b86a')) } // Schildkröte
+    else if (r < .78) { const c = C(['#fb7185', '#f97316'][i % 2]); f.set(x, y, c); f.set(x - 1, y, c); f.set(x + 1, y, c); f.set(x, y - 1, c); f.set(x, y + 1, c) } // Seestern
+    else { f.set(x, y, C('#c4f7ee')); f.set(x + 1, y, C('#e6fffb')) } // Glitzer
+  }
+  // Wiese: Blumen und kleine Büsche; Fels: Brocken mit Licht
+  for (let i = 0; i < 9000; i++) {
+    const x = Math.round(hash(i, 221) * MW * 2), y = Math.round(hash(i, 222) * MH * 2), v = N(x, y)
+    if (MEAD.has(v) && MEAD.has(N(x + 1, y)) && MEAD.has(N(x, y + 1))) {
+      if (i % 3) f.set(x, y, C(['#fde047', '#f472b6', '#ffffff', '#c084fc', '#fb923c'][i % 5]))
+      else { f.rect(x + 1, y + 1, 3, 2, C('#4d7c0f')); f.rect(x, y, 3, 2, C('#65a30d')); f.set(x, y, C('#a3e635')) }
+    } else if (RK.has(v) && RK.has(N(x + 2, y + 2)) && i % 2) { f.rect(x + 1, y + 1, 3, 2, C('#4f4a45')); f.rect(x, y, 3, 2, C('#a8a29e')); f.set(x, y, C('#e7e5e4')) }
+  }
+}
+const flightMap = () => { FLIGHT = true; const f = new FB(MW * 2, MH * 2); paintMap(f, 2, true, new Up2(f)); FLIGHT = false; return f }
+scene('insel-flug', MW * 2, MH * 2, (f) => f.p.set(flightMap().p))
 const bigMap = () => { if (!BIG) { BIG = new FB(MW, MH); paintMap(BIG, 1, true) } return BIG }
 scene('insel-karte', MW, MH, (f) => f.p.set(bigMap().p))
 scene('insel-karte-mini', 384, 216, (f) => paintMap(f, 1 / 3, false))

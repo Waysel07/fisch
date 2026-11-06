@@ -339,6 +339,7 @@ The expected score of every mode grows by about half its base per 1000 skill (`e
 - **Champion duel** against Kapitän Kraul, a walrus in a tracksuit, opens at skill 1500 and 26 stamps. A win gives a trophy (`trophies`, shown on a shelf at the dock), a pearl and +3 % Taler everywhere.
 - **Stamps** (`stamps`): 5 per station, 45 in total. Each pays Taler, XP and Schuppen. All 45 give the title Inselchampion and +5 % Taler everywhere.
 - **Rundflug** (`ipoints`): 30 named viewpoints over the island plus 10 at night. Found ones stay found.
+- **Flight view:** the Rundflug flies over `img/insel-flug.png` (2304×1296, the island at twice the map resolution with bathers, kayaks, shoals and more). Boats, cars, gulls, dolphins, whales, smoke, surf, glints and clouds with shadows move on top (`flWorld`); the seaplane is a sprite rotated in 64 steps (`planeSprite`). A minimap sits in the corner (`flMini`), and at night the house windows found in the image light up (`flLights`).
 - **Stop & score** (`#sport-stop`): a button on the canvas ends a running round at once; the points so far are scored like a normal end (in a catch drill they decide whether the fish is landed).
 - **Daily cap** (`sportDay`): after 10 rounds per station per day, Taler and XP are halved. Skill and stamps are not capped.
 - `sportBonus()` (Profi, trophies, all stamps) goes into the collection group of `coinMult()`, up to +50 %.
