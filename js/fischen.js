@@ -234,8 +234,15 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
-    { id: '2026-11-06-2', date: '06.11.2026', items: [
+    { id: '2026-11-06-3', date: '06.11.2026', items: [
       '🎀 Neuer Fisch am Steg: der Fischelner Samtfisch (selten). Er kommt aus Fischeln in Krefeld, der Samt- und Seidenstadt, glänzt wie Samt und trägt eine Krawatte aus Krefelder Seide. Mit eigener Seite im Fischdex.',
+    ] },
+    { id: '2026-11-06-2', date: '06.11.2026', items: [
+      '🧭 Aufgeräumte Leiste oben: Taler und Level, Uhrzeit und Wetter sowie das Menü sitzen jetzt in drei festen Leisten statt in vielen einzelnen Kästchen. „Gespeichert“ erscheint klein unten rechts, und auf dem Handy im Hochformat sitzt das Meer direkt unter der Leiste.',
+      '🛒 Die Reiter im Laden stehen als gleichmäßiger Block nebeneinander, der Taler-Stand daneben.',
+      '🏅 Größere Minispiele: Während einer Runde ist das Spielfeld so groß, wie der Bildschirm erlaubt, und passt auf dem Handy im Querformat jetzt ganz auf den Schirm.',
+      '🥇 Neue Ergebnis-Karte nach jeder Runde: in der Farbe deiner Medaille, mit großer Punktzahl, den drei Medaillen-Grenzen (wie knapp war die nächste?), Können, Taler und EP. Auf jeder Station steht der Bestwert direkt beim Modus.',
+      '💪 Die Kraft-Anzeige beim Frisbee und der Atem beim Bogenschießen sind jetzt richtige Pixel-Anzeigen mit Rahmen; ist die Kraft voll, blinkt der Rahmen.',
     ] },
     { id: '2026-11-06-1', date: '06.11.2026', items: [
       '🥏 Frisbee ganz neu: Im Zielring wirfst du 8 Scheiben auf drei schwimmende Ziele (nah 2, mittel 3, weit 5 Punkte), die Mitte zählt doppelt, Treffer in Folge geben Bonus und Ballons in der Luft +3. Geworfen wird wie mit einer Schleuder, mit Vorschau der Flugbahn, und die Scheibe fliegt doppelt so schnell. Im Weitwurf hüpft eine flache, harte Scheibe übers Wasser.',
@@ -2620,7 +2627,7 @@
     const [top, bot, dark] = skyColors();
     // letterbox continues the scene (sky above, deep water below)
     const cave = inLava(), bgTop = cave ? '#160d10' : top, bgDeep = cave ? '#120808' : onSea() ? '#01050b' : onInsel() ? mix([3, 24, 42], [2, 8, 20], dark) : mix([9, 42, 82], [4, 10, 28], dark);
-    if (bgTop + bgDeep !== lastBg) { lastBg = bgTop + bgDeep; $('stage').style.background = `linear-gradient(${bgTop} 0 50%, ${bgDeep} 50% 100%)`; }
+    if (bgTop + bgDeep !== lastBg) { lastBg = bgTop + bgDeep; $('stage').style.background = `linear-gradient(${bgTop} 0 var(--bg-split, 50%), ${bgDeep} var(--bg-split, 50%) 100%)`; }
     const key = top + bot + save.map + (inLava() ? caveDepth() : onInsel() ? inselBay() : '');
     // at dawn and dusk the colours change every frame; repainting sky and sea 4x a second is plenty
     if (key !== bgKey && (t - bgAt > .25 || t < bgAt || !bgKey)) { bgKey = key; bgAt = t; renderBg(top, bot, dark); }
@@ -3257,6 +3264,20 @@
     const bx = (t * 2.2 + 90) % (W + 30) - 15;
     sq(bx - 4, horizon - 1, 8, 1, '#1e3a5f'); sq(bx - 3, horizon, 6, .5, '#2d5a7b'); for (let k = 0; k < 6; k++) sq(bx - .5 - k * .35, horizon - 2 - k, .5 + k * .35, 1, '#f8fafc'); sq(bx, horizon - 8, .5, 7, '#475569');
   }
+  // gauge for the sport scenes: ink frame, dark well, a stepped fill coloured by how far it reaches, a lit top edge.
+  // cols run from empty to full; a full gauge blinks its frame gold
+  function smeter(x, y, w, h, v, label, cols = ['#22c55e', '#facc15', '#ef4444']) {
+    v = clamp(v, 0, 1);
+    const full = v >= 1 && Math.floor(t * 8) % 2;
+    sq(x - 1.5, y - 1.5, w + 3, h + 3, '#0b1020'); sq(x - 1, y - 1, w + 2, h + 2, full ? '#fde047' : '#33416b');
+    sq(x, y, w, h, '#101833'); sq(x, y + h - 1, w, 1, '#0b1020');
+    const seg = 3, end = w * v;
+    for (let p = 0; p < end - .01; p += seg) {
+      const c = cols[Math.min(cols.length - 1, Math.floor(p / w * cols.length))], s2 = Math.min(seg - 1, end - p);
+      sq(x + p, y, s2, h, c); sq(x + p, y, s2, 1, 'rgba(255,255,255,.5)'); sq(x + p, y + h - 1, s2, 1, 'rgba(0,0,0,.25)');
+    }
+    if (label) shud(label, x - 2, y - 4, '#fff', 6, 'left');
+  }
   // HUD line on a dark backing so it stays readable over the busier scenes
   function shud(s, x, y, c = '#fff', size = 8, al = 'center') {
     sx.font = `700 ${size}px Poppins, sans-serif`; const w = sx.measureText(s).width + 8, x0 = al === 'left' ? x - 4 : al === 'right' ? x - w + 4 : x - w / 2;
@@ -3429,7 +3450,7 @@
           // the start of the flight path (no wind): enough to aim, the rest is feel
           const v = frisV(g, Math.max(.06, g.pow)), d = { x: 30, y: 148, vx: v * Math.cos(g.ang), vy: -v * Math.sin(g.ang) };
           for (let i = 0; i < (g.mode ? 14 : 18); i++) { for (let k = 0; k < 4; k++) { d.vy += frisG(d) * .015; d.x += d.vx * .015; d.y += d.vy * .015; } if (d.y > 160) break; sx.globalAlpha = 1 - i / 22; sq(d.x - 1, d.y - 1, 2, 2, '#1b1f2e'); sq(d.x - .5, d.y - .5, 1.5, 1.5, i % 2 ? '#fde047' : '#ffffff'); }
-          sx.globalAlpha = 1; sq(14, 100, 6, 24, '#1b1f2e'); sq(15, 101 + 22 * (1 - g.pow), 4, 22 * g.pow, g.pow > .9 ? '#ef4444' : '#22c55e'); sq(31, 129, 5, 1.5, '#f97316');
+          sx.globalAlpha = 1; smeter(9, 111, 28, 5, g.pow, tr('Kraft')); sq(31, 129, 5, 1.5, '#f97316');
         }
         if (g.dis && g.st !== 'aim') { const d = g.dis; sspr(BALLS.disc(), d.x, d.y - .5); if (Math.floor(t * 12) % 2) sq(d.x - 1, d.y - 1.5, 2, .5, '#fff7ed'); drawPelle(sq, g.peX, d.y + 4, 0, true, 1); }
         sx.restore();
@@ -3637,7 +3658,7 @@
         }
         const X = g.ax + (g.sx || 0), Y = g.ay + (g.sy || 0);
         sq(X - 6, Y - .25, 4, .5, '#1b1f2e'); sq(X + 2, Y - .25, 4, .5, '#1b1f2e'); sq(X - .25, Y - 6, .5, 4, '#1b1f2e'); sq(X - .25, Y + 2, .5, 4, '#1b1f2e'); sq(X - .5, Y - .5, 1, 1, '#ef4444');
-        sq(8, 190, 60, 6, '#1b1f2e'); sq(9, 191, 58 * g.breath, 4, g.breath > .3 ? '#38bdf8' : '#ef4444'); stext(tr('Atem'), 38, 186, '#fff', 6);
+        smeter(12, 192, 60, 5, g.breath, tr('Atem'), ['#ef4444', '#38bdf8', '#38bdf8']);
       },
       score: g => g.pts },
     { id: 'tt', icon: '🏓', name: 'Tischtennis', st: 18, modes: ['Match', 'Ballwechsel'],
@@ -4078,7 +4099,7 @@
     sjReset(); sp = { id, s, mode, lvl, t: 0, cd: 2, phase: 'count', g: { mode, lvl, t: 0, d: sportDiff(s, lvl) } };
     s.start(sp.g); Object.assign(SIN, { down: false, tap: false, rel: false, moved: 0, keys: {} });
     $('sport-hub').hidden = true; $('sport-play').hidden = false; $('sport-result').hidden = true; $('sport-play').classList.remove('done');
-    $('sport').hidden = false;
+    $('sport').hidden = false; $('sport').classList.add('playing');
     $('sport-title').textContent = `${s.icon} ${s.name} · ${s.modes[mode]}`;
     $('sport-sub').textContent = lvl === 3 ? tr('Champion-Duell gegen Kapitän Kraul: schlag {n} Punkte!', { n: s.champ[mode] }) : `${SP_LV[lvl]} · ${s.info}`;
   }
@@ -4108,7 +4129,7 @@
     sjReset(); sp = { id: s.id, s, mode: c.mode, lvl: 0, t: 0, cd: 2, phase: 'count', drill: c, g: { mode: c.mode, lvl: 0, t: 0, d: DRILL_D[hooked.f.r] || .2 } };
     s.start(sp.g); c.set(sp.g); Object.assign(SIN, { down: false, tap: false, rel: false, moved: 0, keys: {} });
     $('sport-hub').hidden = true; $('sport-play').hidden = false; $('sport-result').hidden = true; $('sport-play').classList.remove('done');
-    $('sport').hidden = false;
+    $('sport').hidden = false; $('sport').classList.add('playing');
     $('sport-title').textContent = tr('🎣 Fang-Drill · {s}', { s: `${s.icon} ${s.name}` });
     $('sport-sub').textContent = tr('{f} hängt an der Leine! Schaff {n} Punkte, dann ist er gefangen.', { f: hooked.f.name, n: c.pass }) + ' ' + s.info;
   }
@@ -4193,25 +4214,36 @@
     showSportResult(sp.s, sp.g, res);
   }
   function showSportResult(s, g, res) {
-    $('sport-hub').hidden = true; $('sport-play').hidden = false;
+    $('sport-hub').hidden = true; $('sport-play').hidden = false; $('sport').classList.add('playing');
     const box = $('sport-result'); box.hidden = false; box.replaceChildren();
-    const h = document.createElement('p'); h.className = 'sport-medal'; h.textContent = res.champ ? (res.score >= s.champ[g.mode] ? '🏆' : '👑') : res.medal ? SP_MEDAL[res.medal] : tr('Keine Medaille'); h.classList.toggle('none', !res.champ && !res.medal); box.append(h);
     $('sport-play').classList.add('done');
-    const p = document.createElement('p'); p.className = 'sport-score';
-    p.textContent = tr('{n} Punkte', { n: res.score }) + (res.champ ? '' : ' · ' + tr('Können {a} ({d})', { a: res.lv, d: (res.dLv >= 0 ? '+' : '') + res.dLv }));
-    box.append(p);
-    const q = document.createElement('p'); q.className = 'sub';
-    q.textContent = tr('+{c} Taler · +{x} EP', { c: fmtN(res.coins), x: res.xp }) + (res.scales ? ` · +${res.scales} 🐚` : '') + (res.half ? ' · ' + tr('(heute schon oft gespielt: halbe Belohnung)') : '');
-    box.append(q);
-    for (const st of res.newSt) { const li = document.createElement('p'); li.className = 'sport-stamp'; li.textContent = tr('🔖 Neuer Stempel: {s}', { s: st.txt }); box.append(li); }
-    for (const l of res.lines) { const li = document.createElement('p'); li.className = 'sport-line'; li.textContent = l; box.append(li); }
-    const row = document.createElement('div'); row.className = 'catch-actions';
-    const again = document.createElement('button'); again.className = 'btn'; again.textContent = tr('Nochmal');
+    const card = document.createElement('div'); box.append(card);
+    const el = (tag, cls, txt, to = card) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; to.append(e); return e; };
+    const won = res.champ && res.score >= s.champ[g.mode];
+    const tier = res.champ ? (won ? 'gold' : 'none') : ['none', 'bronze', 'silver', 'gold'][res.medal];
+    card.className = 'sr-card sr-' + tier;
+    el('div', 'sr-medal', res.champ ? (won ? '🏆' : '👑') : res.medal ? SP_MEDAL[res.medal] : '🎽');
+    el('p', 'sr-label', res.champ ? (won ? tr('Sieg gegen Kraul!') : tr('Kraul gewinnt')) : [tr('Keine Medaille'), tr('Bronze'), tr('Silber'), tr('Gold')][res.medal]);
+    const sc = el('p', 'sr-score'); el('b', '', fmtN(res.score), sc); el('span', '', tr('Punkte'), sc);
+    // the three medal marks of this mode and level, reached ones lit, so you see how close the next one was
+    if (!res.champ) {
+      const m = s.med[g.mode], f = s.lvMed ? s.lvMed[Math.min(2, g.lvl)] : 1, lad = el('div', 'sr-ladder');
+      for (let i = 0; i < 3; i++) { const t = Math.ceil(m[i] * f); el('span', res.score >= t ? 'on' : '', `${SP_MEDAL[i + 1]} ${fmtN(t)}`, lad); }
+    }
+    const chips = el('div', 'sr-chips');
+    if (!res.champ) el('span', 'sr-chip ' + (res.dLv > 0 ? 'up' : res.dLv < 0 ? 'down' : ''), tr('Können {a} ({d})', { a: res.lv, d: (res.dLv >= 0 ? '+' : '') + res.dLv }), chips);
+    el('span', 'sr-chip taler', tr('+{c} Taler', { c: fmtN(res.coins) }), chips);
+    el('span', 'sr-chip', tr('+{x} EP', { x: res.xp }), chips);
+    if (res.scales) el('span', 'sr-chip', `+${res.scales} 🐚`, chips);
+    if (res.half) el('p', 'sr-note', tr('(heute schon oft gespielt: halbe Belohnung)'));
+    for (const st of res.newSt) el('p', 'sr-stamp', tr('🔖 Neuer Stempel: {s}', { s: st.txt }));
+    for (const l of res.lines) el('p', 'sr-line', l);
+    const row = el('div', 'catch-actions sr-actions');
+    const again = el('button', 'btn', tr('Nochmal'), row);
     again.addEventListener('click', () => startSport(s.id, g.mode, g.lvl));
-    const back = document.createElement('button'); back.className = 'btn ghost'; back.textContent = tr('Zur Station');
+    const back = el('button', 'btn ghost', tr('Zur Station'), row);
     back.addEventListener('click', () => { sp = null; spView.id = s.id; renderSport(); });
     if (s.fishing) again.hidden = !sportOpen(s);
-    row.append(again, back); box.append(row);
     if (res.medal || res.newSt.length) { sfx.coin(); setTimeout(() => sfx.coin(), 180); }
   }
   // the tournament counts island catches; called from land_catch
@@ -4246,7 +4278,7 @@
     SPORT_BG.forEach(worldImg);
     if (sp && !sp.done) return;
     sp = null;
-    $('sport-play').hidden = true; $('sport-hub').hidden = false;
+    $('sport-play').hidden = true; $('sport-hub').hidden = false; $('sport').classList.remove('playing');
     const hub = $('sport-hub'); hub.replaceChildren();
     const n = stampCount(), next = INSEL_BAYS.find(b => b.st > n);
     $('sport-title').textContent = tr('🏅 Sportstationen');
@@ -4318,15 +4350,14 @@
     const bar = document.createElement('span'); bar.className = 'bar'; const bi = document.createElement('i'); bi.style.width = (r.lv / 25) + '%'; bar.append(bi);
     const skv = document.createElement('b'); skv.textContent = `${r.lv} / 2500`;
     sk.append(skl, bar, skv);
-    const best = document.createElement('div'); best.className = 'sport-best';
-    best.textContent = tr('Bestwerte: {b}', { b: s.modes.map((m, i) => `${m} ${r.best[i] | 0}`).join(', ') });
-    head.append(info, sk, best); hub.append(head);
+    head.append(info, sk); hub.append(head);
     const mk = (txt, on, fn, cls = 'btn') => { const b = document.createElement('button'); b.className = cls; b.textContent = txt; b.disabled = !on; b.addEventListener('click', fn); return b; };
     for (let m = 0; m < 2; m++) {
       const box = document.createElement('div'); box.className = 'sport-mode';
       const mOpen = m === 0 || (s.mode2 ? s.mode2() : r.lv >= 300);
       const lab = document.createElement('b'); lab.textContent = s.modes[m];
       if (!mOpen) { const lk = document.createElement('small'); lk.textContent = s.mode2 ? tr('🔒 alle 30 Punkte') : tr('🔒 Können 300'); lab.append(lk); }
+      else if (!s.fishing || r.best[m]) { const bw = document.createElement('em'); bw.className = 'sport-bw'; bw.textContent = tr('Bestwert {n}', { n: fmtN(r.best[m] | 0) }); lab.append(bw); }
       const row = document.createElement('div'); row.className = 'sport-row';
       let first = true;
       for (let l = 0; l < 3; l++) { const ok = mOpen && r.lv >= SP_MIN[l]; row.append(mk(ok ? SP_LV[l] : `🔒 ${SP_LV[l]}`, ok, () => startSport(s.id, m, l), ok && first ? 'btn' : 'btn ghost')); if (ok) first = false; }

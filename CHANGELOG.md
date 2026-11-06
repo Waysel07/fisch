@@ -2,9 +2,17 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
-## 06.11.2026 · `2026-11-06-2`
+## 06.11.2026 · `2026-11-06-3`
 
 - 🎀 New fish at the dock: the Fischeln Velvet Fish (rare). It comes from Fischeln in Krefeld, the city of velvet and silk, shines like velvet and wears a tie of Krefeld silk. It has its own page in the Fishdex.
+
+## 06.11.2026 · `2026-11-06-2`
+
+- 🧭 A tidier top bar: coins and level, time and weather, and the menu now sit in three fixed bars instead of many separate boxes. “Saved” shows up small in the bottom right, and on a phone held upright the sea sits right under the bar.
+- 🛒 The shop tabs sit side by side as an even block, with your coins next to them.
+- 🏅 Bigger minigames: during a round the playing field is as large as your screen allows, and it now fits completely on a phone in landscape.
+- 🥇 A new result card after every round: in the colour of your medal, with a big score, the three medal marks (how close was the next one?), skill, coins and XP. On every station the best score sits right next to its mode.
+- 💪 The power gauge in Frisbee and the breath in Archery are now proper framed pixel gauges; when your power is full, the frame flashes.
 
 ## 06.11.2026 · `2026-11-06-1`
 
