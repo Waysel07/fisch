@@ -348,7 +348,7 @@ The expected score of every mode grows by about half its base per 1000 skill (`e
 
 All of these are opt-in. Without them, progress stays in the browser's `localStorage` (`fischen-save-v1`, see `datenschutz.html`, section 5).
 
-- **Leaderboard** (🏆): sends a nickname and scores to `api/leaderboard.js`. The boards are Taler, Fisch der Woche (biggest non-junk catch this week, its own key per week; last week's top 3 get the Wochensieger-Kappe), total rebirths, Fischdex, diamond medals, biggest catch, Monster catches, Odfisch wins, prestige, Sportler (sum of sport skill) and Taler spent. Names that fail the filter in `_names.js` are shown as ???.
+- **Leaderboard** (🏆): sends a nickname and scores to `api/leaderboard.js`. The boards are Taler, Fisch der Woche (biggest non-junk catch this week, its own key per week; last week's top 3 get the Wochensieger-Kappe), total rebirths, Fischdex, diamond medals, biggest catch, Monster catches, Odfisch wins, prestige, Sportler (sum of sport skill) and Taler spent. Names that fail the filter in `_names.js` are shown as ???. Tapping a name (or „Mein Profil“) opens a **player profile**: the character in its look, rank, title, level, play hours, join date, biggest catch, favourite fish and every board score with its place. The client sends this as `prof` with each submit; the server keeps only whitelisted fields (`cleanProf`) under `lb:prof:<pub>`.
 - **Ideenbrett** (💡): catching the rare Ideenfisch gives one idea slip (`ideaTix`). A slip pins an idea (8–160 characters) to a public board in `api/ideas.js`, under the leaderboard name or „Anonym“. Everyone votes ▲ or ▼, once per idea (random voter ID `ideaId`, the server stores only a hash prefix); the board sorts by „Beliebt“ (up − down) or „Neu“. Ideas with swear words are refused, at most 6 per player per 8 hours, 200 are kept, each expires after 180 days.
 - **Cloud save** (☁️): a secret key stores a copy of the save, so it can be loaded on another device. It's stored under the key's SHA-256 with a 180-day TTL.
 - **Lobbies** (👥): up to 8 anglers share a 4-letter code or a `?lobby=CODE` link. Everyone sees the others on the dock, a feed of catches and a scoreboard of Taler fished since joining. Chat messages ride along with each sync and appear as speech bubbles. The server keeps the last 30 per lobby and stars out words from the name blocklist.
@@ -417,7 +417,7 @@ All functions use Upstash Redis through its REST pipeline.
 
 | Endpoint | Purpose |
 |---|---|
-| `api/leaderboard.js` | Scores with plausibility limits per board. `DELETE {id, admin}` removes an entry. `POST {action: 'stats', admin}` returns totals only: entries per board and how prestige and rebirths are spread. |
+| `api/leaderboard.js` | Scores with plausibility limits per board. `DELETE {id, admin}` removes an entry (and its profile). `GET ?p=<pub>` returns one player's profile with every board score and place. `POST {action: 'stats', admin}` returns totals only: entries per board and how prestige and rebirths are spread. |
 | `api/save.js` | Cloud saves. `POST {action: 'gift', key, hours, admin}` gifts up to 1 000 h of play time, stored under `sv:gift:<hash>`. The game claims it on its next sync (`put` with `claim: true`). |
 | `api/lobby.js` | Lobbies, chat, catch feed and the shared boss fight |
 | `api/jackpot.js` | The slot machine's shared jackpot pot. `GET` returns `{pot, last}`; `POST {action: 'spin', stake, name?}` adds half of the stake, rolls the jackpot and empties the pot atomically (`GETSET`) when it is cracked. 60 spins per minute per hashed IP. |

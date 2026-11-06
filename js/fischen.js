@@ -235,6 +235,10 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-06-7', date: '06.11.2026', items: [
+      '👤 Spielerprofile: Tippe in der Bestenliste auf einen Namen und sieh dir das Profil an – Spielfigur, Rang, Titel, Level, Spielzeit, größter Fang, Lieblingsfisch und alle Platzierungen.',
+      '🙋 Mit „Mein Profil“ in der Bestenliste siehst du, was andere von dir sehen. Dein Profil erscheint beim nächsten Spielen.',
+    ] },
     { id: '2026-11-06-6', date: '06.11.2026', items: [
       '💡 Neuer Fisch am Steg: der Ideenfisch (selten). Wer ihn fängt, bekommt einen Ideen-Zettel und darf eine Idee ans neue Ideenbrett am Steg hängen (Taste I).',
       '👍 Am Ideenbrett stimmen alle öffentlich mit ▲ und ▼ über die Ideen ab, sortiert nach „Beliebt“ oder „Neu“.',
@@ -4780,7 +4784,7 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'sport', 'ideen']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'sport', 'ideen', 'profil']) $(id).hidden = true;
     if (sp && sp.drill) drillEnd(-1); // leaving a catch drill loses the fish
     if (sp && !sp.done) sp = null; // leaving a running station ends it without a result
     if (window.speechSynthesis) window.speechSynthesis.cancel();
@@ -6736,20 +6740,94 @@
     return j;
   }
   const TAMPER_MSG = () => tr('Dieser Spielstand wurde von Hand verändert und kann nicht in die Bestenliste.');
+  // what others see on your profile card (api/leaderboard.js cleanProf)
+  function lbProfile() {
+    const lk = myLook(), mine = FISH.filter(f => f.r !== 'junk' && save.dex[f.id]);
+    const best = mine.reduce((a, f) => (save.dex[f.id].best || 0) > (a ? save.dex[a.id].best || 0 : -1) ? f : a, null);
+    const fav = mine.reduce((a, f) => (save.dex[f.id].n || 0) > (a ? save.dex[a.id].n || 0 : -1) ? f : a, null);
+    return {
+      lk: { t: lk.tier, h: lk.hat || '', j: lk.jacket || '', b: lk.bob || '', s: lk.skin || '', r: lk.hair || '' },
+      ti: myTitle() ? save.title : '', lv: save.lvl, rk: save.rebirthsTotal | 0, pr: save.prestige | 0, sp: profis(),
+      pt: Math.floor((save.playTime || 0) / 3600),
+      best: best ? { f: best.id, n: save.dex[best.id].best || 0 } : null,
+      fav: fav ? { f: fav.id, n: save.dex[fav.id].n || 0 } : null,
+    };
+  }
   async function lbSubmit(force) {
     if (!save.lb || LB.busy) return;
     if (save.tampered) { LB.err = TAMPER_MSG(); return; }
-    const sc = lbScores(), key = JSON.stringify(sc), since = Date.now() - (save.lbT || 0);
+    const sc = lbScores(), prof = lbProfile(), key = JSON.stringify([sc, prof]), since = Date.now() - (save.lbT || 0);
     if (key === save.lbKey || since < 55000 || (!force && since < 120000)) return;
     LB.busy = true; save.lbT = Date.now();
     try {
-      const j = await lbFetch('POST', { id: save.lb.id, token: save.lb.token, name: save.lb.name, scores: sc });
+      const j = await lbFetch('POST', { id: save.lb.id, token: save.lb.token, name: save.lb.name, scores: sc, prof });
       save.lbKey = key; save.lb.me = j.me; LB.ranks = j.ranks; LB.err = ''; persist();
     } catch (e) { LB.err = e.message; }
     LB.busy = false;
     if (!$('lb').hidden) renderLb();
   }
   setInterval(() => lbSubmit(), 130000);
+
+  // ------------------------------------------------------------------ Spielerprofile (GET /api/leaderboard?p=<me>)
+  const PROF = { me: null, data: null, err: '' };
+  async function openProfile(me, name) {
+    if (!me) return;
+    PROF.me = me; PROF.data = null; PROF.err = ''; PROF.name = name || '';
+    closeModals(); $('profil').hidden = false; renderProfile();
+    try {
+      const r = await fetch(LB_API + '?p=' + encodeURIComponent(me));
+      const j = await r.json().catch(() => ({}));
+      if (PROF.me !== me) return;
+      if (r.status === 404) PROF.err = tr('Für diesen Eintrag gibt es noch kein Profil. Es erscheint beim nächsten Spielen.');
+      else if (!r.ok) PROF.err = tr(j.error || 'Bestenliste gerade nicht erreichbar.');
+      else PROF.data = j;
+    } catch { PROF.err = tr('Keine Verbindung zum Server.'); }
+    if (!$('profil').hidden) renderProfile();
+  }
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+  function profFish(label, ref, fmt) {
+    const f = ref && FISH.find(x => x.id === ref.f);
+    const box = el('div', 'prof-fish');
+    box.append(el('small', '', label));
+    if (!f) { box.append(el('p', 'prof-none', '–')); return box; }
+    const img = el('img'); img.src = f.img; img.alt = ''; img.className = f.pixel ? 'pixel' : f.photo ? 'photo' : '';
+    box.append(img, el('b', '', f.name), el('span', '', fmt(ref.n)));
+    return box;
+  }
+  function renderProfile() {
+    const d = PROF.data, p = d && d.prof;
+    $('profil-name').textContent = d ? d.name : PROF.name || tr('Profil');
+    const body = $('profil-body');
+    if (!d) { body.replaceChildren(el('p', 'sub', PROF.err || tr('Lädt …'))); return; }
+    const head = el('div', 'prof-head');
+    const cv = el('canvas', 'prof-avatar');
+    const look = p ? { tier: p.lk.t, hat: p.lk.h, jacket: p.lk.j, bob: p.lk.b, skin: p.lk.s, hair: p.lk.r } : { tier: 0 };
+    const fr = playerFrames(look)[0][0];
+    cv.width = fr.width; cv.height = fr.height; cv.getContext('2d').drawImage(fr, 0, 0);
+    cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', tr('Spielfigur von {name}', { name: d.name }));
+    const info = el('div', 'prof-info');
+    if (p) {
+      info.append(el('p', 'prof-rank', presMark(p.pr) + rankOf(p.rk).name + (p.sp ? ' · ' + '🏅'.repeat(Math.min(9, p.sp)) : '')));
+      if (titleOf(p.ti)) info.append(el('p', 'prof-title', `„${titleOf(p.ti)}“`));
+      info.append(el('p', 'sub', tr('Level {l} · {h} Std gespielt', { l: p.lv, h: p.pt.toLocaleString(I18N.locale) })));
+    }
+    if (d.since) info.append(el('p', 'sub', tr('In der Bestenliste seit {d}', { d: new Date(d.since).toLocaleDateString(I18N.locale) })));
+    if (save.lb && save.lb.me === d.me) info.append(el('p', 'prof-me', tr('Das bist du!')));
+    head.append(cv, info);
+    const fishes = el('div', 'prof-fishes');
+    if (p) fishes.append(profFish(tr('🏆 Größter Fang'), p.best, n => n.toLocaleString(I18N.locale) + ' cm'), profFish(tr('❤️ Lieblingsfisch'), p.fav, n => tr('{n}× gefangen', { n: n.toLocaleString(I18N.locale) })));
+    const stats = el('ul', 'prof-stats');
+    for (const [id, t] of Object.entries(LB_TABS)) {
+      const b = d.boards[id]; if (!b) continue;
+      const li = el('li');
+      li.append(el('small', '', t.label), el('b', '', t.fmt(b.score)), el('span', 'prof-place', b.rank ? tr('Platz {a} von {b}', { a: b.rank.toLocaleString(I18N.locale), b: b.of.toLocaleString(I18N.locale) }) : ''));
+      stats.append(li);
+    }
+    if (!stats.childElementCount) stats.append(el('li', 'empty', tr('Noch keine Werte.')));
+    body.replaceChildren(head, ...(p ? [fishes] : []), stats);
+  }
+  $('profil-back').addEventListener('click', () => { $('profil').hidden = true; toggleModal('lb'); });
+  $('lb-myprof').addEventListener('click', () => { if (save.lb && save.lb.me) openProfile(save.lb.me, save.lb.name); });
   // Fisch der Woche: the top 3 of last week get the Wochensieger-Kappe (and a toast), once per week
   function checkWeekWin(j) {
     if (!save.lb || !save.lb.me || !j || !j.prev || !Array.isArray(j.prev.woche) || !j.week) return;
@@ -6782,7 +6860,8 @@
     else list.replaceChildren(...rows.map((r, i) => {
       const li = document.createElement('li'); if (save.lb && r.me === save.lb.me) li.className = 'mine';
       const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = ['🥇', '🥈', '🥉'][i] || i + 1;
-      const n = document.createElement('b'); n.textContent = r.name;
+      const n = document.createElement('button'); n.type = 'button'; n.className = 'lb-who'; n.textContent = r.name;
+      n.title = tr('Profil ansehen'); n.addEventListener('click', () => openProfile(r.me, r.name));
       const sc = document.createElement('span'); sc.className = 'score'; sc.textContent = LB_TABS[LB.tab].fmt(r.score);
       li.append(pos, n, sc); return li;
     }));
