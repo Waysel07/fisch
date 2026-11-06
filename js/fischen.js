@@ -235,6 +235,10 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-06-9', date: '06.11.2026', items: [
+      '🏝️ Sonneninsel: Alle fünf Buchten sind neu gemalt – ferne Inseln im Dunst, Spiegelungen im Wasser, Lichtnetze unter der Oberfläche und ein Riff voller Korallen, Seesterne und Seeigel.',
+      '🗺️ Die Inselkarte (Rundflug und Pelles Karte) hat jetzt Riffe im Flachwasser, doppelte Brandung, nassen Sand, mehr Höhenlicht und dichteren Dschungel mit Schatten.',
+    ] },
     { id: '2026-11-06-8', date: '06.11.2026', items: [
       '⏹ Sportstationen: Neuer Knopf „Beenden & werten“ – beende eine Runde jederzeit, deine Punkte bis dahin zählen fürs Ergebnis. Kein Warten mehr, bis die Zeit beim Inselflug abläuft.',
     ] },
