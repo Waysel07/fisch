@@ -276,6 +276,29 @@ S('muschelrock', 26, 8, (c) => {
   c.poly([16, 7, 19, 4, 24, 5, 25, 7], '#475569')
 })
 
+// Versunkener alter Computer im Schlamm beim Wrack: gedämpfte Farben, damit man ihn leicht übersieht.
+// Der Cursor blinkt zur Laufzeit (drawPcAlt), die Stelle steht dort als PC_ALT.
+S('pc_alt', 30, 24, (c) => {
+  const EDGE = '#16263a', CASE = '#6f8583', LITE = '#8ea39b', DARK = '#4b6270', GLASS = '#0f2a2a', TEXT = '#2f8f6a'
+  const SAND = '#5f8a8e', SAND2 = '#4a7180', WEED = '#2f7a5e', WEED2 = '#1f5c4b', KEY = '#546c74'
+  c.poly([3, 3, 23, 0, 26, 17, 6, 21], EDGE)
+  c.poly([4, 4, 22, 1, 25, 16, 7, 20], CASE)
+  c.line(4, 4, 22, 1, LITE)
+  c.line(7, 19, 25, 16, DARK); c.line(22, 2, 25, 15, DARK)
+  c.poly([7, 6, 20, 4, 22, 13, 9, 15], EDGE)
+  c.poly([8, 7, 19, 5, 21, 12, 10, 14], GLASS)
+  c.line(10, 8, 16, 7, TEXT); c.line(11, 10, 18, 9, TEXT); c.line(11, 12, 14, 11, TEXT)
+  c.px(23, 15, '#b45309')
+  c.poly([20, 19, 29, 17, 29, 20, 20, 22], EDGE)
+  c.poly([21, 19, 28, 18, 28, 20, 21, 21], KEY)
+  c.px(23, 19, EDGE); c.px(25, 19, EDGE); c.px(27, 18, EDGE)
+  c.ellipse(13, 24, 13, 5, SAND)
+  c.ellipse(26, 24, 5, 3, SAND); c.hline(6, 21, 4, SAND2); c.hline(23, 22, 3, SAND2)
+  c.line(2, 22, 1, 13, WEED); c.line(1, 13, 3, 8, WEED2); c.line(4, 22, 5, 16, WEED2)
+  c.line(28, 22, 27, 15, WEED); c.line(27, 15, 29, 10, WEED2)
+  c.px(5, 8, LITE); c.px(6, 12, DARK); c.px(24, 6, DARK)
+}, false)
+
 // ---------------------------------------------------------------- Köder (16×16)
 const hook = (c, x, y) => { c.vline(x, y, 3, '#94a3b8'); c.hline(x, y + 3, 3, '#cbd5e1'); c.vline(x + 3, y + 1, 2, '#cbd5e1') }
 function lure(c, A, a, W, P) {

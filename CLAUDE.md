@@ -1,7 +1,7 @@
 # fisch.ing – Regeln
 
-- **Jeder neue Fisch im Spiel „Fischen!“ braucht eine eigene Seite.** Lege dafür eine `seiten/<name>.html` im Stil der übrigen Fischseiten an (`../css/style.css`, `.card`, Bild aus `../img/`, kurzer Text, `.links`-Navigation zu `../index.html` und `../fischen.html`, `/js/fish.js`, Datenschutz-Footer) und trage sie im `FISH`-Eintrag in `js/fischen.js` als `page: 'seiten/<name>.html'` ein. Der Fischdex verlinkt die Seite dann automatisch. Das gilt nur für neue Fische; bestehende Fische ohne eigene Seite bleiben so.
-- **Ordner:** Bilder in `img/`, Töne in `sounds/`, Schriften in `fonts/`, Stylesheets in `css/`, Skripte in `js/`, Unterseiten in `seiten/`. Im Hauptordner bleiben nur `index.html`, `fischen.html`, `datenschutz.html`, `apple-touch-icon.png`, `vercel.json`, `api/` und die Doku. Wird eine Datei verschoben oder umbenannt, kommt in `vercel.json` eine Weiterleitung von der alten Adresse dazu.
+- **Neue Fische bekommen keine eigene Seite.** Lege für einen neuen Fisch keine `seiten/<name>.html` an und setze im `FISH`-Eintrag kein `page`. Die vorhandenen Fischseiten bleiben, der Fischdex verlinkt sie weiter.
+- **Ordner:** Bilder in `img/`, Töne in `sounds/`, Schriften in `fonts/`, Stylesheets in `css/`, Skripte in `js/`, Unterseiten in `seiten/`. Im Hauptordner bleiben nur `fischen.html`, `datenschutz.html`, `apple-touch-icon.png`, `vercel.json`, `api/` und die Doku. Wird eine Datei verschoben oder umbenannt, kommt in `vercel.json` eine Weiterleitung von der alten Adresse dazu.
 - **Sprachen:** Texte im Spiel werden auf Deutsch geschrieben und mit `tr('…')` markiert; die englische Fassung kommt in `js/fischen-i18n.js` (Schlüssel = deutscher Text).
 - Spielstand-Felder, die neu im `localStorage` oder auf dem Server landen, müssen in `datenschutz.html` (Abschnitte 5–8) erwähnt werden.
 - **Patch Notes:** Jedes Update, das Spieler im Spiel bemerken, bekommt einen neuen Eintrag ganz oben in `PATCH_NOTES` in `js/fischen.js` (neue `id`, Datum, kurze Stichpunkte auf Deutsch; die englische Fassung kommt in `js/fischen-i18n.js`). Er erscheint als neue Ausgabe der Steg-Zeitung am Steg. Derselbe Eintrag kommt auf Englisch auch ganz oben in `CHANGELOG.md`.
@@ -123,10 +123,9 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
 
 - **Neuer Fisch:**
   1. Sprite nach `img/` (eigene Pixelgrafik oder ein Bild des Nutzers).
-  2. `FISH`-Eintrag (`id`, `name`, `img`, `r`, `min`/`max`, `val`, `say`, `desc`, `page`, optional `pixel`/`photo`/`whole` (Foto nicht beschneiden)/`map`/`weather`/`night`/`far`/`needs`, Fangbedingungen `bait`/`hours`/`crits`/`minRod`).
-  3. `seiten/<name>.html` anlegen.
-  4. EN-Texte für `name`, `say` und `desc`.
-  5. Falls sinnvoll: Dex-Hinweis, Patch Notes, README.
+  2. `FISH`-Eintrag (`id`, `name`, `img`, `r`, `min`/`max`, `val`, `say`, `desc`, optional `pixel`/`photo`/`whole` (Foto nicht beschneiden)/`map`/`weather`/`night`/`far`/`needs`, Fangbedingungen `bait`/`hours`/`crits`/`minRod`).
+  3. EN-Texte für `name`, `say` und `desc`.
+  4. Falls sinnvoll: Dex-Hinweis, Patch Notes, README.
 - **Neues Laden-Item, neue Kosmetik oder neues Talent:**
   1. Eintrag in `RODS`/`BAITS`/`SNACKS`/`COSMETICS`/`PERKS` (mit `lvl`/`reb` für Sperren).
   2. Ein Icon über `ICONS` (`ROD_COLORS`, `BAIT_ART`, Kosmetik-Paletten `col`).

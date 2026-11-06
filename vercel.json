@@ -96,8 +96,23 @@
       ]
     }
   ],
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/fischen.html"
+    }
+  ],
   "redirects": [
-    {"source": "/api/:path*", "destination": "https://api.fisch.ing/api/:path*", "permanent": false},
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://api.fisch.ing/api/:path*",
+      "permanent": false
+    },
     {
       "source": "/admin",
       "destination": "/seiten/admin.html",

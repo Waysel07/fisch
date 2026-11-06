@@ -2,6 +2,11 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 07.11.2026 · `2026-11-07-2`
+
+- 🎣 fisch.ing now opens the game straight away.
+- 🖥️ The old home page isn't gone: somewhere in this world an old computer is still flickering. Look closely.
+
 ## 07.11.2026 · `2026-11-07-1`
 
 - 👥 Lobbies are now live: other anglers, chat, catches and the Odfisch's health bar update in about a second instead of every three.

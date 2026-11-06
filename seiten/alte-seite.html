@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fisch!</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="../css/style.css">
   <style>
     #bg-video {
       position: fixed; inset: 0; z-index: -1;
@@ -22,26 +22,26 @@
     #fish { cursor: pointer; }
     #tisch { color: inherit; text-decoration: none; }
   </style>
-  <link rel="stylesheet" href="css/legal.css">
+  <link rel="stylesheet" href="../css/legal.css">
 </head>
 <body>
 
   <div id="bg-video"></div>
 
   <select class="lang" autocomplete="off" aria-label="Sprache" onchange="location.href = this.value">
-    <option value="index.html" selected>🇩🇪 Deutsch</option>
-    <option value="seiten/frenchfish.html">🇫🇷 Français</option>
+    <option value="alte-seite.html" selected>🇩🇪 Deutsch</option>
+    <option value="frenchfish.html">🇫🇷 Français</option>
   </select>
 
   <main class="card">
-    <h1><a id="tisch" href="seiten/tisch.html">Fisch</a>!</h1>
+    <h1><a id="tisch" href="tisch.html">Fisch</a>!</h1>
     <p>Jetzt neu: Fisch 2!</p>
-    <img id="fish" src="img/fsh-spin.gif" alt="Drehender Fisch" title="Klick mich!">
+    <img id="fish" src="../img/fsh-spin.gif" alt="Drehender Fisch" title="Klick mich!">
     <nav class="links">
-      <a href="seiten/fish2.html">Fisch 2!</a>
-      <a href="seiten/rick.html">Der Ast</a>
-      <a href="seiten/fish3.html">Fisch 3!</a>
-      <a href="fischen.html">Fischen!</a>
+      <a href="fish2.html">Fisch 2!</a>
+      <a href="rick.html">Der Ast</a>
+      <a href="fish3.html">Fisch 3!</a>
+      <a href="../fischen.html">Fischen!</a>
     </nav>
   </main>
 
@@ -74,7 +74,7 @@
         <div role="dialog" aria-modal="true" aria-label="YouTube-Video laden?">
           <p>Beim Abspielen wird ein Video von YouTube (Google Ireland Ltd.) geladen.
              Dabei wird u.&nbsp;a. deine IP-Adresse an Google übertragen, ggf. auch in die USA.
-             Mehr dazu in der <a href="datenschutz.html">Datenschutzerklärung</a>.</p>
+             Mehr dazu in der <a href="../datenschutz.html">Datenschutzerklärung</a>.</p>
           <button class="yes">Video laden</button>
           <button class="no">Abbrechen</button>
         </div>`;
@@ -102,6 +102,6 @@
   </script>
 
 <script src="/js/fish.js" defer></script>
-<footer class="legal"><a href="datenschutz.html">Datenschutz</a></footer>
+<footer class="legal"><a href="../datenschutz.html">Datenschutz</a></footer>
 </body>
 </html>

@@ -17,7 +17,7 @@ The source of [fisch.ing](https://www.fisch.ing): a small, silly fish website an
 
 ## The website
 
-A static site with no build step. `index.html` is the home page, and `seiten/` holds one page per fish plus a few extras:
+A static site with no build step. `/` serves the game (`fischen.html`, through a rewrite in `vercel.json`). The old home page is `seiten/alte-seite.html`, reached in the game through a sunken computer (`PC_ALT`, on the lakebed by the wreck) and through the „Fisch!“ link on the fish pages. `seiten/` holds one page per fish plus a few extras:
 
 - **`seiten/fish5.html`** has Text to Fisch: the Lippenfisch reads out what you type with the browser's speech synthesis. It uses only an on-device German voice, so the text never leaves the browser. „Fischisch“ is the older fish language made of slices of `sounds/fish.mp3`, and also the fallback on devices without a German voice. The same page has the magische Miesmuschel: ask a question, pull the string, get one of a few fixed answers.
 - **`seiten/snake.html`** is a Snake game.
@@ -374,7 +374,7 @@ While the tab is visible, a client syncs once a second if something about it cha
 
 | Path | Contents |
 |---|---|
-| `index.html`, `fischen.html`, `datenschutz.html` | Top-level pages |
+| `fischen.html`, `datenschutz.html` | Top-level pages |
 | `seiten/` | All other pages, one per fish |
 | `js/fischen.js` | The game, one large IIFE |
 | `js/fischen-i18n.js` | English texts, keyed by the German original |
@@ -405,7 +405,7 @@ node --check js/fischen.js js/fischen-i18n.js api/*.js
 
 ### Deployment
 
-Import the repo on Vercel with Framework Preset "Other" and leave the build and output settings empty. `index.html` is served at `/`.
+Import the repo on Vercel with Framework Preset "Other" and leave the build and output settings empty. `vercel.json` serves `fischen.html` at `/`.
 
 | Environment variable | Purpose |
 |---|---|
