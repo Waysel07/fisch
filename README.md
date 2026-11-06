@@ -339,6 +339,7 @@ The expected score of every mode grows by about half its base per 1000 skill (`e
 - **Champion duel** against Kapitän Kraul, a walrus in a tracksuit, opens at skill 1500 and 26 stamps. A win gives a trophy (`trophies`, shown on a shelf at the dock), a pearl and +3 % Taler everywhere.
 - **Stamps** (`stamps`): 5 per station, 45 in total. Each pays Taler, XP and Schuppen. All 45 give the title Inselchampion and +5 % Taler everywhere.
 - **Rundflug** (`ipoints`): 30 named viewpoints over the island plus 10 at night. Found ones stay found.
+- **Stop & score** (`#sport-stop`): a button on the canvas ends a running round at once; the points so far are scored like a normal end (in a catch drill they decide whether the fish is landed).
 - **Daily cap** (`sportDay`): after 10 rounds per station per day, Taler and XP are halved. Skill and stamps are not capped.
 - `sportBonus()` (Profi, trophies, all stamps) goes into the collection group of `coinMult()`, up to +50 %.
 
@@ -433,6 +434,7 @@ It only makes cheating harder. Every save carries a checksum (`sig`, with `fisch
 
 ### Art
 
+- **Fishing worlds:** `img/pxl/welt.px.js` paints the dock, sea, cave and the five Sun Island bays (`img/welt-*.png`, 768×432, sky left transparent): `node img/pxl/render.js welt [name …]`. Each bay has hazy distant islands, its own backdrop with beach and a reflection, caustics under the surface, fading reef ridges and a coral reef on a rippled sand floor.
 - **Sport scenes and island map:** `img/pxl/sport.px.js` paints the station backdrops (`img/sport-*.png`) and the island map (`img/insel-karte.png`, `insel-karte-mini.png`) with the shared painter `img/pxl/maler.inc.js`: `node img/pxl/render.js sport`. The game draws moving things on top and falls back to drawn shapes while an image loads. The map has towns and places between the 30 viewpoints (`areas()`: harbour town at the Strandplatz, resort, airstrip, stadium, fields, orchards, lava channel, coast with umbrellas, boats and islets); `miniAreas()` copies them into the small map. Moving props in the scenes are lit sprites painted once at runtime (`litEll`, `BALLS`, `drawTarget`), spectators are `ART.sp_fan_0/1` recoloured per seat (`sfan`, `crowd`), and `skyLife()` adds gulls and a far sail.
 - **Sprites:** the original pixel sprites are drawn as code in `img/pxl/` (pxl DSL). `node img/pxl/render.js fisch <name …>` renders them to `img/<name>.png` without any npm packages; sprites with `lit: true` (the Sun Island fish) get the shared top light, belly shade and tinted outline from `light()`/`selout()`.
   - `fisch.px.js` renders the PNGs in `img/`.

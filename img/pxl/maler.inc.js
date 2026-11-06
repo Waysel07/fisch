@@ -49,7 +49,7 @@ class FB {
     }
   }
 }
-function art(name, w, h, paint) { sprite(name, { w, h }, (c) => { const f = new FB(w, h); paint(f); f.flush(c) }) }
+function art(name, w, h, paint) { sprite(name, { w, h, scale: 1 }, (c) => { const f = new FB(w, h); paint(f); f.flush(c) }) }
 
 // Wasser/Lava: Farbbänder mit welligen Kanten, an den Übergängen waagerechte Striche statt Schachbrett
 function bandIdx(x, y, y0, y1, n, p, wob, s) {

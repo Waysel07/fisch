@@ -254,6 +254,9 @@ const height = (xx, yy) => { const g = geo(xx, yy); if (g.e <= 0) return 0; retu
 const OCEAN = ['#2fa9c4', '#2696b6', '#1e84a6', '#187394', '#136383', '#0f5472']
 const SHALLOW = ['#9af0e2', '#7fe6da', '#64d9d0', '#4fcbc8']
 const JUNGLE = ['#4ade80', '#22c55e', '#16a34a', '#15803d', '#166534', '#14532d']
+const CANOPY_B = ['#a3e635', '#84cc16', '#65a30d', '#4d7c0f', '#365314']
+const CANOPY_C = ['#6ee7b7', '#34d399', '#10b981', '#047857', '#064e3b']
+const mixHex = (a, b, t) => { const x = mixI(C(a), C(b), t); return '#' + (x & 0xffffff).toString(16).padStart(6, '0') }
 const MEADOW = ['#bef264', '#a3e635', '#84cc16', '#65a30d', '#4d7c0f']
 const ROCK = ['#d6d3d1', '#a8a29e', '#8a8580', '#6b6560', '#4f4a45']
 
@@ -263,15 +266,29 @@ function paintMap(f, s, detail) {
     const [xx, yy] = at(X, Y), g = geo(xx, yy), n = vn2(X * .5, Y * .5, 70)
     let c
     if (g.e < 0) {
-      const d = -g.e
-      if (d < 3 / s * .34 && hash(Math.floor(X / 2) * 7 + Y, 73) > .3) c = '#ffffff' // Brandung
-      else if (d < 44) { const k = d / 44 + (n - .5) * .25; c = SHALLOW[Math.max(0, Math.min(3, Math.floor(k * 4)))]; if (d > 30 && (X + Y) % 2 && n > .5) c = OCEAN[0]; if (detail && d > 4 && d < 34 && d < 26 && Math.abs(vn2(X * .07, Y * .1, 96) - .5) < .012 && (X + Y) % 2) c = '#c4f7ee' }
-      else { const k = Math.min(1, (d - 44) / 240) + (vn2(X * .03, Y * .03, 74) - .5) * .18; c = OCEAN[Math.max(0, Math.min(5, Math.floor(k * 6)))] }
-    } else if (g.e < 3) c = '#e3c98f'
+      const d = -g.e, ws = detail ? 1 : 3, dth = ((X & 1) * 2 + (Y & 1)) / 4 - .375 // geordnetes Dithering zwischen den Tönen
+      if (d < 2.4 * ws && hash(Math.floor(X / 2) * 7 + Y, 73) > .25) c = '#ffffff' // Brandung, zweite Schaumlinie etwas weiter draußen
+      else if (detail && d > 6 && d < 8.5 && Math.sin(Math.atan2(yy - cy, xx - cx) * 40 + d) > .2) c = '#e6fffb'
+      else if (d < 50) {
+        const k = d / 50 + (n - .5) * .12 + dth * .2
+        c = SHALLOW[Math.max(0, Math.min(3, Math.floor(k * 4)))]
+        // Riffflecken und Sandgrund, schräg von oben links beleuchtet
+        const rf = vn2(xx * .06, yy * .06, 94)
+        if (d > 12 && d < 42 && rf > .66) { const t = hash(X * 3 + Y * 7, 95) + (rf - .66) * 2.5 - .3; c = t > 1.08 && detail ? ['#f9a8d4', '#fdba74', '#c4b5fd'][(X + Y) % 3] : t > .55 ? '#2a9a91' : t > .25 ? '#3fb8ad' : '#58c9bc' }
+        else if (d > 10 && d < 40 && rf > .62 && rf < .64) c = '#8fe9db'
+        if (detail && d > 4 && d < 26 && Math.abs(vn2(X * .07, Y * .1, 96) - .5) < .012 && (X + Y) % 2) c = '#c4f7ee'
+      } else {
+        const k = Math.min(1, (d - 50) / 230) + (vn2(X * .03, Y * .03, 74) - .5) * .14 + dth * .16
+        c = OCEAN[Math.max(0, Math.min(5, Math.floor(k * 6)))]
+        // Schlagschatten der Insel nach rechts unten
+        const sg = geo(xx - 26, yy - 18); if (sg.e > -30 && d < 110) c = mixHex(c, '#0b3d55', .25 * Math.min(1, (sg.e + 30) / 30))
+      }
+    } else if (g.e < 2) c = '#c9a96a' // nasser Sand
+    else if (g.e < 4) c = '#e3c98f'
     else if (g.e < 10) c = n > .6 ? SAND[0] : n < .25 ? SAND[2] : SAND[1]
     else {
       // Höhenlicht von links oben aus dem Höhenfeld
-      const e2 = detail ? .7 : 1.5, sh = (height(xx - e2, yy - e2) - height(xx + e2, yy + e2)) * (detail ? 1.2 : .7)
+      const e2 = detail ? .7 : 1.5, sh = (height(xx - e2, yy - e2) - height(xx + e2, yy + e2)) * (detail ? 1.6 : .45)
       const tone = (pal, base) => pal[Math.max(0, Math.min(pal.length - 1, base - Math.round(sh) + (detail ? (n > .7 ? -1 : n < .2 ? 1 : 0) : 0)))]
       g.h += (vn2(xx * .05, yy * .05, 82) - .5) * .08 + (detail && (X + Y) % 2 ? .006 : 0)
       if (g.r < 18) c = g.r < 14 ? (n > .55 ? '#5eead4' : '#2dd4bf') : '#0f766e'
@@ -279,6 +296,8 @@ function paintMap(f, s, detail) {
       else if (g.h < .22) c = tone(ROCK, 1)
       else if (g.h < .42) c = tone(MEADOW, 2)
       else c = tone(JUNGLE, 3)
+      if (detail && g.h >= .22 && g.h < .42 && Math.abs(Math.sin(xx * .35 + yy * .9 + vn2(xx * .05, yy * .05, 88) * 6)) < .08) c = tone(MEADOW, 1) // Grasstreifen
+      if (detail && g.r >= 34 && g.h < .22 && vn2(xx * .12, yy * .12, 89) > .72) c = tone(ROCK, 3) // Geröll
       if (xx < cx - 30 && Math.abs(yy - riverY(xx)) < 2.5 + (cx - xx) / 140) c = Math.abs(yy - riverY(xx)) < 1.5 + (cx - xx) / 200 ? (hash(X + Y * 3, 75) > .8 ? '#e0f2fe' : '#7dd3fc') : '#38bdf8'
     }
     f.set(X, Y, C(c))
@@ -293,13 +312,14 @@ function paintMap(f, s, detail) {
   }
   for (let i = 0; i < 120; i++) { const k = .2 + i / 120 * .6, a = BAY_ANG[0] + Math.sin(i * .25) * .12, X = (cx + Math.cos(a) * isleR(a) * 1.2 * k) * s, Y = (cy + Math.sin(a) * isleR(a) * .8 * k) * s; if (i % 3) f.set(X, Y, C('#d6b97a')) }
   // Baumkronen im Dschungel: runde Tupfen mit Licht oben links
-  const blobs = detail ? 1400 : 0
+  const blobs = detail ? 2600 : 0
   for (let i = 0; i < blobs; i++) {
     const xx = hash(i, 78) * MW, yy = hash(i, 79) * MH, g = geo(xx, yy)
     if (g.e < 14 || g.h + (hash(i, 83) - .5) * .12 < .42 || g.r < 40) continue
     if (xx < cx - 30 && Math.abs(yy - riverY(xx)) < 8 + (cx - xx) / 140) continue
     const r = 3 + Math.round(hash(i, 80) * 3)
-    f.ell(xx + 1, yy + 2, r, r - 1, C(JUNGLE[5])); f.ell(xx, yy, r, r - 1, C(JUNGLE[3])); f.ell(xx - 1, yy - 1, r - 2, r - 2, C(JUNGLE[2])); f.set(xx - 2, yy - 2, C(JUNGLE[0]))
+    const P = hash(i, 84) < .25 ? CANOPY_B : hash(i, 84) < .4 ? CANOPY_C : JUNGLE
+    shadowEll(f, xx + 2, yy + 3, r, r - 1, .3); f.ell(xx, yy, r, r - 1, C(P[3])); f.ell(xx - 1, yy - 1, r - 1, r - 2, C(P[2])); f.ell(xx - 1, yy - 2, Math.max(1, r - 3), Math.max(1, r - 3), C(P[1])); f.set(xx - 2, yy - 2, C(P[0])); f.set(xx + r - 1, yy + 1, C(P[4]))
   }
   // Palmen an der Küste
   for (let i = 0; i < 90; i++) {
