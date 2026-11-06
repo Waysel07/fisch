@@ -1106,10 +1106,6 @@ button#btn-boss:hover { background: #be123c; }
 #sport-result { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .15rem; padding: .75rem; text-align: center; background: rgba(15, 23, 42, .86); color: #fff; overflow-y: auto; }
 #sport-result[hidden] { display: none; }
 #sport-result p { margin: 0; }
-.sport-medal { font-size: 2.6rem; line-height: 1.1; }
-.sport-score { font-family: 'Silkscreen', monospace; font-size: 1.1rem; color: var(--gold); }
-.sport-stamp { color: #fde68a; font-weight: 600; }
-.sport-line { color: #bbf7d0; font-size: .9rem; }
 #sport-result .sub { color: #cbd5e1; }
 /* hub and station page use the same inset wells as cards and quests elsewhere (--slot, ink frame) */
 .sport-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: .35rem .5rem; margin: .35rem 0 .1rem; }
@@ -1156,10 +1152,158 @@ button#btn-boss:hover { background: #be123c; }
 .sport-stamps li span:first-child { flex: none; width: 1.2em; text-align: center; }
 .sport-stamps li span + span { flex: 1; text-align: left; }
 .sport-stamps-h { font-family: var(--px); font-size: .8rem; color: #cbd5e1; margin-top: 1rem; }
-@media (max-width: 600px) {
-  #sport-result { position: static; margin-top: .5rem; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); }
-  #sport-play.done #sport-cv { display: none; }
-  .sport-medal { font-size: 2rem; }
-}
-.sport-medal.none { font-size: 1rem; font-family: "Silkscreen", monospace; color: #cbd5e1; }
 .sport-map { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; image-rendering: pixelated; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); margin: .4rem 0 .6rem; background: #0e7490; }
+
+/* =====================================================================
+   HUD bars: the pills sit in three framed bars (wallet, world, menu)
+   instead of a dozen loose boxes. Each pill is a cell; a 3px ink line
+   separates cells.
+   ===================================================================== */
+#hud { align-items: flex-start; }
+.hud-left { position: relative; align-items: flex-start; gap: .55rem; }
+.hud-group {
+  pointer-events: auto; display: flex; align-items: stretch; flex-wrap: nowrap; gap: 0;
+  background: var(--panel); margin: 3px;
+  box-shadow: 0 -3px 0 var(--ink), 0 3px 0 var(--ink), -3px 0 0 var(--ink), 3px 0 0 var(--ink),
+              inset 0 3px 0 var(--panel-hi), inset 0 -3px 0 var(--panel-lo), 0 6px 0 rgba(0,0,0,.35);
+}
+.hud-right.hud-group { flex-wrap: nowrap; }
+.hud-group > .pill {
+  margin: 0; background: transparent; box-shadow: none; min-height: 2.4rem; padding: .3rem .65rem;
+}
+.hud-group > .pill + .pill { border-left: 3px solid var(--ink); }
+.hud-group > button.pill:hover, .hud-group > a.pill:hover { background: rgba(255,255,255,.07); }
+.hud-group > button.pill:active, .hud-group > a.pill:active { translate: 0 0; background: var(--panel-lo); }
+.hud-group > .pill.lang-switch { padding: .3rem .45rem; }
+#btn-lobby.on { box-shadow: inset 0 -3px 0 var(--leaf); }
+
+/* wallet: coins and level are what you watch, so they get a dark well and more weight */
+.wallet > .pill:nth-child(2), .wallet > #glut-pill { background: var(--slot); }
+.wallet #coins { font-size: 1.2rem; min-width: 2.5ch; }
+.wallet .coin { width: 20px; height: 20px; }
+.pill.lvl .xpbar { width: 64px; height: 10px; }
+.world > .pill { font-weight: 600; color: #cbd5e1; }
+
+/* save note: a small stamp in the bottom right corner, out of the way of the HUD */
+.pill.saved {
+  position: fixed; top: auto; left: auto; right: .9rem; bottom: max(.9rem, env(safe-area-inset-bottom));
+  min-height: 0; padding: .15rem .45rem; font-size: .75rem;
+  background: var(--slot); color: var(--leaf);
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+@media (max-width: 1100px) {
+  .pill.lvl .xpbar { width: 34px; }
+  .hud-group > .pill { padding: .3rem .5rem; }
+}
+@media (max-width: 560px) {
+  .hud-group > .pill { min-height: 2.2rem; padding: .25rem .42rem; font-size: .8rem; }
+  .wallet #coins { font-size: 1rem; }
+}
+
+/* ---- portrait phones: scene sits right under the HUD instead of in the middle of empty space */
+@media (orientation: portrait) {
+  #hud { flex-wrap: wrap; row-gap: .2rem; }
+  .hud-left { gap: .35rem; }
+  #stage { place-items: start center; padding-top: calc(max(.6rem, env(safe-area-inset-top)) + 7.4rem);
+    --bg-split: calc(max(.6rem, env(safe-area-inset-top)) + 7.4rem + 28.125vw); }
+  #hint { top: calc(max(.6rem, env(safe-area-inset-top)) + 7.4rem + 4vw); }
+  #rotate { top: calc(max(.6rem, env(safe-area-inset-top)) + 7.4rem + 56.25vw + 1.2rem); }
+}
+
+/* ---- shop tabs: an even 3 x 2 block of equal buttons instead of a ragged wrap; purse sits beside it */
+.shop-bar { flex-wrap: wrap; align-items: center; row-gap: .6rem; }
+.shop-bar .tabs {
+  flex: 1 1 19rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; padding: 3px;
+}
+.shop-bar .tab { margin: 0; font-size: .86rem; padding: .38rem .4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.shop-bar .tab[hidden] { display: none; }
+.shop-bar .purse { flex: none; margin-left: auto; }
+@media (max-width: 480px) { .shop-bar .tabs { grid-template-columns: repeat(2, 1fr); } }
+
+/* =====================================================================
+   Minigames (#sport): arcade layout while playing, result card, station page
+   ===================================================================== */
+/* while a round runs the window wraps the game tightly: slim header, the canvas as big as the screen allows */
+#sport.playing { padding: .5rem; }
+#sport.playing .sport-sheet {
+  max-width: none; width: min(100%, 64rem, calc((100dvh - 7rem) * 16 / 9 + 2rem));
+  max-height: calc(100dvh - 1rem); overflow: hidden; padding: .7rem 1rem 1rem;
+}
+#sport.playing #sport-title {
+  font-size: 1.3rem; line-height: 1.6rem; padding: 0 2.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#sport.playing #sport-sub {
+  font-size: .82rem; line-height: 1.3; margin: .2rem auto .6rem; max-width: 60ch; color: #cbd5e1;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+#sport.playing .close { top: .55rem; right: .6rem; }
+#sport.playing #sport-cv { border-width: 4px; box-shadow: 0 0 0 0 transparent, 0 6px 0 rgba(0,0,0,.4); }
+@media (max-height: 520px) {
+  #sport.playing .sport-sheet { width: min(100%, calc((100dvh - 4.4rem) * 16 / 9 + 1.4rem)); padding: .45rem .7rem .7rem; }
+  #sport.playing #sport-title { font-size: 1rem; line-height: 1.3rem; }
+  #sport.playing #sport-sub { -webkit-line-clamp: 1; margin: .1rem auto .35rem; font-size: .75rem; }
+  #sport.playing .close { top: .35rem; right: .45rem; width: 1.7rem; height: 1.7rem; }
+}
+
+/* result: a framed card over the frozen game, coloured by the medal */
+#sport-result { background: rgba(6, 10, 26, .72); padding: .6rem; }
+.sr-card {
+  --tier: #64748b; position: relative; width: min(100%, 24rem); max-height: 100%; overflow-y: auto;
+  display: flex; flex-direction: column; align-items: center; gap: .4rem; padding: 1.1rem 1.1rem .9rem;
+  background: var(--panel);
+  box-shadow: 0 -4px 0 var(--ink), 0 4px 0 var(--ink), -4px 0 0 var(--ink), 4px 0 0 var(--ink),
+              inset 0 6px 0 var(--tier), inset 0 -4px 0 var(--panel-lo), 0 10px 0 rgba(0,0,0,.4);
+  animation: pop-px .22s steps(3, end);
+  scrollbar-width: thin; scrollbar-color: var(--panel-hi) var(--slot);
+}
+.sr-gold { --tier: var(--gold); }
+.sr-silver { --tier: #cbd5e1; }
+.sr-bronze { --tier: #d97706; }
+.sr-medal {
+  width: 4.4rem; height: 4.4rem; flex: none; display: grid; place-items: center; font-size: 2.7rem; line-height: 1;
+  background: var(--slot); box-shadow: 0 0 0 3px var(--ink), inset 0 0 0 3px var(--tier), 0 5px 0 rgba(0,0,0,.35);
+}
+.sr-none .sr-medal { filter: grayscale(.6); }
+.sr-label { font-family: var(--px); font-weight: 700; font-size: 1rem; letter-spacing: .04em; color: var(--tier); text-shadow: 2px 2px 0 var(--ink); }
+.sr-none .sr-label { color: #cbd5e1; }
+.sr-score { display: flex; align-items: baseline; justify-content: center; gap: .45rem; }
+.sr-score b { font-family: var(--px); font-weight: 700; font-size: 2.3rem; line-height: 1; color: #fff; text-shadow: 3px 3px 0 var(--ink); font-variant-numeric: tabular-nums; }
+.sr-score span { font-weight: 600; font-size: .9rem; color: #94a3b8; }
+.sr-ladder { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; padding: 2px; }
+.sr-ladder span { font-size: .8rem; font-weight: 700; font-variant-numeric: tabular-nums; padding: .15rem .45rem; color: #64748b; background: var(--slot); box-shadow: 0 0 0 2px var(--ink); }
+.sr-ladder span.on { color: #fef3c7; background: #2a2210; box-shadow: 0 0 0 2px var(--ink), inset 0 0 0 2px var(--gold-d); }
+.sr-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; padding: 2px; margin-top: .15rem; }
+.sr-chip { font-size: .82rem; font-weight: 700; white-space: nowrap; color: #e2e8f0; padding: .2rem .55rem; background: var(--slot); box-shadow: 0 0 0 2px var(--ink); }
+.sr-chip.taler { color: var(--gold); }
+.sr-chip.up { color: var(--leaf); }
+.sr-chip.down { color: #f87171; }
+.sr-note { font-size: .75rem; color: #94a3b8; }
+.sr-stamp { align-self: stretch; font-weight: 800; font-size: .85rem; color: #1c1003; padding: .3rem .6rem; background: var(--gold); box-shadow: 0 0 0 2px var(--ink), inset 0 -3px 0 var(--gold-d); }
+.sr-line { font-size: .85rem; font-weight: 600; color: #bbf7d0; line-height: 1.35; }
+.sr-actions { margin-top: .4rem; }
+@media (max-height: 520px), (max-width: 600px) {
+  .sr-card { padding: .7rem .8rem .7rem; gap: .3rem; }
+  .sr-medal { width: 3.2rem; height: 3.2rem; font-size: 1.9rem; }
+  .sr-score b { font-size: 1.7rem; }
+  .sr-actions .btn { padding: .4rem .9rem; font-size: .9rem; }
+}
+/* narrow phones: the result card takes the place of the game instead of squeezing on top of it */
+@media (max-width: 600px) {
+  #sport-result { position: static; background: none; padding: 0; margin-top: .3rem; }
+  #sport-play.done #sport-cv { display: none; }
+  .sr-card { width: 100%; }
+}
+
+/* station page: best score sits with its mode, levels are an even row, stamps a two-column card */
+.sport-mode > b { display: flex; align-items: baseline; gap: .5rem; }
+.sport-bw { margin-left: auto; font-style: normal; font-size: .8rem; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; }
+.sport-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr)); gap: .6rem; }
+.sport-row .btn { margin: 3px; }
+@media (min-width: 640px) { .sport-stamps { grid-template-columns: 1fr 1fr; } }
+.sport-stamps li { align-items: center; }
+
+/* hub: bigger stamp dots so progress reads at a glance */
+.sport-dots { gap: 4px; }
+.sport-dots i { width: 10px; height: 10px; }
+@media (max-width: 600px) { #sport.playing #sport-title { font-size: 1rem; padding: 0 2.2rem 0 .2rem; } }

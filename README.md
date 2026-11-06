@@ -359,6 +359,8 @@ Lobbies use polling, not sockets. Clients sync every 3 s while the tab is visibl
 - **Fonts:** self-hosted. Silkscreen (SIL OFL, licence in `fonts/silkscreen-OFL.txt`) is only for short display text, and everything people read uses Poppins.
 - **Settings** (⚙️ or E): sound, volume (`vol`), less motion (`calm`), short numbers (`short`), a catch card that closes itself (`autoClose`), automatic bait rebuying (`autoBait`) and the play-time display (`showPlay`).
 - **Play time** (`playTime`): seconds the game was open and visible, shown as a ⏱ pill. It never resets.
+- **HUD:** three framed bars (`.hud-group`): wallet (coins, Glut, level), world (time, play time, weather, snacks, tournament) and menu. The „Saved“ stamp sits in the bottom right. On portrait phones the canvas is pinned under the HUD and the page background splits at its horizon (`--bg-split`).
+- **Minigame window:** while a round runs, `#sport` carries the class `playing`: slim header, canvas sized to the screen. Results are a card (`.sr-card`, coloured per medal) with the medal marks of the mode and level. In-scene gauges use `smeter(x, y, w, h, value, label, colours)`.
 - **Patch notes:** every update adds an issue of the Steg-Zeitung, marked with „!“ while unread (`PATCH_NOTES`, `patchSeen`).
 - **Automatic updates:** open games compare the ETags of `fischen.html`, `js/fischen.js`, `js/fischen-i18n.js` and `css/fischen.css` every two minutes, then save and reload at the next calm moment.
 

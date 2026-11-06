@@ -21,18 +21,22 @@
     <!-- HUD -->
     <div id="hud">
       <div class="hud-left">
+        <div class="hud-group wallet">
         <a class="pill back" href="index.html" title="Zurück">&larr;</a>
         <span class="pill" title="Fischtaler"><img src="img/fish-icon.png" alt="" class="coin"> <b id="coins">0</b></span>
         <span class="pill" id="glut-pill" hidden>🔥 <b id="glut">0</b></span>
         <button class="pill lvl" id="lvl" title="Level">⭐ <b id="lvl-num">1</b><span class="xpbar"><i id="lvl-bar"></i></span><span id="lvl-reb"></span></button>
+        </div>
+        <div class="hud-group world">
         <span class="pill" id="clock" title="Tageszeit">☀️ Tag</span>
         <span class="pill" id="playtime" title="Spielzeit">⏱</span>
         <button class="pill" id="weather" title="Wetter">☀️ <span class="lbl" id="weather-name">Sonnig</span></button>
         <button class="pill" id="buffs" title="Aktive Snacks" hidden></button>
         <span class="pill" id="turnier-pill" title="Angelturnier" hidden></span>
+        </div>
         <span class="pill saved" id="saved" title="Spielstand wird in deinem Browser gespeichert">💾 <span class="lbl">Gespeichert</span></span>
       </div>
-      <div class="hud-right">
+      <div class="hud-right hud-group">
         <button class="pill sr-only" id="btn-dex" title="Fischdex (F)">📖 <span class="lbl">Fischdex</span></button>
         <button class="pill sr-only" id="btn-shop" title="Laden (L)">🛒 <span class="lbl">Laden</span></button>
         <button class="pill sr-only" id="btn-prog" title="Fortschritt (P)">📈 <span class="lbl">Fortschritt</span></button>
