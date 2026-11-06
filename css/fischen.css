@@ -1067,6 +1067,9 @@ button#btn-boss:hover { background: #be123c; }
 .dex-crits h3 { font: 700 .95rem/1.3 var(--ui); margin: 1.2rem 0 .6rem; }
 
 /* Magische Miesmuschel */
+.pc-sheet { max-width: 24rem; text-align: center; }
+.pc-sheet canvas { display: block; width: 180px; height: 144px; margin: .25rem auto .5rem; image-rendering: pixelated; }
+.pc-sheet a.btn { display: inline-block; text-decoration: none; }
 .muschel-sheet { max-width: 24rem; text-align: center; }
 .muschel-sheet img { display: block; width: 144px; height: auto; margin: .25rem auto .5rem; image-rendering: pixelated; cursor: pointer; }
 .muschel-sheet img.pull { animation: muschel-pull .55s ease-in-out; }

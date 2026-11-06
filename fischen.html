@@ -22,7 +22,6 @@
     <div id="hud">
       <div class="hud-left">
         <div class="hud-group wallet">
-        <a class="pill back" href="index.html" title="Zurück">&larr;</a>
         <span class="pill" title="Fischtaler"><img src="img/fish-icon.png" alt="" class="coin"> <b id="coins">0</b></span>
         <span class="pill" id="glut-pill" hidden>🔥 <b id="glut">0</b></span>
         <button class="pill lvl" id="lvl" title="Level">⭐ <b id="lvl-num">1</b><span class="xpbar"><i id="lvl-bar"></i></span><span id="lvl-reb"></span></button>
@@ -187,6 +186,18 @@
     </div>
 
     <!-- Magische Miesmuschel (after the first catch, on the rock next to the dock) -->
+    <div class="modal" id="pc" hidden>
+      <div class="sheet pc-sheet" role="dialog" aria-modal="true" aria-labelledby="pc-title">
+        <h2 id="pc-title">🖥️ Alter Computer</h2>
+        <canvas id="pc-art" width="30" height="24" aria-hidden="true"></canvas>
+        <p class="sub">Tief im Schlamm flackert noch ein Bildschirm. Darauf läuft eine alte Website …</p>
+        <div class="catch-actions">
+          <a class="btn" href="seiten/alte-seite.html" target="_blank" rel="noopener">Einschalten</a>
+          <button class="btn ghost" data-close>Zurück</button>
+        </div>
+      </div>
+    </div>
+
     <div class="modal" id="muschel" hidden>
       <div class="sheet muschel-sheet" role="dialog" aria-modal="true" aria-labelledby="muschel-title">
         <h2 id="muschel-title">🐚 Magische Miesmuschel</h2>
