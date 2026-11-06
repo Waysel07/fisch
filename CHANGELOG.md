@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 06.11.2026 · `2026-11-06-2`
+
+- 🎀 New fish at the dock: the Fischeln Velvet Fish (rare). It comes from Fischeln in Krefeld, the city of velvet and silk, shines like velvet and wears a tie of Krefeld silk. It has its own page in the Fishdex.
+
 ## 06.11.2026 · `2026-11-06-1`
 
 - 🥏 Frisbee rebuilt: in Target Ring you throw 8 discs at three floating targets (near 2, middle 3, far 5 points), the middle counts double, hits in a row give a bonus and balloons in the air +3. You throw like a slingshot with a preview of the flight path, and the disc flies twice as fast. In Long Throw a flat, hard disc skips across the water.
