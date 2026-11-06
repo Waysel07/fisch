@@ -1815,3 +1815,25 @@ F('samtfisch', 54, 34, { lit: true }, (c) => {
   c.line(46, 22, 49, 27, '#facc15'); c.px(50, 28, '#fef3c7')
   spec(c, 10, 6)
 })
+
+F('ideenfisch', 56, 42, { lit: true }, (c) => {
+  // Ideenfisch: ein gelber Anglerfisch, dessen Leuchtköder eine Glühbirne ist – er hat immer eine Idee
+  const p = iFish(c, { x1: 42, cy: 27, up: 11, dn: 11, tl: 11, sp: 9, fin: '#f59e0b', body: (u, v, x, y) => {
+    if (v > 0.72) return '#fef3c7' // heller Bauch
+    if ((x + y * 3) % 9 === 0 && v > 0.2) return '#fde68a' // Funken auf der Haut
+    return B(v, 0.25, '#d97706', 0.6, '#fbbf24', '#fcd34d')
+  } })
+  fan(c, [20, Math.round(p.top(20)) + 1], [[24, 11], [30, 13], [34, Math.round(p.top(34)) + 1]], '#f59e0b', '#b45309')
+  eye(c, 8, 22, { size: 4 })
+  c.line(2, 29, 6, 30, '#78350f')
+  // Angel auf der Stirn, vorn hängt eine Glühbirne
+  const sx = 12, sy = Math.round(p.top(12))
+  c.line(sx, sy, 13, 9, '#92400e'); c.line(13, 9, 10, 5, '#92400e'); c.line(10, 5, 7, 5, '#92400e')
+  c.rect(5, 5, 4, 3, '#64748b'); c.px(6, 6, '#cbd5e1'); c.px(5, 8, '#475569'); c.px(8, 8, '#475569') // Fassung
+  c.poly([2, 14, 1, 11, 2, 9, 5, 8, 9, 8, 12, 9, 13, 11, 12, 14, 9, 16, 5, 16], '#fef08a') // Glaskolben
+  c.rect(5, 10, 4, 4, '#fde047'); c.line(5, 12, 9, 12, '#f59e0b') // Glühfaden
+  c.px(3, 11, '#ffffff'); c.px(4, 10, '#ffffff')
+  // Strahlen
+  for (const [x, y] of [[0, 8], [0, 17], [14, 17], [15, 7], [7, 19]]) c.px(x, y, '#fde047')
+  spec(c, 14, 19)
+})

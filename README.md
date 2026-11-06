@@ -34,12 +34,13 @@ Menus are objects on the dock. The old buttons stay hidden for keyboard and scre
 | Book on the crate | Fischdex and Shinydex | F |
 | Slot machine | Fischautomat | C |
 | Notice board | Progress | P |
+| Cork board with a light bulb | Ideenbrett (idea board) | I |
 | Trophy on the kiosk roof | Leaderboard | B |
 | Newspaper bundle | Steg-Zeitung (patch notes) | N |
 | Your angler | Wardrobe | K |
 | Buoy (Hohe See), Glimm (Glutgrotte) and the seaplane (Sonneninsel) | Travel to another area | |
 
-Other keys: **O** lobby, **E** settings, **M** sound, **1–9** bait hotbar, **Enter** or **T** lobby chat.
+Other keys: **I** Ideenbrett, **O** lobby, **E** settings, **M** sound, **1–9** bait hotbar, **Enter** or **T** lobby chat.
 
 ## Progression
 
@@ -224,7 +225,7 @@ The current area is saved as `map`.
 
 | Area | `map` | Fish | Opens |
 |---|---|---|---|
-| Steg | `steg` | 50 (the Fischelner Samtfisch since `2026-11-06-3`) | From the start |
+| Steg | `steg` | 51 (the Fischelner Samtfisch since `2026-11-06-3`, the Ideenfisch since `2026-11-06-6`) | From the start |
 | Hohe See | `see` | 44, of which 13 are shared with the Steg | 3rd rebirth, or Seekarte |
 | Glutgrotte | `lava` | 31 | 1st prestige |
 | Sonneninsel | `insel` | 22 | 3rd prestige |
@@ -348,6 +349,7 @@ The expected score of every mode grows by about half its base per 1000 skill (`e
 All of these are opt-in. Without them, progress stays in the browser's `localStorage` (`fischen-save-v1`, see `datenschutz.html`, section 5).
 
 - **Leaderboard** (🏆): sends a nickname and scores to `api/leaderboard.js`. The boards are Taler, Fisch der Woche (biggest non-junk catch this week, its own key per week; last week's top 3 get the Wochensieger-Kappe), total rebirths, Fischdex, diamond medals, biggest catch, Monster catches, Odfisch wins, prestige, Sportler (sum of sport skill) and Taler spent. Names that fail the filter in `_names.js` are shown as ???.
+- **Ideenbrett** (💡): catching the rare Ideenfisch gives one idea slip (`ideaTix`). A slip pins an idea (8–160 characters) to a public board in `api/ideas.js`, under the leaderboard name or „Anonym“. Everyone votes ▲ or ▼, once per idea (random voter ID `ideaId`, the server stores only a hash prefix); the board sorts by „Beliebt“ (up − down) or „Neu“. Ideas with swear words are refused, at most 3 per player per day, 200 are kept, each expires after 180 days.
 - **Cloud save** (☁️): a secret key stores a copy of the save, so it can be loaded on another device. It's stored under the key's SHA-256 with a 180-day TTL.
 - **Lobbies** (👥): up to 8 anglers share a 4-letter code or a `?lobby=CODE` link. Everyone sees the others on the dock, a feed of catches and a scoreboard of Taler fished since joining. Chat messages ride along with each sync and appear as speech bubbles. The server keeps the last 30 per lobby and stars out words from the name blocklist.
 
@@ -419,7 +421,9 @@ All functions use Upstash Redis through its REST pipeline.
 | `api/save.js` | Cloud saves. `POST {action: 'gift', key, hours, admin}` gifts up to 1 000 h of play time, stored under `sv:gift:<hash>`. The game claims it on its next sync (`put` with `claim: true`). |
 | `api/lobby.js` | Lobbies, chat, catch feed and the shared boss fight |
 | `api/jackpot.js` | The slot machine's shared jackpot pot. `GET` returns `{pot, last}`; `POST {action: 'spin', stake, name?}` adds half of the stake, rolls the jackpot and empties the pot atomically (`GETSET`) when it is cracked. 60 spins per minute per hashed IP. |
-| `api/_names.js` | Name filter for the leaderboard and lobbies |
+| `api/ideas.js` | The Ideenbrett. `GET` lists the newest 100 ideas; `POST {action: 'list'|'post'|'vote', voter, …}`; `DELETE {id, admin}` removes an idea. |
+| `api/_names.js` | Name and text filter for the leaderboard, lobbies, chat and ideas: a short substring list plus the word list in `_badwords.js`, matched as whole words, with exceptions in `ALLOW` |
+| `api/_badwords.js` | Word list in 28 languages from [List of Dirty, Naughty, Obscene, and Otherwise Bad Words](https://github.com/Hesham-Elbadawi/list-of-banned-words) by Shutterstock and contributors, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); lower-cased and de-duplicated |
 
 One-time gifts by player name are listed in `NAME_GIFTS` in `js/fischen.js` and matched against the leaderboard and lobby name. Arrived ones are saved in `gifts`.
 

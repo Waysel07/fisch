@@ -37,6 +37,7 @@
     { id: 'staebchen', name: 'Fischstäbchen',  img: 'img/fischstaebchen.png', r: 'uncommon', min: 7, max: 11, val: 46, pixel: true, page: 'seiten/fischstaebchen.html', map: 'lava', say: 'Ich war mal ein Fisch. Jetzt bin ich knusprig.', desc: 'Paniert, goldbraun und frisch aus der Glut. Niemand weiß, wer es hier unten gebraten hat.' },
     { id: 'beinfisch', name: 'Beinfisch',       img: 'img/beinfisch.gif',        r: 'uncommon',  min: 15, max: 30,  val: 18, photo: true, page: 'seiten/beinfisch.html', say: 'Ich wollte eigentlich nur kurz spazieren.', desc: 'Hat Beine. Läuft lieber am Ufer entlang als zu schwimmen.' },
     { id: 'spezi1',  name: 'Spezifischer Spezifisch', img: 'img/spezifisch1.png', r: 'rare', clip: [.93, 3.17],      min: 40, max: 70,  val: 38, say: 'Extra Spezi, extra spezifisch.', desc: 'Ein Prachtexemplar mit extra viel Spezi.' },
+    { id: 'idee',    name: 'Ideenfisch', img: 'img/ideenfisch.png', r: 'rare',      min: 20, max: 45,  val: 44, pixel: true, page: 'seiten/ideenfisch.html', say: 'Mir ist da was eingefallen!', desc: 'Ein Anglerfisch, dessen Leuchtköder eine Glühbirne ist. Wer ihn fängt, darf eine Idee ans Ideenbrett am Steg hängen – und alle stimmen darüber ab.' },
     { id: 'samt',    name: 'Fischelner Samtfisch', img: 'img/samtfisch.png', r: 'rare',      min: 25, max: 55,  val: 46, pixel: true, page: 'seiten/samtfisch.html', say: 'Ich komm aus Fischeln. Fisch-eln. Verstehste?', desc: 'Aus Fischeln, mitten in Krefeld, der Samt- und Seidenstadt. Glänzt wie Samt und trägt eine Krawatte aus echter Krefelder Seide.' },
     { id: 'oel',     name: 'Ölfisch',           img: 'img/oelfisch.png',         r: 'rare',      min: 30, max: 60,  val: 45, pixel: true, page: 'seiten/oelfisch.html', say: 'Ich schillere. Das ist kein Kompliment.', desc: 'Schwarz und ölig, mit Regenbogenschimmer. Kommt nachts raus.', night: 1.8, sea: true },
     { id: 'kaugummi', name: 'Kaugummifisch',    img: 'img/fish-smile.gif',    r: 'rare',      min: 15, max: 30,  val: 48, photo: true, page: 'seiten/kaugummifisch.html', say: 'Blubb. Ich klebe jetzt an dir.', desc: 'Rund, grau und zäh wie alter Kaugummi. Lächelt trotzdem.' },
@@ -234,6 +235,11 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-06-6', date: '06.11.2026', items: [
+      '💡 Neuer Fisch am Steg: der Ideenfisch (selten). Wer ihn fängt, bekommt einen Ideen-Zettel und darf eine Idee ans neue Ideenbrett am Steg hängen (Taste I).',
+      '👍 Am Ideenbrett stimmen alle öffentlich mit ▲ und ▼ über die Ideen ab, sortiert nach „Beliebt“ oder „Neu“.',
+      '🧼 Der Schimpfwortfilter für Namen, Chat und Ideen kennt jetzt eine große Wortliste in vielen Sprachen.',
+    ] },
     { id: '2026-11-06-5', date: '06.11.2026', items: [
       '💰 Der Jackpot-Topf wird fett: Ab jetzt landet die Hälfte jedes Einsatzes im gemeinsamen Topf, und obendrauf kommen einmalig 2 Millionen Taler hinein.',
     ] },
@@ -519,6 +525,7 @@
     boxes: {}, dexClaimed: [], lvl: 1, xp: 0, daily: { d: '', n: 0 }, bestStreak: 0, rebirths: 0, scales: 0, perks: {}, prestige: 0, pearls: 0, pperks: {}, quests: [], questsDone: 0, lifeCoins: 0, totalEarned: 0,
   }, load());
   delete save.jackpot; // the pot used to be per player; now it lives on the server for everyone
+  save.ideaTix = Math.max(0, save.ideaTix | 0); // idea tickets: one per Ideenfisch, spent on the Ideenbrett
   save.baits.wurm = Infinity;
   if (sigBroken || (DEBUG && !DEV_HOST)) save.tampered = true;
   if (sigBroken) setTimeout(() => toast(tr('⚠️ Dieser Spielstand wurde von Hand verändert. Du kannst weiterspielen, aber nicht mehr in die Bestenliste.')), 2500);
@@ -985,6 +992,7 @@
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
     e.n++; e.best = Math.max(e.best, size); if (f.r !== 'junk') e.small = Math.min(e.small || Infinity, size); save.dex[f.id] = e;
+    if (f.id === 'idee') save.ideaTix = (save.ideaTix | 0) + 1;
     if (f.r !== 'junk') { e.cls = Math.max(e.cls || 0, cls); if (cls === 4) save.monsters = (save.monsters || 0) + 1; }
     if (f.r !== 'junk' && size > weekBest()) save.weekBest = { w: weekId(), cm: size }; // Fisch der Woche
     checkMastery(f);
@@ -1701,6 +1709,7 @@
     if (k === 'c') { toggleModal('casino'); return; }
     if (k === 'p') { toggleModal('prog'); return; }
     if (k === 'b') { toggleModal('lb'); return; }
+    if (k === 'i') { toggleModal('ideen'); return; }
     if (k === 'n') { toggleModal('patch'); return; }
     if (k === 'o') { toggleModal('lobby'); return; }
     if (k === 'k') { toggleModal('wardrobe'); return; }
@@ -3093,6 +3102,12 @@
     drawArt('trophy', cx - 5, yb - 10, dark);
     if (Math.sin(t * 2.2) > .93) { px(cx + 1, yb - 11.5, .5, 2.5, '#fffbeb'); px(cx, yb - 10.5, 2.5, .5, '#fffbeb'); }
   }
+  // Ideenbrett: a small cork board on a post with a light bulb on top (baked, darkens at night)
+  const IDEA_BOARD = bake(['.......kkkk.......', '......kLLLLk......', '.....kLLLLLLk.....', '.....kLLLLLLk.....', '......kLLLLk......', '.......kggk.......', 'kkkkkkkkggkkkkkkkk', 'kFFFFFFFFFFFFFFFFk', 'kFccccccccccccccFk', 'kFcyyyrcccbbubcCFk', 'kFcyyyycccbbbbcCFk', 'kFcyyyyccCbbbbcCFk', 'kFccccccccccccccFk', 'kFcCppprcccyyyccFk', 'kFccppppccCyyyycFk', 'kFccppppcccyyyycFk', 'kFccccccccccccccFk', 'kFFFFFFFFFFFFFFFFk', 'kkkkkkkkPPkkkkkkkk', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......', '.......kPPk.......'], { k: '#1b1f2e', L: '#fde68a', g: '#94a3b8', F: '#7c4a21', c: '#c08a52', C: '#a8743f', y: '#fef3c7', b: '#bfdbfe', p: '#fecaca', r: '#dc2626', u: '#2563eb', P: '#5b3a1e' });
+  function drawIdeaBoard(dark) {
+    drawLit(IDEA_BOARD, 77, DOCK_Y - 18, dark);
+    if (Math.sin(t * 3) > -.6) { px(80, DOCK_Y - 17.5, 3, 1.5, '#fde047'); if (Math.sin(t * 2.3) > .9) { px(78.5, DOCK_Y - 18, .5, .5, '#fef9c3'); px(84, DOCK_Y - 18, .5, .5, '#fef9c3'); } }
+  }
   function drawBoard(dark) {
     drawArt('board', 64.5, DOCK_Y - 20, dark);
   }
@@ -4389,6 +4404,7 @@
     { id: 'patch',  label: tr('Steg-Zeitung (Patch Notes)'), x: 103.5, y: DOCK_Y - 5.5, w: 8, h: 5.5, draw: drawNewspaper, open: () => toggleModal('patch'), ready: () => save.patchSeen !== PATCH_NOTES[0].id && save.total > 0 },
     { id: 'dex',    map: 'all', label: tr('Fischdex & Shinydex'), get x() { return dexX(); }, get y() { return dexY(); }, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
     { id: 'lb',     label: tr('Bestenliste'),   x: KIOSK.x + KIOSK.w / 2 - 5, y: DOCK_Y - 48, w: 10, h: 10.5, draw: drawTrophy, open: () => toggleModal('lb') },
+    { id: 'ideen',  label: tr('💡 Ideenbrett'), x: 77, y: DOCK_Y - 18, w: 9, h: 18, draw: drawIdeaBoard, open: () => toggleModal('ideen'), ready: () => (save.ideaTix | 0) > 0 },
     { id: 'prog',   label: tr('Aufträge & Fortschritt'), x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
     { id: 'shop',   label: tr('Laden'),         x: KIOSK.x - 3, y: DOCK_Y - 37.5, w: KIOSK.w + 6, h: 37.5, open: () => toggleModal('shop') },
     { id: 'bealin',  label: tr("Käpt'n Bealin"), x: BEALIN.x - 1, y: SURFACE - 16, w: BEALIN.w + 2, h: 18, open: () => talkBealin() },
@@ -4764,7 +4780,7 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'sport']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'sport', 'ideen']) $(id).hidden = true;
     if (sp && sp.drill) drillEnd(-1); // leaving a catch drill loses the fish
     if (sp && !sp.done) sp = null; // leaving a running station ends it without a result
     if (window.speechSynthesis) window.speechSynthesis.cancel();
@@ -4794,7 +4810,7 @@
     if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'sdrill', 'boss', 'summon', 'crit'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: () => { renderCasino(); loadPot(); }, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings, muschel: renderMuschel, sport: () => { spView.id = null; sp = null; renderSport(); } })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: () => { renderCasino(); loadPot(); }, ideen: () => { renderIdeas(); loadIdeas(); }, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, wardrobe: renderWardrobe, settings: renderSettings, muschel: renderMuschel, sport: () => { spView.id = null; sp = null; renderSport(); } })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -4838,6 +4854,7 @@
     if (LOBBY.invite) { LOBBY.invite = false; toggleModal('lobby'); }
   });
   let lastFirst = null;
+  $('catch-idea').addEventListener('click', () => { $('catch-ok').click(); toggleModal('ideen'); });
   $('catch-ok').addEventListener('click', () => {
     if ($('catch-ok').disabled) return;
     $('catch').hidden = true; state = 'idle'; hint('');
@@ -5039,9 +5056,93 @@
     if (jack || mult >= 40) checkCosm();
   }
 
+  // ------------------------------------------------------------------ Ideenbrett (api/ideas.js)
+  // Every Ideenfisch gives one idea ticket (save.ideaTix). Ideas hang on a public board; everyone votes them up or down.
+  const IDEAS_API = '/api/ideas';
+  const IDEAS = { list: null, mine: {}, tab: 'top', err: '', at: 0, busy: false };
+  const voterId = () => {
+    if (!/^[a-f0-9]{32}$/.test(save.ideaId || '')) { const a = new Uint8Array(16); crypto.getRandomValues(a); save.ideaId = [...a].map(b => b.toString(16).padStart(2, '0')).join(''); persist(); }
+    return save.ideaId;
+  };
+  async function ideasCall(body) {
+    const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 6000);
+    try {
+      const r = await fetch(IDEAS_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ voter: voterId(), ...body }), signal: ac.signal });
+      const j = await r.json().catch(() => ({}));
+      return r.ok ? j : { error: j.error || tr('Keine Verbindung zum Server.') };
+    } catch { return { error: tr('Keine Verbindung zum Server.') }; } finally { clearTimeout(tm); }
+  }
+  async function loadIdeas(force) {
+    if (!force && Date.now() - IDEAS.at < 4000) return;
+    IDEAS.at = Date.now();
+    const j = await ideasCall({ action: 'list' });
+    if (j.error) IDEAS.err = tr(j.error); else { IDEAS.list = j.ideas || []; IDEAS.mine = j.mine || {}; IDEAS.err = ''; }
+    if (!$('ideen').hidden) renderIdeas();
+  }
+  const ideaScore = i => i.up - i.down;
+  function renderIdeas() {
+    const n = save.ideaTix | 0;
+    $('idea-text').disabled = !n || IDEAS.busy;
+    $('idea-send').disabled = !n || IDEAS.busy;
+    $('idea-send').textContent = n ? tr('💡 Ans Brett hängen ({n} übrig)', { n }) : tr('💡 Ans Brett hängen');
+    $('idea-note').textContent = n ? tr('Du hast {n} Ideen-Zettel. Dein Name aus der Bestenliste steht dabei, sonst „Anonym“.', { n }) : tr('Fang einen Ideenfisch, um eine Idee einzureichen. Abstimmen kann jeder.');
+    $('idea-tabs').querySelectorAll('[data-tab]').forEach(b => { b.classList.toggle('on', b.dataset.tab === IDEAS.tab); b.setAttribute('aria-selected', b.dataset.tab === IDEAS.tab); });
+    const ul = $('idea-list');
+    const empty = text => ul.replaceChildren(Object.assign(document.createElement('li'), { className: 'empty', textContent: text }));
+    if (!IDEAS.list) return empty(IDEAS.err || tr('Lädt …'));
+    if (!IDEAS.list.length) return empty(tr('Noch keine Ideen. Fang einen Ideenfisch und sei der Erste!'));
+    const rows = [...IDEAS.list].sort(IDEAS.tab === 'top' ? (a, b) => ideaScore(b) - ideaScore(a) || b.at - a.at : (a, b) => b.at - a.at);
+    ul.replaceChildren(...rows.map(i => {
+      const li = document.createElement('li'), my = IDEAS.mine[i.id] || 0;
+      const vote = (v, label, cnt, cls) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'idea-vote ' + cls + (my === v ? ' on' : '');
+        b.setAttribute('aria-pressed', my === v); b.setAttribute('aria-label', label);
+        b.append(Object.assign(document.createElement('span'), { textContent: v > 0 ? '▲' : '▼' }), Object.assign(document.createElement('b'), { textContent: cnt.toLocaleString(I18N.locale) }));
+        b.addEventListener('click', () => voteIdea(i, my === v ? 0 : v));
+        return b;
+      };
+      const votes = document.createElement('div'); votes.className = 'idea-votes';
+      votes.append(vote(1, tr('Gute Idee'), i.up, 'up'), vote(-1, tr('Keine gute Idee'), i.down, 'down'));
+      const body = document.createElement('div'); body.className = 'idea-body';
+      body.append(Object.assign(document.createElement('p'), { textContent: i.text }),
+        Object.assign(document.createElement('small'), { textContent: tr('{name} · {d}', { name: i.name || tr('Anonym'), d: new Date(i.at).toLocaleDateString(I18N.locale) }) }));
+      li.append(votes, body);
+      return li;
+    }));
+  }
+  async function voteIdea(i, v) {
+    const old = IDEAS.mine[i.id] || 0;
+    // show it at once, the server answer corrects the counts
+    if (old === 1) i.up--; if (old === -1) i.down--; if (v === 1) i.up++; if (v === -1) i.down++;
+    if (v) IDEAS.mine[i.id] = v; else delete IDEAS.mine[i.id];
+    renderIdeas(); sfx.coin && tone(v > 0 ? 660 : v < 0 ? 330 : 440, .06, 'square', .04);
+    const j = await ideasCall({ action: 'vote', idea: i.id, v });
+    if (j.error) { toast(tr(j.error)); return loadIdeas(true); }
+    Object.assign(i, j.idea);
+    renderIdeas();
+  }
+  $('idea-tabs').querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => { IDEAS.tab = b.dataset.tab; renderIdeas(); }));
+  $('idea-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const text = $('idea-text').value.trim();
+    if (!(save.ideaTix > 0) || IDEAS.busy) return;
+    if (text.length < 8) { toast(tr('Die Idee ist zu kurz.')); return; }
+    IDEAS.busy = true; renderIdeas();
+    const j = await ideasCall({ action: 'post', text, name: (save.lb && save.lb.name) || '' });
+    IDEAS.busy = false;
+    if (j.error) { toast(tr(j.error)); renderIdeas(); return; }
+    save.ideaTix--; persist();
+    $('idea-text').value = '';
+    IDEAS.tab = 'new';
+    if (IDEAS.list) IDEAS.list.unshift(j.idea); else IDEAS.list = [j.idea];
+    toast(tr('💡 Deine Idee hängt am Brett!'));
+    renderIdeas();
+  });
+
   let lastCatchVal = 0;
   function showCatch(f, size, val, first, mut, newMut, gain, shiny, newShiny, cls = 1) {
     lastCatchVal = val;
+    $('catch-idea').hidden = f.id !== 'idee';
     $('catch-double').hidden = false; $('catch-double').disabled = false;
     $('catch-double').textContent = tr('🎲 Doppelt oder nichts ({n})', { n: val });
     $('catch-flip').hidden = true; $('catch-ok').disabled = false;

@@ -476,7 +476,7 @@ h3 { font-size: 1rem; margin: 1rem 0 .5rem; color: #e2e8f0; }
 #lb-me { margin-top: .5rem; }
 .lb-join, .lb-joined { margin-top: .6rem; }
 .lb-join[hidden], .lb-joined[hidden] { display: none; }
-.lb-join a, .lb-joined a { color: #4ade80; }
+.lb-join a, .lb-joined a, #ideen .sub a { color: #4ade80; }
 .lb-form { display: flex; gap: .5rem; margin: .6rem 0 .4rem; }
 .lb-form input {
   flex: 1; min-width: 0; font: inherit; color: #e2e8f0; background: #1e293b;
@@ -1308,3 +1308,22 @@ button#btn-boss:hover { background: #be123c; }
 .sport-dots { gap: 4px; }
 .sport-dots i { width: 10px; height: 10px; }
 @media (max-width: 600px) { #sport.playing #sport-title { font-size: 1rem; padding: 0 2.2rem 0 .2rem; } }
+
+/* Ideenbrett */
+.idea-form { display: flex; flex-wrap: wrap; gap: .5rem; margin: .6rem 0 .2rem; }
+.idea-form textarea { flex: 1 1 14rem; min-width: 0; resize: vertical; font: 500 .92rem Poppins, sans-serif; padding: .5rem .6rem;
+  background: var(--ink); color: #f8fafc; border: 0; box-shadow: inset 0 0 0 2px #fbbf24; }
+.idea-form textarea:disabled { opacity: .5; box-shadow: inset 0 0 0 2px #475569; }
+.idea-form .btn { flex: 1 1 auto; align-self: stretch; }
+.idea-list { list-style: none; display: grid; gap: .35rem; max-height: 50vh; overflow-y: auto; padding: 2px; }
+.idea-list li { display: grid; grid-template-columns: auto 1fr; gap: .6rem; align-items: start; background: #1e293b; padding: .45rem .6rem; box-shadow: 0 3px 0 #0b1020; }
+.idea-list li.empty { display: block; color: #94a3b8; text-align: center; box-shadow: none; }
+.idea-body { min-width: 0; }
+.idea-body p { margin: 0; font-size: .92rem; color: #f1f5f9; overflow-wrap: anywhere; }
+.idea-body small { color: #94a3b8; font-size: .74rem; }
+.idea-votes { display: flex; flex-direction: column; gap: .25rem; }
+.idea-vote { display: flex; align-items: center; justify-content: space-between; gap: .3rem; min-width: 3.4rem; font: 700 .8rem Poppins, sans-serif;
+  color: #cbd5e1; background: #0f172a; border: 2px solid #334155; padding: .15rem .4rem; cursor: pointer; }
+.idea-vote.up.on { border-color: #22c55e; color: #bbf7d0; background: #14532d; }
+.idea-vote.down.on { border-color: #ef4444; color: #fecaca; background: #7f1d1d; }
+.idea-vote:hover { border-color: #64748b; }

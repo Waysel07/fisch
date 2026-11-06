@@ -93,6 +93,7 @@
         <p class="stats"><span id="catch-size"></span> · <span id="catch-value"></span></p>
         <div class="catch-actions">
           <button class="btn ghost" id="catch-double">🎲 Doppelt oder nichts</button>
+          <button class="btn ghost" id="catch-idea" hidden>💡 Idee einreichen</button>
           <button class="btn" id="catch-ok">Weiter fischen</button>
         </div>
         <p class="flip" id="catch-flip" hidden></p>
@@ -196,6 +197,25 @@
           <button class="btn" type="submit">🪢 An der Schnur ziehen</button>
         </form>
         <div class="catch-actions"><button class="btn ghost" data-close>Zurück</button></div>
+      </div>
+    </div>
+
+    <!-- Ideenbrett: ideas from Ideenfisch catches, public votes -->
+    <div class="modal" id="ideen" hidden>
+      <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="ideen-title">
+        <button class="close" data-close aria-label="Schließen">✕</button>
+        <h2 id="ideen-title">💡 Ideenbrett</h2>
+        <p class="sub">Ideen für das Spiel – von Spielern, die einen Ideenfisch gefangen haben. Stimm mit ▲ und ▼ ab; die Stimmen sieht jeder. <a href="datenschutz.html#ideen">Datenschutz</a></p>
+        <form class="idea-form" id="idea-form">
+          <textarea id="idea-text" maxlength="160" rows="2" placeholder="Deine Idee …" aria-label="Deine Idee"></textarea>
+          <button class="btn" type="submit" id="idea-send">💡 Ans Brett hängen</button>
+        </form>
+        <p class="sub" id="idea-note"></p>
+        <div class="tabs" id="idea-tabs" role="tablist">
+          <button class="tab on" type="button" role="tab" data-tab="top">Beliebt</button>
+          <button class="tab" type="button" role="tab" data-tab="new">Neu</button>
+        </div>
+        <ul class="idea-list" id="idea-list"></ul>
       </div>
     </div>
 

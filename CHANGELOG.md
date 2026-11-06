@@ -2,6 +2,12 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 06.11.2026 · `2026-11-06-6`
+
+- 💡 New fish at the dock: the Idea Fish (rare). Catching it gives you an idea slip, and you can pin an idea to the new idea board on the dock (key I).
+- 👍 On the idea board everyone votes publicly with ▲ and ▼, sorted by “Popular” or “New”.
+- 🧼 The swear-word filter for names, chat and ideas now knows a big word list in many languages.
+
 ## 06.11.2026 · `2026-11-06-5`
 
 - 💰 The jackpot pot gets fat: half of every stake now goes into the shared pot, and on top of that it gets a one-time 2 million coins.
