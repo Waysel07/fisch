@@ -1,7 +1,9 @@
-// Multiplayer-Lobbys für „Fischen!“ – Vercel Function + Upstash Redis (REST, ohne npm-Pakete).
-// Kein WebSocket: jedes Spiel in einer Lobby fragt alle paar Sekunden den Stand ab (sync) und
-// schickt dabei seinen eigenen mit. Lobbys verfallen 2 Stunden nach der letzten Aktivität.
+// Multiplayer-Lobbys für „Fischen!“ – läuft auf dem eigenen Server mit Redis (REST, ohne npm-Pakete).
+// Jedes Spiel schickt per sync seinen Stand und bekommt den der Lobby zurück. Zusätzlich hält es
+// einen Live-Stream offen (action 'stream'), über den der Server jede Änderung sofort an die anderen
+// schickt. Reißt der Stream ab, reicht sync allein. Lobbys verfallen 2 Stunden nach der letzten Aktivität.
 //
+//   POST /api/lobby {action: 'stream', code, id}               → text/event-stream { p?, gone?, feed?, chat?, boss? }
 //   POST /api/lobby {action: 'create', id, name}               → { code }
 //   POST /api/lobby {action: 'join',   code, id, name}         → { ok }
 //   POST /api/lobby {action: 'sync',   code, id, me, ev?, msg?, dmg?, boss?} → { players, feed, chat, me, boss }
@@ -36,6 +38,9 @@ const BOSS_MS = 180000;          // 3 Minuten Zeit
 const BOSS_DMG_MAX = 400;        // höchstens so viel Schaden pro Sync
 const DAY_LENGTH = 300;          // wie im Spiel: ein Tag alle 5 Minuten, ab der Unix-Epoche
 const isNight = (now) => { const t = (now / 1000 / DAY_LENGTH) % 1; return t < .2 || t > .82; };
+const MAX_STREAMS = 2000;        // offene Live-Streams auf dem ganzen Server
+const STREAM_PING = 25000;       // hält die Verbindung offen, wenn gerade nichts passiert
+const STREAM_BACKLOG = 1 << 20;  // wer mehr als 1 MB hinterherhängt, wird getrennt (sync läuft weiter)
 
 const sha = (s) => crypto.createHash('sha256').update(s).digest('hex');
 const pub = (id) => sha('lobby:' + id).slice(0, 10);
@@ -50,6 +55,51 @@ async function redis(cmds) {
   const out = await r.json();
   return out.map((x) => { if (x.error) throw new Error(x.error); return x.result; });
 }
+
+// Live-Streams: Lobby-Code → (Spieler-Kürzel → offene Antwort). Ein Spieler hat höchstens einen.
+const streams = new Map();
+let streamCount = 0;
+
+function openStream(res, code, k) {
+  let room = streams.get(code);
+  if (!room) streams.set(code, room = new Map());
+  const old = room.get(k);
+  room.set(k, res);
+  if (old) old.end();
+  streamCount++;
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store');
+  res.write(': ok\n\n');
+  const ping = setInterval(() => res.write(': ping\n\n'), STREAM_PING);
+  res.on('close', () => {
+    clearInterval(ping);
+    streamCount--;
+    if (room.get(k) === res) room.delete(k);
+    if (!room.size && streams.get(code) === room) streams.delete(code);
+  });
+}
+
+// Schickt eine Änderung an alle in der Lobby außer dem Absender; make(k) baut die Nachricht für Spieler k.
+function publish(code, from, make) {
+  const room = streams.get(code);
+  if (!room) return;
+  for (const [k, res] of room) {
+    if (k === from) continue;
+    if (res.writableLength > STREAM_BACKLOG) { res.destroy(); continue; }
+    res.write(`data: ${JSON.stringify(make(k))}\n\n`);
+  }
+}
+
+function closeStream(code, k) {
+  const res = streams.get(code)?.get(k);
+  if (res) res.end();
+}
+
+// Beim Neustart die Streams beenden, sonst wartet der Server auf sie; die Spiele verbinden sich neu.
+process.once('SIGTERM', () => {
+  for (const room of streams.values()) for (const res of room.values()) res.end();
+});
 
 function send(res, status, body) {
   res.statusCode = status;
@@ -110,6 +160,9 @@ function players(hash, now) {
   return list.filter((p) => now - p.t < ACTIVE_MS);
 }
 
+// Ein Spieler so, wie die anderen ihn sehen
+const shown = ({ t, ...rest }, k) => ({ ...rest, k });
+
 module.exports = async function handler(req, res) {
   if (!URL_ || !TOKEN) return send(res, 503, { error: 'Lobbys sind noch nicht eingerichtet.' });
   if (req.method !== 'POST') return send(res, 405, { error: 'Methode nicht erlaubt.' });
@@ -118,6 +171,18 @@ module.exports = async function handler(req, res) {
     const id = String(body.id || '');
     if (!ID_RE.test(id)) return send(res, 400, { error: 'Ungültige ID.' });
     const k = pub(id), now = Date.now();
+    const code = String(body.code || '').toUpperCase();
+
+    // Vor der Bremse: Der Stream ist eine einzelne lange Anfrage und soll dem nächsten sync nicht im Weg stehen.
+    // Nur für Mitglieder der Lobby, damit niemand unsichtbar mitlesen kann.
+    if (body.action === 'stream') {
+      if (!CODE_RE.test(code)) return send(res, 400, { error: 'Ungültiger Lobby-Code.' });
+      const [meta, member] = await redis([['GET', 'lobby:' + code], ['HEXISTS', `lobby:${code}:p`, k]]);
+      if (!meta) return send(res, 404, { error: 'Diese Lobby gibt es nicht (mehr).' });
+      if (!member) return send(res, 410, { error: 'Du bist nicht mehr in dieser Lobby.' });
+      if (streamCount >= MAX_STREAMS) return send(res, 503, { error: 'Lobby-Server gerade nicht erreichbar.' });
+      return openStream(res, code, k);
+    }
 
     // Bremse: höchstens eine Anfrage pro Spieler und Sekunde
     const [ok] = await redis([['SET', 'lobby:rl:' + k, '1', 'NX', 'PX', 900]]);
@@ -141,12 +206,13 @@ module.exports = async function handler(req, res) {
       return send(res, 503, { error: 'Gerade kein Lobby-Code frei, bitte nochmal.' });
     }
 
-    const code = String(body.code || '').toUpperCase();
     if (!CODE_RE.test(code)) return send(res, 400, { error: 'Ungültiger Lobby-Code.' });
     const L = 'lobby:' + code, P = L + ':p', F = L + ':feed';
 
     if (body.action === 'leave') {
       await redis([['HDEL', P, k]]);
+      closeStream(code, k);
+      publish(code, k, () => ({ gone: [k] }));
       return send(res, 200, { ok: true });
     }
 
@@ -159,6 +225,7 @@ module.exports = async function handler(req, res) {
       if (act.length >= MAX_PLAYERS) return send(res, 409, { error: 'Die Lobby ist voll (8 Angler).' });
       const p = { ...cleanMe(body.me), name, t: now };
       await redis([['HSET', P, k, JSON.stringify(p)], ['EXPIRE', P, TTL], ['EXPIRE', L, TTL]]);
+      publish(code, k, () => ({ p: shown(p, k) }));
       return send(res, 200, { ok: true, me: k });
     }
 
@@ -180,6 +247,7 @@ module.exports = async function handler(req, res) {
       const fresh = { id: crypto.randomBytes(5).toString('hex'), max: Math.round(BOSS_HP * (1 + .5 * st)) * Math.max(1, onSea), ends: now + BOSS_MS, by: k, st };
       const [made] = await redis([['SET', B, JSON.stringify(fresh), 'NX', 'PX', BOSS_MS + 5000]]);
       if (made !== 'OK') return send(res, 409, { error: 'Gerade taucht schon ein Odfisch auf – nochmal versuchen.' });
+      publish(code, k, (to) => ({ boss: bossView(fresh, [], to, now) }));
       return send(res, 200, { boss: bossView(fresh, [], k, now), fresh: true });
     }
 
@@ -216,7 +284,16 @@ module.exports = async function handler(req, res) {
       const gone = [];
       for (let i = 0; i < hash.length; i += 2) { try { if (now - JSON.parse(hash[i + 1]).t > GONE_MS) gone.push(hash[i]); } catch { gone.push(hash[i]); } }
       if (gone.length) await redis([['HDEL', P, ...gone]]);
+      for (const g of gone) closeStream(code, g);
       const parse = (l) => l.map((x) => { try { return JSON.parse(x); } catch { return null; } }).filter(Boolean);
+      const bossDmg = b ? out[out.length - 1] : null;
+      publish(code, k, (to) => ({
+        p: shown(p, k),
+        gone: gone.length ? gone : undefined,
+        feed: ev ? parse(feedRaw) : undefined,
+        chat: msg ? parse(chatRaw) : undefined,
+        boss: b ? bossView(b, bossDmg, to, now) : undefined,
+      }));
       return send(res, 200, { players: players(hash, now).map(({ t, ...rest }) => rest), feed: parse(feedRaw), chat: parse(chatRaw), me: k, now, boss });
     }
 
