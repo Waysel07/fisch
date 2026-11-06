@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 06.11.2026 · `2026-11-06-8`
+
+- ⏹ Sport stations: new “Stop & score” button – end a round any time and your points so far count for the result. No more waiting for the timer to run out in the island flight.
+
 ## 06.11.2026 · `2026-11-06-7`
 
 - 👤 Player profiles: tap a name on the leaderboard to see their profile – character, rank, title, level, play time, biggest catch, favourite fish and every placing.

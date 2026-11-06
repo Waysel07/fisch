@@ -52,7 +52,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
 | `crit` | Kampf gegen eine Lava-Kreatur |
   | `sdrill` | Fang-Drill (Sport-Minispiel im Modal `#sport`) |
 
-  Die Sportstationen der Sonneninsel sind kein eigener `state`: Sie laufen im Modal `#sport` (`sportPlaying()`, `sportTick(dt)` aus `frame()`), das Angeln steht so lange still. Das Modal nutzt denselben Slot-Look wie die übrigen Karten (`.sport-card`, `.sport-mode`, `.sport-stamps li` auf `var(--slot)`); Stationen lassen sich auch auf der Minikarte antippen (`sportMiniMap`).
+  Die Sportstationen der Sonneninsel sind kein eigener `state`: Sie laufen im Modal `#sport` (`sportPlaying()`, `sportTick(dt)` aus `frame()`), das Angeln steht so lange still. Das Modal nutzt denselben Slot-Look wie die übrigen Karten (`.sport-card`, `.sport-mode`, `.sport-stamps li` auf `var(--slot)`); Stationen lassen sich auch auf der Minikarte antippen (`sportMiniMap`). Der Knopf `#sport-stop` („Beenden & werten“) setzt `g.over`, die Runde wird dann mit den bisherigen Punkten gewertet; `score(g)` muss deshalb jederzeit einen gültigen Zwischenstand liefern.
 
   `update(dt)` schaltet diese Zustände um, `draw()` zeichnet sie. Modals sperren je nach Zustand (`toggleModal`).
 - **Welt und Zeichnen:**

@@ -235,6 +235,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-06-8', date: '06.11.2026', items: [
+      '⏹ Sportstationen: Neuer Knopf „Beenden & werten“ – beende eine Runde jederzeit, deine Punkte bis dahin zählen fürs Ergebnis. Kein Warten mehr, bis die Zeit beim Inselflug abläuft.',
+    ] },
     { id: '2026-11-06-7', date: '06.11.2026', items: [
       '👤 Spielerprofile: Tippe in der Bestenliste auf einen Namen und sieh dir das Profil an – Spielfigur, Rang, Titel, Level, Spielzeit, größter Fang, Lieblingsfisch und alle Platzierungen.',
       '🙋 Mit „Mein Profil“ in der Bestenliste siehst du, was andere von dir sehen. Dein Profil erscheint beim nächsten Spielen.',
@@ -4112,6 +4115,8 @@
     return true;
   }
   const sportPlaying = () => sp && !sp.done && !$('sport').hidden;
+  // ⏹ ends the round now; the points so far count as the result (in a catch drill: landed if they reach the goal)
+  $('sport-stop').addEventListener('click', e => { e.stopPropagation(); if (!sportPlaying() || sp.g.over) return; sp.phase = 'play'; sp.g.over = true; sfx.tick(); });
   function sportDiff(s, lvl) { return clamp(sportRec(s.id).lv / 2500 * .7 + [0, .1, .25, .45][lvl], 0, 1); }
   function startSport(id, mode, lvl) {
     SPORT_BG.forEach(worldImg);

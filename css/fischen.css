@@ -1106,6 +1106,11 @@ button#btn-boss:hover { background: #be123c; }
 #sport-cv { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; image-rendering: pixelated; border: 3px solid var(--ink); box-shadow: 0 4px 0 var(--ink); touch-action: none; background: #0e7490; }
 #sport-result { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .15rem; padding: .75rem; text-align: center; background: rgba(15, 23, 42, .86); color: #fff; overflow-y: auto; }
 #sport-result[hidden] { display: none; }
+/* stop button: ends the round early and scores the points so far */
+.sport-stop { display: block; margin: .75rem 0 0 auto; font: 700 .8rem/1 'Poppins', sans-serif; color: #fff; background: var(--slot, #1e293b); border: 2px solid var(--ink); box-shadow: 0 3px 0 var(--ink); padding: .45rem .7rem; cursor: pointer; }
+.sport-stop:hover { background: #b91c1c; }
+.sport-stop:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+#sport-play.done .sport-stop { visibility: hidden; }
 #sport-result p { margin: 0; }
 #sport-result .sub { color: #cbd5e1; }
 /* hub and station page use the same inset wells as cards and quests elsewhere (--slot, ink frame) */
@@ -1228,7 +1233,7 @@ button#btn-boss:hover { background: #be123c; }
 /* while a round runs the window wraps the game tightly: slim header, the canvas as big as the screen allows */
 #sport.playing { padding: .5rem; }
 #sport.playing .sport-sheet {
-  max-width: none; width: min(100%, 64rem, calc((100dvh - 7rem) * 16 / 9 + 2rem));
+  max-width: none; width: min(100%, 64rem, calc((100dvh - 9.5rem) * 16 / 9 + 2rem));
   max-height: calc(100dvh - 1rem); overflow: hidden; padding: .7rem 1rem 1rem;
 }
 #sport.playing #sport-title {
@@ -1241,7 +1246,7 @@ button#btn-boss:hover { background: #be123c; }
 #sport.playing .close { top: .55rem; right: .6rem; }
 #sport.playing #sport-cv { border-width: 4px; box-shadow: 0 0 0 0 transparent, 0 6px 0 rgba(0,0,0,.4); }
 @media (max-height: 520px) {
-  #sport.playing .sport-sheet { width: min(100%, calc((100dvh - 4.4rem) * 16 / 9 + 1.4rem)); padding: .45rem .7rem .7rem; }
+  #sport.playing .sport-sheet { width: min(100%, calc((100dvh - 6.6rem) * 16 / 9 + 1.4rem)); padding: .45rem .7rem .7rem; }
   #sport.playing #sport-title { font-size: 1rem; line-height: 1.3rem; }
   #sport.playing #sport-sub { -webkit-line-clamp: 1; margin: .1rem auto .35rem; font-size: .75rem; }
   #sport.playing .close { top: .35rem; right: .45rem; width: 1.7rem; height: 1.7rem; }
