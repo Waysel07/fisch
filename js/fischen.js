@@ -233,6 +233,17 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-06-2', date: '06.11.2026', items: [
+      '🧭 Aufgeräumte Leiste oben: Taler und Level, Uhrzeit und Wetter sowie das Menü sitzen jetzt in drei festen Leisten statt in vielen einzelnen Kästchen. „Gespeichert“ erscheint klein unten rechts, und auf dem Handy im Hochformat sitzt das Meer direkt unter der Leiste.',
+      '🛒 Die Reiter im Laden stehen als gleichmäßiger Block nebeneinander, der Taler-Stand daneben.',
+      '🏅 Größere Minispiele: Während einer Runde ist das Spielfeld so groß, wie der Bildschirm erlaubt, und passt auf dem Handy im Querformat jetzt ganz auf den Schirm.',
+      '🥇 Neue Ergebnis-Karte nach jeder Runde: in der Farbe deiner Medaille, mit großer Punktzahl, den drei Medaillen-Grenzen (wie knapp war die nächste?), Können, Taler und EP. Auf jeder Station steht der Bestwert direkt beim Modus.',
+      '💪 Die Kraft-Anzeige beim Frisbee und der Atem beim Bogenschießen sind jetzt richtige Pixel-Anzeigen mit Rahmen; ist die Kraft voll, blinkt der Rahmen.',
+    ] },
+    { id: '2026-11-06-1', date: '06.11.2026', items: [
+      '🥏 Frisbee ganz neu: Im Zielring wirfst du 8 Scheiben auf drei schwimmende Ziele (nah 2, mittel 3, weit 5 Punkte), die Mitte zählt doppelt, Treffer in Folge geben Bonus und Ballons in der Luft +3. Geworfen wird wie mit einer Schleuder, mit Vorschau der Flugbahn, und die Scheibe fliegt doppelt so schnell. Im Weitwurf hüpft eine flache, harte Scheibe übers Wasser.',
+      '🎮 Alle Minispiele fühlen sich besser an: Konfetti, Spritzer, aufsteigende Punkte, Wackeln und Aufblitzen bei Treffern, und beim Countdown steht, wie man spielt. Bowling wird jetzt mit einem Wisch nach oben geworfen, beim Beachvolleyball spielst du den Ball von selbst zurück und tippst nur noch für den Schmetterball, beim Tischtennis gibt schnelles Schwingen einen Schmetterball. Surfen: Die Kante der Welle hebt und senkt sich, Punkte gibt es vor allem direkt darunter, Tricks gehen überall im goldenen Bereich. Jetski: Kombo-Anzeige und Bonus für Tore genau durch die Mitte. Rundflug: kürzer, jeder Ballon bringt 4 Sekunden, ein Pfeil zeigt zum nächsten. Bogenschießen: Pfeile fliegen sichtbar, Ballons geben Ketten.',
+    ] },
     { id: '2026-11-05-12', date: '05.11.2026', items: [
       '🏝️ Mehr Insel als je zuvor: Auf der Inselkarte gibt es jetzt eine Hafenstadt mit Rathaus, Markt und Booten am Kai, eine Ferienanlage mit Pool und Wasserbungalows, einen Flugplatz, ein Stadion, Felder mit Windmühle, Obstgärten, eine glühende Lavarinne am Vulkan, Sonnenschirme, Segelboote und kleine Nachbarinseln. Im Rundflug gibt es überall etwas zu entdecken.',
       '🏐 Schönere Minispiele: Bälle, Pins, Bojen, Ballons und die Frisbee-Scheibe haben Licht und Schatten, die Zielscheibe steht auf einem Holzgestell, und beim Beachvolleyball und Bogenschießen jubeln Zuschauer bei jedem Punkt. Die Surfwelle bricht jetzt sichtbar, mit Lippe, Gischt und Weißwasser, über den Stränden ziehen Möwen und Segler, und die Anzeigen sind auf dunklem Grund besser zu lesen.',
@@ -3345,50 +3356,104 @@
     sx.drawImage(face, snap(192 - face.width / 4), snap(100 - face.height / 4), face.width / 2, face.height / 2);
   }
   // the sports: start(g) sets up, update(g, dt, I) plays, draw(g) paints, score(g) is the result; stamps get checked on g at the end
+  // Frisbee helpers: throw speed, glide (a fast disc floats), and the three floating targets (near, mid, far)
+  const frisV = (g, pow = g.pow) => 50 + pow * (g.mode ? 140 : 100);
+  const frisG = d => 70 - 30 * Math.min(1, Math.abs(d.vx) / 150);
+  function frisTarget(g, k) {
+    const [lo, hi] = [[120, 190], [200, 270], [280, 355]][k], w = [13, 11, 9][k] - g.d * 3;
+    return { k, lo, hi, x: rnd(lo, hi), w, base: [2, 3, 5][k], col: ['#22c55e', '#3b82f6', '#ef4444'][k], vx: g.d > .3 && Math.random() < .6 ? rnd(-1, 1) * (6 + g.d * 14) : 0, pop: 0 };
+  }
+  // the lip of the surf wave rises and falls in sections, so you have to follow it (x on screen, scroll of the wave)
+  const surfLip = (x, sc) => 72 + Math.sin(x * .02 + sc * .03 - 2.6) * 6 + Math.sin(x * .011 - sc * .021) * 8 + Math.max(0, 120 - x) * .12;
+  const SURF_TRICKS = ['Kickflip!', 'Aerial!', '360!', 'Cutback!', 'Floater!', 'Tube-Ride!'].map(n => tr(n));
   const SPORTS = [
     { id: 'frisbee', icon: '🥏', name: 'Frisbee', st: 0, modes: ['Zielring', 'Weitwurf'],
-      info: 'Halten für Kraft, loslassen, wenn der Winkel passt. Pelle fliegt der Scheibe hinterher.',
-      exp: [lv => 12 + lv * .006, lv => 180 + lv * .07], med: [[12, 17, 22], [207, 261, 324]], champ: [25, 369],
+      info: 'Zieh wie mit einer Schleuder und lass los. Zielring: 8 Scheiben auf drei schwimmende Ziele, je weiter, desto mehr Punkte, die Mitte zählt doppelt, Treffer in Folge geben Bonus, Ballons in der Luft +3. Weitwurf: flach und hart geworfen hüpft die Scheibe übers Wasser.',
+      ctl: 'Ziehen & loslassen = Wurf',
+      exp: [lv => 14 + lv * .009, lv => 200 + lv * .07], med: [[14, 24, 36], [240, 300, 370]], champ: [44, 420],
       stamps: [['f1', 'Erster Treffer im Zielring', g => g.hits > 0], ['f2', 'Ein Volltreffer in die Mitte', g => g.bulls > 0], ['f3', '5 Treffer im Zielring hintereinander', g => g.mode === 0 && g.maxStreak >= 5],
         ['f4', '40 Punkte im Zielring', g => g.mode === 0 && g.pts >= 40], ['f5', 'Weitwurf über 300 m', g => g.mode === 1 && g.far >= 300]],
-      start(g) { g.n = g.mode ? 3 : 5; g.i = 0; g.pts = 0; g.hits = 0; g.streak = 0; g.maxStreak = 0; g.bulls = 0; g.far = 0; g.pow = 0; g.dis = null; g.peX = 20; g.newThrow = true; },
+      start(g) {
+        Object.assign(g, { n: g.mode ? 3 : 8, i: 0, pts: 0, hits: 0, streak: 0, maxStreak: 0, bulls: 0, far: 0, pow: 0, dis: null, peX: 20, newThrow: true, ang: .55, tg: [], bal: null, skips: 0 });
+        if (!g.mode) for (let k = 0; k < 3; k++) g.tg.push(frisTarget(g, k));
+      },
       update(g, dt, I) {
-        if (g.newThrow) { g.newThrow = false; g.st = 'aim'; g.pow = 0; g.dis = null; g.ring = g.mode ? 0 : clamp(150 + g.i * 32 + g.d * 50 + rnd(-15, 15), 140, 350); g.wind = rnd(-1, 1) * (3 + g.d * 16); g.pop = null; }
+        for (const tg of g.tg) { if (tg.vx) { tg.x += tg.vx * dt; if (tg.x < tg.lo || tg.x > tg.hi) { tg.vx = -tg.vx; tg.x = clamp(tg.x, tg.lo, tg.hi); } } if (tg.pop > 0 && (tg.pop -= dt) <= 0) Object.assign(tg, frisTarget(g, tg.k)); }
+        if (g.newThrow) { g.newThrow = false; g.st = 'aim'; g.pow = 0; g.dis = null; g.drag = null; g.hold = 0; g.skips = 0; g.wind = rnd(-1, 1) * (3 + g.d * 14); g.bal = !g.mode && Math.random() < .6 ? { x: rnd(150, 320), y: rnd(70, 115) } : null; }
         if (g.st === 'aim') {
-          g.ang = .25 + .6 * (.5 + .5 * Math.sin(g.t * (2.2 + g.d * 2.4)));
-          if (I.down) g.pow = Math.min(1, g.pow + dt * .85);
-          if (I.rel && g.pow > .05) { const v = 50 + g.pow * (g.mode ? 140 : 100); g.dis = { x: 30, y: 148, vx: v * Math.cos(g.ang), vy: -v * Math.sin(g.ang) }; g.st = 'fly'; sfx.whoosh(); }
+          // slingshot: pull back (or push forward), the vector sets angle and power; holding still charges
+          if (I.keys.arrowup) g.ang = Math.min(1.2, g.ang + dt * .9); if (I.keys.arrowdown) g.ang = Math.max(.1, g.ang - dt * .9);
+          if (I.tap) { g.drag = { x: I.x, y: I.y, on: false }; g.hold = 0; g.pow = 0; }
+          if (I.down && g.drag) {
+            g.hold += dt; let vx = g.drag.x - I.x, vy = g.drag.y - I.y; if (vx < 0) { vx = -vx; vy = -vy; }
+            const len = Math.hypot(vx, vy);
+            if (len > 6) g.drag.on = true;
+            if (g.drag.on) { g.ang = clamp(Math.atan2(-vy, vx), .1, 1.2); g.pow = clamp(len / 80, 0, 1); }
+            else g.pow = Math.min(1, g.hold * .85);
+          }
+          if (I.rel && g.drag) {
+            if (g.pow > .06) { const v = frisV(g); g.dis = { x: 30, y: 148, vx: v * Math.cos(g.ang), vy: -v * Math.sin(g.ang) }; g.st = 'fly'; sfx.whoosh(); }
+            g.drag = null;
+          }
         } else if (g.st === 'fly') {
-          const d = g.dis; d.vx += g.wind * dt; d.vy += (70 - 30 * Math.min(1, Math.abs(d.vx) / 150)) * dt; d.x += d.vx * dt; d.y += d.vy * dt;
-          g.peX += (d.x - 8 - g.peX) * Math.min(1, dt * 3);
+          const d = g.dis, cam = g.mode ? Math.max(0, d.x - 260) : 0;
+          for (let k = 0; k < 2; k++) { // the flight runs at double speed: no waiting around
+            const h = dt * .95; d.vx += g.wind * h; d.vy += frisG(d) * h; d.x += d.vx * h; d.y += d.vy * h;
+            if (g.bal && Math.hypot(d.x - g.bal.x, d.y - g.bal.y) < 8) { g.pts += 3; burst(g.bal.x, g.bal.y, BAL_COL.r.slice(0, 3), 14, 60, 60); spop('+3', g.bal.x, g.bal.y - 10, '#fde047', 10); sfx.plip(); g.bal = null; }
+            if (d.y >= 160 && g.mode && d.vy < 95 && d.vx > 55 && g.skips < 5) { // a flat, fast disc skips off the water
+              g.skips++; d.y = 159; d.vy = -Math.max(18, d.vy * .5); d.vx *= .8; burst(d.x - cam, 160, ['#ffffff', '#e0fffa', '#7dd3fc'], 10, 45); spop(tr('Hüpfer!'), d.x - cam, 146, '#7dd3fc', 8); sfx.plip();
+            }
+            if (d.y >= 160 || (!g.mode && d.x > 380) || d.x < 4) break;
+          }
+          g.peX += (d.x - 8 - g.peX) * Math.min(1, dt * 5);
           if (d.y >= 160 || (!g.mode && d.x > 380) || d.x < 4) {
-            d.y = Math.min(d.y, 160); const m = Math.max(0, Math.round((d.x - 30) * .5));
-            if (g.mode) { g.pts += m; g.far = Math.max(g.far, m); g.pop = m + ' m'; }
-            else { const dx = Math.abs(d.x - g.ring), p = dx < 5 ? 10 : dx < 12 ? 6 : dx < 22 ? 3 : 0; g.pts += p; if (p) { g.hits++; g.streak++; g.maxStreak = Math.max(g.maxStreak, g.streak); sfx.coin(); } else g.streak = 0; if (p === 10) g.bulls++; g.pop = p ? '+' + p : tr('daneben'); }
+            d.y = Math.min(d.y, 160); const m = Math.max(0, Math.round((d.x - 30) * .5)), X = d.x - (g.mode ? Math.max(0, d.x - 260) : 0);
+            if (g.mode) { const rec = m > g.far && g.i > 0; g.pts += m; g.far = Math.max(g.far, m); spop(m + ' m', X, 140, rec ? '#86efac' : '#fde047', 12); if (rec) spop(tr('Rekord!'), X, 126, '#86efac', 9); if (m >= 300) { burst(X, 156, CONFETTI, 24, 70); sflash('#fde047', .2); } burst(X, 160, ['#e0fffa', '#7dd3fc'], 10, 40); }
+            else {
+              const tg = g.tg.find(o => o.pop <= 0 && Math.abs(d.x - o.x) < o.w);
+              if (tg) {
+                const bull = Math.abs(d.x - tg.x) < 3.5, p = tg.base * (bull ? 2 : 1) + Math.min(g.streak, 5);
+                g.pts += p; g.hits++; g.streak++; g.maxStreak = Math.max(g.maxStreak, g.streak); tg.pop = .7; sfx.coin();
+                burst(tg.x, 156, bull ? CONFETTI : [tg.col, '#ffffff', '#fde047'], bull ? 28 : 16, bull ? 80 : 55);
+                spop('+' + p, tg.x, 140, '#fde047', 13); shake(bull ? 3 : 1.2);
+                if (bull) { g.bulls++; sflash('#fde047', .3); spop(tr('VOLLTREFFER!'), 192, 70, '#fde047', 16); }
+                if (g.streak >= 2) spop(tr('{n}er-Serie', { n: g.streak }), tg.x, 126, '#86efac', 8);
+              } else { g.streak = 0; burst(d.x, 160, ['#e0fffa', '#7dd3fc', '#ffffff'], 10, 45); spop(tr('daneben'), d.x, 146, '#cbd5e1', 9); }
+            }
             g.st = 'land'; g.lt = 0; sfx.splash();
           }
-        } else if (g.st === 'land') { g.lt += dt; if (g.lt > 1) { g.i++; if (g.i >= g.n) g.over = true; else g.newThrow = true; } }
+        } else if (g.st === 'land') { g.lt += dt; if (g.lt > .7) { g.i++; if (g.i >= g.n) g.over = true; else g.newThrow = true; } }
       },
       draw(g) {
         sceneBg('sport-frisbee', 140);
         const cam = g.mode && g.dis ? Math.max(0, g.dis.x - 260) : 0; sx.save(); sx.translate(-cam, 0);
         { const u = worldImg('sport-ufer'); if (imgReady(u)) sx.drawImage(u, 0, 138, 46, 78); else { sand(138, 0, 44); sq(40, 140, 6, 76, '#e2c98d'); } }
-        drawPelle(sq, 12, 148, 0); // the angler is Pelle's buddy: a little figure
+        drawPelle(sq, 12, 148, 0);
         sme(28.5, 144, g.st === 'aim' ? 0 : 1);
-        if (!g.mode && g.ring) { // floating target: three rings of floats seen from the side, a flag in the middle
-          const bob = Math.sin(t * 2) * .4; sx.globalAlpha = .3; sq(g.ring - 23, 161.5, 46, 1.5, '#0b3d5c'); sx.globalAlpha = 1;
-          for (const [w, c, d] of [[22, '#f8fafc', '#94a3b8'], [12, '#ef4444', '#991b1b'], [5, '#facc15', '#a16207']]) for (let x = -w; x < w; x += 2) { sq(g.ring + x, 159 + bob, 2, 2, (x / 2 + w) % 4 < 2 ? c : d); sq(g.ring + x, 159 + bob, 2, .5, '#ffffff'); }
-          sq(g.ring - .5, 149 + bob, 1, 10, '#78350f'); sq(g.ring + .5, 149 + bob + Math.sin(t * 5) * .3, 5, 3, '#ef4444'); sq(g.ring + .5, 149 + bob, 5, .5, '#fca5a5'); }
-        if (g.mode) for (let m = 50; m <= 450; m += 50) { const x = 30 + m * 2; sq(x, 158, .5, 4, '#f8fafc'); stext(m + ' m', x, 170, '#f8fafc', 6); }
+        for (const tg of g.tg) { // floating targets: rings of floats seen from the side, a flag with the points
+          if (tg.pop > 0) continue;
+          const bob = Math.sin(t * 2 + tg.k) * .4, w = Math.round(tg.w); sx.globalAlpha = .3; sq(tg.x - w - 1, 161.5, w * 2 + 2, 1.5, '#0b3d5c'); sx.globalAlpha = 1;
+          for (let x = -w; x < w; x += 2) { const inner = Math.abs(x + 1) < 3.5; sq(tg.x + x, 159 + bob, 2, 2, inner ? '#facc15' : (x / 2 + w) % 4 < 2 ? tg.col : '#f8fafc'); sq(tg.x + x, 159 + bob, 2, .5, '#ffffff'); }
+          sq(tg.x - .5, 147 + bob, 1, 12, '#78350f'); sq(tg.x + .5, 147 + bob + Math.sin(t * 5 + tg.k) * .3, 8, 6, tg.col); stext(String(tg.base), tg.x + 4.5, 152.5 + bob, '#fff', 6);
+        }
+        if (g.bal) sballoon(g.bal.x, g.bal.y + Math.sin(t * 2) * 2, 'r');
+        if (g.mode) for (let m = 50; m <= 600; m += 50) { const x = 30 + m * 2; sq(x, 158, .5, 4, '#f8fafc'); stext(m + ' m', x, 170, '#f8fafc', 6); }
         sx.restore();
-        const wl = clamp(g.wind / 20, -1, 1); stext(tr('Wind'), 340, 14, '#fff', 7); sq(340, 18, Math.abs(wl) * 30 * Math.sign(wl) || .5, 2, '#38bdf8'); sq(340 + wl * 30 - (wl < 0 ? 0 : 1), 17, 1.5, 4, '#38bdf8');
+        { const wl = clamp(g.wind / 18, -1, 1), cx = 352; sx.globalAlpha = .5; sq(cx - 26, 6, 52, 22, '#0b1030'); sx.globalAlpha = 1; stext(tr('Wind'), cx, 14, '#fff', 7);
+          const L = Math.abs(wl) * 20, dir = Math.sign(wl) || 1; sq(cx - (dir < 0 ? L : 0), 20, Math.max(1, L), 2, '#7dd3fc'); for (let k = 0; k < 3; k++) sq(cx + dir * (L - k) - .5, 19 - (2 - k) * .7 + .7, 1, 2 + (2 - k) * 1.4 - 1.4, '#7dd3fc'); }
         sx.save(); sx.translate(-cam, 0);
-        if (g.st === 'aim') { for (let i = 0; i < 9; i++) sq(31 + Math.cos(g.ang) * i * 3, 128 - Math.sin(g.ang) * i * 3, 1, 1, '#facc15'); smeter(9, 111, 28, 5, g.pow, tr('Kraft')); sq(31, 129, 5, 1.5, '#f97316'); }
+        if (g.st === 'aim') {
+          // the start of the flight path (no wind): enough to aim, the rest is feel
+          const v = frisV(g, Math.max(.06, g.pow)), d = { x: 30, y: 148, vx: v * Math.cos(g.ang), vy: -v * Math.sin(g.ang) };
+          for (let i = 0; i < (g.mode ? 14 : 18); i++) { for (let k = 0; k < 4; k++) { d.vy += frisG(d) * .015; d.x += d.vx * .015; d.y += d.vy * .015; } if (d.y > 160) break; sx.globalAlpha = 1 - i / 22; sq(d.x - 1, d.y - 1, 2, 2, '#1b1f2e'); sq(d.x - .5, d.y - .5, 1.5, 1.5, i % 2 ? '#fde047' : '#ffffff'); }
+          sx.globalAlpha = 1; smeter(9, 111, 28, 5, g.pow, tr('Kraft')); sq(31, 129, 5, 1.5, '#f97316');
+        }
         if (g.dis && g.st !== 'aim') { const d = g.dis; sspr(BALLS.disc(), d.x, d.y - .5); if (Math.floor(t * 12) % 2) sq(d.x - 1, d.y - 1.5, 2, .5, '#fff7ed'); drawPelle(sq, g.peX, d.y + 4, 0, true, 1); }
-        if (g.pop && g.dis) stext(g.pop, g.dis.x, 150 - g.lt * 10, '#fde047', 9);
         sx.restore();
-        if (g.mode && g.dis && g.st === 'fly') stext(Math.max(0, Math.round((g.dis.x - 30) * .5)) + ' m', 192, 28, '#fde047', 9);
-        shud(tr('Wurf {a}/{b}', { a: Math.min(g.n, g.i + 1), b: g.n }), 192, 14, '#fff', 8);
+        if (g.st === 'aim' && g.drag && g.drag.on && SIN.down) { sx.globalAlpha = .6; for (let k = 0; k <= 1; k += .1) sq(g.drag.x + (SIN.x - g.drag.x) * k - .5, g.drag.y + (SIN.y - g.drag.y) * k - .5, 1, 1, '#ffffff'); sx.globalAlpha = 1; sdisc(g.drag.x, g.drag.y, 2, '#fde047'); }
+        if (g.mode && g.dis && g.st === 'fly') shud(Math.max(0, Math.round((g.dis.x - 30) * .5)) + ' m' + (g.skips ? ' · ' + tr('{n}× gehüpft', { n: g.skips }) : ''), 192, 30, '#fde047', 9);
+        shud(g.mode ? tr('Wurf {a}/{b}', { a: Math.min(g.n, g.i + 1), b: g.n }) : tr('Scheibe {a}/{b} · {p} Punkte', { a: Math.min(g.n, g.i + 1), b: g.n, p: g.pts }), 192, 14, '#fff', 8);
+        if (!g.mode && g.streak >= 2) shud(tr('Serie ×{n}', { n: g.streak }), 8, 14, '#86efac', 8, 'left');
       },
       score: g => g.mode ? g.far : g.pts },
     { id: 'turnier', icon: '🎣', name: 'Angelturnier', st: 0, modes: ['Fünf Fänge', 'Größter Fang'], fishing: true,
@@ -3398,19 +3463,20 @@
         ['a4', 'Einen Legendären im Turnier gefangen', g => g.leg], ['a5', 'Einen Shiny im Turnier gefangen', g => g.shiny]],
       score: g => g.mode ? g.best * 3 : g.pts },
     { id: 'flug', icon: '✈️', name: 'Rundflug', st: 0, modes: ['Erkunden', 'Nachtflug'],
-      info: 'Flieg mit dem Wasserflugzeug über die Insel und sammle Aussichtsballons: 2 Punkte pro Ballon, 5 extra für neue. Gefundene bleiben für immer.',
+      info: 'Flieg mit dem Wasserflugzeug über die Insel und sammle Aussichtsballons: 2 Punkte pro Ballon, 5 extra für neue, jeder Ballon bringt 4 Sekunden. Der Pfeil zeigt zum nächsten. Gefundene bleiben für immer.',
+      ctl: 'Finger zeigt die Richtung · Tippen = Boost',
       exp: [lv => 20 + lv * .01, lv => 10 + lv * .004], med: [[20, 29, 36], [10, 14, 18]], champ: [41, 20], mode2: () => save.ipoints.filter(i => i < 30).length >= 30,
       stamps: [['r1', 'Ersten Aussichtspunkt gefunden', () => save.ipoints.length >= 1], ['r2', '10 Aussichtspunkte gefunden', () => save.ipoints.filter(i => i < 30).length >= 10],
         ['r3', '20 Aussichtspunkte gefunden', () => save.ipoints.filter(i => i < 30).length >= 20], ['r4', 'Alle 30 Aussichtspunkte gefunden', () => save.ipoints.filter(i => i < 30).length >= 30],
         ['r5', 'Nachtflug: alle 10 Nachtpunkte gefunden', () => save.ipoints.filter(i => i >= 30).length >= 10]],
-      start(g) { g.x = MAP_W / 2; g.y = MAP_H - 40; g.a = -Math.PI / 2; g.time = g.mode ? 150 : 180; g.pts = 0; g.got = new Set(); g.boost = 0; g.cool = 0; g.msg = ''; g.msgT = 0; islandMap(); },
+      start(g) { g.x = MAP_W / 2; g.y = MAP_H - 40; g.a = -Math.PI / 2; g.time = g.mode ? 90 : 110; g.pts = 0; g.got = new Set(); g.chain = 0; g.lastGet = -9; g.boost = 0; g.cool = 0; g.msg = ''; g.msgT = 0; islandMap(); },
       update(g, dt, I) {
         g.time -= dt; if (g.time <= 0) { g.over = true; return; }
         let want = null;
         if (I.down || I.moved > 0) want = Math.atan2(I.y - 108, I.x - 192);
         if (I.keys.arrowleft) g.a -= 2 * dt; if (I.keys.arrowright) g.a += 2 * dt;
         if (want !== null) { let da = want - g.a; while (da > Math.PI) da -= Math.PI * 2; while (da < -Math.PI) da += Math.PI * 2; g.a += clamp(da, -2 * dt, 2 * dt); }
-        if (I.tap && g.cool <= 0) { g.boost = 1.2; g.cool = 3.5; sfx.whoosh(); }
+        if (I.tap && g.cool <= 0) { g.boost = 1.4; g.cool = 2.5; sfx.whoosh(); shake(1); }
         g.boost -= dt; g.cool -= dt; g.msgT -= dt;
         const v = g.boost > 0 ? 125 : 72; g.x += Math.cos(g.a) * v * dt; g.y += Math.sin(g.a) * v * dt;
         if (g.x < 10 || g.x > MAP_W - 10 || g.y < 10 || g.y > MAP_H - 10) { g.x = clamp(g.x, 10, MAP_W - 10); g.y = clamp(g.y, 10, MAP_H - 10); g.a += Math.PI * dt * 3; }
@@ -3418,8 +3484,11 @@
           if ((p.night ? 1 : 0) !== g.mode || g.got.has(p.i) || Math.hypot(p.x - g.x, p.y - g.y) > 11) continue;
           if (stampCount() < INSEL_BAYS[p.bay - 1].st) { if (g.msgT < 0) { g.msg = tr('🔒 Hinter den Wolken: {b} (ab {n} Stempeln)', { b: INSEL_BAYS[p.bay - 1].name, n: INSEL_BAYS[p.bay - 1].st }); g.msgT = 1.5; } continue; }
           g.got.add(p.i);
-          g.pts += 2;
-          if (!save.ipoints.includes(p.i)) { save.ipoints.push(p.i); g.pts += 5; g.msg = ipointText(p); g.msgT = 2.6; sfx.coin(); }
+          g.pts += 2; g.time += 4; g.chain = g.t - g.lastGet < 8 ? g.chain + 1 : 1; g.lastGet = g.t;
+          const X = p.x - clamp(g.x - W / 2, 0, MAP_W - W), Y = p.y - clamp(g.y - H / 2, 0, MAP_H - H);
+          burst(X, Y - 3, p.night ? ['#fde047', '#fffbeb'] : ['#f43f5e', '#fda4af', '#ffffff'], 14, 55, 40);
+          spop('+4 s', X, Y - 12, '#86efac', 8); if (g.chain > 1) spop(tr('{n}er-Kette', { n: g.chain }), X, Y - 22, '#fde047', 8);
+          if (!save.ipoints.includes(p.i)) { save.ipoints.push(p.i); g.pts += 5; g.msg = ipointText(p); g.msgT = 2.6; sfx.coin(); sflash('#fde047', .18); spop(tr('NEU! +7'), X, Y - 32, '#fde047', 10); }
           else sfx.plip();
         }
       },
@@ -3446,6 +3515,15 @@
         for (let v = -4; v <= 4; v += .5) { const [a, b] = at(-7, v); sq(a - .5, b - .5, 1.5, 1.5, '#ef4444'); }
         { const [a, b] = at(9, 0); sq(a - .5, b - .5, 1.5, 1.5, Math.floor(t * 20) % 2 ? '#94a3b8' : '#e2e8f0'); }
         if (g.boost > 0) for (let i = 1; i < 6; i++) { const [a, b] = at(-8 - i * 3, rnd(-1, 1)); sx.globalAlpha = .6 - i * .1; sq(a - 1, b - .5, 2, 1, '#ffffff'); sx.globalAlpha = 1; }
+        // compass: an arrow at the screen edge toward the nearest balloon still to get
+        { let best = null, bd = 1e9; for (const p of IPOINTS) { if ((p.night ? 1 : 0) !== g.mode || g.got.has(p.i) || stampCount() < INSEL_BAYS[p.bay - 1].st) continue; const d = Math.hypot(p.x - g.x, p.y - g.y); if (d < bd) { bd = d; best = p; } }
+          if (best) { const PX = best.x - cxm, PY = best.y - cym;
+            if (PX < 8 || PX > W - 8 || PY < 22 || PY > H - 8) {
+              const a = Math.atan2(PY - Y, PX - X), c = Math.cos(a) || 1e-6, n = Math.sin(a) || 1e-6;
+              const d = Math.min(c > 0 ? (W - 14 - X) / c : (14 - X) / c, n > 0 ? (H - 14 - Y) / n : (30 - Y) / n), ax = clamp(X + c * d, 14, W - 14), ay = clamp(Y + n * d, 30, H - 14), pulse = 1 + Math.sin(t * 6) * .2;
+              sx.globalAlpha = .5; sdisc(ax, ay, 6.5 * pulse, '#0b1030'); sx.globalAlpha = 1;
+              for (let i = 0; i < 7; i++) { const w = (7 - i) * .75 + .5; sq(ax + c * (i - 3) * 1.1 - w / 2, ay + n * (i - 3) * 1.1 - w / 2, w, w, g.mode ? '#fde047' : '#f43f5e'); }
+              stext(String(Math.round(bd / 10)), ax - c * 12, ay - n * 12 + 3, '#fff', 6); } } }
         if (g.msgT > 0) { sq(20, 186, W - 40, 20, 'rgba(15,23,42,.85)'); stext(g.msg, W / 2, 199, '#fde047', 8); }
         stext(tr('⏱ {s} s · ⭐ {p}', { s: Math.ceil(g.time), p: g.pts }), 192, 14, '#fff', 8);
         stext(tr('Gefunden: {a}/{b}', { a: save.ipoints.filter(i => (i >= 30) === !!g.mode).length, b: g.mode ? 10 : 30 }), 8, 14, '#fff', 7, 'left');
@@ -3453,7 +3531,8 @@
       },
       score: g => g.pts },
     { id: 'jetski', icon: '🚤', name: 'Jetski', st: 4, modes: ['Slalom', 'Ringjagd'],
-      info: 'Lenk durch die Tore aus Bojen. Tippen = über eine Welle springen.',
+      info: 'Lenk durch die Tore aus Bojen, genau durch die Mitte gibt es extra. Jedes Tor in Folge erhöht die Kombo. Tippen = über eine Welle springen.',
+      ctl: 'Finger lenkt · Tippen = Sprung',
       exp: [lv => 120 + lv * .06, lv => 120 + lv * .06], med: [[138, 174, 216], [138, 174, 216]], champ: [246, 246],
       stamps: [['j1', '10 Tore in einer Runde', g => g.passed >= 10], ['j2', 'Slalom ohne verpasstes Tor (mind. 15)', g => g.mode === 0 && g.miss === 0 && g.passed >= 15],
         ['j3', '10 Wellen übersprungen', g => g.jumps >= 10], ['j4', 'Slalom: 300 Punkte', g => g.mode === 0 && g.pts >= 300], ['j5', 'Ringjagd: 30 Ringe', g => g.mode === 1 && g.rings >= 30]],
@@ -3476,9 +3555,13 @@
           o.y += sp * dt;
           if (o.done || o.y < 168) continue;
           o.done = true;
-          if (o.k === 'gate') { if (Math.abs(g.x - o.x) < o.w / 2) { g.passed++; g.combo++; g.pts += 10 + Math.min(10, g.combo); sfx.plip(); o.ok = 1; } else { g.miss++; g.combo = 0; g.pts = Math.max(0, g.pts - 5); g.slow = .5; o.ok = -1; } }
-          else if (o.k === 'wave') { if (Math.abs(g.x - o.x) < o.w / 2) { if (g.jump > 0) { g.jumps++; g.pts += 3; } else { g.slow = .8; sfx.splash(); } } }
-          else if (o.k === 'ring') { if (Math.abs(g.x - o.x) < 13) { g.rings++; g.pts += 10; g.time += 1.2; sfx.coin(); o.ok = 1; } }
+          if (o.k === 'gate') {
+            const off = Math.abs(g.x - o.x);
+            if (off < o.w / 2) { const perf = off < 5; g.passed++; g.combo++; const p = 10 + Math.min(10, g.combo) + (perf ? 5 : 0); g.pts += p; sfx.plip(); o.ok = 1; spop('+' + p, g.x, 156, perf ? '#86efac' : '#fde047', perf ? 11 : 9); if (perf) { spop(tr('Perfekt!'), g.x, 144, '#86efac', 8); sfx.coin(); } burst(g.x, 170, ['#ffffff', '#e0fffa', '#7dd3fc'], perf ? 14 : 8, 50); if (g.combo % 5 === 0) { spop(tr('{n}er-Kombo!', { n: g.combo }), 192, 60, '#fde047', 13); sflash('#fde047', .15); } }
+            else { g.miss++; g.combo = 0; g.pts = Math.max(0, g.pts - 5); g.slow = .5; o.ok = -1; shake(3); sflash('#ef4444', .2); spop('-5', g.x, 156, '#fca5a5', 9); sfx.splash(); }
+          }
+          else if (o.k === 'wave') { if (Math.abs(g.x - o.x) < o.w / 2) { if (g.jump > 0) { g.jumps++; g.pts += 3; spop(tr('Sprung +3'), g.x, 150, '#7dd3fc', 8); burst(g.x, 176, ['#ffffff', '#e0fffa'], 16, 60); } else { g.slow = .8; sfx.splash(); shake(2.5); burst(g.x, 172, ['#ffffff', '#e0fffa'], 18, 70); } } }
+          else if (o.k === 'ring') { if (Math.abs(g.x - o.x) < 13) { g.rings++; g.combo++; g.pts += 10; g.time += 1.2; sfx.coin(); o.ok = 1; spop('+10 · +1 s', g.x, 156, '#fde047', 9); burst(o.x, o.y, ['#fde047', '#f97316', '#fffbeb'], 16, 60, 30); } else g.combo = 0; }
         }
         g.objs = g.objs.filter(o => o.y < H + 20);
         g.wake.unshift({ x: g.x, y: 176 }); if (g.wake.length > 20) g.wake.pop(); for (const w of g.wake) w.y += sp * dt;
@@ -3503,15 +3586,27 @@
         if (Math.random() < .5) { sx.globalAlpha = .6; sq(x - 4 + Math.random() * 8, y + 8 + Math.random() * 3, 1, 1, '#ffffff'); sx.globalAlpha = 1; }
         shud(tr('⏱ {s} s · {p} Punkte', { s: Math.ceil(g.time), p: g.pts }), 192, 14, '#fff', 8);
         shud(g.mode ? tr('Ringe: {n}', { n: g.rings }) : tr('Tore: {n} · verpasst: {m}', { n: g.passed, m: g.miss }), 192, 26, '#fde047', 7);
+        if (g.combo >= 2) shud(tr('Kombo ×{n}', { n: g.combo }), 376, 14, g.combo >= 10 ? '#86efac' : '#fde047', 8, 'right');
+        // speed lines at the edges once the pace picks up
+        const pace = (70 + g.d * 60 + (40 - g.time) * .6) * (g.slow > 0 ? .5 : 1); if (pace > 100) { sx.globalAlpha = .35; for (let i = 0; i < 8; i++) { const y = (i * 41 + g.scroll * 2.2) % H; sq(i % 2 ? 22 : W - 24, y, .5, 10, '#ffffff'); } sx.globalAlpha = 1; }
       },
       score: g => g.pts },
     { id: 'bogen', icon: '🏹', name: 'Bogenschießen', st: 10, modes: ['Scheiben', 'Ballons'],
-      info: 'Zielen, halten zum ruhig Atmen, loslassen zum Schießen. Achte auf den Wind.',
+      info: 'Zielen, halten zum ruhig Atmen, loslassen zum Schießen. Achte auf den Wind. Bei den Ballons gibt schnelles Treffen eine Kette.',
+      ctl: 'Halten = ruhig zielen · Loslassen = Schuss',
       exp: [lv => 24 + lv * .012, lv => 10 + lv * .005], med: [[25, 35, 43], [12, 14, 18]], champ: [49, 20],
       stamps: [['b1', 'Ein Volltreffer (10)', g => g.bulls > 0], ['b2', '3 Volltreffer in einer Runde', g => g.bulls >= 3], ['b3', 'Scheiben: 50 Punkte', g => g.mode === 0 && g.pts >= 50],
         ['b4', 'Ballons: 25 in einer Runde', g => g.mode === 1 && g.pts >= 25], ['b5', 'Alle 6 Pfeile auf 8 oder besser', g => g.mode === 0 && g.shots.length === 6 && g.shots.every(s => s >= 8)]],
       start(g) { g.k = 0; g.shot = 0; g.pts = 0; g.bulls = 0; g.shots = []; g.breath = 1; g.arrows = []; g.ax = 192; g.ay = 100; g.wind = rnd(-1, 1); g.time = 30; g.bal = []; g.spawn = 0; g.fly = 0; },
       update(g, dt, I) {
+        if (g.flying && (g.flying.f += dt / .18) >= 1) { // the arrow lands: thunk, score popup
+          const a = g.flying; g.flying = null; g.arrows.push({ x: a.x, y: a.y, k: a.k }); sfx.tick();
+          spop(a.p ? '+' + a.p : tr('daneben'), a.x, a.y - 8, a.p >= 8 ? '#fde047' : a.p ? '#fff' : '#cbd5e1', a.p >= 8 ? 12 : 9);
+          if (a.p) burst(a.x, a.y, ['#fef3c7', '#d6a35c', '#ffffff'], 6 + a.p, 35);
+          if (a.p === 10) { spop(tr('VOLLTREFFER!'), 192, 50, '#fde047', 16); sflash('#fde047', .3); shake(2.5); burst(a.x, a.y, CONFETTI, 24, 70); sfx.coin(); } else if (a.p) shake(.8);
+          if (g.nextK) { g.nextK = false; g.k++; g.wind = rnd(-1, 1); }
+        }
+        if (g.endT > 0) { if ((g.endT -= dt) <= 0) g.over = true; return; }
         if (I.down || I.moved > 0) { g.ax = I.x; g.ay = I.y; }
         if (I.keys.arrowleft) g.ax -= 90 * dt; if (I.keys.arrowright) g.ax += 90 * dt; if (I.keys.arrowup) g.ay -= 90 * dt; if (I.keys.arrowdown) g.ay += 90 * dt;
         const A = (5 + g.d * 12) * (1 + g.k * .2), calm = I.down && g.breath > 0 ? .3 : g.breath <= 0 && I.down ? 1.6 : 1;
@@ -3520,17 +3615,26 @@
         const aimX = g.ax + g.sx, aimY = g.ay + g.sy;
         g.fly -= dt;
         if (g.mode === 0) {
-          if (I.rel && g.fly <= 0) {
+          if (I.rel && g.fly <= 0 && !g.flying && !g.nextK) {
             const R = [34, 23, 14][g.k], wx = g.wind * (4 + g.k * 4 + g.d * 6), hx = aimX + wx, hy = aimY;
             const dist = Math.hypot(hx - 192, hy - 100) / R, p = dist < .2 ? 10 : dist < .4 ? 8 : dist < .6 ? 6 : dist < .8 ? 4 : dist < 1 ? 2 : 0;
-            g.pts += p; g.shots.push(p); if (p === 10) g.bulls++; g.arrows.push({ x: hx, y: hy, k: g.k }); g.pop = p ? '+' + p : tr('daneben'); g.fly = .7; sfx.tick();
-            g.shot++; if (g.shot % 2 === 0) { if (g.k === 2) { g.over = true; g.fly = 1; } else { g.k++; g.wind = rnd(-1, 1); } }
+            g.pts += p; g.shots.push(p); if (p === 10) g.bulls++; g.fly = .7; sfx.whoosh();
+            g.flying = { x: hx, y: hy, k: g.k, p, f: 0 };
+            g.shot++; if (g.shot % 2 === 0) { if (g.k === 2) g.endT = 1.3; else g.nextK = true; }
           }
         } else {
           g.time -= dt; if (g.time <= 0) { g.over = true; return; }
           g.spawn -= dt; if (g.spawn <= 0) { g.spawn = .55 - g.d * .2; g.bal.push({ x: rnd(30, W - 30), y: H + 10, v: 22 + g.d * 26 + rnd(0, 12), gold: Math.random() < .1 }); }
           for (const b of g.bal) { b.y -= b.v * dt; b.x += Math.sin(g.t * 2 + b.v) * 8 * dt; }
-          if (I.tap) { const hit = g.bal.find(b => !b.pop && Math.hypot(b.x - aimX, b.y - aimY) < 9); sfx.tick(); if (hit) { hit.pop = 1; g.pts += hit.gold ? 3 : 1; sfx.plip(); } }
+          if (I.tap) {
+            const hit = g.bal.find(b => !b.pop && Math.hypot(b.x - aimX, b.y - aimY) < 9); sfx.tick();
+            if (hit) {
+              hit.pop = 1; g.pts += hit.gold ? 3 : 1; sfx.plip(); g.chain = g.t - (g.lastPop ?? -9) < 1.2 ? (g.chain || 0) + 1 : 1; g.lastPop = g.t;
+              const col = hit.gold ? 'y' : 'rbgp'[Math.floor(hit.v) % 4]; burst(hit.x, hit.y, [BAL_COL[col][0], BAL_COL[col][1], BAL_COL[col][2]], 14, 60, 60);
+              spop(hit.gold ? '+3' : '+1', hit.x, hit.y - 10, hit.gold ? '#fde047' : '#fff', hit.gold ? 12 : 9); if (g.chain >= 3) spop(tr('{n}er-Kette', { n: g.chain }), hit.x, hit.y - 20, '#86efac', 8);
+              if (hit.gold) { sflash('#fde047', .2); shake(1.5); }
+            } else g.chain = 0;
+          }
           g.bal = g.bal.filter(b => b.y > -20 && !b.pop);
         }
       },
@@ -3540,7 +3644,8 @@
         if (g.mode === 0) {
           const R = [34, 23, 14][Math.min(2, g.k)];
           drawTarget(R);
-          for (const a of g.arrows) if (a.k === g.k || g.over) { sq(a.x - .5, a.y - .5, 1.5, 1.5, '#1b1f2e'); sq(a.x + .5, a.y - 1, 2.5, 1, '#78350f'); sq(a.x + 2.5, a.y - 2.5, 1.5, 1.5, '#f97316'); sq(a.x + 2.5, a.y - .5, 1.5, 1, '#fde68a'); }
+          if (g.flying) { const a = g.flying, k = Math.min(1, a.f), x = 192 + (a.x - 192) * k, y = 230 + (a.y - 230) * k, sc = 3 - k * 2; sq(x - .5 * sc, y - .5 * sc, 1.5 * sc, 1.5 * sc, '#1b1f2e'); sq(x - .5, y, 1, 6 * sc, '#78350f'); sq(x - 1.5 * sc / 2, y + 5 * sc, 1.5 * sc, 1.5 * sc, '#f97316'); }
+          for (const a of g.arrows) if (a.k === Math.min(2, g.k) || g.over || g.endT > 0) { sq(a.x - .5, a.y - .5, 1.5, 1.5, '#1b1f2e'); sq(a.x + .5, a.y - 1, 2.5, 1, '#78350f'); sq(a.x + 2.5, a.y - 2.5, 1.5, 1.5, '#f97316'); sq(a.x + 2.5, a.y - .5, 1.5, 1, '#fde68a'); }
           const wl = clamp(g.wind, -1, 1); stext(tr('Wind'), 340, 14, '#fff', 7); sq(340, 18, wl * 30 || .5, 2, '#38bdf8');
           shud(tr('Scheibe {a}/3 · Pfeil {b}/2', { a: Math.min(3, g.k + 1), b: g.shot % 2 + 1 }), 192, 14, '#fff', 8);
         } else {
@@ -3550,18 +3655,19 @@
         const X = g.ax + (g.sx || 0), Y = g.ay + (g.sy || 0);
         sq(X - 6, Y - .25, 4, .5, '#1b1f2e'); sq(X + 2, Y - .25, 4, .5, '#1b1f2e'); sq(X - .25, Y - 6, .5, 4, '#1b1f2e'); sq(X - .25, Y + 2, .5, 4, '#1b1f2e'); sq(X - .5, Y - .5, 1, 1, '#ef4444');
         smeter(12, 192, 60, 5, g.breath, tr('Atem'), ['#ef4444', '#38bdf8', '#38bdf8']);
-        if (g.pop && g.fly > 0) stext(g.pop, 192, 40, '#fde047', 10);
       },
       score: g => g.pts },
     { id: 'tt', icon: '🏓', name: 'Tischtennis', st: 18, modes: ['Match', 'Ballwechsel'],
-      info: 'Der Schläger folgt deinem Finger. Wo der Ball den Schläger trifft, bestimmt den Winkel.',
+      info: 'Der Schläger folgt deinem Finger. Wo der Ball den Schläger trifft, bestimmt den Winkel. Schwing den Schläger beim Treffen schnell zur Seite = Schmetterball.',
+      ctl: 'Finger bewegt den Schläger · schnell schwingen = Schmetterball',
       exp: [lv => 40 + lv * .02, lv => 10 + lv * .005], med: [[50, 100, 120], [12, 14, 18]], champ: [100, 20],
       stamps: [['t1', 'Ersten Punkt gemacht', g => g.me > 0], ['t2', 'Ein Match gewonnen', g => g.mode === 0 && g.me >= 7], ['t3', 'Ein Match auf Profi gewonnen', g => g.mode === 0 && g.me >= 7 && g.lvl >= 2],
         ['t4', 'Ballwechsel mit 30 Schlägen', g => g.mode === 1 && g.rally >= 30], ['t5', 'Ballwechsel mit 60 Schlägen', g => g.mode === 1 && g.rally >= 60]],
       start(g) { g.me = 0; g.op = 0; g.px = 192; g.ox = 192; g.rally = 0; g.best = 0; g.serve = 1; g.wait = 1; g.ball = null; },
       update(g, dt, I) {
         let tx = g.px; if (I.down || I.moved > 0) tx = I.x; if (I.keys.arrowleft) tx = g.px - 80; if (I.keys.arrowright) tx = g.px + 80;
-        g.px = clamp(g.px + clamp(tx - g.px, -260 * dt, 260 * dt), 136, 248);
+        const px0 = g.px; g.px = clamp(g.px + clamp(tx - g.px, -260 * dt, 260 * dt), 136, 248);
+        g.swing = (g.swing || 0) * Math.pow(1e-4, dt) + (g.px - px0); // recent paddle motion, for smashes
         if (g.wait > 0) { g.wait -= dt; if (g.wait <= 0) { const v = 80 + g.d * 40; g.ball = { x: g.serve > 0 ? g.px : g.ox, y: g.serve > 0 ? 180 : 36, vx: rnd(-30, 30), vy: g.serve > 0 ? -v : v }; g.rally = 0; } return; }
         const b = g.ball, champ = g.lvl === 3, perfect = g.mode === 1;
         const oSpeed = perfect ? 999 : (60 + g.d * 120 + g.rally * 2.5) * (champ ? 1.35 : 1);
@@ -3570,13 +3676,20 @@
         b.x += b.vx * dt; b.y += b.vy * dt;
         if (b.x < 134 || b.x > 250) { b.vx = -b.vx; b.x = clamp(b.x, 134, 250); }
         const hitP = (pxx, w) => Math.abs(b.x - pxx) <= w;
-        if (b.vy > 0 && b.y >= 182 && b.y < 192 && hitP(g.px, 14)) { b.vy = -Math.min(260, Math.abs(b.vy) * 1.05); b.vx = (b.x - g.px) / 14 * 110; g.rally++; sfx.tick(); }
-        else if (b.vy < 0 && b.y <= 34 && b.y > 24 && (perfect || hitP(g.ox, 12))) { b.vy = Math.min(260, Math.abs(b.vy) * 1.04); b.vx = rnd(-1, 1) * (40 + g.d * 80) * (champ ? 1.3 : 1); g.err = rnd(-1, 1) * (champ ? 6 : 16 - g.d * 8); g.rally++; sfx.tick(); }
+        if (b.vy > 0 && b.y >= 182 && b.y < 192 && hitP(g.px, 14)) {
+          const smash = Math.abs(g.swing) > 18 && !perfect;
+          b.vy = -Math.min(smash ? 330 : 260, Math.abs(b.vy) * (smash ? 1.35 : 1.05)); b.vx = (b.x - g.px) / 14 * 110 + (smash ? Math.sign(g.swing) * 60 : 0); b.smash = smash; g.rally++; sfx.tick();
+          burst(b.x, 186, smash ? ['#fde047', '#f97316', '#ffffff'] : ['#ffffff', '#fed7aa'], smash ? 14 : 5, smash ? 70 : 35, 0);
+          if (smash) { g.smashes = (g.smashes || 0) + 1; spop(tr('Schmetterball!'), b.x, 172, '#fde047', 10); shake(2); sfx.whoosh(); }
+          if (g.mode === 1 && g.rally % 10 === 0) { spop(tr('{n} Schläge!', { n: g.rally }), 192, 100, '#86efac', 13); sflash('#86efac', .15); }
+        }
+        else if (b.vy < 0 && b.y <= 34 && b.y > 24 && (perfect || hitP(g.ox, b.smash ? 7 : 12))) { b.vy = Math.min(260, Math.abs(b.vy) * 1.04); b.vx = rnd(-1, 1) * (40 + g.d * 80) * (champ ? 1.3 : 1); b.smash = false; g.err = rnd(-1, 1) * (champ ? 6 : 16 - g.d * 8); g.rally++; sfx.tick(); burst(b.x, 32, ['#ffffff', '#bfdbfe'], 5, 35, 0); }
+        (g.trail = g.trail || []).unshift({ x: b.x, y: b.y }); if (g.trail.length > 7) g.trail.pop();
         if (b.y > 206 || b.y < 10) {
           const meWon = b.y < 10; g.best = Math.max(g.best, g.rally);
           if (perfect) { g.over = true; return; }
-          if (meWon) { g.me++; sfx.coin(); } else { g.op++; sfx.splash(); }
-          g.serve = meWon ? -1 : 1; g.wait = .9; g.ball = null;
+          if (meWon) { g.me++; sfx.coin(); spop(tr('Punkt!'), 192, 70, '#86efac', 14); burst(b.x, 14, CONFETTI, 20, 60); } else { g.op++; sfx.splash(); shake(2); sflash('#ef4444', .15); }
+          g.serve = meWon ? -1 : 1; g.wait = .9; g.ball = null; g.trail = [];
           if (g.me >= 7 || g.op >= 7) g.over = true;
         }
       },
@@ -3590,45 +3703,57 @@
         sq(g.ox - 12, 30, 24, 3, '#1b1f2e'); sq(g.ox - 11.5, 30.5, 23, 2, '#3b82f6');
         sq(g.px - 1.5, 188.5, 3, 7, '#1b1f2e'); sq(g.px - 1, 189, 2, 6, '#b45309'); sq(g.px - 1.5, 192, 3, 3, lookPal().pal.s);
         sq(g.px - 14, 185.5, 28, 4, '#1b1f2e'); sq(g.px - 13, 186, 26, 3, '#ef4444'); sq(g.px - 12.5, 186, 25, .5, '#fca5a5'); sq(g.px - 13, 188.5, 26, .5, '#b91c1c');
-        if (g.ball) { sx.globalAlpha = .3; sdisc(g.ball.x + 2, g.ball.y + 3, 2, '#0b1030'); sx.globalAlpha = 1; sspr(BALLS.tt(), g.ball.x, g.ball.y); }
+        if (g.ball) { (g.trail || []).forEach((p, i) => { sx.globalAlpha = .45 - i * .06; sdisc(p.x, p.y, 2 - i * .2, g.ball.smash ? '#fde047' : '#ffffff'); }); sx.globalAlpha = .3; sdisc(g.ball.x + 2, g.ball.y + 3, 2, '#0b1030'); sx.globalAlpha = 1; sspr(BALLS.tt(), g.ball.x, g.ball.y); }
         stext(g.mode ? tr('Ballwechsel: {n}', { n: g.rally }) : `${g.me} : ${g.op}`, 64, 108, '#1b1f2e', 12);
         if (!g.mode) stext(tr('Erster bis 7'), 64, 122, '#78350f', 7);
       },
       score: g => g.mode ? g.best : g.me * 10 + (g.me >= 7 ? 30 + (7 - g.op) * 5 : 0) },
     { id: 'surf', icon: '🏄', name: 'Surfen', st: 6, modes: ['Wellenritt', 'Trickjagd'],
-      info: 'Zieh hoch und runter auf der Welle: oben gibt es mehr Punkte, über der Kante stürzt du. Tippen, wenn der Kamm glitzert = Trick. Zu tief holt dich das Weißwasser.',
-      exp: [lv => 70 + lv * .035, lv => 90 + lv * .045], med: [[80, 102, 126], [100, 130, 162]], champ: [144, 184],
+      info: 'Die Kante der Welle hebt und senkt sich: Bleib im goldenen Bereich direkt darunter, dort gibt es die meisten Punkte, darüber stürzt du. Tippen im goldenen Bereich = Trick, glitzert der Kamm dabei, ist er perfekt und zählt viel mehr. Zu tief holt dich das Weißwasser.',
+      ctl: 'Finger hoch/runter · Tippen oben = Trick',
+      exp: [lv => 90 + lv * .06, lv => 90 + lv * .045], med: [[110, 160, 220], [100, 130, 162]], champ: [260, 184],
       stamps: [['s1', 'Ersten Trick gestanden', g => g.tricks > 0], ['s2', '5 Tricks in einer Kombo', g => g.maxCombo >= 5], ['s3', 'Wellenritt ohne Sturz', g => g.mode === 0 && g.falls === 0 && g.time <= 0],
         ['s4', 'Wellenritt: 250 Punkte', g => g.mode === 0 && g.pts >= 250], ['s5', 'Trickjagd: 10 Treffer in Folge', g => g.mode === 1 && g.bestChain >= 10]],
-      start(g) { Object.assign(g, { y: 130, time: g.mode ? 40 : 45, pts: 0, combo: 0, maxCombo: 0, tricks: 0, falls: 0, stun: 0, air: 0, foam: 20, cue: 0, nextCue: 2, chain: 0, bestChain: 0, scroll: 0, used: false, last: 0, pop: '', popT: 0 }); },
+      start(g) { Object.assign(g, { y: 130, time: g.mode ? 40 : 45, pts: 0, combo: 0, maxCombo: 0, tricks: 0, falls: 0, stun: 0, air: 0, foam: 20, cue: 0, nextCue: 2, chain: 0, bestChain: 0, scroll: 0, used: false, last: 2, pop: '', popT: 0 }); },
       update(g, dt, I) {
         g.time -= dt; if (g.time <= 0) { g.time = 0; g.over = true; return; }
         g.scroll += dt * 60; g.popT -= dt; g.air -= dt; g.last += dt;
-        const lip = 74 + Math.sin(g.scroll * .03) * 4, crest = Math.sin(g.scroll * .03 + 1.2) > .3;
+        const lip = surfLip(130, g.scroll), crest = Math.sin(g.scroll * .03 + 1.2) > .3;
         if (!crest) g.used = false;
-        const wipe = () => { g.falls++; g.combo = 0; g.chain = 0; g.stun = 1.4; g.foam = 30; g.air = 0; g.pop = tr('Sturz!'); g.popT = 1.2; sfx.splash(); };
+        const wipe = () => { shake(3.5); sflash('#ffffff', .3); burst(130, g.y, ['#ffffff', '#e0fffa', '#a5f3fc'], 26, 80); g.falls++; g.combo = 0; g.chain = 0; g.stun = 1.1; g.foam = 30; g.air = 0; g.pop = tr('Sturz!'); g.popT = 1.2; sfx.splash(); };
         if (g.stun > 0) { g.stun -= dt; g.y += (155 - g.y) * Math.min(1, dt * 4); return; }
+        if (g.air > 0 && g.air - dt <= 0) burst(130, g.y + 2, ['#ffffff', '#e0fffa', '#a5f3fc'], 12, 55); // landing spray
         let ty = g.y; if (I.down || I.moved > 0) ty = I.y; if (I.keys.arrowup) ty = g.y - 60; if (I.keys.arrowdown) ty = g.y + 60;
-        g.y = clamp(g.y + clamp(ty - g.y, -110 * dt, 110 * dt), 64, 175);
-        if (g.air <= 0) g.pts += dt * Math.max(0, (175 - g.y) / 105) * 6 * (1 + Math.min(g.combo, 6) * .05);
+        g.y = clamp(g.y + clamp(ty - g.y, -110 * dt, 110 * dt), 52, 175);
+        // the pocket right under the lip pays full, a bit lower a third, down in the flats almost nothing
+        const dist = g.y - lip; g.pocket = dist < 17;
+        if (g.air <= 0) g.pts += dt * (dist < 17 ? 6 : dist < 40 ? 2.5 : .6) * (1 + Math.min(g.combo, 6) * .05);
         g.foam = clamp(g.foam + dt * (g.y > 140 ? 30 + g.d * 30 : -25), 0, 120);
         if (g.foam >= 104 || (g.y < lip - 2 && g.air <= 0)) { wipe(); return; }
         if (g.last > 4) g.combo = 0;
-        const high = g.y < lip + 24;
+        const high = g.y < lip + 17;
         if (g.mode === 1) {
           if (g.cue > 0) { g.cue -= dt; if (g.cue <= 0) { g.chain = 0; g.pop = tr('verpasst'); g.popT = .8; } }
           else if ((g.nextCue -= dt) <= 0) { g.cue = 1.1 - g.d * .5; g.nextCue = 2.4 - g.d * .8; sfx.tick(); }
         }
         if (I.tap && g.air <= 0) {
-          if (g.mode === 0 && high && crest && !g.used) { g.used = true; g.air = .9; g.tricks++; g.combo++; g.last = 0; const p = 8 + 3 * Math.min(g.combo, 6); g.pts += p; g.pop = '+' + p; g.popT = 1; sfx.whoosh(); }
-          else if (g.mode === 1 && g.cue > 0 && high) { g.cue = 0; g.air = .9; g.tricks++; g.chain++; g.combo++; g.last = 0; g.bestChain = Math.max(g.bestChain, g.chain); const p = 10 + 3 * Math.min(g.chain, 10); g.pts += p; g.pop = '+' + p; g.popT = 1; sfx.whoosh(); }
+          const trick = () => { const n = SURF_TRICKS[Math.floor(Math.random() * SURF_TRICKS.length)]; spop(n, 130, g.y - 30, '#ffffff', 9); burst(130, g.y + 2, ['#ffffff', '#e0fffa'], 10, 50); sfx.whoosh(); };
+          if (g.mode === 0 && high && g.last < 1.4) { g.pop = tr('Schwung holen …'); g.popT = .5; }
+          else if (g.mode === 0 && high) {
+            const perf = crest && !g.used; if (perf) g.used = true;
+            g.air = .9; g.tricks++; g.combo++; g.last = 0; const p = perf ? 8 + 3 * Math.min(g.combo, 6) : 2;
+            g.pts += p; g.pop = '+' + p; g.popT = 1; trick();
+            if (perf) { spop(tr('Perfekt!'), 130, g.y - 42, '#fde047', 11); sflash('#fde047', .18); shake(1.5); sfx.coin(); }
+          }
+          else if (g.mode === 0) { g.pop = tr('höher!'); g.popT = .6; }
+          else if (g.mode === 1 && g.cue > 0 && high) { g.cue = 0; g.air = .9; g.tricks++; g.chain++; g.combo++; g.last = 0; g.bestChain = Math.max(g.bestChain, g.chain); const p = 10 + 3 * Math.min(g.chain, 10); g.pts += p; g.pop = '+' + p; g.popT = 1; trick(); if (g.chain % 5 === 0) { sflash('#fde047', .2); spop(tr('{n}er-Serie', { n: g.chain }), 192, 70, '#fde047', 13); } }
           else if (g.mode === 1) { g.chain = 0; g.pop = tr('zu früh'); g.popT = .7; }
         }
         g.maxCombo = Math.max(g.maxCombo, g.combo);
       },
       draw(g) {
         sceneBg('sport-surf', 56);
-        const lipAt = x => 70 + Math.sin(x * .02 + g.scroll * .03 - 2.6) * 5 + Math.max(0, 120 - x) * .12;
+        const lipAt = x => surfLip(x, g.scroll);
         // the wave face: a dithered strip from the back-lit lip (light) down to the deep trough, painted once
         const FACE = ['#c4fff4', '#8cf2e2', '#5ad9d1', '#36bcc6', '#2399b5', '#17789b', '#105e81'];
         const face = spPaint('surfFace', 4, 240, (set) => { for (let y = 0; y < 240; y++) for (let x = 0; x < 4; x++) set(x, y, FACE[clamp(Math.floor(Math.pow(y / 240, .8) * 7 + (BAYER[(y & 3) * 4 + x] / 16 - .5) * .9), 0, 6)]); });
@@ -3659,6 +3784,7 @@
         }
         for (let i = 0; i < 6; i++) { const y = lipAt(g.foam) + 4 + i * 16, r = 3 + Math.abs(Math.sin(g.scroll * .15 + i * 1.3)) * 3; if (y < 178) { sdisc(g.foam + 8 + Math.sin(t * 4 + i) * 2, y, r, '#f8fafc'); sdisc(g.foam + 7 + Math.sin(t * 4 + i) * 2, y - 1, r * .6, '#ffffff'); } }
         const crest = Math.sin(g.scroll * .03 + 1.2) > .3;
+        if (g.stun <= 0) { const lp = lipAt(130); sx.globalAlpha = .14 + (g.pocket ? .1 : 0) + (crest && !g.used && g.mode === 0 ? .1 : 0); sq(112, lp + 1, 36, 16, '#fde047'); sx.globalAlpha = .7; sq(112, lp + 17, 36, .5, '#fde047'); sx.globalAlpha = 1; }
         if (g.mode === 0 && crest && !g.used) for (let i = 0; i < 3; i++) sq(118 + i * 8, lipAt(126) - 4 - (i % 2) * 2, 1.5, 1.5, '#fde047');
         if (g.mode === 1 && g.cue > 0) { stext(tr('JETZT!'), 192, 44, '#fde047', 14); for (let a = 0; a < 6.3; a += .35) sq(130 + Math.cos(a) * 14, lipAt(130) + 10 + Math.sin(a) * 6, 1.5, 1.5, '#fde047'); }
         const jy = g.air > 0 ? Math.sin(Math.max(0, g.air) / .9 * Math.PI) * 12 : 0, x = 130, y = g.y - jy;
@@ -3675,7 +3801,8 @@
       },
       score: g => g.pts },
     { id: 'volley', icon: '🏐', name: 'Beachvolleyball', st: 14, modes: ['Match', 'Aufschlag-Serie'],
-      info: 'Lauf unter den Ball (Ring im Sand) und tippe, wenn er tief genug ist. Ganz tief getroffen wird ein Schmetterball.',
+      info: 'Lauf unter den Ball (roter Ring im Sand), dann spielst du ihn von selbst zurück. Tippst du, während er über dir ist, wird daraus ein Schmetterball, den Pelle kaum kriegt.',
+      ctl: 'Finger = laufen · Tippen = Schmetterball',
       exp: [lv => 40 + lv * .02, lv => 12 + lv * .006], med: [[50, 100, 120], [14, 17, 22]], champ: [100, 25],
       stamps: [['v1', 'Ersten Punkt gemacht', g => g.me > 0], ['v2', 'Ein Match gewonnen', g => g.mode === 0 && g.me >= 7], ['v3', '5 Schmetterbälle in einem Match', g => g.mode === 0 && g.spikes >= 5],
         ['v4', 'Aufschlag-Serie: 30 Punkte', g => g.mode === 1 && g.pts >= 30], ['v5', 'Ein Match zu null gewonnen', g => g.mode === 0 && g.me >= 7 && g.op === 0]],
@@ -3695,7 +3822,7 @@
             return;
           }
           const b = g.ball; b.x += b.vx * dt; b.h += b.vh * dt; b.vh -= G * dt;
-          if (b.h <= 0) { const x = b.x, p = x < 192 || x > 376 ? 0 : x > 330 ? 5 : x > 260 ? 3 : 1; g.pts += p; g.n++; g.mark = { x, p }; g.pop = p ? '+' + p : tr('aus'); g.popT = 1; g.ball = null; p ? sfx.coin() : sfx.splash(); }
+          if (b.h <= 0) { const x = b.x, p = x < 192 || x > 376 ? 0 : x > 330 ? 5 : x > 260 ? 3 : 1; g.pts += p; g.n++; g.mark = { x, p }; g.pop = p ? '+' + p : tr('aus'); g.popT = 1; g.ball = null; p ? sfx.coin() : sfx.splash(); burst(x, 176, p === 5 ? CONFETTI : ['#f5e6bf', '#e2c98d'], p === 5 ? 22 : 12, 55); if (p === 5) { sflash('#fde047', .2); shake(1.5); } }
           return;
         }
         if (!g.ball) {
@@ -3712,15 +3839,19 @@
           if (b.x > 196 && b.h < 26 && b.h > 6 && Math.abs(b.x - g.ox) < 14) { g.ball = launch(b.x, b.h, rnd(24, 176), 1.35 - g.d * .35 - (champ ? .15 : 0)); sfx.tick(); return; }
         } else {
           g.ox += (290 - g.ox) * Math.min(1, dt);
-          if (I.tap && b.x < 188 && b.h < 40 && b.h > 4 && Math.abs(b.x - g.px) < 16) {
-            const spike = b.h < 20; if (spike) g.spikes++;
-            g.ball = launch(b.x, Math.max(b.h, 14), rnd(230, 372), spike ? .75 : 1.3); g.ball.spike = spike;
-            g.pop = spike ? tr('Schmetterball!') : tr('Bagger!'); g.popT = .8; sfx.whoosh(); return;
+          // in reach: a tap smashes it, otherwise you bump it back on your own once it gets low
+          const reach = b.x < 188 && b.h < 40 && b.h > 4 && Math.abs(b.x - g.px) < 16;
+          if (reach && (I.tap || b.h < 12)) {
+            const spike = I.tap; if (spike) g.spikes++;
+            g.ball = launch(b.x, Math.max(b.h, 14), rnd(230, 372), spike ? .75 - g.d * .1 : 1.45); g.ball.spike = spike;
+            if (spike) { spop(tr('Schmetterball!'), b.x, 172 - b.h - 10, '#fde047', 11); shake(2.5); burst(b.x, 172 - b.h, ['#fde047', '#ffffff', '#f97316'], 16, 70, 20); sfx.whoosh(); }
+            else { spop(tr('Bagger!'), b.x, 172 - b.h - 10, '#ffffff', 8); burst(b.x, 172 - b.h, ['#ffffff'], 6, 35, 20); sfx.tick(); }
+            return;
           }
         }
         if (b.h <= 0) {
           const meWon = b.x > 192 ? b.x <= 380 : b.x < 8; // out behind your own line counts for you
-          if (meWon) { g.me++; sfx.coin(); } else { g.op++; sfx.splash(); }
+          if (meWon) { g.me++; sfx.coin(); spop(tr('Punkt!'), 192, 80, '#86efac', 14); burst(b.x, 176, ['#f5e6bf', '#e2c98d'], 18, 60); } else { g.op++; sfx.splash(); shake(2); burst(b.x, 176, ['#f5e6bf', '#e2c98d'], 14, 50); }
           g.mark = { x: b.x, p: meWon ? 1 : 0 }; g.ball = null; g.wait = .9; g.serve = meWon ? 1 : -1;
           if (g.me >= 7 || g.op >= 7) g.over = true;
         }
@@ -3752,15 +3883,33 @@
       },
       score: g => g.mode ? g.pts : g.me * 10 + (g.me >= 7 ? 30 + (7 - g.op) * 5 : 0) },
     { id: 'bowling', icon: '🎳', name: 'Strand-Bowling', st: 22, modes: ['10 Frames', 'Pyramide'],
-      info: 'Erstes Tippen hält die Richtung fest, zweites den Drall. Der Ball rollt, die Pins fallen.',
+      info: 'Wisch nach oben: Wo du ansetzt, steht der Ball, die Richtung des Wischens ist die Richtung des Wurfs, die Länge seine Kraft. Mit Tastatur: Pfeile links/rechts verschieben, hoch/runter zielen, Leertaste halten und loslassen.',
+      ctl: 'Nach oben wischen = Wurf',
       exp: [lv => 80 + lv * .04, lv => 8 + lv * .004], med: [[90, 116, 144], [9, 12, 14]], champ: [164, 16],
       stamps: [['w1', 'Ersten Strike geworfen', g => g.strikes > 0], ['w2', 'Einen Spare geworfen', g => g.spares > 0], ['w3', '3 Strikes in Folge', g => g.maxRow >= 3],
         ['w4', '10 Frames: 200 Punkte', g => g.mode === 0 && g.pts >= 200], ['w5', 'Pyramide: alle 21 Pins', g => g.mode === 1 && g.pts >= 21]],
-      start(g) { Object.assign(g, { rolls: [], frame: 0, inFrame: 0, pts: 0, strikes: 0, spares: 0, row: 0, maxRow: 0, throws: 0, ph: 'aim', aim: 0, spin: 0, ball: null, pins: [], simT: 0, pop: '', popT: 0, standBefore: 0 }); bowlRack(g); },
+      start(g) { Object.assign(g, { rolls: [], frame: 0, inFrame: 0, pts: 0, strikes: 0, spares: 0, row: 0, maxRow: 0, throws: 0, ph: 'aim', aim: 0, spin: 0, bx: 192, pow: 0, drag: null, ball: null, pins: [], simT: 0, pop: '', popT: 0, standBefore: 0 }); bowlRack(g); },
       update(g, dt, I) {
         g.popT -= dt;
-        if (g.ph === 'aim') { g.aim = Math.sin(g.t * (1.6 + g.d * 2.4)) * .16; if (I.tap) { g.ph = 'spin'; g.t0 = g.t; sfx.tick(); } return; }
-        if (g.ph === 'spin') { g.spin = Math.sin((g.t - g.t0) * (2.2 + g.d * 3)); if (I.tap) { g.ph = 'roll'; g.ball = { x: 192, y: 196, vx: Math.sin(g.aim) * 250, vy: -Math.cos(g.aim) * 250, gut: false }; g.simT = 0; g.standBefore = g.pins.filter(p => !p.down).length; sfx.whoosh(); } return; }
+        if (g.ph === 'aim') {
+          // keys: move along the line, aim, hold space for power
+          if (!I.down) { if (I.keys.arrowleft) g.bx -= 40 * dt; if (I.keys.arrowright) g.bx += 40 * dt; }
+          if (I.keys.arrowup) g.aim -= .3 * dt; if (I.keys.arrowdown) g.aim += .3 * dt;
+          if (I.tap) { g.drag = { x: I.x, y: I.y, on: false, t: 0 }; if (I.y > 140) g.bx = I.x; }
+          g.bx = clamp(g.bx, 160, 224); g.aim = clamp(g.aim, -.22, .22);
+          if (I.down && g.drag) {
+            g.drag.t += dt; const dx = I.x - g.drag.x, dy = g.drag.y - I.y;
+            if (Math.hypot(dx, dy) > 6) g.drag.on = true;
+            if (g.drag.on) { g.pow = clamp(dy / 90, 0, 1); if (dy > 4) g.aim = clamp(Math.atan2(dx, dy), -.22, .22); }
+            else g.pow = Math.min(1, g.drag.t * .9);
+          }
+          if (I.rel && g.drag) {
+            g.drag = null;
+            if (g.pow > .08) { const v = 170 + g.pow * 140; g.ph = 'roll'; g.spin = 0; g.hitOnce = false; g.ball = { x: g.bx, y: 196, vx: Math.sin(g.aim) * v, vy: -Math.cos(g.aim) * v, gut: false }; g.simT = 0; g.standBefore = g.pins.filter(p => !p.down).length; sfx.whoosh(); }
+            g.pow = 0;
+          }
+          return;
+        }
         if (g.ph !== 'roll') { if ((g.simT -= dt) <= 0) bowlNext(g); return; }
         g.simT += dt;
         for (let k = 0; k < 4; k++) bowlStep(g, dt / 4);
@@ -3780,17 +3929,20 @@
           if (p.down) { sspr(litEll('pinDown', 3.6, 1.6, { a: ['#f8fafc', '#e2e8f0', '#cbd5e1', '#94a3b8'], r: ['#fca5a5', '#ef4444', '#b91c1c', '#7f1d1d'] }, (u) => Math.abs(u + .35) < .12 ? 'r' : 'a', false), p.x, p.y); continue; }
           sx.globalAlpha = .28; sdisc(p.x + 1.5, p.y + 2, 3, '#3b2a14'); sx.globalAlpha = 1; sspr(BALLS.pin(), p.x, p.y);
         }
-        { const b = g.ball || { x: 192, y: 196 }; sx.globalAlpha = .3; sdisc(b.x + 2, b.y + 2.5, 5, '#3b2a14'); sx.globalAlpha = 1; sspr(BALLS.bowl(), b.x, b.y); for (const [dx, dy] of [[1, -2.5], [2.5, -1], [3, 1.5]]) sq(b.x + dx, b.y + dy, 1, 1, '#0b1030'); }
-        if (g.ph === 'aim' || g.ph === 'spin') { for (let i = 1; i < 12; i++) sq(192 + Math.sin(g.aim) * i * 7 - .5, 196 - Math.cos(g.aim) * i * 7, 1.5, 1.5, '#facc15'); }
-        if (g.ph === 'spin') { sq(252, 170, 70, 6, '#1b1f2e'); sq(286.5, 169, 1, 8, '#f8fafc'); sq(287 + g.spin * 33 - 1.5, 168, 3, 10, '#ef4444'); stext(tr('Drall'), 287, 164, '#78350f', 7); }
-        if (g.ph === 'aim') shud(tr('Tippen = Richtung'), 287, 164, '#fde047', 7);
+        { const b = g.ball || { x: g.bx, y: 196 }; sx.globalAlpha = .3; sdisc(b.x + 2, b.y + 2.5, 5, '#3b2a14'); sx.globalAlpha = 1; sspr(BALLS.bowl(), b.x, b.y); for (const [dx, dy] of [[1, -2.5], [2.5, -1], [3, 1.5]]) sq(b.x + dx, b.y + dy, 1, 1, '#0b1030'); }
+        if (g.ph === 'aim') {
+          const n = 6 + Math.round(g.pow * 14);
+          for (let i = 1; i < n; i++) { sx.globalAlpha = 1 - i / (n + 4); sq(g.bx + Math.sin(g.aim) * i * 7 - .75, 196 - Math.cos(g.aim) * i * 7, 1.5, 1.5, i % 2 ? '#facc15' : '#ffffff'); }
+          sx.globalAlpha = 1; sq(252, 150, 6, 40, '#1b1f2e'); sq(253, 151 + 38 * (1 - g.pow), 4, 38 * g.pow, g.pow > .85 ? '#ef4444' : '#22c55e'); stext(tr('Kraft'), 255, 146, '#78350f', 6);
+          if (!g.drag) shud(tr('Nach oben wischen'), 300, 176, '#fde047', 7);
+        }
         if (g.popT > 0) stext(g.pop, 192, 100, '#fde047', 14);
         shud(g.mode ? tr('Wurf {a}/3 · {p} Pins', { a: Math.min(3, g.throws + 1), p: g.pts }) : tr('Frame {a}/10 · {p} Punkte', { a: Math.min(10, g.frame + 1), p: bowlTotal(g.rolls) }), 8, 14, '#fff', 8, 'left');
       },
       score: g => g.pts },
   ];
   SPORTS.sort((a, b) => a.st - b.st);
-  trAll(SPORTS, ['name', 'info']);
+  trAll(SPORTS, ['name', 'info', 'ctl']);
   SPORTS.forEach(s => { s.modes = s.modes.map(m => tr(m)); s.stamps = s.stamps.map(([id, txt, ok]) => ({ id, txt: tr(txt), ok })); });
   const ALL_STAMPS = SPORTS.reduce((n, s) => n + s.stamps.length, 0);
   // Rundflug: the island seen from above, painted once at runtime (1 canvas pixel = 1 game pixel, 3×3 screens)
@@ -3840,7 +3992,7 @@
     if (!b.gut && (b.x < 152 || b.x > 232)) { b.gut = true; b.x = b.x < 192 ? 149 : 235; b.vx = 0; }
     for (const p of g.pins) {
       if (p.gone) continue;
-      if (!b.gut) { const dx = p.x - b.x, dy = p.y - b.y, d = Math.hypot(dx, dy); if (d < 8.5 && d > 0) { const sp = Math.hypot(b.vx, b.vy) * .6; p.vx = dx / d * sp + b.vx * .3; p.vy = dy / d * sp + b.vy * .3; p.x = b.x + dx / d * 8.6; p.y = b.y + dy / d * 8.6; p.down = true; b.vx = b.vx * .9 - dx / d * sp * .25; b.vy *= .9; } }
+      if (!b.gut) { const dx = p.x - b.x, dy = p.y - b.y, d = Math.hypot(dx, dy); if (d < 8.5 && d > 0) { if (!g.hitOnce) { g.hitOnce = true; shake(2); sfx.tick(); } if (!p.down) burst(p.x, p.y, ['#ffffff', '#fca5a5'], 4, 40, 0); const sp = Math.hypot(b.vx, b.vy) * .6; p.vx = dx / d * sp + b.vx * .3; p.vy = dy / d * sp + b.vy * .3; p.x = b.x + dx / d * 8.6; p.y = b.y + dy / d * 8.6; p.down = true; b.vx = b.vx * .9 - dx / d * sp * .25; b.vy *= .9; } }
       p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= Math.pow(.1, dt); p.vy *= Math.pow(.1, dt);
       if (p.x < 151 || p.x > 233 || p.y < -6) { p.down = true; p.gone = true; }
     }
@@ -3863,12 +4015,12 @@
   function bowlScore(g) {
     const n = g.standBefore - g.pins.filter(p => !p.down).length;
     g.ph = 'show'; g.simT = 1.1; g.ball = null; g.throws++;
-    if (g.mode) { g.pts += n; g.pop = tr('{n} Pins', { n }); g.popT = 1.1; g.nextRack = false; return; }
+    if (g.mode) { g.pts += n; g.pop = tr('{n} Pins', { n }); g.popT = 1.1; g.nextRack = false; if (n >= 6) { burst(192, 40, CONFETTI, 20 + n * 2, 80); sflash('#fde047', .2); } return; }
     g.rolls.push(n);
     const tenth = g.frame === 9, first = g.inFrame === 0;
     const clear = g.pins.every(p => p.down);
-    if (clear && (first || (tenth && g.inFrame === 1 && g.rolls[g.rolls.length - 2] === 10) || (tenth && g.inFrame === 2))) { g.strikes++; g.row++; g.pop = tr('STRIKE!'); sfx.coin(); setTimeout(() => sfx.coin(), 150); }
-    else if (clear) { g.spares++; g.row = 0; g.pop = tr('Spare!'); sfx.coin(); }
+    if (clear && (first || (tenth && g.inFrame === 1 && g.rolls[g.rolls.length - 2] === 10) || (tenth && g.inFrame === 2))) { g.strikes++; g.row++; g.pop = g.row >= 3 ? tr('TURKEY!') : g.row === 2 ? tr('DOPPEL-STRIKE!') : tr('STRIKE!'); sfx.coin(); setTimeout(() => sfx.coin(), 150); burst(192, 50, CONFETTI, 40, 90); sflash('#fde047', .35); shake(3); }
+    else if (clear) { g.spares++; g.row = 0; g.pop = tr('Spare!'); sfx.coin(); burst(192, 50, ['#86efac', '#ffffff', '#fde047'], 24, 70); sflash('#86efac', .2); }
     else { g.row = 0; g.pop = n ? tr('{n} Pins', { n }) : tr('Rinne'); }
     g.maxRow = Math.max(g.maxRow, g.row); g.popT = 1.1;
     // what comes next: same frame (pins stay) or a fresh rack
@@ -3889,6 +4041,31 @@
     else if (g.nextRack === 'rack') bowlRack(g);
     else for (const p of g.pins) if (p.down) p.gone = true;
     g.ph = 'aim';
+  }
+  // game feel for every station: particles, rising score popups, screen shake and a short flash
+  const SJ = { parts: [], pops: [], shake: 0, flash: 0, flashC: '#fff' };
+  function sjReset() { SJ.parts = []; SJ.pops = []; SJ.shake = 0; SJ.flash = 0; }
+  function burst(x, y, cols, n = 10, v = 50, grav = 90) {
+    for (let i = 0; i < n; i++) { const a = Math.random() * Math.PI * 2, s = v * (.35 + Math.random() * .65); SJ.parts.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - v * .35, g: grav, l: .5 + Math.random() * .4, c: cols[i % cols.length], z: Math.random() < .3 ? 1.5 : 1 }); }
+    if (SJ.parts.length > 260) SJ.parts.splice(0, SJ.parts.length - 260);
+  }
+  const CONFETTI = ['#fde047', '#f43f5e', '#38bdf8', '#22c55e', '#f97316', '#ffffff'];
+  function spop(txt, x, y, c = '#fde047', size = 10) { SJ.pops.push({ txt, x, y, c, size, l: 1 }); if (SJ.pops.length > 8) SJ.pops.shift(); }
+  const shake = a => { SJ.shake = Math.max(SJ.shake, a); };
+  const sflash = (c = '#fff', a = .35) => { SJ.flash = a; SJ.flashC = c; };
+  function sjTick(dt) {
+    for (const p of SJ.parts) { p.vy += p.g * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.l -= dt; }
+    SJ.parts = SJ.parts.filter(p => p.l > 0);
+    for (const p of SJ.pops) { p.l -= dt * .9; p.y -= dt * 18 * p.l; }
+    SJ.pops = SJ.pops.filter(p => p.l > 0);
+    SJ.shake = Math.max(0, SJ.shake - dt * 14); SJ.flash = Math.max(0, SJ.flash - dt * 1.6);
+  }
+  function sjDraw() {
+    for (const p of SJ.parts) { sx.globalAlpha = Math.min(1, p.l * 2.5); sq(p.x, p.y, p.z, p.z, p.c); }
+    sx.globalAlpha = 1;
+    for (const p of SJ.pops) { const k = 1 - p.l, sc = k < .12 ? 1 + (.12 - k) * 4 : 1; sx.globalAlpha = Math.min(1, p.l * 3); stext(p.txt, p.x, p.y, p.c, Math.round(p.size * sc)); }
+    sx.globalAlpha = 1;
+    if (SJ.flash > 0) { sx.globalAlpha = SJ.flash; sq(0, 0, W, H, SJ.flashC); sx.globalAlpha = 1; }
   }
   // --- running a station ----------------------------------------------------------
   let sp = null, spView = { id: null };
@@ -3915,7 +4092,7 @@
       save.turnier = { id, mode, lvl, n: 0, pts: 0, best: 0, leg: false, shiny: false };
       persist(); closeModals(); updateTurnierPill(); toast(tr('🏆 Das Angelturnier läuft! Die nächsten 5 Fänge zählen.')); sfx.coin(); return;
     }
-    sp = { id, s, mode, lvl, t: 0, cd: 2.4, phase: 'count', g: { mode, lvl, t: 0, d: sportDiff(s, lvl) } };
+    sjReset(); sp = { id, s, mode, lvl, t: 0, cd: 2, phase: 'count', g: { mode, lvl, t: 0, d: sportDiff(s, lvl) } };
     s.start(sp.g); Object.assign(SIN, { down: false, tap: false, rel: false, moved: 0, keys: {} });
     $('sport-hub').hidden = true; $('sport-play').hidden = false; $('sport-result').hidden = true; $('sport-play').classList.remove('done');
     $('sport').hidden = false; $('sport').classList.add('playing');
@@ -3927,7 +4104,7 @@
   // `clean` counts as a clean catch. Nothing here touches skill, stamps, medals or the daily limit.
   const SPORT_DRILL_CHANCE = .15, DRILL_D = { rare: .15, epic: .3, legendary: .45 };
   const SPORT_DRILLS = [
-    { id: 'frisbee', mode: 1, set: g => { g.n = 2; }, pass: 170, clean: 270 },
+    { id: 'frisbee', mode: 1, set: g => { g.n = 2; }, pass: 200, clean: 300 },
     { id: 'flug', mode: 0, set: g => { g.time = 45; }, pass: 4, clean: 8 },
     { id: 'jetski', mode: 1, set: g => { g.time = 20; }, pass: 55, clean: 95 },
     { id: 'bogen', mode: 1, set: g => { g.time = 18; }, pass: 6, clean: 10 },
@@ -3945,7 +4122,7 @@
     SPORT_BG.forEach(worldImg);
     const s = SPORTS.find(x => x.id === c.id);
     closeModals(); state = 'sdrill'; hint(''); $('reel').hidden = true;
-    sp = { id: s.id, s, mode: c.mode, lvl: 0, t: 0, cd: 2.4, phase: 'count', drill: c, g: { mode: c.mode, lvl: 0, t: 0, d: DRILL_D[hooked.f.r] || .2 } };
+    sjReset(); sp = { id: s.id, s, mode: c.mode, lvl: 0, t: 0, cd: 2, phase: 'count', drill: c, g: { mode: c.mode, lvl: 0, t: 0, d: DRILL_D[hooked.f.r] || .2 } };
     s.start(sp.g); c.set(sp.g); Object.assign(SIN, { down: false, tap: false, rel: false, moved: 0, keys: {} });
     $('sport-hub').hidden = true; $('sport-play').hidden = false; $('sport-result').hidden = true; $('sport-play').classList.remove('done');
     $('sport').hidden = false; $('sport').classList.add('playing');
@@ -3970,10 +4147,15 @@
     if (!sp || $('sport').hidden || sp.done) return;
     const g = sp.g;
     if (sp.phase === 'count') { sp.cd -= dt; if (Math.ceil(sp.cd) !== Math.ceil(sp.cd + dt)) sfx.tick(); if (sp.cd <= 0) sp.phase = 'play'; }
-    else { g.t += dt; sp.s.update(g, dt, SIN); if (g.over) { sportFinish(); return; } }
+    else { g.t += dt; sp.s.update(g, dt, SIN); sjTick(dt); if (g.over) { sportFinish(); return; } }
     sx.setTransform(2, 0, 0, 2, 0, 0); sx.clearRect(0, 0, W, H);
-    sp.s.draw(g);
-    if (sp.phase === 'count') { sx.globalAlpha = .55; sq(0, 0, W, H, '#0b1030'); sx.globalAlpha = 1; stext(sp.cd > .5 ? String(Math.ceil(sp.cd - .4)) : tr('Los!'), W / 2, H / 2 + 10, '#fde047', 32); }
+    const shk = SJ.shake > 0 ? SJ.shake : 0; if (shk) sx.setTransform(2, 0, 0, 2, Math.round(rnd(-shk, shk)), Math.round(rnd(-shk, shk)));
+    sp.s.draw(g); sjDraw();
+    if (shk) sx.setTransform(2, 0, 0, 2, 0, 0);
+    if (sp.phase === 'count') {
+      sx.globalAlpha = .6; sq(0, 0, W, H, '#0b1030'); sx.globalAlpha = 1; stext(sp.cd > .5 ? String(Math.ceil(sp.cd - .4)) : tr('Los!'), W / 2, H / 2 - 6, '#fde047', 32);
+      if (sp.s.ctl) shud(sp.s.ctl, W / 2, H / 2 + 24, '#fff', 9);
+    }
     SIN.tap = false; SIN.rel = false;
   }
   // Taler and XP per round; after 10 rounds a day at the same station they drop to half

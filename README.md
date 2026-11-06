@@ -329,6 +329,8 @@ From the 3rd prestige the seaplane at the end of the dock (`flieger`) flies you 
 
 **Fang-Drills** (since `2026-11-05-10`): once the island is open (`inselOpen()`), `hook()` turns 15 % of rare, epic and legendary bites on every map into a short round of a station the player has already opened (`SPORT_DRILLS`, `startDrill`, state `sdrill`). Legendaries can also get the osu-Taktdrill. Reaching `pass` points lands the fish, and `clean` counts as a clean catch. Missing the target or closing the modal loses it. Drills never change skill, stamps, medals, coins or the daily limit.
 
+**Game feel** (since `2026-11-06-1`): every station shares one effects layer (`SJ`: `burst` particles, `spop` rising popups, `shake`, `sflash`), drawn by `sportTick` over the scene, and the countdown shows the station's short control line (`ctl`). Frisbee throws like a slingshot at three floating targets (`frisTarget`, `frisV`, `frisG`) and skips over the water in Weitwurf; bowling is a swipe up; volleyball returns on its own (tap = smash); table tennis smashes on a fast swing; the surf lip moves (`surfLip`) and pays most in the pocket right under it; the Rundflug is shorter, +4 s per balloon, with a compass arrow.
+
 The expected score of every mode grows by about half its base per 1000 skill (`exp`). Medals sit at about 1.15, 1.45 and 1.8 times the base, the champion duel at about 2× (the volleyball and table-tennis matches: bronze 5 points, silver a win, gold a win by 4, the duel a win against Kraul).
 
 - **Skill** (`sport[id].lv`, 0–2500): after each round it moves by round((clamp((score / expected − 1) × 60, −30, 60) + 6 × medal) × level factor) (medal 0–3, `SP_MEDAL_LV`), and it never drops below the floor of the current class (Anfänger 0, Fortgeschritten 500, Profi 1000, Champion-Anwärter 1500, Legende 2500). Levels 2 and 3 open at 500 and 1000 and pay more.
@@ -357,6 +359,8 @@ Lobbies use polling, not sockets. Clients sync every 3 s while the tab is visibl
 - **Fonts:** self-hosted. Silkscreen (SIL OFL, licence in `fonts/silkscreen-OFL.txt`) is only for short display text, and everything people read uses Poppins.
 - **Settings** (⚙️ or E): sound, volume (`vol`), less motion (`calm`), short numbers (`short`), a catch card that closes itself (`autoClose`), automatic bait rebuying (`autoBait`) and the play-time display (`showPlay`).
 - **Play time** (`playTime`): seconds the game was open and visible, shown as a ⏱ pill. It never resets.
+- **HUD:** three framed bars (`.hud-group`): wallet (coins, Glut, level), world (time, play time, weather, snacks, tournament) and menu. The „Saved“ stamp sits in the bottom right. On portrait phones the canvas is pinned under the HUD and the page background splits at its horizon (`--bg-split`).
+- **Minigame window:** while a round runs, `#sport` carries the class `playing`: slim header, canvas sized to the screen. Results are a card (`.sr-card`, coloured per medal) with the medal marks of the mode and level. In-scene gauges use `smeter(x, y, w, h, value, label, colours)`.
 - **Patch notes:** every update adds an issue of the Steg-Zeitung, marked with „!“ while unread (`PATCH_NOTES`, `patchSeen`).
 - **Automatic updates:** open games compare the ETags of `fischen.html`, `js/fischen.js`, `js/fischen-i18n.js` and `css/fischen.css` every two minutes, then save and reload at the next calm moment.
 
