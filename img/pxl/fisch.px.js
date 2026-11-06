@@ -1793,3 +1793,25 @@ F('mantarochen', 96, 50, { lit: true }, (c) => {
   c.poly([66, 23, 70, 19, 72, 23], L)
   for (const [x, y] of [[4, 6], [86, 40], [80, 10], [90, 30]]) drop(c, x, y)
 })
+
+// ---------------------------------------------------------------- Neu 2026-11-06: Fischeln (Krefeld)
+F('samtfisch', 54, 34, { lit: true }, (c) => {
+  // Fischelner Samtfisch: weinroter Samt mit weichem Strich, ein goldener Seidenstreifen, und er trägt eine Krawatte aus Krefelder Seide
+  const p = iFish(c, { x1: 40, cy: 16, up: 12, dn: 12, tl: 11, sp: 9, fin: '#e11d48', body: (u, v, x, y) => {
+    if (v > 0.38 && v < 0.5) return (x + y) % 4 === 0 ? '#fef3c7' : '#facc15' // Seidenstreifen
+    if (v > 0.5 && v < 0.54) return '#b45309'
+    return (x * 2 + y) % 5 === 0 ? '#9f1239' : B(v, 0.2, '#881337', 0.75, '#be123c', '#9f1239') // Samtflor
+  } })
+  fan(c, [18, Math.round(p.top(18)) + 1], [[22, 2], [30, 3], [34, Math.round(p.top(34)) + 1]], '#e11d48', '#881337')
+  eye(c, 8, 11, { size: 4 })
+  c.line(2, 18, 5, 19, '#4c0519')
+  // Krawatte unter dem Kinn: Knoten, dann das Blatt mit Streifen
+  const kx = 12, ky = Math.round(p.bot(12)) - 6
+  c.rect(kx - 1, ky, 3, 2, '#1e3a8a')
+  c.poly([kx - 1, ky + 2, kx + 2, ky + 2, kx + 3, ky + 8, kx + .5, ky + 10, kx - 2, ky + 8], '#1d4ed8')
+  for (let i = 0; i < 4; i++) c.px(kx - 1 + (i % 2), ky + 3 + i * 2, '#93c5fd')
+  // Samtglanz und ein Seidenfaden, der hinten aus der Flosse hängt
+  for (const [x, y] of [[16, 7], [24, 9], [30, 12]]) c.px(x, y, '#fda4af')
+  c.line(46, 22, 49, 27, '#facc15'); c.px(50, 28, '#fef3c7')
+  spec(c, 10, 6)
+})

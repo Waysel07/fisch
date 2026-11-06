@@ -37,6 +37,7 @@
     { id: 'staebchen', name: 'Fischstäbchen',  img: 'img/fischstaebchen.png', r: 'uncommon', min: 7, max: 11, val: 46, pixel: true, page: 'seiten/fischstaebchen.html', map: 'lava', say: 'Ich war mal ein Fisch. Jetzt bin ich knusprig.', desc: 'Paniert, goldbraun und frisch aus der Glut. Niemand weiß, wer es hier unten gebraten hat.' },
     { id: 'beinfisch', name: 'Beinfisch',       img: 'img/beinfisch.gif',        r: 'uncommon',  min: 15, max: 30,  val: 18, photo: true, page: 'seiten/beinfisch.html', say: 'Ich wollte eigentlich nur kurz spazieren.', desc: 'Hat Beine. Läuft lieber am Ufer entlang als zu schwimmen.' },
     { id: 'spezi1',  name: 'Spezifischer Spezifisch', img: 'img/spezifisch1.png', r: 'rare', clip: [.93, 3.17],      min: 40, max: 70,  val: 38, say: 'Extra Spezi, extra spezifisch.', desc: 'Ein Prachtexemplar mit extra viel Spezi.' },
+    { id: 'samt',    name: 'Fischelner Samtfisch', img: 'img/samtfisch.png', r: 'rare',      min: 25, max: 55,  val: 46, pixel: true, page: 'seiten/samtfisch.html', say: 'Ich komm aus Fischeln. Fisch-eln. Verstehste?', desc: 'Aus Fischeln, mitten in Krefeld, der Samt- und Seidenstadt. Glänzt wie Samt und trägt eine Krawatte aus echter Krefelder Seide.' },
     { id: 'oel',     name: 'Ölfisch',           img: 'img/oelfisch.png',         r: 'rare',      min: 30, max: 60,  val: 45, pixel: true, page: 'seiten/oelfisch.html', say: 'Ich schillere. Das ist kein Kompliment.', desc: 'Schwarz und ölig, mit Regenbogenschimmer. Kommt nachts raus.', night: 1.8, sea: true },
     { id: 'kaugummi', name: 'Kaugummifisch',    img: 'img/fish-smile.gif',    r: 'rare',      min: 15, max: 30,  val: 48, photo: true, page: 'seiten/kaugummifisch.html', say: 'Blubb. Ich klebe jetzt an dir.', desc: 'Rund, grau und zäh wie alter Kaugummi. Lächelt trotzdem.' },
     { id: 'zacken',  name: 'Zackenbarsch',      img: 'img/zackenbarsch.gif',     r: 'rare',      min: 60, max: 120, val: 50, photo: true, page: 'seiten/zackenbarsch.html', say: 'AAAAAH.', desc: 'Reißt das Maul weit auf. Drin wohnt ein kleiner Putzerfisch zur Miete.', sea: true },
@@ -233,6 +234,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-06-3', date: '06.11.2026', items: [
+      '🎀 Neuer Fisch am Steg: der Fischelner Samtfisch (selten). Er kommt aus Fischeln in Krefeld, der Samt- und Seidenstadt, glänzt wie Samt und trägt eine Krawatte aus Krefelder Seide. Mit eigener Seite im Fischdex.',
+    ] },
     { id: '2026-11-06-2', date: '06.11.2026', items: [
       '🧭 Aufgeräumte Leiste oben: Taler und Level, Uhrzeit und Wetter sowie das Menü sitzen jetzt in drei festen Leisten statt in vielen einzelnen Kästchen. „Gespeichert“ erscheint klein unten rechts, und auf dem Handy im Hochformat sitzt das Meer direkt unter der Leiste.',
       '🛒 Die Reiter im Laden stehen als gleichmäßiger Block nebeneinander, der Taler-Stand daneben.',

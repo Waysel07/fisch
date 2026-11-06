@@ -224,7 +224,7 @@ The current area is saved as `map`.
 
 | Area | `map` | Fish | Opens |
 |---|---|---|---|
-| Steg | `steg` | 49 | From the start |
+| Steg | `steg` | 50 (the Fischelner Samtfisch since `2026-11-06-3`) | From the start |
 | Hohe See | `see` | 44, of which 13 are shared with the Steg | 3rd rebirth, or Seekarte |
 | Glutgrotte | `lava` | 31 | 1st prestige |
 | Sonneninsel | `insel` | 22 | 3rd prestige |
