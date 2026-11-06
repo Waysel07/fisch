@@ -2,6 +2,11 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 06.11.2026 · `2026-11-06-1`
+
+- 🥏 Frisbee rebuilt: in Target Ring you throw 8 discs at three floating targets (near 2, middle 3, far 5 points), the middle counts double, hits in a row give a bonus and balloons in the air +3. You throw like a slingshot with a preview of the flight path, and the disc flies twice as fast. In Long Throw a flat, hard disc skips across the water.
+- 🎮 Every minigame feels better: confetti, splashes, rising points, shake and flashes on hits, and the countdown tells you how to play. Bowling is now thrown with a swipe up, in Beach Volleyball you play the ball back on your own and only tap for a smash, in Table Tennis a fast swing gives a smash. Surfing: the lip of the wave rises and falls, the points are mostly right below it, and tricks work anywhere in the golden zone. Jetski: combo display and a bonus for gates hit dead centre. Scenic Flight: shorter, every balloon adds 4 seconds and an arrow points to the next one. Archery: arrows fly visibly, balloons build chains.
+
 ## 05.11.2026 · `2026-11-05-12`
 
 - 🏝️ More island than ever: the island map now has a harbour town with a town hall, a market and boats at the quay, a resort with a pool and water bungalows, an airstrip, a stadium, fields with a windmill, orchards, a glowing lava channel on the volcano, beach umbrellas, sailboats and small neighbouring islets. There is something to discover everywhere in the Island Flight.
