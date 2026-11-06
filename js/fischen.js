@@ -238,6 +238,7 @@
     { id: '2026-11-06-7', date: '06.11.2026', items: [
       '👤 Spielerprofile: Tippe in der Bestenliste auf einen Namen und sieh dir das Profil an – Spielfigur, Rang, Titel, Level, Spielzeit, größter Fang, Lieblingsfisch und alle Platzierungen.',
       '🙋 Mit „Mein Profil“ in der Bestenliste siehst du, was andere von dir sehen. Dein Profil erscheint beim nächsten Spielen.',
+      '💡 Ein einziger Ideenfisch schaltet das Ideenbrett jetzt für immer frei – keine Ideen-Zettel mehr. Du kannst bis zu 6 Ideen in 8 Stunden einreichen.',
     ] },
     { id: '2026-11-06-6', date: '06.11.2026', items: [
       '💡 Neuer Fisch am Steg: der Ideenfisch (selten). Wer ihn fängt, bekommt einen Ideen-Zettel und darf eine Idee ans neue Ideenbrett am Steg hängen (Taste I).',
@@ -529,7 +530,6 @@
     boxes: {}, dexClaimed: [], lvl: 1, xp: 0, daily: { d: '', n: 0 }, bestStreak: 0, rebirths: 0, scales: 0, perks: {}, prestige: 0, pearls: 0, pperks: {}, quests: [], questsDone: 0, lifeCoins: 0, totalEarned: 0,
   }, load());
   delete save.jackpot; // the pot used to be per player; now it lives on the server for everyone
-  save.ideaTix = Math.max(0, save.ideaTix | 0); // idea tickets: one per Ideenfisch, spent on the Ideenbrett
   save.baits.wurm = Infinity;
   if (sigBroken || (DEBUG && !DEV_HOST)) save.tampered = true;
   if (sigBroken) setTimeout(() => toast(tr('⚠️ Dieser Spielstand wurde von Hand verändert. Du kannst weiterspielen, aber nicht mehr in die Bestenliste.')), 2500);
@@ -996,7 +996,6 @@
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
     e.n++; e.best = Math.max(e.best, size); if (f.r !== 'junk') e.small = Math.min(e.small || Infinity, size); save.dex[f.id] = e;
-    if (f.id === 'idee') save.ideaTix = (save.ideaTix | 0) + 1;
     if (f.r !== 'junk') { e.cls = Math.max(e.cls || 0, cls); if (cls === 4) save.monsters = (save.monsters || 0) + 1; }
     if (f.r !== 'junk' && size > weekBest()) save.weekBest = { w: weekId(), cm: size }; // Fisch der Woche
     checkMastery(f);
@@ -4408,7 +4407,7 @@
     { id: 'patch',  label: tr('Steg-Zeitung (Patch Notes)'), x: 103.5, y: DOCK_Y - 5.5, w: 8, h: 5.5, draw: drawNewspaper, open: () => toggleModal('patch'), ready: () => save.patchSeen !== PATCH_NOTES[0].id && save.total > 0 },
     { id: 'dex',    map: 'all', label: tr('Fischdex & Shinydex'), get x() { return dexX(); }, get y() { return dexY(); }, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
     { id: 'lb',     label: tr('Bestenliste'),   x: KIOSK.x + KIOSK.w / 2 - 5, y: DOCK_Y - 48, w: 10, h: 10.5, draw: drawTrophy, open: () => toggleModal('lb') },
-    { id: 'ideen',  label: tr('💡 Ideenbrett'), x: 77, y: DOCK_Y - 18, w: 9, h: 18, draw: drawIdeaBoard, open: () => toggleModal('ideen'), ready: () => (save.ideaTix | 0) > 0 },
+    { id: 'ideen',  label: tr('💡 Ideenbrett'), x: 77, y: DOCK_Y - 18, w: 9, h: 18, draw: drawIdeaBoard, open: () => toggleModal('ideen') },
     { id: 'prog',   label: tr('Aufträge & Fortschritt'), x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
     { id: 'shop',   label: tr('Laden'),         x: KIOSK.x - 3, y: DOCK_Y - 37.5, w: KIOSK.w + 6, h: 37.5, open: () => toggleModal('shop') },
     { id: 'bealin',  label: tr("Käpt'n Bealin"), x: BEALIN.x - 1, y: SURFACE - 16, w: BEALIN.w + 2, h: 18, open: () => talkBealin() },
@@ -5061,7 +5060,8 @@
   }
 
   // ------------------------------------------------------------------ Ideenbrett (api/ideas.js)
-  // Every Ideenfisch gives one idea ticket (save.ideaTix). Ideas hang on a public board; everyone votes them up or down.
+  // One Ideenfisch in the dex unlocks the board for good (the server caps it at 6 ideas per 8 h). Everyone votes ideas up or down.
+  const ideaOpen = () => !!(save.dex.idee && save.dex.idee.n > 0);
   const IDEAS_API = '/api/ideas';
   const IDEAS = { list: null, mine: {}, tab: 'top', err: '', at: 0, busy: false };
   const voterId = () => {
@@ -5085,11 +5085,11 @@
   }
   const ideaScore = i => i.up - i.down;
   function renderIdeas() {
-    const n = save.ideaTix | 0;
+    const n = ideaOpen();
     $('idea-text').disabled = !n || IDEAS.busy;
     $('idea-send').disabled = !n || IDEAS.busy;
-    $('idea-send').textContent = n ? tr('💡 Ans Brett hängen ({n} übrig)', { n }) : tr('💡 Ans Brett hängen');
-    $('idea-note').textContent = n ? tr('Du hast {n} Ideen-Zettel. Dein Name aus der Bestenliste steht dabei, sonst „Anonym“.', { n }) : tr('Fang einen Ideenfisch, um eine Idee einzureichen. Abstimmen kann jeder.');
+    $('idea-send').textContent = tr('💡 Ans Brett hängen');
+    $('idea-note').textContent = n ? tr('Höchstens 6 Ideen in 8 Stunden. Dein Name aus der Bestenliste steht dabei, sonst „Anonym“.') : tr('Fang einmal einen Ideenfisch, dann ist das Brett für immer offen. Abstimmen kann jeder.');
     $('idea-tabs').querySelectorAll('[data-tab]').forEach(b => { b.classList.toggle('on', b.dataset.tab === IDEAS.tab); b.setAttribute('aria-selected', b.dataset.tab === IDEAS.tab); });
     const ul = $('idea-list');
     const empty = text => ul.replaceChildren(Object.assign(document.createElement('li'), { className: 'empty', textContent: text }));
@@ -5129,13 +5129,12 @@
   $('idea-form').addEventListener('submit', async e => {
     e.preventDefault();
     const text = $('idea-text').value.trim();
-    if (!(save.ideaTix > 0) || IDEAS.busy) return;
+    if (!ideaOpen() || IDEAS.busy) return;
     if (text.length < 8) { toast(tr('Die Idee ist zu kurz.')); return; }
     IDEAS.busy = true; renderIdeas();
     const j = await ideasCall({ action: 'post', text, name: (save.lb && save.lb.name) || '' });
     IDEAS.busy = false;
     if (j.error) { toast(tr(j.error)); renderIdeas(); return; }
-    save.ideaTix--; persist();
     $('idea-text').value = '';
     IDEAS.tab = 'new';
     if (IDEAS.list) IDEAS.list.unshift(j.idea); else IDEAS.list = [j.idea];
