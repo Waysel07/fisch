@@ -1327,3 +1327,29 @@ button#btn-boss:hover { background: #be123c; }
 .idea-vote.up.on { border-color: #22c55e; color: #bbf7d0; background: #14532d; }
 .idea-vote.down.on { border-color: #ef4444; color: #fecaca; background: #7f1d1d; }
 .idea-vote:hover { border-color: #64748b; }
+
+/* Spielerprofile */
+.lb-who { all: unset; cursor: pointer; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-who:hover, .lb-who:focus-visible { color: #4ade80; text-decoration: underline; }
+.prof-head { display: flex; gap: 1rem; align-items: center; margin: .4rem 0 .8rem; }
+.prof-avatar { width: 88px; height: auto; image-rendering: pixelated; background: #1e293b; padding: .5rem; box-shadow: 0 4px 0 #0b1020; flex: none; }
+.prof-info { min-width: 0; }
+.prof-info p { margin: .1rem 0; }
+.prof-rank { font-family: var(--px); color: var(--gold); font-size: .95rem; }
+.prof-title { color: #f5d0fe; font-weight: 600; }
+.prof-me { color: #4ade80; font-weight: 700; }
+.prof-fishes { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-bottom: .6rem; }
+.prof-fish { background: #1e293b; padding: .5rem; box-shadow: 0 4px 0 #0b1020; display: grid; justify-items: center; text-align: center; gap: .15rem; min-width: 0; }
+.prof-fish small { color: #94a3b8; font-size: .74rem; }
+.prof-fish img { width: 72px; height: 48px; object-fit: contain; }
+.prof-fish img.pixel { image-rendering: pixelated; }
+.prof-fish b { font-size: .88rem; overflow-wrap: anywhere; }
+.prof-fish span { color: #fde68a; font-size: .8rem; }
+.prof-none { margin: .8rem 0; color: #64748b; }
+.prof-stats { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: .4rem; }
+.prof-stats li { background: #1e293b; padding: .45rem .55rem; display: grid; gap: .05rem; box-shadow: 0 3px 0 #0b1020; min-width: 0; }
+.prof-stats li.empty { grid-column: 1 / -1; color: #94a3b8; text-align: center; }
+.prof-stats small { color: #94a3b8; font-size: .72rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prof-stats b { color: #f8fafc; font-size: .95rem; }
+.prof-place { color: #4ade80; font-size: .74rem; }
+@media (max-width: 420px) { .prof-avatar { width: 64px; } .prof-stats { grid-template-columns: 1fr 1fr; } }

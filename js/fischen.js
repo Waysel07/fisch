@@ -235,6 +235,11 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-06-7', date: '06.11.2026', items: [
+      '👤 Spielerprofile: Tippe in der Bestenliste auf einen Namen und sieh dir das Profil an – Spielfigur, Rang, Titel, Level, Spielzeit, größter Fang, Lieblingsfisch und alle Platzierungen.',
+      '🙋 Mit „Mein Profil“ in der Bestenliste siehst du, was andere von dir sehen. Dein Profil erscheint beim nächsten Spielen.',
+      '💡 Ein einziger Ideenfisch schaltet das Ideenbrett jetzt für immer frei – keine Ideen-Zettel mehr. Du kannst bis zu 6 Ideen in 8 Stunden einreichen.',
+    ] },
     { id: '2026-11-06-6', date: '06.11.2026', items: [
       '💡 Neuer Fisch am Steg: der Ideenfisch (selten). Wer ihn fängt, bekommt einen Ideen-Zettel und darf eine Idee ans neue Ideenbrett am Steg hängen (Taste I).',
       '👍 Am Ideenbrett stimmen alle öffentlich mit ▲ und ▼ über die Ideen ab, sortiert nach „Beliebt“ oder „Neu“.',
@@ -525,7 +530,6 @@
     boxes: {}, dexClaimed: [], lvl: 1, xp: 0, daily: { d: '', n: 0 }, bestStreak: 0, rebirths: 0, scales: 0, perks: {}, prestige: 0, pearls: 0, pperks: {}, quests: [], questsDone: 0, lifeCoins: 0, totalEarned: 0,
   }, load());
   delete save.jackpot; // the pot used to be per player; now it lives on the server for everyone
-  save.ideaTix = Math.max(0, save.ideaTix | 0); // idea tickets: one per Ideenfisch, spent on the Ideenbrett
   save.baits.wurm = Infinity;
   if (sigBroken || (DEBUG && !DEV_HOST)) save.tampered = true;
   if (sigBroken) setTimeout(() => toast(tr('⚠️ Dieser Spielstand wurde von Hand verändert. Du kannst weiterspielen, aber nicht mehr in die Bestenliste.')), 2500);
@@ -992,7 +996,6 @@
     const first = !save.dex[f.id];
     const e = save.dex[f.id] || { n: 0, best: 0 };
     e.n++; e.best = Math.max(e.best, size); if (f.r !== 'junk') e.small = Math.min(e.small || Infinity, size); save.dex[f.id] = e;
-    if (f.id === 'idee') save.ideaTix = (save.ideaTix | 0) + 1;
     if (f.r !== 'junk') { e.cls = Math.max(e.cls || 0, cls); if (cls === 4) save.monsters = (save.monsters || 0) + 1; }
     if (f.r !== 'junk' && size > weekBest()) save.weekBest = { w: weekId(), cm: size }; // Fisch der Woche
     checkMastery(f);
@@ -4404,7 +4407,7 @@
     { id: 'patch',  label: tr('Steg-Zeitung (Patch Notes)'), x: 103.5, y: DOCK_Y - 5.5, w: 8, h: 5.5, draw: drawNewspaper, open: () => toggleModal('patch'), ready: () => save.patchSeen !== PATCH_NOTES[0].id && save.total > 0 },
     { id: 'dex',    map: 'all', label: tr('Fischdex & Shinydex'), get x() { return dexX(); }, get y() { return dexY(); }, w: 8, h: 8.5, draw: drawDexBook, open: () => toggleModal('dex'), ready: () => $('btn-dex').classList.contains('ready') },
     { id: 'lb',     label: tr('Bestenliste'),   x: KIOSK.x + KIOSK.w / 2 - 5, y: DOCK_Y - 48, w: 10, h: 10.5, draw: drawTrophy, open: () => toggleModal('lb') },
-    { id: 'ideen',  label: tr('💡 Ideenbrett'), x: 77, y: DOCK_Y - 18, w: 9, h: 18, draw: drawIdeaBoard, open: () => toggleModal('ideen'), ready: () => (save.ideaTix | 0) > 0 },
+    { id: 'ideen',  label: tr('💡 Ideenbrett'), x: 77, y: DOCK_Y - 18, w: 9, h: 18, draw: drawIdeaBoard, open: () => toggleModal('ideen') },
     { id: 'prog',   label: tr('Aufträge & Fortschritt'), x: 64.5, y: DOCK_Y - 20, w: 10, h: 20, draw: drawBoard, open: () => toggleModal('prog'), ready: () => $('btn-prog').classList.contains('ready') },
     { id: 'shop',   label: tr('Laden'),         x: KIOSK.x - 3, y: DOCK_Y - 37.5, w: KIOSK.w + 6, h: 37.5, open: () => toggleModal('shop') },
     { id: 'bealin',  label: tr("Käpt'n Bealin"), x: BEALIN.x - 1, y: SURFACE - 16, w: BEALIN.w + 2, h: 18, open: () => talkBealin() },
@@ -4780,7 +4783,7 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'sport', 'ideen']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'sport', 'ideen', 'profil']) $(id).hidden = true;
     if (sp && sp.drill) drillEnd(-1); // leaving a catch drill loses the fish
     if (sp && !sp.done) sp = null; // leaving a running station ends it without a result
     if (window.speechSynthesis) window.speechSynthesis.cancel();
@@ -5057,7 +5060,8 @@
   }
 
   // ------------------------------------------------------------------ Ideenbrett (api/ideas.js)
-  // Every Ideenfisch gives one idea ticket (save.ideaTix). Ideas hang on a public board; everyone votes them up or down.
+  // One Ideenfisch in the dex unlocks the board for good (the server caps it at 6 ideas per 8 h). Everyone votes ideas up or down.
+  const ideaOpen = () => !!(save.dex.idee && save.dex.idee.n > 0);
   const IDEAS_API = '/api/ideas';
   const IDEAS = { list: null, mine: {}, tab: 'top', err: '', at: 0, busy: false };
   const voterId = () => {
@@ -5081,11 +5085,11 @@
   }
   const ideaScore = i => i.up - i.down;
   function renderIdeas() {
-    const n = save.ideaTix | 0;
+    const n = ideaOpen();
     $('idea-text').disabled = !n || IDEAS.busy;
     $('idea-send').disabled = !n || IDEAS.busy;
-    $('idea-send').textContent = n ? tr('💡 Ans Brett hängen ({n} übrig)', { n }) : tr('💡 Ans Brett hängen');
-    $('idea-note').textContent = n ? tr('Du hast {n} Ideen-Zettel. Dein Name aus der Bestenliste steht dabei, sonst „Anonym“.', { n }) : tr('Fang einen Ideenfisch, um eine Idee einzureichen. Abstimmen kann jeder.');
+    $('idea-send').textContent = tr('💡 Ans Brett hängen');
+    $('idea-note').textContent = n ? tr('Höchstens 6 Ideen in 8 Stunden. Dein Name aus der Bestenliste steht dabei, sonst „Anonym“.') : tr('Fang einmal einen Ideenfisch, dann ist das Brett für immer offen. Abstimmen kann jeder.');
     $('idea-tabs').querySelectorAll('[data-tab]').forEach(b => { b.classList.toggle('on', b.dataset.tab === IDEAS.tab); b.setAttribute('aria-selected', b.dataset.tab === IDEAS.tab); });
     const ul = $('idea-list');
     const empty = text => ul.replaceChildren(Object.assign(document.createElement('li'), { className: 'empty', textContent: text }));
@@ -5125,13 +5129,12 @@
   $('idea-form').addEventListener('submit', async e => {
     e.preventDefault();
     const text = $('idea-text').value.trim();
-    if (!(save.ideaTix > 0) || IDEAS.busy) return;
+    if (!ideaOpen() || IDEAS.busy) return;
     if (text.length < 8) { toast(tr('Die Idee ist zu kurz.')); return; }
     IDEAS.busy = true; renderIdeas();
     const j = await ideasCall({ action: 'post', text, name: (save.lb && save.lb.name) || '' });
     IDEAS.busy = false;
     if (j.error) { toast(tr(j.error)); renderIdeas(); return; }
-    save.ideaTix--; persist();
     $('idea-text').value = '';
     IDEAS.tab = 'new';
     if (IDEAS.list) IDEAS.list.unshift(j.idea); else IDEAS.list = [j.idea];
@@ -6736,20 +6739,94 @@
     return j;
   }
   const TAMPER_MSG = () => tr('Dieser Spielstand wurde von Hand verändert und kann nicht in die Bestenliste.');
+  // what others see on your profile card (api/leaderboard.js cleanProf)
+  function lbProfile() {
+    const lk = myLook(), mine = FISH.filter(f => f.r !== 'junk' && save.dex[f.id]);
+    const best = mine.reduce((a, f) => (save.dex[f.id].best || 0) > (a ? save.dex[a.id].best || 0 : -1) ? f : a, null);
+    const fav = mine.reduce((a, f) => (save.dex[f.id].n || 0) > (a ? save.dex[a.id].n || 0 : -1) ? f : a, null);
+    return {
+      lk: { t: lk.tier, h: lk.hat || '', j: lk.jacket || '', b: lk.bob || '', s: lk.skin || '', r: lk.hair || '' },
+      ti: myTitle() ? save.title : '', lv: save.lvl, rk: save.rebirthsTotal | 0, pr: save.prestige | 0, sp: profis(),
+      pt: Math.floor((save.playTime || 0) / 3600),
+      best: best ? { f: best.id, n: save.dex[best.id].best || 0 } : null,
+      fav: fav ? { f: fav.id, n: save.dex[fav.id].n || 0 } : null,
+    };
+  }
   async function lbSubmit(force) {
     if (!save.lb || LB.busy) return;
     if (save.tampered) { LB.err = TAMPER_MSG(); return; }
-    const sc = lbScores(), key = JSON.stringify(sc), since = Date.now() - (save.lbT || 0);
+    const sc = lbScores(), prof = lbProfile(), key = JSON.stringify([sc, prof]), since = Date.now() - (save.lbT || 0);
     if (key === save.lbKey || since < 55000 || (!force && since < 120000)) return;
     LB.busy = true; save.lbT = Date.now();
     try {
-      const j = await lbFetch('POST', { id: save.lb.id, token: save.lb.token, name: save.lb.name, scores: sc });
+      const j = await lbFetch('POST', { id: save.lb.id, token: save.lb.token, name: save.lb.name, scores: sc, prof });
       save.lbKey = key; save.lb.me = j.me; LB.ranks = j.ranks; LB.err = ''; persist();
     } catch (e) { LB.err = e.message; }
     LB.busy = false;
     if (!$('lb').hidden) renderLb();
   }
   setInterval(() => lbSubmit(), 130000);
+
+  // ------------------------------------------------------------------ Spielerprofile (GET /api/leaderboard?p=<me>)
+  const PROF = { me: null, data: null, err: '' };
+  async function openProfile(me, name) {
+    if (!me) return;
+    PROF.me = me; PROF.data = null; PROF.err = ''; PROF.name = name || '';
+    closeModals(); $('profil').hidden = false; renderProfile();
+    try {
+      const r = await fetch(LB_API + '?p=' + encodeURIComponent(me));
+      const j = await r.json().catch(() => ({}));
+      if (PROF.me !== me) return;
+      if (r.status === 404) PROF.err = tr('Für diesen Eintrag gibt es noch kein Profil. Es erscheint beim nächsten Spielen.');
+      else if (!r.ok) PROF.err = tr(j.error || 'Bestenliste gerade nicht erreichbar.');
+      else PROF.data = j;
+    } catch { PROF.err = tr('Keine Verbindung zum Server.'); }
+    if (!$('profil').hidden) renderProfile();
+  }
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+  function profFish(label, ref, fmt) {
+    const f = ref && FISH.find(x => x.id === ref.f);
+    const box = el('div', 'prof-fish');
+    box.append(el('small', '', label));
+    if (!f) { box.append(el('p', 'prof-none', '–')); return box; }
+    const img = el('img'); img.src = f.img; img.alt = ''; img.className = f.pixel ? 'pixel' : f.photo ? 'photo' : '';
+    box.append(img, el('b', '', f.name), el('span', '', fmt(ref.n)));
+    return box;
+  }
+  function renderProfile() {
+    const d = PROF.data, p = d && d.prof;
+    $('profil-name').textContent = d ? d.name : PROF.name || tr('Profil');
+    const body = $('profil-body');
+    if (!d) { body.replaceChildren(el('p', 'sub', PROF.err || tr('Lädt …'))); return; }
+    const head = el('div', 'prof-head');
+    const cv = el('canvas', 'prof-avatar');
+    const look = p ? { tier: p.lk.t, hat: p.lk.h, jacket: p.lk.j, bob: p.lk.b, skin: p.lk.s, hair: p.lk.r } : { tier: 0 };
+    const fr = playerFrames(look)[0][0];
+    cv.width = fr.width; cv.height = fr.height; cv.getContext('2d').drawImage(fr, 0, 0);
+    cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', tr('Spielfigur von {name}', { name: d.name }));
+    const info = el('div', 'prof-info');
+    if (p) {
+      info.append(el('p', 'prof-rank', presMark(p.pr) + rankOf(p.rk).name + (p.sp ? ' · ' + '🏅'.repeat(Math.min(9, p.sp)) : '')));
+      if (titleOf(p.ti)) info.append(el('p', 'prof-title', `„${titleOf(p.ti)}“`));
+      info.append(el('p', 'sub', tr('Level {l} · {h} Std gespielt', { l: p.lv, h: p.pt.toLocaleString(I18N.locale) })));
+    }
+    if (d.since) info.append(el('p', 'sub', tr('In der Bestenliste seit {d}', { d: new Date(d.since).toLocaleDateString(I18N.locale) })));
+    if (save.lb && save.lb.me === d.me) info.append(el('p', 'prof-me', tr('Das bist du!')));
+    head.append(cv, info);
+    const fishes = el('div', 'prof-fishes');
+    if (p) fishes.append(profFish(tr('🏆 Größter Fang'), p.best, n => n.toLocaleString(I18N.locale) + ' cm'), profFish(tr('❤️ Lieblingsfisch'), p.fav, n => tr('{n}× gefangen', { n: n.toLocaleString(I18N.locale) })));
+    const stats = el('ul', 'prof-stats');
+    for (const [id, t] of Object.entries(LB_TABS)) {
+      const b = d.boards[id]; if (!b) continue;
+      const li = el('li');
+      li.append(el('small', '', t.label), el('b', '', t.fmt(b.score)), el('span', 'prof-place', b.rank ? tr('Platz {a} von {b}', { a: b.rank.toLocaleString(I18N.locale), b: b.of.toLocaleString(I18N.locale) }) : ''));
+      stats.append(li);
+    }
+    if (!stats.childElementCount) stats.append(el('li', 'empty', tr('Noch keine Werte.')));
+    body.replaceChildren(head, ...(p ? [fishes] : []), stats);
+  }
+  $('profil-back').addEventListener('click', () => { $('profil').hidden = true; toggleModal('lb'); });
+  $('lb-myprof').addEventListener('click', () => { if (save.lb && save.lb.me) openProfile(save.lb.me, save.lb.name); });
   // Fisch der Woche: the top 3 of last week get the Wochensieger-Kappe (and a toast), once per week
   function checkWeekWin(j) {
     if (!save.lb || !save.lb.me || !j || !j.prev || !Array.isArray(j.prev.woche) || !j.week) return;
@@ -6782,7 +6859,8 @@
     else list.replaceChildren(...rows.map((r, i) => {
       const li = document.createElement('li'); if (save.lb && r.me === save.lb.me) li.className = 'mine';
       const pos = document.createElement('span'); pos.className = 'pos'; pos.textContent = ['🥇', '🥈', '🥉'][i] || i + 1;
-      const n = document.createElement('b'); n.textContent = r.name;
+      const n = document.createElement('button'); n.type = 'button'; n.className = 'lb-who'; n.textContent = r.name;
+      n.title = tr('Profil ansehen'); n.addEventListener('click', () => openProfile(r.me, r.name));
       const sc = document.createElement('span'); sc.className = 'score'; sc.textContent = LB_TABS[LB.tab].fmt(r.score);
       li.append(pos, n, sc); return li;
     }));

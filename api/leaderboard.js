@@ -2,7 +2,9 @@
 //
 //   GET    /api/leaderboard                     → Top 10 jeder Liste (30 s im CDN gecacht), dazu die
 //                                                  Top 3 der Wochenliste der letzten Woche (prev)
-//   POST   /api/leaderboard {id, token, name, scores}  → eintragen/aktualisieren, liefert eigene Plätze
+//   GET    /api/leaderboard?p=<me>              → Spielerprofil: Name, Profil (Aussehen, Titel, Rang, Lieblings-
+//                                                  und größter Fisch …), Werte und Plätze in jeder Liste
+//   POST   /api/leaderboard {id, token, name, scores, prof?}  → eintragen/aktualisieren, liefert eigene Plätze
 //   DELETE /api/leaderboard {id, token}         → eigenen Eintrag löschen
 //   DELETE /api/leaderboard {id, admin}         → Eintrag als Admin löschen (ADMIN_TOKEN)
 //   POST   /api/leaderboard {action:'stats', admin} → anonyme Zahlen für Admins: Einträge pro Liste,
@@ -41,6 +43,48 @@ const TOP = 10;
 const ID_RE = /^[a-f0-9]{16,40}$/;
 
 const sha = (s) => crypto.createHash('sha256').update(s).digest('hex');
+const pubOf = (id) => sha(id).slice(0, 12); // öffentliches Kürzel eines Eintrags (Feld `me` in den Listen)
+const PUB_RE = /^[a-f0-9]{12}$/;
+
+// Profil: nur diese Felder, mit Grenzen (Whitelist wie cleanMe in lobby.js)
+const num = (v, lo, hi) => { const n = Math.round(Number(v)); return Number.isFinite(n) ? Math.max(lo, Math.min(hi, n)) : lo; };
+const slug = (v, max = 24) => (typeof v === 'string' && new RegExp(`^[a-z0-9-]{1,${max}}$`).test(v) ? v : '');
+function cleanProf(p) {
+  p = p && typeof p === 'object' ? p : {};
+  const lk = p.lk && typeof p.lk === 'object' ? p.lk : {};
+  const fish = (f) => (f && typeof f === 'object' && slug(f.f) ? { f: slug(f.f), n: num(f.n, 0, 1e7) } : null);
+  return {
+    lk: { t: num(lk.t, 0, 9), h: slug(lk.h, 16), j: slug(lk.j, 16), b: slug(lk.b, 16), s: slug(lk.s, 16), r: slug(lk.r, 16) }, // Aussehen
+    ti: slug(p.ti, 16),           // Titel (ID einer Fischdex-Belohnung)
+    lv: num(p.lv, 1, 9999),       // Level
+    rk: num(p.rk, 0, 1e5),        // Wiedergeburten insgesamt (Rang)
+    pr: num(p.pr, 0, 1000),       // Prestige
+    sp: num(p.sp, 0, 9),          // Sportarten auf Profi-Niveau
+    pt: num(p.pt, 0, 1e6),        // Spielzeit in Stunden
+    best: fish(p.best),           // größter Fang: Fisch-ID und Größe (n in cm)
+    fav: fish(p.fav),             // Lieblingsfisch: am häufigsten gefangen (n Fänge)
+  };
+}
+
+// Profil eines Eintrags: gespeichertes Profil plus aktuelle Werte und Plätze in jeder Liste
+async function profile(pub) {
+  const [id, json, since] = (await redis([['HGET', 'lb:pubid', pub], ['GET', 'lb:prof:' + pub], ['HGET', 'lb:since', pub]]));
+  if (!id) return null;
+  const keys = Object.keys(BOARDS), wk = weekId();
+  const out = await redis([
+    ['HGET', 'lb:names', id],
+    ...keys.map((b) => ['ZSCORE', keyOf(b, wk), id]),
+    ...keys.map((b) => ['ZREVRANK', keyOf(b, wk), id]),
+    ...keys.map((b) => ['ZCARD', keyOf(b, wk)]),
+  ]);
+  const n = keys.length, boards = {};
+  keys.forEach((b, i) => {
+    const s = out[1 + i], r = out[1 + n + i];
+    if (s !== null && s !== undefined) boards[b] = { score: Number(s), rank: r === null ? null : r + 1, of: out[1 + 2 * n + i] };
+  });
+  let prof = null; try { prof = json ? cleanProf(JSON.parse(json)) : null; } catch { /* old or broken */ }
+  return { me: pub, name: cleanName(out[0]) || '???', prof, boards, since: Number(since) || null };
+}
 
 async function redis(cmds) {
   const r = await fetch(`${URL_}/pipeline`, {
@@ -79,7 +123,7 @@ async function top() {
   const names = ids.length ? await redis([['HMGET', 'lb:names', ...ids]]) : [[]];
   // names from before a filter change are hidden too
   const nameOf = Object.fromEntries(ids.map((id, i) => [id, cleanName(names[0][i]) || '???']));
-  const rowsOf = (l) => { const rows = []; for (let i = 0; i < l.length; i += 2) rows.push({ name: nameOf[l[i]], score: Number(l[i + 1]), me: sha(l[i]).slice(0, 12) }); return rows; };
+  const rowsOf = (l) => { const rows = []; for (let i = 0; i < l.length; i += 2) rows.push({ name: nameOf[l[i]], score: Number(l[i + 1]), me: pubOf(l[i]) }); return rows; };
   const boards = {};
   keys.forEach((b, k) => { boards[b] = rowsOf(lists[k]); });
   return { boards, prev: { woche: rowsOf(lists[keys.length]) }, week: wk };
@@ -104,6 +148,12 @@ module.exports = async function handler(req, res) {
   if (!URL_ || !TOKEN) return send(res, 503, { error: 'Die Bestenliste ist noch nicht eingerichtet.' });
   try {
     if (req.method === 'GET') {
+      const p = new URL(req.url || '/', 'http://x').searchParams.get('p');
+      if (p !== null) {
+        if (!PUB_RE.test(p)) return send(res, 400, { error: 'Unbekannter Spieler.' });
+        const pr = await profile(p);
+        return pr ? send(res, 200, pr, 'public, s-maxage=30, stale-while-revalidate=60') : send(res, 404, { error: 'Unbekannter Spieler.' });
+      }
       return send(res, 200, await top(), 'public, s-maxage=30, stale-while-revalidate=60');
     }
 
@@ -123,7 +173,8 @@ module.exports = async function handler(req, res) {
       }
       await redis([
         ...Object.keys(BOARDS).map((b) => ['ZREM', keyOf(b), id]),
-        ['HDEL', 'lb:names', id], ['DEL', 'lb:tok:' + id, 'lb:last:' + id],
+        ['HDEL', 'lb:names', id], ['DEL', 'lb:tok:' + id, 'lb:last:' + id, 'lb:prof:' + pubOf(id)],
+        ['HDEL', 'lb:pubid', pubOf(id)], ['HDEL', 'lb:since', pubOf(id)],
       ]);
       return send(res, 200, { ok: true });
     }
@@ -167,7 +218,9 @@ module.exports = async function handler(req, res) {
       scores[b] = v; times[b] = now;
     }
 
-    const keys = Object.keys(BOARDS), wk = weekId();
+    const keys = Object.keys(BOARDS), wk = weekId(), pub = pubOf(id);
+    // Profil: ältere Spielversionen schicken keins, dann bleibt das alte stehen
+    if (body.prof && typeof body.prof === 'object') await redis([['SET', 'lb:prof:' + pub, JSON.stringify(cleanProf(body.prof))]]);
     const out = await redis([
       ['HSET', 'lb:names', id, name],
       ['SET', 'lb:last:' + id, JSON.stringify({ t: now, s: scores, ts: times })],
@@ -176,10 +229,11 @@ module.exports = async function handler(req, res) {
       ...keys.map((b) => ['ZREVRANK', keyOf(b, wk), id]),
       ...keys.map((b) => ['ZCARD', keyOf(b, wk)]),
       ['EXPIRE', keyOf('woche', wk), WEEK_TTL],
+      ['HSET', 'lb:pubid', pub, id], ['HSETNX', 'lb:since', pub, String(now)],
     ]);
     const n = keys.length, ranks = {};
     keys.forEach((b, i) => { const r = out[2 + n + i]; ranks[b] = { rank: r === null ? null : r + 1, of: out[2 + 2 * n + i] }; });
-    return send(res, 200, { ok: true, ranks, me: sha(id).slice(0, 12), skipped });
+    return send(res, 200, { ok: true, ranks, me: pub, skipped });
   } catch (e) {
     console.error(e);
     return send(res, 502, { error: 'Bestenliste gerade nicht erreichbar.' });

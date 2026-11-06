@@ -2,6 +2,12 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 06.11.2026 · `2026-11-06-7`
+
+- 👤 Player profiles: tap a name on the leaderboard to see their profile – character, rank, title, level, play time, biggest catch, favourite fish and every placing.
+- 🙋 “My profile” on the leaderboard shows what others see of you. Your profile appears the next time you play.
+- 💡 A single Idea Fish now unlocks the idea board for good – no more idea slips. You can post up to 6 ideas every 8 hours.
+
 ## 06.11.2026 · `2026-11-06-6`
 
 - 💡 New fish at the dock: the Idea Fish (rare). Catching it gives you an idea slip, and you can pin an idea to the new idea board on the dock (key I).

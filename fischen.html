@@ -437,8 +437,18 @@
           <p class="err" id="lb-err" role="alert"></p>
         </div>
         <div class="lb-joined" id="lb-joined" hidden>
-          <p class="sub">Eingetragen als <b id="lb-myname"></b>. Dein Stand wird beim Spielen automatisch aktualisiert. <button class="linkbtn" id="lb-leave">Austragen und Eintrag löschen</button></p>
+          <p class="sub">Eingetragen als <b id="lb-myname"></b>. Dein Stand wird beim Spielen automatisch aktualisiert. <button class="linkbtn" id="lb-myprof">Mein Profil</button> · <button class="linkbtn" id="lb-leave">Austragen und Eintrag löschen</button></p>
         </div>
+      </div>
+    </div>
+
+    <!-- Player profile (from the leaderboard) -->
+    <div class="modal" id="profil" hidden>
+      <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="profil-name">
+        <button class="close" data-close aria-label="Schließen">✕</button>
+        <h2 id="profil-name">Profil</h2>
+        <div id="profil-body"></div>
+        <div class="catch-actions"><button class="btn ghost" id="profil-back">← Bestenliste</button></div>
       </div>
     </div>
 
