@@ -5,6 +5,8 @@
   // texts are written in German; js/fischen-i18n.js swaps in English when that language is picked
   const I18N = window.I18N || { tr: (t, v) => t.replace(/\{(\w+)\}/g, (m, k) => (v && k in v ? v[k] : m)), locale: 'de-DE', lang: 'de' };
   const tr = I18N.tr;
+  // live the API runs on its own server; anywhere else (local tests) on the same origin
+  const API_BASE = location.hostname === 'www.fisch.ing' ? 'https://api.fisch.ing' : '';
   const trAll = (list, keys) => { for (const o of list) for (const k of keys) if (typeof o[k] === 'string') o[k] = tr(o[k]); };
 
   // ------------------------------------------------------------------ data
@@ -5082,7 +5084,7 @@
   const betCap = () => BET_CAPS[capIdx()];
   const betStep = v => v < 1000 ? 50 : v < 10000 ? 500 : 2500;
   const fmtN = n => Math.round(n).toLocaleString(I18N.locale);
-  const JP_API = '/api/jackpot';
+  const JP_API = API_BASE + '/api/jackpot';
   let potVal = null, potLast = null, potAt = 0; // null until the server answered
   const potName = () => (save.lb && save.lb.name) || ''; // only a name that is already public on the leaderboard
   async function jpFetch(opt, ms) {
@@ -5235,7 +5237,7 @@
   // ------------------------------------------------------------------ Ideenbrett (api/ideas.js)
   // One Ideenfisch in the dex unlocks the board for good (the server caps it at 6 ideas per 8 h). Everyone votes ideas up or down.
   const ideaOpen = () => !!(save.dex.idee && save.dex.idee.n > 0);
-  const IDEAS_API = '/api/ideas';
+  const IDEAS_API = API_BASE + '/api/ideas';
   const IDEAS = { list: null, mine: {}, tab: 'top', err: '', at: 0, busy: false };
   const voterId = () => {
     if (!/^[a-f0-9]{32}$/.test(save.ideaId || '')) { const a = new Uint8Array(16); crypto.getRandomValues(a); save.ideaId = [...a].map(b => b.toString(16).padStart(2, '0')).join(''); persist(); }
@@ -6253,7 +6255,7 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) checkVersion(); });
   $('btn-reset').addEventListener('click', async () => {
     if (!confirm(tr('Spielstand wirklich löschen? Fischdex, Taler und Ausrüstung sind dann weg.') + (save.lb ? tr(' Dein Bestenlisten-Eintrag wird ebenfalls gelöscht.') : ''))) return;
-    if (save.lb) { try { await fetch('/api/leaderboard', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: save.lb.id, token: save.lb.token }) }); } catch { /* offline: entry stays, can be removed on request */ } }
+    if (save.lb) { try { await fetch(LB_API, { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: save.lb.id, token: save.lb.token }) }); } catch { /* offline: entry stays, can be removed on request */ } }
     leaving = true;
     try { localStorage.removeItem(SAVE_KEY); } catch { /* ignore */ }
     location.reload();
@@ -6873,7 +6875,7 @@
   // ------------------------------------------------------------------ leaderboard (opt-in)
   // Only after the player chooses a nickname and agrees, scores are sent to /api/leaderboard
   // (Vercel Function + Upstash Redis). At most every 2 minutes and only when something improved.
-  const LB_API = '/api/leaderboard';
+  const LB_API = API_BASE + '/api/leaderboard';
   const LB_TABS = {
     taler:  { label: tr('🪙 Taler'),          fmt: s => tr('{n} Taler', { n: s.toLocaleString(I18N.locale) }) },
     woche:  { label: tr('📅 Fisch der Woche'), fmt: s => s + ' cm', note: () => tr('Größter Fisch dieser Woche (ohne Müll). Montag geht es von vorn los – die Top 3 bekommen die Wochensieger-Kappe.') },
@@ -7071,7 +7073,7 @@
   // Up to 8 anglers share a lobby (4-letter code): everyone sees the others on the dock, their
   // catches and who has fished the most Taler since joining. No sockets: the game syncs with
   // api/lobby.js every 3 seconds while the tab is visible.
-  const LOBBY_API = '/api/lobby', LOBBY_EVERY = 3000;
+  const LOBBY_API = API_BASE + '/api/lobby', LOBBY_EVERY = 3000;
   const LOBBY = { code: null, me: null, players: [], feed: [], chat: [], outbox: [], seenChat: 0, err: '', busy: false, pending: [], seenFeed: 0, timer: 0 };
   async function lobbyFetch(body) {
     const r = await fetch(LOBBY_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -7268,7 +7270,7 @@
   // ------------------------------------------------------------------ cloud save (secret key)
   // Optional: a secret key stores a copy of the save on the server (/api/save) so it can be
   // loaded on another device. Synced every few minutes while a key exists.
-  const CLOUD_API = '/api/save';
+  const CLOUD_API = API_BASE + '/api/save';
   const KEY_CHARS = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
   function newKey() {
     const r = crypto.getRandomValues(new Uint8Array(16));
