@@ -1,5 +1,5 @@
 // Gemeinsamer Jackpot-Topf des Fischautomaten – Vercel Function + Upstash Redis (REST, ohne npm-Pakete).
-// Alle Spieler zahlen in denselben Topf ein: 2 % jedes Einsatzes. Ob ein Dreh den Topf knackt,
+// Alle Spieler zahlen in denselben Topf ein: die Hälfte jedes Einsatzes. Ob ein Dreh den Topf knackt,
 // würfelt der Server (so selten wie drei Odfische auf den Walzen); der Topf wird dabei atomar
 // geleert, damit ihn nie zwei Spieler gleichzeitig gewinnen.
 //
@@ -17,11 +17,19 @@ const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TO
 
 const POT = 'jp:pot', LAST = 'jp:last';
 const SEED = 1000;               // so viel liegt nach einem Gewinn wieder im Topf
-const CUT = 0.02;                // Anteil jedes Einsatzes
+const CUT = 0.5;                 // Anteil jedes Einsatzes
 const MAX_STAKE = 50000;         // höchster Einsatz im Spiel
 const MIN_STAKE = 50;
 const ODDS = Math.pow(3 / 100, 3); // drei Odfische: Gewicht 3 von 100 je Walze
 const SPINS_PER_MIN = 60;        // pro (gehashter) IP
+// einmalige Aufstockungen des Topfs: jede id wird genau einmal gutgeschrieben (SET NX)
+const BOOSTS = [['jp:boost:2026-11-06', 2000000]];
+
+async function boost() {
+  const done = await redis(BOOSTS.map(([k]) => ['SET', k, '1', 'NX']));
+  const add = BOOSTS.reduce((a, [, n], i) => a + (done[i] === 'OK' ? n : 0), 0);
+  if (add) await redis([['INCRBY', POT, add]]);
+}
 
 const sha = (s) => crypto.createHash('sha256').update(s).digest('hex');
 
@@ -63,6 +71,7 @@ function lastOf(v) {
 module.exports = async function handler(req, res) {
   if (!URL_ || !TOKEN) return send(res, 503, { error: 'Der Jackpot ist noch nicht eingerichtet.' });
   try {
+    await boost();
     if (req.method === 'GET') {
       const [p, l] = await redis([['GET', POT], ['GET', LAST]]);
       return send(res, 200, { pot: potOf(p), last: l ? lastOf(l) : null });

@@ -234,6 +234,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-06-5', date: '06.11.2026', items: [
+      '💰 Der Jackpot-Topf wird fett: Ab jetzt landet die Hälfte jedes Einsatzes im gemeinsamen Topf, und obendrauf kommen einmalig 2 Millionen Taler hinein.',
+    ] },
     { id: '2026-11-06-4', date: '06.11.2026', items: [
       '💰 Der Jackpot-Topf am Fischautomaten gehört jetzt allen: Jeder Dreh von jedem Spieler zahlt 2 % seines Einsatzes in denselben Topf. Wer drei Odfische dreht, räumt ihn komplett ab. Im Automaten steht, wer ihn zuletzt geknackt hat (dein Name nur, wenn du in der Bestenliste stehst).',
     ] },
@@ -4878,7 +4881,7 @@
     { id: 'odfisch', img: 'img/odfish.jpg',           w: 3,  pay: 150 },
     { id: 'ratte',   img: 'img/rat.gif',              w: 6,  pay: 0 },
   ];
-  // the highest stake grows with the rebirths; 2 % of every stake goes into one jackpot pot shared
+  // the highest stake grows with the rebirths; half of every stake goes into one jackpot pot shared
   // by all players (api/jackpot.js). The server decides whether a spin cracks it, at the odds of
   // three Odfische; then the reels show three Odfische and pay the pot on top of the ×150.
   const PAIR = 1.5, MIN_BET = 50, BET_CAPS = [2000, 5000, 10000, 25000, 50000];
