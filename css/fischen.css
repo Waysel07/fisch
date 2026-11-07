@@ -1327,6 +1327,13 @@ button#btn-boss:hover { background: #be123c; }
 .idea-list li { display: grid; grid-template-columns: auto 1fr; gap: .6rem; align-items: start; background: #1e293b; padding: .45rem .6rem; box-shadow: 0 3px 0 #0b1020; }
 .idea-list li.empty { display: block; color: #94a3b8; text-align: center; box-shadow: none; }
 .idea-body { min-width: 0; }
+.idea-badge { display: inline-block; margin-bottom: .25rem; padding: .05rem .4rem; font: 600 .74rem Poppins, sans-serif; border: 2px solid; }
+.idea-badge.ok { border-color: #22c55e; color: #bbf7d0; background: #14532d; }
+.idea-badge.no { border-color: #ef4444; color: #fecaca; background: #7f1d1d; }
+.ideanews-sheet { max-width: 24rem; text-align: center; }
+.ideanews-sheet canvas { display: block; width: 66px; height: 135px; margin: .25rem auto .6rem; image-rendering: pixelated; }
+.ideanews-sheet canvas[hidden] { display: none; }
+.ideanews-sheet blockquote { margin: 0 0 .6rem; padding: .5rem .7rem; background: var(--slot); color: #f1f5f9; font-size: .92rem; overflow-wrap: anywhere; }
 .idea-body p { margin: 0; font-size: .92rem; color: #f1f5f9; overflow-wrap: anywhere; }
 .idea-body small { color: #94a3b8; font-size: .74rem; }
 .idea-votes { display: flex; flex-direction: column; gap: .25rem; }

@@ -186,6 +186,19 @@
     </div>
 
     <!-- Magische Miesmuschel (after the first catch, on the rock next to the dock) -->
+    <div class="modal" id="ideanews" hidden>
+      <div class="sheet ideanews-sheet" role="dialog" aria-modal="true" aria-labelledby="ideanews-title">
+        <h2 id="ideanews-title"></h2>
+        <canvas id="ideanews-art" aria-hidden="true" hidden></canvas>
+        <blockquote id="ideanews-text"></blockquote>
+        <p class="sub" id="ideanews-sub"></p>
+        <div class="catch-actions">
+          <button class="btn" id="ideanews-wear" data-close hidden>Hut aufsetzen</button>
+          <button class="btn ghost" id="ideanews-ok" data-close>Schön!</button>
+        </div>
+      </div>
+    </div>
+
     <div class="modal" id="pc" hidden>
       <div class="sheet pc-sheet" role="dialog" aria-modal="true" aria-labelledby="pc-title">
         <h2 id="pc-title">🖥️ Alter Computer</h2>

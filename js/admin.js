@@ -15,7 +15,7 @@
   };
   const WHAT = {
     login: 'Anmeldung', 'login-fail': 'Fehlversuch', logout: 'Abmeldung', delete_player: 'Spieler gelöscht',
-    delete_idea: 'Idee gelöscht', gift: 'Spielzeit geschenkt', jackpot_add: 'Jackpot aufgestockt',
+    delete_idea: 'Idee gelöscht', accept_idea: 'Idee angenommen', deny_idea: 'Idee abgelehnt', gift: 'Spielzeit geschenkt', jackpot_add: 'Jackpot aufgestockt',
   };
   const fmt = (n) => Number(n || 0).toLocaleString('de-DE');
   const when = (t) => (t ? new Date(t).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' }) : '–');
@@ -195,8 +195,25 @@
     ul.replaceChildren();
     if (!j.ideas.length) ul.append(el('li', 'muted', 'Keine Ideen.'));
     for (const i of j.ideas) {
-      const li = el('li'), del = el('button', 'btn red sm', 'Löschen'); del.type = 'button';
-      li.append(el('p', '', i.text), el('span', 'meta', `${i.name || 'Anonym'} · ${when(i.at)} · ▲ ${fmt(i.up)} ▼ ${fmt(i.down)}`), del);
+      const li = el('li'), del = el('button', 'btn red sm', 'Löschen'), acts = el('div', 'acts'); del.type = 'button';
+      li.append(el('p', '', i.text), el('span', 'meta', `${i.name || 'Anonym'} · ${when(i.at)} · ▲ ${fmt(i.up)} ▼ ${fmt(i.down)}`), acts);
+      const decide = (verdict, label, cls, ask, done) => {
+        const b = el('button', cls, label); b.type = 'button';
+        b.addEventListener('click', async () => {
+          if (!(await confirmBox(`„${i.text.slice(0, 80)}“ ${ask}`, label, cls))) return;
+          try {
+            const r = await call('review_idea', { id: i.id, verdict });
+            say(r.notified ? done : `${done} Keine Nachricht möglich: Die Idee ist zu alt, um ihren Absender zu kennen.`, true);
+            await ideas();
+          } catch (err) { say(err.message); }
+        });
+        return b;
+      };
+      if (i.status) acts.append(el('span', 'verdict ' + i.status, i.status === 'ok' ? 'Angenommen' : 'Abgelehnt'));
+      else acts.append(
+        decide('ok', 'Annehmen', 'btn gold sm', 'annehmen? Das steht danach öffentlich am Brett, der Absender bekommt den Ideenhut und eine Nachricht. Das lässt sich nicht zurücknehmen.', 'Idee angenommen.'),
+        decide('no', 'Ablehnen', 'btn sm', 'ablehnen? Das steht danach öffentlich am Brett und der Absender bekommt eine Nachricht. Das lässt sich nicht zurücknehmen.', 'Idee abgelehnt.'));
+      acts.append(del);
       del.addEventListener('click', async () => {
         if (!(await confirmBox(`Idee „${i.text.slice(0, 80)}“ löschen?`))) return;
         try { await call('delete_idea', { id: i.id, confirm: true }); li.remove(); say('Idee gelöscht.', true); }
@@ -236,9 +253,9 @@
   async function fullLog() { logList($('lg-list'), (await call('log')).log || []); }
 
   // --- Bestätigen ---
-  function confirmBox(text, yes = 'Löschen') {
+  function confirmBox(text, yes = 'Löschen', cls = 'btn red') {
     const d = $('confirm');
-    $('confirm-text').textContent = text; $('confirm-yes').textContent = yes;
+    $('confirm-text').textContent = text; $('confirm-yes').textContent = yes; $('confirm-yes').className = cls;
     return new Promise((done) => {
       const end = (v) => { d.close(); $('confirm-yes').onclick = $('confirm-no').onclick = null; d.oncancel = null; done(v); };
       $('confirm-yes').onclick = () => end(true);

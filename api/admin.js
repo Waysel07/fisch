@@ -182,12 +182,21 @@ async function act(body, iph) {
     return [200, { ok: true }];
   }
   if (a === 'ideas') return [200, { ideas: (await IDEAS.list(null)).ideas }];
+  if (a === 'review_idea') {
+    const id = String(body.id || ''), verdict = body.verdict === 'ok' || body.verdict === 'no' ? body.verdict : '';
+    if (!IDEAS.IDEA_RE.test(id) || !verdict) return [400, { error: 'Unbekannte Idee.' }];
+    const r = await IDEAS.review(id, verdict);
+    if (r.status === 404) return [404, { error: 'Diese Idee gibt es nicht mehr.' }];
+    if (r.status === 409) return [409, { error: 'Über diese Idee wurde schon entschieden.' }];
+    await log(iph, verdict === 'ok' ? 'accept_idea' : 'deny_idea', id + ' ' + cleanText(r.text, 60));
+    return [200, { ok: true, notified: r.notified }];
+  }
   if (a === 'delete_idea') {
     const id = String(body.id || '');
     if (!IDEAS.IDEA_RE.test(id)) return [400, { error: 'Unbekannte Idee.' }];
     if (body.confirm !== true) return [400, { error: 'Bitte bestätigen.' }];
     const [json] = await redis([['GET', 'idea:' + id]]);
-    await redis([['ZREM', IDEAS.LIST, id], ['DEL', 'idea:' + id, 'idea:' + id + ':c', 'idea:' + id + ':v']]);
+    await redis([['ZREM', IDEAS.LIST, id], ['DEL', 'idea:' + id, 'idea:' + id + ':c', 'idea:' + id + ':v', 'idea:' + id + ':st']]);
     let t = ''; try { t = JSON.parse(json).t; } catch { /* schon weg */ }
     await log(iph, 'delete_idea', id + ' ' + cleanText(String(t || ''), 60));
     return [200, { ok: true }];
