@@ -240,6 +240,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-07-8', date: '07.11.2026', items: [
+      '🦈 Kartenhai: Am Blackjack-Tisch geht jetzt mehr. Der Höchsteinsatz ist fünfmal so hoch wie am Fischautomaten, mit allen Wiedergeburten bis 250 000 Taler. Dazu gibt es feste Einsätze von 100 bis 100 000 zum Antippen.',
+    ] },
     { id: '2026-11-07-7', date: '07.11.2026', items: [
       '🦈 Neu auf der Sonneninsel: Der Kartenhai hat in seiner Tiki-Bar einen Blackjack-Tisch aufgemacht. Blackjack zahlt 3:2, und Verdoppeln geht auch.',
     ] },
@@ -5346,7 +5349,7 @@
   const PAIR = 1.5, MIN_BET = 50, BET_CAPS = [2000, 5000, 10000, 25000, 50000];
   const capIdx = () => save.prestige ? BET_CAPS.length - 1 : Math.min(BET_CAPS.length - 1, save.rebirths | 0); // after a prestige the cap stays at the top
   const betCap = () => BET_CAPS[capIdx()];
-  const betStep = v => v < 1000 ? 50 : v < 10000 ? 500 : 2500;
+  const betStep = v => v < 1000 ? 50 : v < 10000 ? 500 : v < 50000 ? 2500 : 10000;
   const fmtN = n => Math.round(n).toLocaleString(I18N.locale);
   const JP_API = API_BASE + '/api/jackpot';
   let potVal = null, potLast = null, potAt = 0; // null until the server answered
@@ -5528,8 +5531,11 @@
     return pv > dv ? { win: stake * 2, why: 'win' } : pv < dv ? { win: 0, why: 'lose' } : { win: stake, why: 'push' };
   }
   const bjDraw = () => (bj.force.length ? bj.force.shift() : bj.shoe.pop());
-  const bjMaxBet = () => Math.min(betCap(), Math.max(MIN_BET, Math.floor(save.coins / 50) * 50));
-  function bjSetBet(v) { v = Math.round(+v); bj.bet = Number.isFinite(v) ? Math.min(betCap(), Math.max(MIN_BET, v)) : MIN_BET; renderBj(); }
+  // blackjack has its own, higher cap: it stays client-only and pays nothing into the shared jackpot
+  const BJ_CAPS = BET_CAPS.map(c => c * 5);
+  const bjCap = () => BJ_CAPS[capIdx()];
+  const bjMaxBet = () => Math.min(bjCap(), Math.max(MIN_BET, Math.floor(save.coins / 50) * 50));
+  function bjSetBet(v) { v = Math.round(+v); bj.bet = Number.isFinite(v) ? Math.min(bjCap(), Math.max(MIN_BET, v)) : MIN_BET; renderBj(); }
   function bjCard(c, hidden) {
     const el = document.createElement('div');
     el.className = 'bj-card' + (c.seen ? '' : ' dealt'); c.seen = true;
@@ -5544,7 +5550,7 @@
     return el;
   }
   function renderBj() {
-    if (!bj.on && bj.bet > betCap()) bj.bet = betCap();
+    if (!bj.on && bj.bet > bjCap()) bj.bet = bjCap();
     const cvHai = $('bj-hai');
     if (!cvHai.width || cvHai.width === 300) { const img = bake(...ART.bj_hai); cvHai.width = img.width; cvHai.height = img.height; cvHai.getContext('2d').drawImage(img, 0, 0); }
     $('bj-coins').textContent = fmtN(save.coins);
@@ -5558,8 +5564,14 @@
     $('bj-hit').disabled = $('bj-stand').disabled = bj.busy;
     $('bj-double').disabled = bj.busy || bj.p.length !== 2 || save.coins < bj.stake;
     $('bj-bet').textContent = fmtN(bj.bet);
-    $('bj-down').disabled = bj.bet <= MIN_BET; $('bj-up').disabled = bj.bet >= betCap();
-    $('bj-half').disabled = bj.bet <= MIN_BET; $('bj-twice').disabled = bj.bet >= betCap(); $('bj-max').disabled = save.coins < MIN_BET;
+    $('bj-down').disabled = bj.bet <= MIN_BET; $('bj-up').disabled = bj.bet >= bjCap();
+    $('bj-half').disabled = bj.bet <= MIN_BET; $('bj-twice').disabled = bj.bet >= bjCap(); $('bj-max').disabled = save.coins < MIN_BET;
+    $('bj-chips').querySelectorAll('[data-bj]').forEach(btn => {
+      const v = +btn.dataset.bj;
+      btn.textContent = v < 1000 ? v : v / 1000 + 'K'; btn.setAttribute('aria-label', tr('{n} Taler', { n: fmtN(v) })); btn.hidden = v > bjCap(); btn.disabled = v > save.coins; btn.classList.toggle('on', v === bj.bet);
+    });
+    const bjNext = BJ_CAPS[capIdx() + 1];
+    $('bj-cap').textContent = bjNext ? tr('Höchsteinsatz {a} · ab der {n}. Wiedergeburt {b}', { a: fmtN(bjCap()), n: (save.rebirths | 0) + 1, b: fmtN(bjNext) }) : tr('Höchsteinsatz {a}', { a: fmtN(bjCap()) });
     const poor = save.coins < bj.bet;
     $('bj-deal').disabled = poor;
     $('bj-deal').textContent = poor ? tr('Zu wenig Taler – geh fischen!') : tr('Austeilen ({n} Taler)', { n: fmtN(bj.bet) });
@@ -5629,6 +5641,7 @@
   $('bj-half').addEventListener('click', () => bjSetBet(Math.round(bj.bet / 100) * 50));
   $('bj-twice').addEventListener('click', () => bjSetBet(bj.bet * 2));
   $('bj-max').addEventListener('click', () => bjSetBet(bjMaxBet()));
+  $('bj-chips').querySelectorAll('[data-bj]').forEach(btn => btn.addEventListener('click', () => bjSetBet(+btn.dataset.bj)));
 
   // ------------------------------------------------------------------ Ideenbrett (api/ideas.js)
   // One Ideenfisch in the dex unlocks the board for good (the server caps it at 6 ideas per 8 h). Everyone votes ideas up or down.

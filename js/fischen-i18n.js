@@ -1612,6 +1612,7 @@
     "Nur Fischtaler, kein echtes Geld. Blackjack zahlt 3:2, der Hai bleibt bei 17.": "Fish coins only, no real money. Blackjack pays 3:2, the shark stands on 17.",
     "Karten des Hais": "The shark's cards",
     "Deine Karten": "Your cards",
+    "🦈 Kartenhai: Am Blackjack-Tisch geht jetzt mehr. Der Höchsteinsatz ist fünfmal so hoch wie am Fischautomaten, mit allen Wiedergeburten bis 250 000 Taler. Dazu gibt es feste Einsätze von 100 bis 100 000 zum Antippen.": "🦈 Card Shark: higher stakes at the blackjack table. The maximum stake is five times the fish machine's, up to 250,000 coins with all rebirths. You also get fixed stakes from 100 to 100,000 to tap.",
     "🦈 Neu auf der Sonneninsel: Der Kartenhai hat in seiner Tiki-Bar einen Blackjack-Tisch aufgemacht. Blackjack zahlt 3:2, und Verdoppeln geht auch.": "🦈 New on the Sonneninsel: the Card Shark has opened a blackjack table in a tiki bar. Blackjack pays 3:2, and you can double down.",
     "Stockfisch": "Stockfisch",
     "Matt in einem. Ich habe nachgerechnet.": "Mate in one. I did the maths.",
