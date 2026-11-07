@@ -25,6 +25,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   | `bite` | Biss |
   | `reel` | Drill |
   | `rhythm` | Taktdrill |
+  | `chess` | Schachduell des Stockfischs (`f.chess`, Modal `#chess`): drei Stellungen Matt in einem, zwei reichen (`startChess`, `CHESS_POS`) |
   | `show` | Fangkarte |
   | `summon` | Boss erscheint |
   | `boss` | Bossfight |
@@ -72,6 +73,7 @@ Die Datei ist lang. Am besten sucht man nach den Namen unten statt nach Zeilennu
   - `save` direkt ändern;
   - fangen: `landCls(id, klasse)`, `pick()`;
   - Welt: `setTime(0–1)`, `setWeather(id)`, `travel('see')`;
+  - Schachduell: `chess()`, `chessState`;
   - Boss: `bossSolo()`, `bossHit(n)`; Lava-Kreatur: `crit()`, `critState`, `critChance()`;
   - Sport: `sport(id, modus, stufe)`, `sportOver()`, `sportG`;
   - erzwingen: `forceShiny`, `forceMut`, `forceSlot = ['odfisch', 'odfisch', 'odfisch']`.
