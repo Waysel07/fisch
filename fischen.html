@@ -237,6 +237,14 @@
           <button class="btn spin" id="bj-deal" type="button">Austeilen</button>
         </div>
         <p class="fine">Nur Fischtaler, kein echtes Geld. Blackjack zahlt 3:2, der Hai bleibt bei 17.</p>
+    <div class="modal" id="chess" hidden>
+      <div class="sheet chess-sheet" role="dialog" aria-modal="true" aria-labelledby="chess-title">
+        <h2 id="chess-title">♟️ Der Stockfisch hat angebissen!</h2>
+        <p class="sub chess-say" id="chess-say" aria-live="polite"></p>
+        <div class="chess-hud"><span id="chess-round"></span><span id="chess-time"></span></div>
+        <div class="chess-bar"><span id="chess-bar"></span></div>
+        <div class="chess-board" id="chess-board" role="group"></div>
+        <div class="catch-actions"><button class="btn ghost" data-close>Aufgeben</button></div>
       </div>
     </div>
 

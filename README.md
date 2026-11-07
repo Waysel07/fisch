@@ -228,6 +228,8 @@ The current area is saved as `map`.
 | Area | `map` | Fish | Opens |
 |---|---|---|---|
 | Steg | `steg` | 52 (the Fischelner Samtfisch since `2026-11-06-3`, the Ideenfisch since `2026-11-06-6`, the Pixel-Spezifisch since `2026-11-07-3`) | From the start |
+| Hohe See | `see` | 45, of which 13 are shared with the Steg (the Stockfisch since `2026-11-07-6`) | 3rd rebirth, or Seekarte |
+| Steg | `steg` | 53 (the Fischelner Samtfisch since `2026-11-06-3`, the Ideenfisch since `2026-11-06-6`, the Pixel-Spezifisch since `2026-11-07-3`, the Filet-O-Fisch since `2026-11-07-5`) | From the start |
 | Hohe See | `see` | 44, of which 13 are shared with the Steg | 3rd rebirth, or Seekarte |
 | Glutgrotte | `lava` | 31 | 1st prestige |
 | Sonneninsel | `insel` | 22 | 3rd prestige |

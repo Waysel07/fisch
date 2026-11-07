@@ -1348,6 +1348,21 @@ button#btn-boss:hover { background: #be123c; }
 .bj-bet { min-width: 5.5rem; font-size: 1.1rem; text-align: center; font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .bj-card.new { animation: none; } }
 @media (max-height: 560px) { .bj-head canvas { display: none; } }
+.chess-sheet { max-width: 420px; padding: .9rem .8rem; }
+.chess-say { min-height: 2.8em; margin: .2rem 0 .3rem; }
+.chess-hud { display: flex; justify-content: space-between; gap: .5rem; margin-bottom: .25rem; font-size: .85rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.chess-bar { height: 6px; margin-bottom: .55rem; background: var(--slot); }
+.chess-bar span { display: block; height: 100%; background: var(--gold); transform-origin: left; }
+.chess-bar.low span { background: #ef4444; }
+.chess-board { display: grid; grid-template-columns: repeat(8, 1fr); width: min(100%, 62vh); margin: 0 auto .9rem; box-shadow: 0 0 0 4px var(--ink); touch-action: manipulation; }
+.chess-sq { position: relative; display: block; min-width: 0; aspect-ratio: 1; padding: 0; border: 0; border-radius: 0; background: #e6cc9f; cursor: pointer; }
+.chess-sq.d { background: #94704a; }
+.chess-sq canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+.chess-sq:focus-visible { outline: 3px solid #ffffff; outline-offset: -3px; }
+.chess-sq.sel, .chess-sq.last { box-shadow: inset 0 0 0 3px var(--gold); }
+.chess-sq.hint { box-shadow: inset 0 0 0 3px #16a34a; background: #bbf7d0; }
+.chess-sq.mate { background: #ef4444; }
+.chess-sq.to::after { content: ""; position: absolute; left: 39%; top: 39%; width: 22%; height: 22%; background: #16a34a; box-shadow: 0 0 0 2px var(--ink); }
 .idea-body { min-width: 0; }
 .idea-badge { display: inline-block; margin-bottom: .25rem; padding: .05rem .4rem; font: 600 .74rem Poppins, sans-serif; border: 2px solid; }
 .idea-badge.ok { border-color: #22c55e; color: #bbf7d0; background: #14532d; }
