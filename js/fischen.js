@@ -5219,8 +5219,7 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'pc', 'ideanews', 'bj', 'sport', 'ideen', 'profil']) $(id).hidden = true;
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'pc', 'ideanews', 'chess', 'sport', 'ideen', 'profil']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'pc', 'ideanews', 'bj', 'chess', 'sport', 'ideen', 'profil']) $(id).hidden = true;
     if (sp && sp.drill) drillEnd(-1); // leaving a catch drill loses the fish
     if (chess.on) chessEnd(true); // leaving the duel, too
     if (sp && !sp.done) sp = null; // leaving a running station ends it without a result
