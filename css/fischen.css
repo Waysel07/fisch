@@ -1345,6 +1345,8 @@ button#btn-boss:hover { background: #be123c; }
 .bj-acts { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem; margin-bottom: .8rem; }
 .bj-acts .btn { flex: 1 1 auto; }
 .bj-acts[hidden] { display: none; }
+#bj-bets .bets { gap: .25rem; }
+#bj-chips button { min-width: 3.7rem; }
 .bj-bet { min-width: 5.5rem; font-size: 1.1rem; text-align: center; font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .bj-card.dealt { animation: none; } }
 @media (max-height: 560px) { .bj-head canvas { display: none; } }

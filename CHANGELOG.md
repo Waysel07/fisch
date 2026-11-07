@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 07.11.2026 · `2026-11-07-8`
+
+- 🦈 Card Shark: higher stakes at the blackjack table. The maximum stake is five times the fish machine's, up to 250,000 coins with all rebirths. You also get fixed stakes from 100 to 100,000 to tap.
+
 ## 07.11.2026 · `2026-11-07-7`
 
 - 🦈 New on the Sonneninsel: the Card Shark has opened a blackjack table in a tiki bar. Blackjack pays 3:2, and you can double down.
