@@ -2,6 +2,10 @@
 
 Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Generated from `PATCH_NOTES` in `js/fischen.js` with the English texts from `js/fischen-i18n.js`; the same notes appear in-game as the Steg-Zeitung. See `CLAUDE.md` for how to keep both in sync.
 
+## 07.11.2026 · `2026-11-07-4`
+
+- 💡 Idea board: ideas can now be accepted or declined. The board shows the result and you get a message. If yours is accepted, you get the new Idea Hat with a glowing bulb.
+
 ## 07.11.2026 · `2026-11-07-3`
 
 - 🥤 New fish at the dock: the Pixel Spezifisch (rare). A Spezifisch made of pure pixels, in cola and orange.

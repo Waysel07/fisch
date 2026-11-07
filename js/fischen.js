@@ -238,6 +238,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-07-4', date: '07.11.2026', items: [
+      '💡 Ideenbrett: Ideen können jetzt angenommen oder abgelehnt werden. Das steht dann am Brett und du bekommst Bescheid. Wird deine angenommen, bekommst du den neuen Ideenhut mit leuchtender Birne.',
+    ] },
     { id: '2026-11-07-3', date: '07.11.2026', items: [
       '🥤 Neuer Fisch am Steg: der Pixel-Spezifisch (selten). Ein Spezifisch aus reinen Pixeln, in Cola und Orange.',
     ] },
@@ -1948,6 +1951,7 @@
 
   // Sprites as char rows, drawn in img/pxl/code.px.js. 1 char = 1 fine pixel = 0.5 world units.
   const ART = {
+    idee_birne: [["..kkkk..",".kwyywk.","kwwyywwk","kwyyyywk","kyyyyyyk","kYyyyyYk",".kYyyYk.",".kGggGk.",".kggggk.",".kGggGk.","..kkkk.."],{"k":"#1b1f2e","y":"#fde047","Y":"#f59e0b","w":"#fffbe6","g":"#cbd5e1","G":"#64748b"}],
     pc_alt: [["....................aaaa......",".............aaaaaabccca......","......aaaaaaabccccccbbda......","...aaaabccccccbbbbbbbbdaa.....","...accccbbbbbbbbbaaaabdba.....","...abbbbbbaaaaaaeeeeabbda.....","....bbbaaaaeeeeeeeeeabbdd.....","....abbaeeeeeefffeeeeabda.....","...gacbaeeffffeeeeeeeabda.....","...gabbbaeeeeeeffffeeabbda....","..g.abbbaeeffffeeeeeeabbda...g","..g.abbbaeeeeffeeeeeeeabda...g",".g...adbaeeffeeeeeaeeeabda..g.",".g...abbbaeeeeeeeeeaaaabbd..g.",".h...abbbaeeeaaaaaabbbbbbd.g..",".h...abbbaaaabbbbbbbbbbibdag..",".h...gbbbbbbbbbbbbbbbbbdddah..",".h...gbbbbbbbbbbbdddddd.aaahaa","..h..gabbbbddddddbbaaaaajjjhja","..h..gadlllllllllll.ajjajajjha","..h.glllllllllllllllllljajjjha","..hlglmmmmllllllllllllllllllh.",".lhlgllllllllllllllllllmmmllhl","llllllllllllllllllllllllllllll"], {"a":"#16263a","b":"#6f8583","c":"#8ea39b","d":"#4b6270","e":"#0f2a2a","f":"#2f8f6a","g":"#1f5c4b","h":"#2f7a5e","i":"#b45309","j":"#546c74","l":"#5f8a8e","m":"#4a7180"}],
     sp_fan_1: [["..kkkkkkk..",".kshhhhhSk.",".kchssSHCk.",".kcsssSsCk.",".kcsssSsCk.",".kckssskCk.",".kcccccCCk.","..kccccCk..","..kccccCk..","..kccccCk..","..kCCCCCk..","...kpkPk...","...kpkPk...","...kpkPk...","....k.k....","..........."], {"k":"#1b1f2e","s":"#f2c9a0","h":"#7c4a24","S":"#d9a47a","c":"#ef4444","H":"#4a2a12","C":"#b91c1c","p":"#334155","P":"#1e293b"}],
     sp_fan_0: [["...kkkkk...","..khhhhhk..","..khssSHk..","..ksssSsk..","..ksssSsk..","...ksssk...","..kccccCk..",".kcccccCCk.",".kcccccCCk.",".kcccccCCk.",".ksCCCCCSk.","..kkpkPkk..","...kpkPk...","...kpkPk...","....k.k....","..........."], {"k":"#1b1f2e","h":"#7c4a24","s":"#f2c9a0","S":"#d9a47a","H":"#4a2a12","c":"#ef4444","C":"#b91c1c","p":"#334155","P":"#1e293b"}],
@@ -2064,6 +2068,7 @@
     { id: 'pose-diamant', slot: 'bob',   name: 'Diamantpose',        price: 60000, col: '#cffafe', desc: 'Die teuerste Pose am Steg. Bitte nicht verlieren.' },
     { id: 'hut-krone',   slot: 'hat',    name: 'Kronen-Hut',         price: 100000, col: ['#fde047', '#a16207', '#ffffff'], sparkle: true, desc: 'Für Angler, die wirklich alles haben.' },
     // unlocked by achievements
+    { id: 'hut-idee',    slot: 'hat',    name: 'Ideenhut',           col: ['#4338ca', '#312e81', '#a5b4fc'], topper: 'idee_birne', desc: 'Eine deiner Ideen hat es ins Spiel geschafft. Dieses Licht geht nicht mehr aus.', ach: 'Lass eine deiner Ideen am Ideenbrett annehmen.', got: () => cosmStat('ideaOk') > 0 },
     { id: 'hut-gold',    slot: 'hat',    name: 'Goldener Hut',       col: ['#facc15', '#b45309', '#fef08a'], desc: 'Für alle, die einen legendären Fisch gelandet haben.', ach: 'Fange einen legendären Fisch.', got: () => FISH.some(f => f.r === 'legendary' && save.dex[f.id]) },
     { id: 'hut-glitzer', slot: 'hat',    name: 'Glitzerhut',         col: ['#f0abfc', '#a21caf', '#fdf4ff'], desc: 'Funkelt fast so schön wie ein Shiny.', ach: 'Fange einen Shiny.', got: () => Object.values(save.dex).some(e => e.shiny) },
     { id: 'hut-schwarz', slot: 'hat',    name: 'Nachteulen-Hut',     col: ['#334155', '#0f172a', '#64748b'], desc: 'Für Angler, die lieber im Dunkeln fischen.', ach: 'Fange 25 Fische bei Nacht.', got: () => cosmStat('night') >= 25 },
@@ -2157,9 +2162,23 @@
     Object.assign(pal, { s, S, r, B, b });
     return { key, pal };
   }
+  // something standing on the hat (Ideenhut): the frame grows upward, the feet stay where they are
+  function withTopper(img, top) {
+    const c = document.createElement('canvas'), lift = top.height - 2; // the base sinks 2 px into the hat
+    c.width = img.width; c.height = img.height + lift;
+    const g = c.getContext('2d');
+    g.drawImage(img, 0, lift); g.drawImage(top, Math.round((img.width - top.width) / 2), 0);
+    return c;
+  }
   function playerFrames(look = myLook()) {
     const { key, pal } = lookPal(look);
-    if (!lookFrames.has(key)) lookFrames.set(key, [false, true].map(flip => PLAYER_LEGS.map(g => bake(PLAYER_BODY.concat(g), pal, flip))));
+    if (!lookFrames.has(key)) {
+      const top = (COSM[look.hat] || {}).topper;
+      lookFrames.set(key, [false, true].map(flip => PLAYER_LEGS.map(g => {
+        const img = bake(PLAYER_BODY.concat(g), pal, flip);
+        return top ? withTopper(img, bake(...ART[top])) : img;
+      })));
+    }
     return lookFrames.get(key);
   }
 
@@ -4977,7 +4996,7 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'pc', 'sport', 'ideen', 'profil']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'pc', 'ideanews', 'sport', 'ideen', 'profil']) $(id).hidden = true;
     if (sp && sp.drill) drillEnd(-1); // leaving a catch drill loses the fish
     if (sp && !sp.done) sp = null; // leaving a running station ends it without a result
     if (window.speechSynthesis) window.speechSynthesis.cancel();
@@ -5007,7 +5026,7 @@
     if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'sdrill', 'boss', 'summon', 'crit'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: () => { renderCasino(); loadPot(); }, ideen: () => { renderIdeas(); loadIdeas(); }, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, pc: () => { const g = $('pc-art').getContext('2d'); g.clearRect(0, 0, 30, 24); g.drawImage(artImg('pc_alt').img, 0, 0); }, wardrobe: renderWardrobe, settings: renderSettings, muschel: renderMuschel, sport: () => { spView.id = null; sp = null; renderSport(); } })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: () => { renderCasino(); loadPot(); }, ideen: () => { renderIdeas(); loadIdeas(); }, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, ideanews: renderIdeaNews, pc: () => { const g = $('pc-art').getContext('2d'); g.clearRect(0, 0, 30, 24); g.drawImage(artImg('pc_alt').img, 0, 0); }, wardrobe: renderWardrobe, settings: renderSettings, muschel: renderMuschel, sport: () => { spView.id = null; sp = null; renderSport(); } })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -5277,6 +5296,43 @@
     if (j.error) IDEAS.err = tr(j.error); else { IDEAS.list = j.ideas || []; IDEAS.mine = j.mine || {}; IDEAS.err = ''; }
     if (!$('ideen').hidden) renderIdeas();
   }
+  // ---- answers from the admin: fetched from the player's inbox, shown one at a time in a quiet moment.
+  // The server forgets a note only after it was shown, so a closed tab can't lose it.
+  const IDEA_NEWS = { queue: [], busy: false, open: false };
+  async function ideaInbox() {
+    if (IDEA_NEWS.busy || IDEA_NEWS.queue.length || !/^[a-f0-9]{32}$/.test(save.ideaId || '')) return; // no id: never posted an idea
+    IDEA_NEWS.busy = true;
+    const j = await ideasCall({ action: 'inbox' });
+    IDEA_NEWS.busy = false;
+    if (j.error || !Array.isArray(j.notes) || !j.notes.length) return;
+    IDEA_NEWS.queue = j.notes;
+    if (j.notes.some(n => n.k === 'ok')) { save.cosm.st.ideaOk = 1; checkCosm(true); persist(); } // the reward is safe before anything shows
+    if (!$('ideen').hidden) loadIdeas(true);
+  }
+  function renderIdeaNews() {
+    const n = IDEA_NEWS.queue[0], ok = n && n.k === 'ok';
+    if (!n) return;
+    $('ideanews-title').textContent = ok ? tr('💡 Deine Idee wurde angenommen!') : tr('Deine Idee wurde abgelehnt');
+    $('ideanews-text').textContent = n.t;
+    $('ideanews-sub').textContent = ok ? tr('Danke! Dafür bekommst du den Ideenhut.') : tr('Danke trotzdem fürs Einreichen. Häng gern die nächste ans Brett.');
+    $('ideanews-wear').hidden = !ok;
+    const cv = $('ideanews-art'); cv.hidden = !ok;
+    if (ok) {
+      const fr = playerFrames({ ...myLook(), hat: 'hut-idee' })[0][0];
+      cv.width = fr.width; cv.height = fr.height; cv.getContext('2d').drawImage(fr, 0, 0);
+    }
+  }
+  $('ideanews-wear').addEventListener('click', () => { save.cosm.hat = 'hut-idee'; persist(); toast(tr('Steht dir!')); });
+  setInterval(() => {
+    if (IDEA_NEWS.open && $('ideanews').hidden) { // closed in any way (button, Esc, tap beside it): seen
+      IDEA_NEWS.open = false; IDEA_NEWS.queue.shift(); ideasCall({ action: 'ack', n: 1 });
+    }
+    if (IDEA_NEWS.queue.length && !IDEA_NEWS.open && !document.hidden && state === 'idle' && !anyModal()) {
+      IDEA_NEWS.open = true; toggleModal('ideanews'); sfx.coin();
+    }
+  }, 1500);
+  setTimeout(ideaInbox, 4000);
+  setInterval(ideaInbox, 180000);
   const ideaScore = i => i.up - i.down;
   function renderIdeas() {
     const n = ideaOpen();
@@ -5302,6 +5358,7 @@
       const votes = document.createElement('div'); votes.className = 'idea-votes';
       votes.append(vote(1, tr('Gute Idee'), i.up, 'up'), vote(-1, tr('Keine gute Idee'), i.down, 'down'));
       const body = document.createElement('div'); body.className = 'idea-body';
+      if (i.status) body.append(Object.assign(document.createElement('span'), { className: 'idea-badge ' + i.status, textContent: i.status === 'ok' ? tr('Angenommen') : tr('Abgelehnt') }));
       body.append(Object.assign(document.createElement('p'), { textContent: i.text }),
         Object.assign(document.createElement('small'), { textContent: tr('{name} · {d}', { name: i.name || tr('Anonym'), d: new Date(i.at).toLocaleDateString(I18N.locale) }) }));
       li.append(votes, body);

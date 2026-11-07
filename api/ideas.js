@@ -5,11 +5,13 @@
 //   POST   /api/ideas {action: 'list', voter}           → { ideas, mine: {id: 1|-1} }
 //   POST   /api/ideas {action: 'post', voter, text, name?} → { idea }
 //   POST   /api/ideas {action: 'vote', voter, idea, v}  → { idea, v }   (v: 1 hoch, -1 runter, 0 zurücknehmen)
-//   Löschen geht nur über /api/admin (Aktion 'delete_idea').
+//   POST   /api/ideas {action: 'inbox', voter}          → { notes: [{k: 'ok'|'no', t}] }   (Antworten auf eigene Ideen)
+//   POST   /api/ideas {action: 'ack', voter, n}         → { ok }   (die ältesten n Antworten sind gelesen)
+//   Annehmen, Ablehnen und Löschen gehen nur über /api/admin ('review_idea', 'delete_idea').
 //
 // `voter` ist eine zufällige Geheim-ID des Spielers; gespeichert wird nur ein Kürzel ihres Hashs.
 // Schlüssel: ideas (ZSET id → Zeitpunkt), idea:<id> (JSON: Text, Name, Zeitpunkt), idea:<id>:c (Hash up/dn),
-// idea:<id>:v (Hash Stimme je Spieler). Ideen verfallen 180 Tage nach dem Einreichen; es bleiben höchstens 200.
+// idea:<id>:v (Hash Stimme je Spieler), idea:<id>:st (ok oder no, nur einmal setzbar), idea:inbox:<Kürzel> (Liste der Antworten). Ideen verfallen 180 Tage nach dem Einreichen; es bleiben höchstens 200.
 'use strict';
 const crypto = require('crypto');
 const { cleanName, cleanText, isBad } = require('./_names');
@@ -24,6 +26,7 @@ const MIN_LEN = 8, MAX_LEN = 160;
 const POSTS = 6, WINDOW = 8 * 3600; // je Spieler höchstens 6 Ideen in 8 Stunden
 const ID_RE = /^[a-f0-9]{32,64}$/;
 const IDEA_RE = /^[a-z0-9]{8,16}$/;
+const INBOX = 20;
 
 const sha = (s) => crypto.createHash('sha256').update(s).digest('hex');
 const pub = (voter) => sha('idea:' + voter).slice(0, 16);
@@ -55,10 +58,10 @@ async function readBody(req) {
   try { return JSON.parse(raw || '{}'); } catch { return {}; }
 }
 
-function parse(id, json, c) {
+function parse(id, json, c, st) {
   try {
     const j = JSON.parse(json);
-    return { id, text: String(j.t || ''), name: String(j.n || ''), at: Number(j.at) || 0, up: Math.max(0, +c[0] || 0), down: Math.max(0, +c[1] || 0) };
+    return { id, text: String(j.t || ''), name: String(j.n || ''), at: Number(j.at) || 0, up: Math.max(0, +c[0] || 0), down: Math.max(0, +c[1] || 0), status: st === 'ok' || st === 'no' ? st : '' };
   } catch { return null; }
 }
 
@@ -68,21 +71,34 @@ async function list(me) {
   if (!ids.length) return { ideas: [], mine: {} };
   const cmds = [];
   for (const id of ids) {
-    cmds.push(['GET', 'idea:' + id], ['HMGET', 'idea:' + id + ':c', 'up', 'dn']);
+    cmds.push(['GET', 'idea:' + id], ['HMGET', 'idea:' + id + ':c', 'up', 'dn'], ['GET', 'idea:' + id + ':st']);
     if (me) cmds.push(['HGET', 'idea:' + id + ':v', me]);
   }
-  const out = await redis(cmds), step = me ? 3 : 2;
+  const out = await redis(cmds), step = me ? 4 : 3;
   const ideas = [], mine = {}, gone = [];
   ids.forEach((id, i) => {
     const j = out[i * step];
     if (!j) { gone.push(id); return; }
-    const idea = parse(id, j, out[i * step + 1] || []);
+    const idea = parse(id, j, out[i * step + 1] || [], out[i * step + 2]);
     if (!idea) return;
     ideas.push(idea);
-    if (me) { const v = +out[i * step + 2]; if (v === 1 || v === -1) mine[id] = v; }
+    if (me) { const v = +out[i * step + 3]; if (v === 1 || v === -1) mine[id] = v; }
   });
   if (gone.length) await redis(gone.map((id) => ['ZREM', LIST, id])); // abgelaufen
   return { ideas, mine };
+}
+
+// Annehmen oder Ablehnen geht pro Idee genau einmal (SET NX), damit niemand doppelt benachrichtigt wird.
+async function review(id, verdict) {
+  const key = 'idea:' + id;
+  const [json, ttl] = await redis([['GET', key], ['TTL', key]]);
+  if (!json) return { status: 404 };
+  const [made] = await redis([['SET', key + ':st', verdict, 'NX', 'EX', +ttl > 0 ? +ttl : TTL]]);
+  if (made !== 'OK') return { status: 409 };
+  let idea = {}; try { idea = JSON.parse(json); } catch { /* kaputt: kein Empfänger */ }
+  const text = String(idea.t || '');
+  if (idea.by) await redis([['RPUSH', 'idea:inbox:' + idea.by, JSON.stringify({ k: verdict, t: text })], ['EXPIRE', 'idea:inbox:' + idea.by, TTL]]);
+  return { status: 200, text, notified: !!idea.by };
 }
 
 async function limit(req, action, max) {
@@ -107,6 +123,20 @@ module.exports = async function handler(req, res) {
     if (body.action === 'list') {
       if (await limit(req, 'list', 60)) return send(res, 429, { error: 'Zu viele Anfragen – kurz warten.' });
       return send(res, 200, await list(me));
+    }
+
+    if (body.action === 'inbox') {
+      if (await limit(req, 'inbox', 30)) return send(res, 429, { error: 'Zu viele Anfragen – kurz warten.' });
+      const [raw] = await redis([['LRANGE', 'idea:inbox:' + me, 0, INBOX - 1]]);
+      const notes = (raw || []).map((x) => { try { return JSON.parse(x); } catch { return null; } }).filter(Boolean);
+      return send(res, 200, { notes });
+    }
+
+    if (body.action === 'ack') {
+      if (await limit(req, 'ack', 30)) return send(res, 429, { error: 'Zu viele Anfragen – kurz warten.' });
+      const n = Math.max(0, Math.min(INBOX, Math.floor(Number(body.n)) || 0));
+      if (n) await redis([['LTRIM', 'idea:inbox:' + me, n, -1]]);
+      return send(res, 200, { ok: true });
     }
 
     if (body.action === 'post') {
@@ -146,8 +176,8 @@ module.exports = async function handler(req, res) {
         cmds.push(['EXPIRE', V, left], ['EXPIRE', C, left]);
         await redis(cmds);
       }
-      const [c] = await redis([['HMGET', C, 'up', 'dn']]);
-      return send(res, 200, { idea: parse(id, json, c || []), v });
+      const [c, st] = await redis([['HMGET', C, 'up', 'dn'], ['GET', 'idea:' + id + ':st']]);
+      return send(res, 200, { idea: parse(id, json, c || [], st), v });
     }
 
     return send(res, 400, { error: 'Unbekannte Aktion.' });
@@ -157,4 +187,4 @@ module.exports = async function handler(req, res) {
 };
 
 // für /api/admin
-module.exports.lib = { list, IDEA_RE, LIST };
+module.exports.lib = { list, review, IDEA_RE, LIST };
