@@ -240,6 +240,8 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-07-7', date: '07.11.2026', items: [
+      '🦈 Neu auf der Sonneninsel: Der Kartenhai hat in seiner Tiki-Bar einen Blackjack-Tisch aufgemacht. Blackjack zahlt 3:2, und Verdoppeln geht auch.',
     { id: '2026-11-07-6', date: '07.11.2026', items: [
       '♟️ Neuer Fisch auf Hoher See: der Stockfisch (episch). Er kämpft nicht an der Leine, sondern am Schachbrett: Finde das Matt in einem Zug, sonst ist er weg.',
     { id: '2026-11-07-5', date: '07.11.2026', items: [
@@ -2158,6 +2160,13 @@
 
   // Sprites as char rows, drawn in img/pxl/code.px.js. 1 char = 1 fine pixel = 0.5 world units.
   const ART = {
+    bj_tisch: [["..............dd..............","............ddttd.............","...........dttUUtdd...........",".........ddtUUUUUUtdd.........",".......ddtUUUUUUUUUUtd........",".....ddtUUUUUUUtUtUUUUdd......","....dtUUUUUtUtUtUtUtUtUUdd....","..ddUUUUtUttUtUttUtUtUUtUUd...",".dUUtUttUttUttUttUttUttUttUd..","dTTTTTTTTTTTTTTTTTTTTTTTTTTTd.","dTTTTTTTTTTTTTTTTTTTTTTTTTTTd.",".dTbBTddTddTddTddTddTDDTdbTBd.",".dTbBTddTddTSSTSSTSSTDDTdbTBd.",".dbbBd..ddSSSSSSSSSSSSDddbbBd.",".dbbBd..dSDDDsssssssSSSddbbBd.",".dbbBd.dSSEeessssssssssddbbBd.",".dbbBddsssEeessssssDsDsddbbBd.",".dnnndsDsssssssssssDsDsddnnnd.",".dbbBdmmmmmmmmmmmssDsDssdbbBd.",".dbbBdwEMEMEMEMEwwsDsDssdbbBd.",".dbbBdwmEmEmEmEmEwwsssssdbbBd.",".dbbBdhhhhhhhhhhhhhhhhhhdbbBd.",".dbbBdhhhhrerhhhhhyhSSyhdbbBd.",".dbbBdhhhhrhrhhhhyhySSSSdbbBd.",".dbbBdhyhhhhhhhyhhyhhSSSdbbBd.",".dnnndHHHHccccHccccHHSSSdnnnd.","dfffffffffcrccfccdcffffffffffd","dfffffffffccccfccccffffffffffd","dFFFFFFFFFFFFFFFFFFFFFFFFFFFFd","dnnnnnnnnnnnnnnnnnnnnnnnnnnnnd","dbbbBbbbBbbbBbbbBbbbBbbbBbbbbd","dbbbBbbbBbUUUUUUUUUUBbbbBbbbbd","dbbbBbbbBbUyyyUyyUUUBbbbBbbbbd","dbbbBbbbBbUUUyUUyUUUBbbbBbbbbd","dbbbBbbbBbUyyyUUyUUUBbbbBbbbbd","dbbbBbbbBbUyUUUUyUUUBbbbBbbbbd","dbbbBbbbBbUyyyUyyyUUBbbbBbbbbd","dbbbBbbbBbbbBbbbBbbbBbbbBbbbbd","dnnnnnnnnnnnnnnnnnnnnnnnnnnnnd",".dddddddddddddddddddddddddddd."],{"B":"#a8743a","D":"#465a6b","E":"#ffffff","F":"#0f7a37","H":"#c2410c","M":"#8f2230","S":"#667f93","T":"#b98a35","U":"#8a6426","b":"#d9a85c","c":"#fffbeb","d":"#1b1f2e","e":"#10121c","f":"#16a34a","h":"#f97316","m":"#5f1420","n":"#7a5128","r":"#dc2626","s":"#8fa6b8","t":"#e0b354","w":"#eef4f7","y":"#fde047"}],
+    bj_hai: [[".............................................d......................","..........................................dddSd.....................",".......................................dddSSDSd.....................","......................................dSSSSDDSd.....................",".....................................dSSSSDDSd......................","....................................dSSSSDDDSd......................","...................................dSSSSSDDDSd......................","..................................dSSSSSDDDdd.......................","..................................dSSSSSDDd.........................",".................................dSSSSSDDSSd........................","................................dSSSSSDDDSSSd.......................","................................dSSSSSDDDSSSd.......................","........................ddddddddSSSSSDDDDSSSd.......................",".....................dddDDDDDDDDDDDDDDDDDDSSd.......................","..................dddDDDDDDDDDDDDDDDDDDDDDSSSd......................","...............dddDDDDDDDDDDDDSSSSSSSDDDDDDDSdd.....................",".............ddDDDDDDDDSSSSSSSSSSSSSSSSSSSDDDDDd....................","............dSDDDDDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSd...................","...........dSSSDDSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSd..................",".........ddSSSSSSSSSSSSSSSSssssssssSSSSSSSSSSSSSSSd.................","........dSSSSSSSSSSDDDDDsssssssssssssssSSSSSSSSSSSSd................",".......dSSSSSSDDDDDDDDDDsssssssssssssssssssSSSSSSSSd................","......dSSSSSSSDDDDDEEEssssssssssssssssssssssssSSSSSSd...............",".....dSSSSSSSSssEeeeeesssssssssssssssssssssssssSSSSSSd..............","....dsSSSSSSssssEeEeeellllllllllllllsssssssssssssSSSSSd.............","....dSSSSSssssssEeeeeellllllllllllDlllDsssDsssssssSSSSd.............","...dsSSDDswswsslEeeeeellllllllllllDlllDlllDssssssssSSSd.............","..dssSssssswssssEeeeeelllllllssssssDsssDsllDlssssssssSSd............","..dssssssssswssssssssssMMMMMsssssssDsssDsssDssssssssssSd............",".dssssssssssswsMMMMMMMMMMMMMMssssssDsssDsssDsssssssssssd............",".dwssssMMMMMMMMMMMMMMMMmmmmMMMwssssDsssDsssDsssssssssssd............",".dwMMggggggggggggEEEEEEEEEmmMMMwwwwDsssDsssDsssssssssssd............","..dwMEEEEEEEEEEEEmEmmEmmEmmmmMwwwwDwwwDsssDsssssssssssssd...........","..dwMMEMMEMMEmmEmmEmmEmmEmmmMwwwwwDwwwDwwwDsssssssssssssd...........","..dwwMEMMEEMEEmEEmmEmmEmmEmMMwwwwwDwwwDwwwDwwwssssssssssd...........","...dwwMMMMEMMEmmEmmEmmEmmEMMwwwwwwwwwwwwWWWWWWwwwsssssssd...........","...dwwwMMEEEEEEEEEEEEEEEEEEwwwwWWWWWWWWWWWWWWWWWWwwsssssd...........","...dwwwwMgggggggggggggggggwWWWWWWWWWWWWWWWWWWWWWWWWWwssssd..........","....dwWWWWWWWWWwwwwwwwwwwwwWWWWWWWWWWWWWWWWWWWWWWWWWWWWwsdd.........",".....dWcccccccWhwrwwwwwwwwwhrwwwwwwwwwwwwwhhhhhhhhhhhhhhhhhd........",".dddddWcddccccWhhrrwwwwwwwrrrhwwwwwwwwwwwhhhhhhhhhhhhhhhhhhd........","dWWWWWWWWWccccWhhrrrrwmmmrrrrhhwwwwwwwwwhhhhhhhhhhhhhhhhhhhd........","dWcccccccWccccWhhrrrrwmmmrrrrhhhwwwwwwhhhhhhhhyyyhhhhhhhhhhd........","dWcrrccccWccccWhhrrrwwmmmhrrrhhhhwwwwhhhhhhhhyyyyyhhhhhhhhhd........","dWcrrccccWccccWhhrrhhwhhhhhrrhhhhhwwhhhhhhhhhyyHyyhhhhhhhhhd........","dWcccccccWccccWhhrhhhhhhhhhhrhhhhhFhhhhhhhhhhyyyyyhhhhhhhhhd........","dWcccrrccWccccWhhhsshhhhhhhhhhhfFFhhhhhhhhhhhhyyyhhhhhhhhhhd........","dWcccrrccWccccWhsssssshhhhhhhhFFhhhhhyyyhhhhhhhhhhhhhhhhhhhd........","dWcccrrccWccccsslssssssshhhhhFFFhhhhyyyyyhhhhhhhhFhhhyyyhhhd........","dWcccccccWccclllsssssssssshhhhhhFFFhyyHyyhhhhhfFFhhhyyyyyhhd........","dWcccccccWWllllsssssssssssshhhhhhhhhyyyyyhhhhFFhhhhhyyHyyhhd........","dWcccccccWssllsssssssssssshhhhhhhhhhhyyyhhhhFFFhhhhhyyyyyhhd........","dWcccccccWhssssssssssssssshhhhhhhhhhhhhhhhhhhhhFFFhhhyyyhhhd........","dWWWWWWWWWHHsssssssDDDDDDDHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHd........",".ddddddddHHHHDDDDDDHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHd........",".........dddddddddddddddddddddddddddddddddddddddddddddddddd........."],{"D":"#465a6b","E":"#ffffff","F":"#0f7a37","H":"#c2410c","M":"#8f2230","S":"#667f93","W":"#c6d3dc","c":"#fffbeb","d":"#1b1f2e","e":"#10121c","f":"#16a34a","g":"#f2a0a8","h":"#f97316","l":"#b4c6d4","m":"#5f1420","r":"#dc2626","s":"#8fa6b8","w":"#eef4f7","y":"#fde047"}],
+    bj_herz: [[".rr.rr.","rrrrrrr","rrrrrrr",".rrrrr.","..rrr..","...r..."],{"r":"#dc2626"}],
+    bj_karo: [["...r...","..rrr..",".rrrrr.","rrrrrrr",".rrrrr.","..rrr..","...r..."],{"r":"#dc2626"}],
+    bj_pik: [["...d...","..ddd..",".ddddd.","ddddddd","dd.d.dd","...d...","..ddd.."],{"d":"#1b1f2e"}],
+    bj_kreuz: [["..ddd..","..ddd..","dd.d.dd","ddddddd","dd.d.dd","...d...","..ddd.."],{"d":"#1b1f2e"}],
+    bj_ruecken: [[".dddddddddddddddd.","dccccccccccccccccd","dcaaaaaaaaaaaaaacd","dcaaaaaaaaaaaaaacd","dcqqaaqqaaqqaaaacd","dcaaAAaaAAaaAAaacd","dcaaaaaaaaaaaaaacd","dcaaaaaaaaaaaaaacd","dcaaqqaaqqaaqqaacd","dcaaaaAAaaAAaaAAcd","dcaaaaaaaaaaaaaacd","dcaaaaaaaaaaaaaacd","dcqqaaqqaaqqaaaacd","dcaaAAaaAAaaAAaacd","dcaaaaaaaaaaaaaacd","dcaaaaaaaaaaaaaacd","dcaaqqaaqqaaqqaacd","dcaaaaAAaaAAaaAAcd","dcaaaaaaaaaaaaaacd","dcaaaaaaaaaaaaaacd","dcqqaaqqaaqqaaaacd","dcaaAAaaAAaaAAaacd","dcaaaaaaaaaaaaaacd","dcaaaaaaaaaaaaaacd","dccccccccccccccccd",".dddddddddddddddd."],{"A":"#155e75","a":"#0e7490","c":"#fffbeb","d":"#1b1f2e","q":"#67e8f9"}],
     figur_p: [["..............","..............","..............",".....kkkk.....","....kwwwwk....","...kwwwwwwk...","...kwwsswwk...","....kwsswk....","...kwwwwwwk...","...kwwsswwk...","..kwwwsswwwk..","..kwwsssswwk..",".kwwwsssswwwk.",".kssssssssssk.","..kkkkkkkkkk..",".............."],{"k":"#1f2230","w":"#f8f4e6","s":"#c9c2a8"}],
     figur_r: [["..............","..............","..kk.kkkk.kk..",".kwwkwwwwkwwk.",".kwwwwwwwwwwk.",".kwwwsssswwwk.","..kwwsssswwk..","..kwwwsswwwk..","..kwwwsswwwk..","..kwwwsswwwk..","..kwwwsswwwk..","..kwwwsswwwk..",".kwwwsssswwwk.",".kssssssssssk.","..kkkkkkkkkk..",".............."],{"k":"#1f2230","w":"#f8f4e6","s":"#c9c2a8"}],
     figur_n: [["..............","......kk......",".....kwwkk....","....kwwwwwk...","...kwwkwwwwk..","..kwwwwwwwssk.",".kwwwwwwwwssk.",".kwwsswwwwssk.","..ksskwwwwssk.","...kkwwwwwssk.","...kwwwwwwssk.","...kwwwwwsssk.","..kwwwwwwsssk.",".kwwwwwwwssssk",".ksssssssssssk","..kkkkkkkkkkk."],{"k":"#1f2230","w":"#f8f4e6","s":"#c9c2a8"}],
@@ -4845,6 +4854,7 @@
     { id: 'wheel',  map: 'see', label: tr('⚓ Zurück zum Steg'), get x() { return wheelX(); }, get y() { return wheelY(); }, w: 15, h: 22, draw: drawWheel, open: () => travel('steg') },
     { id: 'flieger', get label() { return inselOpen() ? tr('✈️ Inselflieger · Zur Sonneninsel') : tr('✈️ Inselflieger (🔒 3× Prestige)'); }, x: 356, y: SURFACE - 13, w: 26, h: 14, draw: dark => drawPlane(369, SURFACE + 1, dark), open: () => travel('insel'), ready: () => inselOpen() && !save.inselSeen },
     { id: 'heimflug', map: 'insel', label: tr('✈️ Zurück zum Steg'), x: 356, y: SURFACE - 13, w: 26, h: 14, draw: dark => drawPlane(369, SURFACE + 1, dark), open: () => travel('steg') },
+    { id: 'kartenhai', map: 'insel', label: tr('🦈 Kartenhai · Blackjack'), x: 2, y: DOCK_Y - 20, w: 15, h: 20, draw: dark => drawArt('bj_tisch', 2, DOCK_Y - 20, dark), open: () => toggleModal('bj') },
     { id: 'pelle',  map: 'insel', label: tr('🏅 Coach Pelle · Sportstationen'), x: 18, y: DOCK_Y - 17, w: 12, h: 17, draw: dark => drawPelle(px, 24, DOCK_Y, Math.sin(t * 2) > .7 ? 1 : 0, false, 0, dark), open: () => toggleModal('sport'), ready: () => sportReady() },
     { id: 'strandbude', map: 'insel', label: tr('🍹 Strandbude'), x: KIOSK.x - 3, y: DOCK_Y - 30, w: KIOSK.w + 6, h: 30, draw: drawBeachHut, open: () => toggleModal('shop') },
     { id: 'pokale', get label() { return tr('🏆 Inselpokale ({n})', { n: save.trophies.length }); }, x: 79, y: DOCK_Y - 10, w: 21, h: 10, draw: drawPokale, show: () => save.trophies.length > 0,
@@ -5209,7 +5219,7 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'pc', 'ideanews', 'chess', 'sport', 'ideen', 'profil']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'pc', 'ideanews', 'bj', 'chess', 'sport', 'ideen', 'profil']) $(id).hidden = true;
     if (sp && sp.drill) drillEnd(-1); // leaving a catch drill loses the fish
     if (chess.on) chessEnd(true); // leaving the duel, too
     if (sp && !sp.done) sp = null; // leaving a running station ends it without a result
@@ -5240,7 +5250,7 @@
     if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'chess', 'sdrill', 'boss', 'summon', 'crit'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
-    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: () => { renderCasino(); loadPot(); }, ideen: () => { renderIdeas(); loadIdeas(); }, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, ideanews: renderIdeaNews, pc: () => { const g = $('pc-art').getContext('2d'); g.clearRect(0, 0, 30, 24); g.drawImage(artImg('pc_alt').img, 0, 0); }, wardrobe: renderWardrobe, settings: renderSettings, muschel: renderMuschel, sport: () => { spView.id = null; sp = null; renderSport(); } })[id](); $(id).hidden = false; }
+    if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: () => { renderCasino(); loadPot(); }, ideen: () => { renderIdeas(); loadIdeas(); }, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, ideanews: renderIdeaNews, bj: () => { renderBj(); bjFocus(); }, pc: () => { const g = $('pc-art').getContext('2d'); g.clearRect(0, 0, 30, 24); g.drawImage(artImg('pc_alt').img, 0, 0); }, wardrobe: renderWardrobe, settings: renderSettings, muschel: renderMuschel, sport: () => { spView.id = null; sp = null; renderSport(); } })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
@@ -5485,6 +5495,138 @@
     renderCasino();
     if (jack || mult >= 40) checkCosm();
   }
+
+  // ------------------------------------------------------------------ Blackjack with the Kartenhai (Sonneninsel)
+  // Four decks, shuffled fresh for every hand. The shark stands on every 17 and checks for blackjack
+  // right away. Blackjack pays 3:2, doubling works on the first two cards, there is no split or insurance.
+  // Stakes follow the slot machine. A closed window keeps the hand; a closed tab loses the stake.
+  const BJ_SUITS = { h: ['bj_herz', 'Herz'], d: ['bj_karo', 'Karo'], s: ['bj_pik', 'Pik'], c: ['bj_kreuz', 'Kreuz'] };
+  const BJ_RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+  const bj = { bet: 100, on: false, busy: false, shoe: [], force: [], p: [], d: [], stake: 0, hide: true, msg: tr('Setz deinen Einsatz.'), cls: 'result', art: {} };
+  function bjShoe() {
+    const s = [];
+    for (let n = 0; n < 4; n++) for (const k of Object.keys(BJ_SUITS)) for (const r of BJ_RANKS) s.push({ r, s: k });
+    for (let i = s.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [s[i], s[j]] = [s[j], s[i]]; }
+    return s;
+  }
+  function bjValue(h) {
+    let t = 0, aces = 0;
+    for (const c of h) { if (c.r === 'A') { t += 11; aces++; } else t += +c.r || 10; }
+    while (t > 21 && aces) { t -= 10; aces--; }
+    return { t, soft: aces > 0 };
+  }
+  const bjNatural = h => h.length === 2 && bjValue(h).t === 21;
+  function bjPayout(p, d, stake) { // what comes back to the player, stake included
+    const pv = bjValue(p).t, dv = bjValue(d).t, np = bjNatural(p), nd = bjNatural(d);
+    if (pv > 21) return { win: 0, why: 'bust' };
+    if (np && nd) return { win: stake, why: 'push' };
+    if (np) return { win: Math.round(stake * 2.5), why: 'bj' };
+    if (nd) return { win: 0, why: 'dealerbj' };
+    if (dv > 21) return { win: stake * 2, why: 'dealerbust' };
+    return pv > dv ? { win: stake * 2, why: 'win' } : pv < dv ? { win: 0, why: 'lose' } : { win: stake, why: 'push' };
+  }
+  const bjDraw = () => (bj.force.length ? bj.force.shift() : bj.shoe.pop());
+  const bjMaxBet = () => Math.min(betCap(), Math.max(MIN_BET, Math.floor(save.coins / 50) * 50));
+  function bjSetBet(v) { v = Math.round(+v); bj.bet = Number.isFinite(v) ? Math.min(betCap(), Math.max(MIN_BET, v)) : MIN_BET; renderBj(); }
+  function bjCard(c, hidden) {
+    const el = document.createElement('div');
+    el.className = 'bj-card' + (c.seen ? '' : ' new'); c.seen = true;
+    const cv = document.createElement('canvas'), name = hidden ? 'bj_ruecken' : BJ_SUITS[c.s][0];
+    const img = bj.art[name] || (bj.art[name] = bake(...ART[name]));
+    cv.width = img.width; cv.height = img.height; cv.getContext('2d').drawImage(img, 0, 0);
+    if (hidden) { el.classList.add('back'); el.setAttribute('aria-label', tr('Verdeckte Karte')); el.append(cv); return el; }
+    if (c.s === 'h' || c.s === 'd') el.classList.add('red');
+    el.setAttribute('aria-label', `${tr(BJ_SUITS[c.s][1])} ${c.r}`);
+    const r = document.createElement('b'); r.textContent = c.r; r.setAttribute('aria-hidden', 'true');
+    el.append(r, cv);
+    return el;
+  }
+  function renderBj() {
+    if (!bj.on && bj.bet > betCap()) bj.bet = betCap();
+    const cvHai = $('bj-hai');
+    if (!cvHai.width || cvHai.width === 300) { const img = bake(...ART.bj_hai); cvHai.width = img.width; cvHai.height = img.height; cvHai.getContext('2d').drawImage(img, 0, 0); }
+    $('bj-coins').textContent = fmtN(save.coins);
+    $('bj-dealer').replaceChildren(...bj.d.map((c, i) => bjCard(c, bj.hide && i === 1)));
+    $('bj-player').replaceChildren(...bj.p.map(c => bjCard(c, false)));
+    const label = h => { const v = bjValue(h); return v.soft && v.t < 21 ? `${v.t - 10} / ${v.t}` : String(v.t); };
+    $('bj-dv').textContent = !bj.d.length ? '' : bj.hide ? label(bj.d.slice(0, 1)) : label(bj.d);
+    $('bj-pv').textContent = bj.p.length ? label(bj.p) : '';
+    $('bj-result').className = bj.cls; $('bj-result').textContent = bj.msg;
+    $('bj-acts').hidden = !bj.on; $('bj-bets').hidden = bj.on;
+    $('bj-hit').disabled = $('bj-stand').disabled = bj.busy;
+    $('bj-double').disabled = bj.busy || bj.p.length !== 2 || save.coins < bj.stake;
+    $('bj-bet').textContent = fmtN(bj.bet);
+    $('bj-down').disabled = bj.bet <= MIN_BET; $('bj-up').disabled = bj.bet >= betCap();
+    $('bj-half').disabled = bj.bet <= MIN_BET; $('bj-twice').disabled = bj.bet >= betCap(); $('bj-max').disabled = save.coins < MIN_BET;
+    const poor = save.coins < bj.bet;
+    $('bj-deal').disabled = poor;
+    $('bj-deal').textContent = poor ? tr('Zu wenig Taler – geh fischen!') : tr('Austeilen ({n} Taler)', { n: fmtN(bj.bet) });
+  }
+  function bjFocus() { // keeps the keyboard on the button that matters now
+    if ($('bj').hidden) return;
+    const b = bj.on ? $('bj-hit') : $('bj-deal');
+    if (!b.disabled) b.focus({ preventScroll: true });
+  }
+  function bjDeal() {
+    if (bj.on || save.coins < bj.bet) return;
+    bj.stake = bj.bet; save.coins -= bj.stake; persist(); updateCoins();
+    bj.shoe = bjShoe();
+    bj.p = [bjDraw(), bjDraw()]; bj.d = [bjDraw(), bjDraw()];
+    Object.assign(bj, { on: true, busy: false, hide: true, msg: tr('Karte oder bleiben?'), cls: 'result' });
+    tone(420, .05, 'square', .04);
+    if (bjNatural(bj.p) || bjNatural(bj.d)) return bjFinish();
+    renderBj(); bjFocus();
+  }
+  function bjHit() {
+    if (!bj.on || bj.busy) return;
+    bj.p.push(bjDraw()); tone(420, .05, 'square', .04);
+    const v = bjValue(bj.p).t;
+    if (v > 21) return bjFinish();
+    if (v === 21) return bjStand();
+    renderBj();
+  }
+  function bjDouble() {
+    if (!bj.on || bj.busy || bj.p.length !== 2 || save.coins < bj.stake) return;
+    save.coins -= bj.stake; bj.stake *= 2; persist(); updateCoins();
+    bj.p.push(bjDraw()); tone(420, .05, 'square', .04);
+    if (bjValue(bj.p).t > 21) return bjFinish();
+    bjStand();
+  }
+  function bjStand() {
+    if (!bj.on || bj.busy) return;
+    bj.busy = true; bj.hide = false; bj.msg = tr('Der Hai ist dran …');
+    renderBj();
+    const step = () => {
+      if (bjValue(bj.d).t >= 17) return bjFinish();
+      bj.d.push(bjDraw()); tone(340, .05, 'square', .04); renderBj();
+      setTimeout(step, reduceMotion ? 150 : 650);
+    };
+    setTimeout(step, reduceMotion ? 150 : 650);
+  }
+  function bjFinish() {
+    const { win, why } = bjPayout(bj.p, bj.d, bj.stake), n = fmtN(win - bj.stake);
+    Object.assign(bj, { on: false, busy: false, hide: false });
+    save.coins += win; save.gamble = (save.gamble || 0) + win - bj.stake;
+    persist(); updateCoins();
+    const say = {
+      bj: [tr('BLACKJACK! +{n} Taler', { n }), 'result big'], win: [tr('Gewonnen! +{n} Taler', { n }), 'result win'],
+      dealerbust: [tr('Der Hai hat sich überkauft! +{n} Taler', { n }), 'result win'], push: [tr('Unentschieden. Dein Einsatz kommt zurück.'), 'result'],
+      bust: [tr('Überkauft! Der Hai grinst.'), 'result lose'], dealerbj: [tr('Der Hai hat Blackjack.'), 'result lose'], lose: [tr('Der Hai gewinnt.'), 'result lose'],
+    }[why];
+    bj.msg = say[0]; bj.cls = say[1];
+    if (win > bj.stake) sfx.coin(); else if (!win) tone(200, .3, 'triangle', .06, -80);
+    renderBj(); bjFocus();
+    if ($('bj').hidden) toast('🦈 ' + bj.msg); // the window was closed while the shark drew
+  }
+  $('bj-deal').addEventListener('click', bjDeal);
+  $('bj-hit').addEventListener('click', bjHit);
+  $('bj-stand').addEventListener('click', bjStand);
+  $('bj-double').addEventListener('click', bjDouble);
+  $('bj-down').addEventListener('click', () => { const st = betStep(bj.bet - 1); bjSetBet(Math.ceil(bj.bet / st) * st - st); });
+  $('bj-up').addEventListener('click', () => { const st = betStep(bj.bet); bjSetBet(Math.floor(bj.bet / st) * st + st); });
+  $('bj-half').addEventListener('click', () => bjSetBet(Math.round(bj.bet / 100) * 50));
+  $('bj-twice').addEventListener('click', () => bjSetBet(bj.bet * 2));
+  $('bj-max').addEventListener('click', () => bjSetBet(bjMaxBet()));
 
   // ------------------------------------------------------------------ Ideenbrett (api/ideas.js)
   // One Ideenfisch in the dex unlocks the board for good (the server caps it at 6 ideas per 8 h). Everyone votes ideas up or down.
@@ -6524,7 +6666,7 @@
       return tags.every(Boolean) ? tags.join('|') : null;
     } catch { return null; } // offline: try again later
   }
-  function calm() { return document.hidden || (state === 'idle' && !spinning && $('box').hidden); }
+  function calm() { return !bj.on && (document.hidden || (state === 'idle' && !spinning && $('box').hidden)); } // a reload must not eat a running hand
   function updateNow() {
     if (leaving) return;
     persist(); leaving = true;
@@ -7718,6 +7860,7 @@
   // tiny debug/test hook
   if (DEBUG) window.__fischen = { save, coinMult: () => coinMult(), bossStage: () => bossStage(), crit: () => startCrit(), get critState() { return { ...crit, c: crit.c && crit.c.id }; }, critChance: () => critChance(), gainXp, rebirth, prestige, dig: () => digDeeper(), buyGlutUp: id => buyGlutUp(id), claimGlimm: i => claimGlimm(i), caveMult: () => caveMult(), glimm: () => talkGlimm(), MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); },
+    bjState: bj,
     chess: () => { const f = FISH.find(x => x.id === 'stockfisch'); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; reel.maxT = 0; startChess(); }, chessState: chess,
     rhythm: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; reel.maxT = 0; startRhythm(); },
     get notes() { return rhythm.notes; },
