@@ -5,6 +5,9 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 ## 07.11.2026 · `2026-11-07-6`
 
 - ♟️ New fish on the high seas: the Stockfisch (epic). It fights on a chessboard, not on the line: find the mate in one or it gets away.
+## 07.11.2026 · `2026-11-07-5`
+
+- 🍔 New fish at the dock: the Filet-O-Fish (rare). Square, breaded, with half a slice of cheese.
 
 ## 07.11.2026 · `2026-11-07-4`
 
