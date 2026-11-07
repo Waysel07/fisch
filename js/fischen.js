@@ -242,8 +242,10 @@
   const PATCH_NOTES = [
     { id: '2026-11-07-7', date: '07.11.2026', items: [
       '🦈 Neu auf der Sonneninsel: Der Kartenhai hat in seiner Tiki-Bar einen Blackjack-Tisch aufgemacht. Blackjack zahlt 3:2, und Verdoppeln geht auch.',
+    ] },
     { id: '2026-11-07-6', date: '07.11.2026', items: [
       '♟️ Neuer Fisch auf Hoher See: der Stockfisch (episch). Er kämpft nicht an der Leine, sondern am Schachbrett: Finde das Matt in einem Zug, sonst ist er weg.',
+    ] },
     { id: '2026-11-07-5', date: '07.11.2026', items: [
       '🍔 Neuer Fisch am Steg: der Filet-O-Fisch (selten). Quadratisch, paniert, mit einer halben Scheibe Käse.',
     ] },

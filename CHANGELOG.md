@@ -5,6 +5,7 @@ Player-facing updates of the game „Fischen!“ (fisch.ing), newest first. Gene
 ## 07.11.2026 · `2026-11-07-7`
 
 - 🦈 New on the Sonneninsel: the Card Shark has opened a blackjack table in a tiki bar. Blackjack pays 3:2, and you can double down.
+
 ## 07.11.2026 · `2026-11-07-6`
 
 - ♟️ New fish on the high seas: the Stockfisch (epic). It fights on a chessboard, not on the line: find the mate in one or it gets away.
