@@ -1337,7 +1337,7 @@ button#btn-boss:hover { background: #be123c; }
 .bj-hand { display: flex; flex-wrap: wrap; row-gap: .3rem; min-height: 66px; margin-bottom: .35rem; }
 .bj-card { position: relative; display: grid; place-items: center; flex: none; width: 46px; height: 66px; background: #fffbeb; color: var(--ink); box-shadow: 0 0 0 2px var(--ink), 0 3px 0 2px rgba(0,0,0,.35); }
 .bj-card + .bj-card { margin-left: -10px; }
-.bj-card.new { animation: pop-px .22s steps(3, end); }
+.bj-card.dealt { animation: pop-px .22s steps(3, end); }
 .bj-card.red { color: #dc2626; }
 .bj-card b { position: absolute; left: 4px; top: 2px; font: 400 .95rem var(--px); line-height: 1.1; }
 .bj-card canvas { width: 21px; height: auto; margin-top: 12px; image-rendering: pixelated; }
@@ -1346,7 +1346,7 @@ button#btn-boss:hover { background: #be123c; }
 .bj-acts .btn { flex: 1 1 auto; }
 .bj-acts[hidden] { display: none; }
 .bj-bet { min-width: 5.5rem; font-size: 1.1rem; text-align: center; font-variant-numeric: tabular-nums; }
-@media (prefers-reduced-motion: reduce) { .bj-card.new { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .bj-card.dealt { animation: none; } }
 @media (max-height: 560px) { .bj-head canvas { display: none; } }
 .chess-sheet { max-width: 420px; padding: .9rem .8rem; }
 .chess-say { min-height: 2.8em; margin: .2rem 0 .3rem; }

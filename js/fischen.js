@@ -5532,7 +5532,7 @@
   function bjSetBet(v) { v = Math.round(+v); bj.bet = Number.isFinite(v) ? Math.min(betCap(), Math.max(MIN_BET, v)) : MIN_BET; renderBj(); }
   function bjCard(c, hidden) {
     const el = document.createElement('div');
-    el.className = 'bj-card' + (c.seen ? '' : ' new'); c.seen = true;
+    el.className = 'bj-card' + (c.seen ? '' : ' dealt'); c.seen = true;
     const cv = document.createElement('canvas'), name = hidden ? 'bj_ruecken' : BJ_SUITS[c.s][0];
     const img = bj.art[name] || (bj.art[name] = bake(...ART[name]));
     cv.width = img.width; cv.height = img.height; cv.getContext('2d').drawImage(img, 0, 0);
