@@ -39,6 +39,7 @@
     { id: 'staebchen', name: 'Fischstäbchen',  img: 'img/fischstaebchen.png', r: 'uncommon', min: 7, max: 11, val: 46, pixel: true, page: 'seiten/fischstaebchen.html', map: 'lava', say: 'Ich war mal ein Fisch. Jetzt bin ich knusprig.', desc: 'Paniert, goldbraun und frisch aus der Glut. Niemand weiß, wer es hier unten gebraten hat.' },
     { id: 'beinfisch', name: 'Beinfisch',       img: 'img/beinfisch.gif',        r: 'uncommon',  min: 15, max: 30,  val: 18, photo: true, page: 'seiten/beinfisch.html', say: 'Ich wollte eigentlich nur kurz spazieren.', desc: 'Hat Beine. Läuft lieber am Ufer entlang als zu schwimmen.' },
     { id: 'spezi1',  name: 'Spezifischer Spezifisch', img: 'img/spezifisch1.png', r: 'rare', clip: [.93, 3.17],      min: 40, max: 70,  val: 38, say: 'Extra Spezi, extra spezifisch.', desc: 'Ein Prachtexemplar mit extra viel Spezi.' },
+    { id: 'spezipx', name: 'Pixel-Spezifisch', img: 'img/pixel-spezifisch.png', r: 'rare', min: 30, max: 55, val: 42, pixel: true, say: 'Acht Bit, voll spezifisch.', desc: 'Ein Spezifisch aus reinen Pixeln, in Cola und Orange. Das Etikett ist aufgemalt, der Durst ist echt.' },
     { id: 'idee',    name: 'Ideenfisch', img: 'img/ideenfisch.png', r: 'rare',      min: 20, max: 45,  val: 44, pixel: true, page: 'seiten/ideenfisch.html', say: 'Mir ist da was eingefallen!', desc: 'Ein Anglerfisch, dessen Leuchtköder eine Glühbirne ist. Wer ihn fängt, darf eine Idee ans Ideenbrett am Steg hängen – und alle stimmen darüber ab.' },
     { id: 'samt',    name: 'Fischelner Samtfisch', img: 'img/samtfisch.png', r: 'rare',      min: 25, max: 55,  val: 46, pixel: true, page: 'seiten/samtfisch.html', say: 'Ich komm aus Fischeln. Fisch-eln. Verstehste?', desc: 'Aus Fischeln, mitten in Krefeld, der Samt- und Seidenstadt. Glänzt wie Samt und trägt eine Krawatte aus echter Krefelder Seide.' },
     { id: 'oel',     name: 'Ölfisch',           img: 'img/oelfisch.png',         r: 'rare',      min: 30, max: 60,  val: 45, pixel: true, page: 'seiten/oelfisch.html', say: 'Ich schillere. Das ist kein Kompliment.', desc: 'Schwarz und ölig, mit Regenbogenschimmer. Kommt nachts raus.', night: 1.8, sea: true },
@@ -237,6 +238,9 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-07-3', date: '07.11.2026', items: [
+      '🥤 Neuer Fisch am Steg: der Pixel-Spezifisch (selten). Ein Spezifisch aus reinen Pixeln, in Cola und Orange.',
+    ] },
     { id: '2026-11-07-2', date: '07.11.2026', items: [
       '🎣 fisch.ing startet jetzt direkt das Spiel.',
       '🖥️ Die alte Startseite ist nicht weg: Irgendwo in dieser Welt flackert noch ein alter Computer. Schau genau hin.',
