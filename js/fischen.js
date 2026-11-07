@@ -55,6 +55,7 @@
     { id: 'wiigruen', name: 'Wii-Grünling',     img: 'img/wii-gruen.png',        r: 'wii',       min: 8,  max: 15,  val: 40, page: 'seiten/wii-gruenling.html', say: 'Halb grün, halb weiß, ganz glücklich.', desc: 'Vorne weiß, hinten grün getupft. Grinst gern.' },
     { id: 'wiirot',  name: 'Wii-Rotling',       img: 'img/wii-rot.png',          r: 'wii',       min: 8,  max: 15,  val: 40, page: 'seiten/wii-rotling.html', say: 'Ich bin nicht rot, ich bin aufgeregt.', desc: 'Leuchtend rot mit dunklen Flecken. Immer ein bisschen aufgeregt.' },
     { id: 'lippe',   name: 'Lippenfisch',       img: 'img/lippenfisch-spin.gif', r: 'epic',      min: 30, max: 60,  val: 175, photo: true, map: 'see', say: 'Also … wo fange ich an?', desc: 'Er möchte reden. Er hat viel zu sagen.', night: 2.5 },
+    { id: 'stockfisch', name: 'Stockfisch', img: 'img/stockfisch.png', r: 'epic', min: 45, max: 80, val: 220, pixel: true, map: 'see', chess: true, say: 'Matt in einem. Ich habe nachgerechnet.', desc: 'Getrocknet, steif wie ein Brett und rechnet zwanzig Züge voraus. Wer ihn an Land ziehen will, muss ihn zuerst mattsetzen.' },
     { id: 'travis',  name: 'Travis',            img: 'img/twawis.jpg',           r: 'epic',      min: 35, max: 65,  val: 180, photo: true, map: 'see', say: 'Jetzt bin ich da.', desc: 'Jetzt kommt Travis.', far: .4, sound: 'sounds/jetzt-kommt-travis.mp3' },
     { id: 'blob',    name: 'Blobfisch',         img: 'img/blobfisch.gif',        r: 'epic',      min: 25, max: 40,  val: 130, photo: true, page: 'seiten/blobfisch.html', say: 'Hier oben ist mir der Druck zu wenig.', desc: 'Lebt eigentlich tief unten. Nur weit draußen und am liebsten nachts.', far: .5, night: 2, sea: true },
     { id: 'muschel', name: 'Magische Miesmuschel', img: 'img/miesmuschel.png', r: 'epic', min: 12, max: 20, val: 150, pixel: true, page: 'seiten/miesmuschel.html', sea: true, say: 'Frag mich etwas.', desc: 'Liegt still im Sand und weiß alles. Zieh an der Schnur, dann antwortet sie. Meistens mit Nein.', hint: 'Wer sie fängt, kann ihr am Steg Fragen stellen' },
@@ -239,6 +240,8 @@
   // Patch notes: newest first. Every update players notice gets a new entry on top (new id);
   // returning players see the entries they missed once after the update (📰 / N shows them again).
   const PATCH_NOTES = [
+    { id: '2026-11-07-6', date: '07.11.2026', items: [
+      '♟️ Neuer Fisch auf Hoher See: der Stockfisch (episch). Er kämpft nicht an der Leine, sondern am Schachbrett: Finde das Matt in einem Zug, sonst ist er weg.',
     { id: '2026-11-07-5', date: '07.11.2026', items: [
       '🍔 Neuer Fisch am Steg: der Filet-O-Fisch (selten). Quadratisch, paniert, mit einer halben Scheibe Käse.',
     ] },
@@ -974,6 +977,7 @@
     if (inLava() && Math.random() * 100 < critChance()) return startCrit();
     hooked = { f, ...rollSize(f), str: STRENGTH[f.r] };
     Object.assign(reel, { tension: .15, progress: .22, thrash: 0, thrashT: 1 + Math.random(), slack: 0, maxT: 0 });
+    if (f.chess) { sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff'); startChess(); return; }
     if (f.r === 'legendary' && !f.fake && Math.random() < RHYTHM_CHANCE) { sfx.bite(); splash(bob.x, SURFACE, 14, '#ffffff'); startRhythm(); return; }
     if (DRILL_D[f.r] && !f.fake && inselOpen() && Math.random() < SPORT_DRILL_CHANCE) {
       const pool = drillPool(f);
@@ -1198,6 +1202,204 @@
       land_catch();
     } else {
       retract(tr('Aus dem Takt! {f} ist weg. ({n} %)', { f: f.name, n: Math.round(acc * 100) }) + lostXp(f));
+      bealinEvent({ type: 'lost' });
+    }
+  }
+
+  // ------------------------------------------------------------------ chess duel: the Stockfisch
+  // It doesn't fight on the line: three positions, white to move, mate in one, half a minute each.
+  // Two solved land the fish, all three are a clean catch. No castling or en passant, no position
+  // needs them; a pawn always promotes to a queen. Half of the time a position is mirrored for variety.
+  const CHESS_POS = [
+    '6k1/5ppp/8/8/8/8/5PPP/3R2K1 w', // back rank
+    'r1bqkbnr/pppp1ppp/2n5/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w', // scholar's mate
+    'rnbqkbnr/ppppp2p/5p2/6p1/3PP3/8/PPP2PPP/RNBQKBNR w', // fool's mate, the other way round
+    'rn1q1bnr/ppp1kB1p/3p2p1/4N3/4P3/2N5/PPPP1PPP/R1BbK2R w', // Légal's mate
+    '6rk/6pp/8/6N1/8/8/8/6K1 w', // smothered mate
+    '7k/7p/5N2/8/8/8/8/6RK w', // Arabian mate
+    '5r2/4Nppk/8/8/8/8/5K2/R7 w', // Anastasia's mate
+    'k7/7R/8/8/8/8/8/6RK w', // two rooks, a ladder
+    '7k/8/6K1/8/8/8/8/1Q6 w', // queen and king
+    '6k1/P4ppp/8/8/8/8/5PPP/6K1 w', // promotion on the back rank
+    '5rk1/6pp/6P1/7Q/8/8/8/6K1 w', // Damiano's mate
+    '3rkr2/8/8/8/8/1Q6/8/6K1 w', // epaulette mate
+    '5rk1/5ppp/8/6N1/8/7Q/8/6K1 w', // queen and knight on h7
+    '1n2kb1r/p4ppp/4q3/4p1B1/4P3/8/PPP2PPP/2KR4 w', // the end of Morphy's Opera Game
+  ];
+  const chessIsW = p => p === p.toUpperCase();
+  function chessParse(fen, mirror) {
+    const b = [];
+    for (const rank of fen.split(' ')[0].split('/')) {
+      const row = [];
+      for (const ch of rank) { if (/\d/.test(ch)) for (let n = +ch; n > 0; n--) row.push(''); else row.push(ch); }
+      b.push(...(mirror ? row.reverse() : row));
+    }
+    return b;
+  }
+  const CHESS_N_JUMP = [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]];
+  const CHESS_DIAG = [[-1, -1], [-1, 1], [1, -1], [1, 1]], CHESS_LINE = [[-1, 0], [1, 0], [0, -1], [0, 1]], CHESS_ALL = CHESS_DIAG.concat(CHESS_LINE);
+  const chessOn = (r, f) => r >= 0 && r < 8 && f >= 0 && f < 8;
+  function chessAttacked(b, sq, byWhite) { // is this square attacked by that side?
+    const r = sq >> 3, f = sq & 7, foe = p => (byWhite ? p : p.toLowerCase());
+    for (const [a, c] of CHESS_N_JUMP) if (chessOn(r + a, f + c) && b[(r + a) * 8 + f + c] === foe('N')) return true;
+    for (const [a, c] of CHESS_ALL) if (chessOn(r + a, f + c) && b[(r + a) * 8 + f + c] === foe('K')) return true;
+    const pr = r + (byWhite ? 1 : -1); // a white pawn attacks upward, so it stands one row below
+    for (const c of [-1, 1]) if (chessOn(pr, f + c) && b[pr * 8 + f + c] === foe('P')) return true;
+    for (const [dirs, kind] of [[CHESS_DIAG, 'B'], [CHESS_LINE, 'R']]) for (const [a, c] of dirs) {
+      for (let x = r + a, y = f + c; chessOn(x, y); x += a, y += c) {
+        const p = b[x * 8 + y];
+        if (!p) continue;
+        if (p === foe(kind) || p === foe('Q')) return true;
+        break;
+      }
+    }
+    return false;
+  }
+  function chessApply(b, m) {
+    const n = b.slice(), p = n[m.from];
+    n[m.to] = p === 'P' && m.to < 8 ? 'Q' : p === 'p' && m.to >= 56 ? 'q' : p;
+    n[m.from] = '';
+    return n;
+  }
+  function chessMoves(b, white) { // all legal moves of that side
+    const out = [], mine = p => p && chessIsW(p) === white;
+    b.forEach((p, i) => {
+      if (!mine(p)) return;
+      const r = i >> 3, f = i & 7, add = (x, y) => { const q = b[x * 8 + y]; if (!mine(q)) out.push({ from: i, to: x * 8 + y }); }, kind = p.toLowerCase();
+      if (kind === 'p') {
+        const d = white ? -1 : 1, x = r + d;
+        if (chessOn(x, f) && !b[x * 8 + f]) {
+          out.push({ from: i, to: x * 8 + f });
+          if (r === (white ? 6 : 1) && !b[(x + d) * 8 + f]) out.push({ from: i, to: (x + d) * 8 + f });
+        }
+        for (const c of [-1, 1]) if (chessOn(x, f + c) && b[x * 8 + f + c] && !mine(b[x * 8 + f + c])) out.push({ from: i, to: x * 8 + f + c });
+      } else if (kind === 'n' || kind === 'k') {
+        for (const [a, c] of kind === 'n' ? CHESS_N_JUMP : CHESS_ALL) if (chessOn(r + a, f + c)) add(r + a, f + c);
+      } else {
+        for (const [a, c] of kind === 'b' ? CHESS_DIAG : kind === 'r' ? CHESS_LINE : CHESS_ALL) {
+          for (let x = r + a, y = f + c; chessOn(x, y); x += a, y += c) { add(x, y); if (b[x * 8 + y]) break; }
+        }
+      }
+    });
+    const king = white ? 'K' : 'k';
+    return out.filter(m => { const n = chessApply(b, m); return !chessAttacked(n, n.indexOf(king), !white); });
+  }
+  const chessInCheck = (b, white) => chessAttacked(b, b.indexOf(white ? 'K' : 'k'), !white);
+  const chessIsMate = (b, white) => chessInCheck(b, white) && !chessMoves(b, white).length;
+  const CHESS_N = 3, CHESS_PASS = 2, CHESS_T = 30, CHESS_MARK = { p: 'Bauer', r: 'Turm', n: 'Springer', b: 'Läufer', q: 'Dame', k: 'König' };
+  const CHESS_SAY = ['Matt in einem Zug. Das siehst du doch, oder?', 'Das habe ich schon vor dem Auswerfen berechnet.', 'Letzte Stellung. Ich hätte sie längst gelöst.'];
+  const chess = { on: false, round: 0, solved: 0, failed: 0, left: 0, sel: -1, b: null, moves: [], locked: true, list: [], wait: 0, last: 0, shown: -1, cells: null, art: null };
+  function chessPieces() {
+    if (chess.art) return chess.art;
+    const black = { k: '#1f2230', w: '#454b6b', s: '#2c3050' };
+    chess.art = {};
+    for (const k of 'prnbqk') { const [rows, white] = ART['figur_' + k]; chess.art[k.toUpperCase()] = bake(rows, white); chess.art[k] = bake(rows, black); }
+    return chess.art;
+  }
+  function chessBuild() {
+    if (chess.cells) return;
+    const board = $('chess-board');
+    board.setAttribute('aria-label', tr('Schachbrett'));
+    chess.cells = Array.from({ length: 64 }, (_, i) => {
+      const c = document.createElement('button'), cv = document.createElement('canvas');
+      c.type = 'button'; c.dataset.i = i; cv.width = cv.height = 16; c.append(cv);
+      c.addEventListener('click', () => chessTap(i));
+      board.append(c);
+      return c;
+    });
+    board.addEventListener('keydown', e => { // arrow keys walk over the board
+      const step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -8, ArrowDown: 8 }[e.key];
+      if (!step) return;
+      e.preventDefault();
+      const n = +e.target.dataset.i + step;
+      if (n >= 0 && n < 64) chess.cells[n].focus();
+    });
+  }
+  function chessRender(marks = {}) {
+    const art = chessPieces(), to = chess.sel < 0 ? [] : chess.moves.filter(m => m.from === chess.sel).map(m => m.to);
+    chess.cells.forEach((c, i) => {
+      const p = chess.b[i], g = c.firstChild.getContext('2d'), name = 'abcdefgh'[i & 7] + (8 - (i >> 3));
+      g.clearRect(0, 0, 16, 16);
+      if (p) g.drawImage(art[p], 1, 0);
+      c.className = 'chess-sq ' + (((i >> 3) + (i & 7)) % 2 ? 'd' : 'l') + (i === chess.sel ? ' sel' : '') + (to.includes(i) ? ' to' : '') + (marks[i] ? ' ' + marks[i] : '');
+      c.setAttribute('aria-label', p ? `${name} ${tr(chessIsW(p) ? 'Weiß' : 'Schwarz')} ${tr(CHESS_MARK[p.toLowerCase()])}` : name);
+    });
+  }
+  function chessHud() {
+    const s = Math.max(0, Math.ceil(chess.left));
+    $('chess-bar').style.transform = `scaleX(${Math.max(0, chess.left / CHESS_T)})`;
+    if (s === chess.shown) return;
+    chess.shown = s;
+    $('chess-time').textContent = tr('{n} s', { n: s });
+    $('chess-bar').parentElement.classList.toggle('low', s <= 5);
+  }
+  function chessRound() {
+    const fen = chess.list[chess.round];
+    Object.assign(chess, { b: chessParse(fen, Math.random() < .5), sel: -1, left: CHESS_T, locked: false, shown: -1 });
+    chess.moves = chessMoves(chess.b, true);
+    $('chess-round').textContent = tr('Stellung {n} von {m} · gelöst: {s}', { n: chess.round + 1, m: CHESS_N, s: chess.solved });
+    $('chess-say').textContent = tr(CHESS_SAY[chess.round]);
+    chessRender(); chessHud();
+  }
+  function startChess() {
+    closeModals(); state = 'chess'; hint(''); $('reel').hidden = true; holding = false;
+    chessBuild();
+    const pool = CHESS_POS.slice();
+    const list = Array.from({ length: CHESS_N }, () => pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+    Object.assign(chess, { on: true, round: 0, solved: 0, failed: 0, list, last: performance.now() });
+    $('chess').hidden = false;
+    chessRound();
+    chess.cells[52].focus({ preventScroll: true });
+    requestAnimationFrame(chessTick);
+  }
+  function chessTick(now) {
+    if (!chess.on) return;
+    const dt = Math.min(.1, (now - chess.last) / 1000); chess.last = now; // a hidden tab pauses the clock
+    if (!chess.locked) { chess.left -= dt; chessHud(); if (chess.left <= 0) chessResult(false, tr('Zeit um! Markiert ist das Matt.')); }
+    requestAnimationFrame(chessTick);
+  }
+  function chessTap(i) {
+    if (!chess.on || chess.locked) return;
+    const m = chess.moves.find(x => x.from === chess.sel && x.to === i);
+    if (m) {
+      const after = chessApply(chess.b, m);
+      if (chessIsMate(after, false)) { chess.b = after; return chessResult(true, tr('Matt! Das hat er nicht kommen sehen.'), m); }
+      return chessResult(false, tr('Kein Matt! Markiert wäre es gewesen.'));
+    }
+    chess.sel = chess.b[i] && chessIsW(chess.b[i]) && i !== chess.sel ? i : -1;
+    if (chess.sel >= 0) tone(520, .04, 'square', .03);
+    chessRender();
+  }
+  function chessResult(ok, msg, move) {
+    chess.locked = true; chess.sel = -1;
+    const marks = {};
+    if (ok) {
+      chess.solved++; sfx.coin();
+      marks[move.from] = marks[move.to] = 'last'; marks[chess.b.indexOf('k')] = 'mate';
+    } else {
+      chess.failed++; tone(160, .28, 'square', .06);
+      const s = chess.moves.find(m => chessIsMate(chessApply(chess.b, m), false));
+      if (s) marks[s.from] = marks[s.to] = 'hint';
+    }
+    $('chess-say').textContent = msg;
+    $('chess-round').textContent = tr('Stellung {n} von {m} · gelöst: {s}', { n: chess.round + 1, m: CHESS_N, s: chess.solved });
+    chessRender(marks);
+    chess.wait = setTimeout(() => {
+      chess.round++;
+      if (chess.round >= CHESS_N || chess.failed > CHESS_N - CHESS_PASS) chessEnd(false); else chessRound();
+    }, ok ? 1500 : 2800);
+  }
+  function chessEnd(quit) {
+    const n = chess.solved, f = hooked && hooked.f;
+    chess.on = false; chess.locked = true; clearTimeout(chess.wait);
+    $('chess').hidden = true;
+    if (!f) { state = 'idle'; return; }
+    if (!quit && n >= CHESS_PASS) {
+      reel.maxT = n >= CHESS_N ? 0 : .8; // all three count as a clean catch
+      toast(tr('♟️ Schachmatt! {f} gefangen ({n} von {m} gelöst)', { f: f.name, n, m: CHESS_N }));
+      land_catch();
+    } else {
+      retract((quit ? tr('Aufgegeben! {f} ist weg.', { f: f.name }) : tr('Schachmatt für dich! {f} ist weg. ({n} von {m} gelöst)', { f: f.name, n, m: CHESS_N })) + lostXp(f));
       bealinEvent({ type: 'lost' });
     }
   }
@@ -1734,6 +1936,7 @@
   window.addEventListener('keydown', e => {
     const k = e.key.toLowerCase();
     if (k === 'escape') { closeModals(); return; }
+    if (state === 'chess') return; // the board's own buttons take the keys
     if (e.target.closest && e.target.closest('input, textarea, select')) return;
     if (sportPlaying() && sportKey(e, true)) return;
     if (state === 'rhythm') { if (!e.repeat && k === ' ') { e.preventDefault(); rhythmHit(); } else if (!e.repeat && (k === 'z' || k === 'x')) { e.preventDefault(); rhythmAimHit(); } return; }
@@ -1955,6 +2158,12 @@
 
   // Sprites as char rows, drawn in img/pxl/code.px.js. 1 char = 1 fine pixel = 0.5 world units.
   const ART = {
+    figur_p: [["..............","..............","..............",".....kkkk.....","....kwwwwk....","...kwwwwwwk...","...kwwsswwk...","....kwsswk....","...kwwwwwwk...","...kwwsswwk...","..kwwwsswwwk..","..kwwsssswwk..",".kwwwsssswwwk.",".kssssssssssk.","..kkkkkkkkkk..",".............."],{"k":"#1f2230","w":"#f8f4e6","s":"#c9c2a8"}],
+    figur_r: [["..............","..............","..kk.kkkk.kk..",".kwwkwwwwkwwk.",".kwwwwwwwwwwk.",".kwwwsssswwwk.","..kwwsssswwk..","..kwwwsswwwk..","..kwwwsswwwk..","..kwwwsswwwk..","..kwwwsswwwk..","..kwwwsswwwk..",".kwwwsssswwwk.",".kssssssssssk.","..kkkkkkkkkk..",".............."],{"k":"#1f2230","w":"#f8f4e6","s":"#c9c2a8"}],
+    figur_n: [["..............","......kk......",".....kwwkk....","....kwwwwwk...","...kwwkwwwwk..","..kwwwwwwwssk.",".kwwwwwwwwssk.",".kwwsswwwwssk.","..ksskwwwwssk.","...kkwwwwwssk.","...kwwwwwwssk.","...kwwwwwsssk.","..kwwwwwwsssk.",".kwwwwwwwssssk",".ksssssssssssk","..kkkkkkkkkkk."],{"k":"#1f2230","w":"#f8f4e6","s":"#c9c2a8"}],
+    figur_b: [["..............","..............","......kk......",".....kwwk.....","....kwwwwk....","...kwwsswwk...","...kwwwwwwk...","....kwsswk....","...kwwsswwk...","...kwwsswwk...","..kwwwsswwwk..","..kwwsssswwk..",".kwwwsssswwwk.",".kssssssssssk.","..kkkkkkkkkk..",".............."],{"k":"#1f2230","w":"#f8f4e6","s":"#c9c2a8"}],
+    figur_q: [["..............",".k....kk....k.","kwk..kwwk..kwk",".kwkkwwwwkkwk.",".kwwkwwwwkwwk.",".kwwwwwwwwwwk.","..kwwwsswwwk..","..kwwsssswwk..","...kwwsswwk...","...kwwsswwk...","...kwwsswwk...","..kwwwsswwwk..",".kwwwsssswwwk.",".kssssssssssk.","..kkkkkkkkkk..",".............."],{"k":"#1f2230","w":"#f8f4e6","s":"#c9c2a8"}],
+    figur_k: [["......kk......",".....kwwk.....","....kwwwwk....","....kkwwkk....","...kwwwwwwk...","..kwwwwwwwwk..","..kwwwsswwwk..","...kwwsswwk...","...kwwsswwk...","...kwwsswwk...","...kwwsswwk...","..kwwwsswwwk..",".kwwwsssswwwk.",".kssssssssssk.","..kkkkkkkkkk..",".............."],{"k":"#1f2230","w":"#f8f4e6","s":"#c9c2a8"}],
     idee_birne: [["..kkkk..",".kwyywk.","kwwyywwk","kwyyyywk","kyyyyyyk","kYyyyyYk",".kYyyYk.",".kGggGk.",".kggggk.",".kGggGk.","..kkkk.."],{"k":"#1b1f2e","y":"#fde047","Y":"#f59e0b","w":"#fffbe6","g":"#cbd5e1","G":"#64748b"}],
     pc_alt: [["....................aaaa......",".............aaaaaabccca......","......aaaaaaabccccccbbda......","...aaaabccccccbbbbbbbbdaa.....","...accccbbbbbbbbbaaaabdba.....","...abbbbbbaaaaaaeeeeabbda.....","....bbbaaaaeeeeeeeeeabbdd.....","....abbaeeeeeefffeeeeabda.....","...gacbaeeffffeeeeeeeabda.....","...gabbbaeeeeeeffffeeabbda....","..g.abbbaeeffffeeeeeeabbda...g","..g.abbbaeeeeffeeeeeeeabda...g",".g...adbaeeffeeeeeaeeeabda..g.",".g...abbbaeeeeeeeeeaaaabbd..g.",".h...abbbaeeeaaaaaabbbbbbd.g..",".h...abbbaaaabbbbbbbbbbibdag..",".h...gbbbbbbbbbbbbbbbbbdddah..",".h...gbbbbbbbbbbbdddddd.aaahaa","..h..gabbbbddddddbbaaaaajjjhja","..h..gadlllllllllll.ajjajajjha","..h.glllllllllllllllllljajjjha","..hlglmmmmllllllllllllllllllh.",".lhlgllllllllllllllllllmmmllhl","llllllllllllllllllllllllllllll"], {"a":"#16263a","b":"#6f8583","c":"#8ea39b","d":"#4b6270","e":"#0f2a2a","f":"#2f8f6a","g":"#1f5c4b","h":"#2f7a5e","i":"#b45309","j":"#546c74","l":"#5f8a8e","m":"#4a7180"}],
     sp_fan_1: [["..kkkkkkk..",".kshhhhhSk.",".kchssSHCk.",".kcsssSsCk.",".kcsssSsCk.",".kckssskCk.",".kcccccCCk.","..kccccCk..","..kccccCk..","..kccccCk..","..kCCCCCk..","...kpkPk...","...kpkPk...","...kpkPk...","....k.k....","..........."], {"k":"#1b1f2e","s":"#f2c9a0","h":"#7c4a24","S":"#d9a47a","c":"#ef4444","H":"#4a2a12","C":"#b91c1c","p":"#334155","P":"#1e293b"}],
@@ -5000,8 +5209,9 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'pc', 'ideanews', 'sport', 'ideen', 'profil']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'pc', 'ideanews', 'chess', 'sport', 'ideen', 'profil']) $(id).hidden = true;
     if (sp && sp.drill) drillEnd(-1); // leaving a catch drill loses the fish
+    if (chess.on) chessEnd(true); // leaving the duel, too
     if (sp && !sp.done) sp = null; // leaving a running station ends it without a result
     if (window.speechSynthesis) window.speechSynthesis.cancel();
   }
@@ -5027,14 +5237,14 @@
   $('patch-more').addEventListener('click', () => { const y = $('patch-list').parentElement.scrollTop; renderPatch(patchShown + 5); $('patch-list').parentElement.scrollTop = y; });
   function toggleModal(id) {
     if (!$('title').hidden || !$('catch').hidden) return;
-    if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'sdrill', 'boss', 'summon', 'crit'].includes(state)) return;
+    if (['charge', 'fly', 'bite', 'reel', 'rhythm', 'chess', 'sdrill', 'boss', 'summon', 'crit'].includes(state)) return;
     const open = $(id).hidden;
     closeModals();
     if (open) { ({ dex: () => { if (dexTab !== 'shiny') dexTab = DEX_AREAS[save.map] ? save.map : 'steg'; document.querySelector('#dex .dexrew').open = dexClaimable().length > 0; renderDex(); }, shop: renderShop, casino: () => { renderCasino(); loadPot(); }, ideen: () => { renderIdeas(); loadIdeas(); }, prog: renderProg, lb: openLb, cloud: renderCloud, patch: () => { renderPatch(unreadPatches()); save.patchSeen = PATCH_NOTES[0].id; persist(); }, lobby: renderLobby, ideanews: renderIdeaNews, pc: () => { const g = $('pc-art').getContext('2d'); g.clearRect(0, 0, 30, 24); g.drawImage(artImg('pc_alt').img, 0, 0); }, wardrobe: renderWardrobe, settings: renderSettings, muschel: renderMuschel, sport: () => { spView.id = null; sp = null; renderSport(); } })[id](); $(id).hidden = false; }
   }
   document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', closeModals));
   document.querySelectorAll('.modal').forEach(m => m.addEventListener('pointerdown', e => {
-    if (e.target === m && m.id !== 'title' && m.id !== 'catch' && !(m.id === 'sport' && sp && sp.drill)) closeModals(); // a stray tap must not lose the fish in a catch drill
+    if (e.target === m && m.id !== 'title' && m.id !== 'catch' && m.id !== 'chess' && !(m.id === 'sport' && sp && sp.drill)) closeModals(); // a stray tap must not lose the fish in a catch drill
   }));
   $('btn-dex').addEventListener('click', () => toggleModal('dex'));
   $('btn-shop').addEventListener('click', () => toggleModal('shop'));
@@ -7164,7 +7374,7 @@
     return j;
   }
   function lobbyMe() {
-    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'sdrill', 'boss', 'crit'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: Math.min(99, save.rebirthsTotal | 0), pr: save.prestige, ti: myTitle() ? save.title : '', bs: bossStage(), sp: profis() };
+    return { x: player.x, d: player.dir, m: save.map, s: ['wait', 'bite', 'summon'].includes(state) ? 'w' : ['reel', 'rhythm', 'chess', 'sdrill', 'boss', 'crit'].includes(state) ? 'r' : 'i', hat: Math.min(HATS.length - 1, save.rebirths), ch: save.cosm.hat || '', cj: save.cosm.jacket || '', cb: save.cosm.bob || '', sk: save.cosm.skin || '', hr: save.cosm.hair || '', sc: save.lobby ? save.lobby.sc : 0, n: save.lobby ? save.lobby.n : 0, rk: Math.min(99, save.rebirthsTotal | 0), pr: save.prestige, ti: myTitle() ? save.title : '', bs: bossStage(), sp: profis() };
   }
   async function lobbySync() {
     if (!save.lobby || LOBBY.busy || document.hidden) return;
@@ -7508,6 +7718,7 @@
   // tiny debug/test hook
   if (DEBUG) window.__fischen = { save, coinMult: () => coinMult(), bossStage: () => bossStage(), crit: () => startCrit(), get critState() { return { ...crit, c: crit.c && crit.c.id }; }, critChance: () => critChance(), gainXp, rebirth, prestige, dig: () => digDeeper(), buyGlutUp: id => buyGlutUp(id), claimGlimm: i => claimGlimm(i), caveMult: () => caveMult(), glimm: () => talkGlimm(), MUTATIONS, forceMut: null, forceShiny: false, get state() { return state; }, talk: () => talkBealin(), openBox: id => openBox(BOXES.find(b => b.id === id)), line: () => bealinLine, setTime: v => { timeShift = 0; timeShift = v - worldTime(); time = worldTime(); },
     land: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; land_catch(); },
+    chess: () => { const f = FISH.find(x => x.id === 'stockfisch'); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; reel.maxT = 0; startChess(); }, chessState: chess,
     rhythm: id => { const f = FISH.find(x => x.id === id); hooked = { f, size: f.max, str: STRENGTH[f.r] }; bob.x = 260; reel.maxT = 0; startRhythm(); },
     get notes() { return rhythm.notes; },
     // tests: weather, maps, size classes, boss fight
