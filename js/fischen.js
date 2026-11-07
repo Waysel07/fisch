@@ -4973,7 +4973,7 @@
 
   const anyModal = () => [...document.querySelectorAll('.modal')].some(m => !m.hidden);
   function closeModals() {
-    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'sport', 'ideen', 'profil']) $(id).hidden = true;
+    for (const id of ['dex', 'shop', 'casino', 'prog', 'lb', 'cloud', 'box', 'patch', 'lobby', 'wardrobe', 'settings', 'muschel', 'pc', 'sport', 'ideen', 'profil']) $(id).hidden = true;
     if (sp && sp.drill) drillEnd(-1); // leaving a catch drill loses the fish
     if (sp && !sp.done) sp = null; // leaving a running station ends it without a result
     if (window.speechSynthesis) window.speechSynthesis.cancel();
