@@ -199,6 +199,47 @@
       </div>
     </div>
 
+    <div class="modal" id="bj" hidden>
+      <div class="sheet casino-sheet bj-sheet" role="dialog" aria-modal="true" aria-labelledby="bj-title">
+        <button class="close" data-close aria-label="Schließen">✕</button>
+        <div class="bj-head">
+          <canvas id="bj-hai" aria-hidden="true"></canvas>
+          <div>
+            <h2 id="bj-title">Kartenhai</h2>
+            <p class="sub">Du hast <b id="bj-coins">0</b> Fischtaler.</p>
+          </div>
+        </div>
+        <div class="bj-felt">
+          <p class="bj-who"><span>Kartenhai</span> <b id="bj-dv"></b></p>
+          <div class="bj-hand" id="bj-dealer"></div>
+          <p class="bj-who"><span>Du</span> <b id="bj-pv"></b></p>
+          <div class="bj-hand" id="bj-player"></div>
+        </div>
+        <p class="result" id="bj-result" aria-live="polite"></p>
+        <div class="bj-acts" id="bj-acts" hidden>
+          <button class="btn" id="bj-hit" type="button">Karte</button>
+          <button class="btn" id="bj-stand" type="button">Bleiben</button>
+          <button class="btn ghost" id="bj-double" type="button">Verdoppeln</button>
+        </div>
+        <div id="bj-bets">
+          <div class="bets">
+          <div class="bet-pick">
+            <button type="button" id="bj-down" aria-label="Weniger Einsatz">−</button>
+            <b class="bj-bet" id="bj-bet" aria-live="polite">100</b>
+            <button type="button" id="bj-up" aria-label="Mehr Einsatz">+</button>
+          </div>
+          <div class="bet-quick">
+            <button type="button" id="bj-half">½</button>
+            <button type="button" id="bj-twice">×2</button>
+            <button type="button" id="bj-max">Max</button>
+          </div>
+          </div>
+          <button class="btn spin" id="bj-deal" type="button">Austeilen</button>
+        </div>
+        <p class="fine">Nur Fischtaler, kein echtes Geld. Blackjack zahlt 3:2, der Hai bleibt bei 17.</p>
+      </div>
+    </div>
+
     <div class="modal" id="pc" hidden>
       <div class="sheet pc-sheet" role="dialog" aria-modal="true" aria-labelledby="pc-title">
         <h2 id="pc-title">🖥️ Alter Computer</h2>

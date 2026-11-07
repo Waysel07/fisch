@@ -33,6 +33,7 @@ Menus are objects on the dock. The old buttons stay hidden for keyboard and scre
 | Kiosk, run by Herr Zylinderwels | Shop | L |
 | Book on the crate | Fischdex and Shinydex | F |
 | Slot machine | Fischautomat | C |
+| Tiki bar with a shark (Sonneninsel) | Kartenhai, blackjack | |
 | Notice board | Progress | P |
 | Cork board with a light bulb | Ideenbrett (idea board) | I |
 | Trophy on the kiosk roof | Leaderboard | B |
@@ -139,6 +140,7 @@ Bait, snacks and mystery boxes cost their base price × √(Taler bonus), so pri
 - **Schätze** (`TREASURES`, `save.treasures`): one-time buys from 500 000 to 5 million Taler that stay forever, even through prestige: Goldener Pokal (+5 % Taler), Glückskompass (+5 % luck), Ebbe-Sanduhr (5 % faster bites), Goldnetz (+10 % XP) and Perlenmuschel (1 more pearl per prestige, from 2× prestige).
 - **Mystery boxes** (`BOXES`): wooden 120, silver 450 (level 4), golden 1 500 (level 8). They are also found on the hook now and then (`boxes`). A box holds Taler, bait, XP, an old sock or a 5× jackpot.
 - **Fischautomat:** stakes run from 50 to 2 000, and the cap rises with each rebirth to 5 000, 10 000, 25 000 and 50 000. Half of every stake from every player feeds one shared jackpot pot on the server (`api/jackpot.js`, starts at 1 000; one-time boosts like the 2 000 000 of 06.11.2026 sit in `BOOSTS`). The server decides whether a spin cracks it, at the odds of three Odfische (3/100 per reel); the reels then show three Odfische and pay the whole pot on top of ×150. Online, three Odfische only come from the server; offline, the machine spins locally and pays ×150 without the pot. The machine shows the last winner (leaderboard name only).
+- **Blackjack** (Kartenhai, Sonneninsel, prop `kartenhai`): four decks shuffled for each hand, the shark stands on every 17, blackjack pays 3:2, doubling on the first two cards, no split or insurance. Stakes run from 50 up to the same cap as the slot machine, and none of it feeds the jackpot pot. The result counts towards `save.gamble`.
 - **Cosmetics** (`COSMETICS`, saved as `cosm`): hats, jackets, bobbers and boat skins. Some are sold, some come from achievements, and luxury items are late-game Taler sinks, up to the Sonnenkrone (500 000, prestige 1) and the Galaxiemantel (1 000 000, prestige 2). The wardrobe previews them and offers free skin and hair colours. The boat skin „David Hasselhoff“ (`boot-hoff`, 30 000 Taler, rebirth 3) replaces the boat on the open sea with a giant swimming pixel man. More colours (orange, purple, camo hats; yellow, black, pink raincoats; yellow, purple, white bobbers), the Diamantjacke (75 000) and Diamantpose (60 000) in the shop, and catch rewards for the new content: Vamp-Jacke/Vamp-Hut (Carti fish, 1× and 5×), Schrotthelm (anchor), Schatzpose (chest) and Muschelhut (Magic Conch). The slot machine gives the Jackpot-Jacke for any JACKPOT (×40 or the pot) and the sparkling Jackpot-Hut for the Odfisch pot (counters `cosm.st.jackpot` and `cosm.st.pot`).
 - **Codes:** the settings redeem codes (`CODES`, keyed by a checksum, redeemed ones saved as `codes`).
 
