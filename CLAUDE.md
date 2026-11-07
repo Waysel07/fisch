@@ -85,6 +85,7 @@ Vor der Arbeit am jeweiligen Bereich lesen, nicht auswendig annehmen:
 ## Testen
 
 - **Syntax:** `for f in js/fischen.js js/fischen-i18n.js api/*.js; do node --check "$f"; done` (`node --check` prüft nur die erste Datei, die man ihm nennt).
+- **Vor jedem Merge:** `gamecheck <Spielordner>` auf dem VPS mit genau dem Stand laufen lassen, der gemergt wird (Docker-Browser, Exit 0 = alles bestanden), und die Screenshots in `/srv/gamecheck/out/` anschauen. Schlägt eine Prüfung fehl, wird nicht gemergt. Nicht abgedeckt: echte API, CSP-Header, Lobby auf zwei Geräten.
 - **Im Browser:** Playwright gegen einen lokalen Server, der die Dateien statisch ausliefert und `api/*.js` mit einem Mock der Redis-Pipeline ausführt. Durch das Spiel hilft `window.__fischen`. Screenshots in Desktop- und Mobilbreite anschauen, Fehler auf der Seite (`pageerror`) sammeln.
 - **Spielstände vorgeben:** mit `addInitScript` setzen, und zwar vor dem ersten Laden. Ein `localStorage.setItem` mit anschließendem `reload` wird vom `pagehide`-Speichern überschrieben.
 - **Übersetzung:** Jeder `tr('…')`-Schlüssel muss im `EN`-Objekt stehen. Am einfachsten prüft man das mit einem kleinen Node-Skript, das beide Dateien per Regex vergleicht. Bewusste Ausnahmen: Eigennamen wie Karpador.
@@ -95,3 +96,4 @@ Vor der Arbeit am jeweiligen Bereich lesen, nicht auswendig annehmen:
 - Arbeiten auf dem zugewiesenen Arbeitszweig.
 - Ein Draft-PR pro Update, gemergt wird nur auf ausdrückliches „merge“.
 - Keine Modellnamen oder Modell-IDs in Commits, PRs oder Code.
+- Kein `merge=union`: Es verwirft gleiche schließende Zeilen ohne Warnung. Mehrere Merges nacheinander stoppen bei der ersten fehlgeschlagenen Prüfung.
